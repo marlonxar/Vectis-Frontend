@@ -1,0 +1,22 @@
+<main id="main-content" class="legal">
+  <article class="container legal-wrap">
+    <header class="legal-head">
+      <p class="eyebrow">{{ 'TERMS.EYEBROW' | translate }}</p>
+      <h1 class="legal-title">{{ 'TERMS.TITLE' | translate }}</h1>
+      <p class="legal-updated">{{ 'TERMS.UPDATED' | translate }}</p>
+      <p class="lead legal-intro">{{ 'TERMS.INTRO' | translate }}</p>
+    </header>
+
+    <section class="legal-sec" *ngFor="let s of sections; let i = index">
+      <h2>{{ i + 1 }}. {{ 'TERMS.' + s + '.H' | translate }}</h2>
+      <p [innerText]="'TERMS.' + s + '.B' | translate"></p>
+    </section>
+
+    <p class="legal-contact">
+      {{ 'TERMS.CONTACT_LINE' | translate }}
+      <a href="mailto:contacto@wearevectis.com">contacto&#64;wearevectis.com</a>.
+    </p>
+
+    <a routerLink="/" class="btn btn-dark legal-back">{{ 'TERMS.BACK' | translate }}</a>
+  </article>
+</main>

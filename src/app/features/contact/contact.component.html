@@ -55,7 +55,7 @@
           </div>
           <div class="field"><label for="m-subject">{{ 'CONTACT.SUBJECT' | translate }} *</label><input id="m-subject" name="m-subject" [(ngModel)]="msg.subject" required /></div>
           <div class="field"><label for="m-message">{{ 'CONTACT.MESSAGE' | translate }} *</label><textarea id="m-message" name="m-message" rows="4" [(ngModel)]="msg.message" required></textarea></div>
-          <label class="consent"><input type="checkbox" name="m-consent" [(ngModel)]="msg.consent" /> <span>{{ 'CONTACT.CONSENT' | translate }}</span></label>
+          <div class="consent"><input type="checkbox" id="m-consent" name="m-consent" [(ngModel)]="msg.consent" /><label for="m-consent">{{ 'CONTACT.CONSENT_PRE' | translate }}<a [routerLink]="privacyPath()" target="_blank" rel="noopener">{{ 'CONTACT.CONSENT_PRIVACY' | translate }}</a>{{ 'CONTACT.CONSENT_AND' | translate }}<a [routerLink]="termsPath()" target="_blank" rel="noopener">{{ 'CONTACT.CONSENT_TERMS' | translate }}</a>{{ 'CONTACT.CONSENT_POST' | translate }}</label></div>
           <p class="form-err" *ngIf="msgError()" role="alert">{{ 'CONTACT.ERROR' | translate }}</p>
           <button type="submit" class="btn btn-gold full">{{ 'CONTACT.SEND' | translate }}</button>
         </div>

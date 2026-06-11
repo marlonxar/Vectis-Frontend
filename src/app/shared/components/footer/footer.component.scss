@@ -37,3 +37,8 @@
   .footer-top { grid-template-columns: 1fr; gap: var(--space-5); }
   .bottom-bar { flex-direction: column; text-align: center; }
 }
+
+.legal-links { display: inline-flex; gap: 10px; align-items: center; }
+.legal-links a { color: rgba(255,255,255,0.55); transition: color var(--dur) var(--ease); }
+.legal-links a:hover { color: var(--gold-bright); }
+.legal-links span { color: rgba(255,255,255,0.3); }

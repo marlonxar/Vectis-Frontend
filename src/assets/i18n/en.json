@@ -242,7 +242,12 @@
     "B2": "$5,000 – $15,000",
     "B3": "$15,000 – $50,000",
     "B4": "Over $50,000",
-    "CONSENT": "I agree to receive communications and to the use of my data per the privacy policy."
+    "CONSENT": "I accept the Privacy Policy and Terms & Conditions, and the use of my data to respond to my request.",
+    "CONSENT_PRE": "I accept the ",
+    "CONSENT_PRIVACY": "Privacy Policy",
+    "CONSENT_AND": " and the ",
+    "CONSENT_TERMS": "Terms & Conditions",
+    "CONSENT_POST": ", and the use of my data to respond to my request."
   },
   "FOOTER": {
     "TAGLINE": "Intelligent automation. Software development. The future is already running.",
@@ -257,7 +262,8 @@
     "SUBSCRIBED": "Thanks for subscribing!",
     "COPYRIGHT": "Vectis Automation Group, Inc. All rights reserved.",
     "PRIVACY": "Privacy Policy",
-    "NAV_TITLE": "Navigation"
+    "NAV_TITLE": "Navigation",
+    "TERMS": "Terms & Conditions"
   },
   "FAQ": {
     "EYEBROW": "FAQ",
@@ -313,5 +319,97 @@
     "TEXT": "The page you're looking for doesn't exist or was moved. Let's get you back on track.",
     "HOME": "Back to home",
     "CONTACT": "Contact us"
+  },
+  "PRIVACY": {
+    "META_TITLE": "Privacy Policy — Vectis",
+    "META_DESC": "How Vectis Automation Group collects, uses and protects your personal information.",
+    "EYEBROW": "Legal",
+    "TITLE": "Privacy Policy",
+    "UPDATED": "Last updated: June 2026",
+    "INTRO": "At Vectis Automation Group we respect your privacy. This policy explains what information we collect through our website and forms, and how we use it.",
+    "S1": {
+      "H": "Data controller",
+      "B": "Vectis Automation Group, based in San José, Costa Rica. For any question about your data, write to us at contacto@wearevectis.com."
+    },
+    "S2": {
+      "H": "Information we collect",
+      "B": "We collect the information you voluntarily provide through our contact, appointment and newsletter forms. This may include: name, email, company, subject, estimated budget and the message you send us. We do not collect sensitive data."
+    },
+    "S3": {
+      "H": "Use of your email and form information",
+      "B": "We may use your email and the information you submit through our forms to: respond to your request, contact you, schedule meetings or appointments, prepare proposals, and send you communications and information related to our services. By submitting a form, you agree that we may use that data for these purposes."
+    },
+    "S4": {
+      "H": "Communications and newsletter",
+      "B": "If you subscribe to our newsletter, we will use your email to send you news, content and updates. You can unsubscribe at any time using the opt-out link or by writing to contacto@wearevectis.com."
+    },
+    "S5": {
+      "H": "Data retention",
+      "B": "We keep your information only for as long as necessary to fulfill the purposes described, or while we maintain a relationship with you, unless the law requires a different period."
+    },
+    "S6": {
+      "H": "Sharing with third parties",
+      "B": "We do not sell or rent your information. We only share it with trusted providers that help us operate the site and communicate with you (for example, email or hosting services), always under confidentiality obligations."
+    },
+    "S7": {
+      "H": "Cookies and similar technologies",
+      "B": "The site may use cookies or similar technologies to work properly and, if enabled, to measure usage anonymously. You can control cookies from your browser settings. If we add analytics or marketing tools, we will display a consent notice."
+    },
+    "S8": {
+      "H": "Your rights",
+      "B": "You can request access, correction or deletion of your personal data, as well as object to its processing, by writing to contacto@wearevectis.com. We will handle your request in accordance with applicable law."
+    },
+    "S9": {
+      "H": "Changes to this policy",
+      "B": "We may update this policy from time to time. We will post the current version on this page with its update date."
+    },
+    "CONTACT_LINE": "Questions about your privacy? Write to us at",
+    "BACK": "Back to home"
+  },
+  "TERMS": {
+    "META_TITLE": "Terms & Conditions — Vectis",
+    "META_DESC": "Terms and conditions for using the website and services of Vectis Automation Group.",
+    "EYEBROW": "Legal",
+    "TITLE": "Terms & Conditions",
+    "UPDATED": "Last updated: June 2026",
+    "INTRO": "These terms and conditions govern the use of the Vectis Automation Group website and requests for our services. By using the site or submitting a form, you accept these terms.",
+    "S1": {
+      "H": "Acceptance of terms",
+      "B": "By accessing and using this website you agree to be bound by these terms. If you do not agree, please do not use the site."
+    },
+    "S2": {
+      "H": "Use of the site",
+      "B": "You agree to use the site lawfully and not to take any action that could damage it, disrupt its operation or infringe the rights of third parties."
+    },
+    "S3": {
+      "H": "Services and proposals",
+      "B": "Information on the site is informational and does not constitute a binding offer. Services are governed by the specific proposals or contracts we agree in writing with each client."
+    },
+    "S4": {
+      "H": "Forms and communications",
+      "B": "By submitting a contact, appointment or subscription form, you confirm the information provided is accurate and agree that Vectis may contact you to follow up on your request. Processing of your data is governed by our Privacy Policy."
+    },
+    "S5": {
+      "H": "Intellectual property",
+      "B": "The site content (text, design, logo and the Vectis brand) is owned by Vectis Automation Group or its licensors. It may not be reproduced or used without prior authorization."
+    },
+    "S6": {
+      "H": "Third-party links",
+      "B": "The site may contain links to third-party sites. We are not responsible for the content or privacy practices of those sites."
+    },
+    "S7": {
+      "H": "Limitation of liability",
+      "B": "The site is provided \"as is\". To the extent permitted by law, Vectis shall not be liable for indirect or consequential damages arising from the use of, or inability to use, the site."
+    },
+    "S8": {
+      "H": "Changes",
+      "B": "We may update these terms at any time. The current version will be posted on this page with its update date."
+    },
+    "S9": {
+      "H": "Governing law",
+      "B": "These terms are governed by the laws of the Republic of Costa Rica, without prejudice to any applicable consumer protection rules."
+    },
+    "CONTACT_LINE": "Questions about these terms? Write to us at",
+    "BACK": "Back to home"
   }
 }

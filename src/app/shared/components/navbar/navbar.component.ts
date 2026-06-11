@@ -4,6 +4,7 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser, DOCUMENT } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
+import { Router, NavigationEnd } from '@angular/router';
 import { ScrollService } from '../../../core/services/scroll.service';
 import { mobileMenuStagger } from '../../animations/page-animations';
 
@@ -24,10 +25,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private readonly scroll = inject(ScrollService);
   private readonly platformId = inject(PLATFORM_ID);
   private readonly doc = inject(DOCUMENT);
+  private readonly router = inject(Router);
 
   readonly scrolled = signal(false);
   readonly menuOpen = signal(false);
   readonly activeId = signal('inicio');
+  readonly forceSolid = signal(false);
 
   readonly links: NavLink[] = [
     { id: 'inicio', key: 'NAV.HOME' },
@@ -41,6 +44,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   private observer?: IntersectionObserver;
 
   ngOnInit(): void {
+    this.updateSolid(this.router.url);
+    this.router.events.subscribe((e) => { if (e instanceof NavigationEnd) this.updateSolid(e.urlAfterRedirects); });
     if (!isPlatformBrowser(this.platformId)) return;
     this.observer = new IntersectionObserver((entries) => {
       for (const e of entries) {
@@ -54,6 +59,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void { this.observer?.disconnect(); this.lockScroll(false); }
+
+  private updateSolid(url: string): void { this.forceSolid.set(/privac|term/i.test(url)); }
 
   private lockScroll(lock: boolean): void {
     if (!this.scroll.isBrowser) return;

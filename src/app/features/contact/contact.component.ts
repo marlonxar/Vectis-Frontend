@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { stepTransition, fadeSwitch } from '../../shared/animations/page-animations';
 import { RevealDirective } from '../../core/directives/reveal.directive';
+import { RouterLink } from '@angular/router';
 
 type Mode = 'message' | 'appointment';
 interface DayCell { date: Date | null; disabled: boolean; }
@@ -11,7 +12,7 @@ interface DayCell { date: Date | null; disabled: boolean; }
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule, RevealDirective],
+  imports: [CommonModule, FormsModule, TranslateModule, RevealDirective, RouterLink],
   templateUrl: './contact.component.html',
   styleUrl: './contact.component.scss',
   animations: [stepTransition, fadeSwitch],
@@ -19,6 +20,8 @@ interface DayCell { date: Date | null; disabled: boolean; }
 export class ContactComponent {
   private readonly translate = inject(TranslateService);
   readonly mode = signal<Mode>('message');
+  privacyPath(): string { return this.translate.currentLang === 'en' ? '/privacy' : '/privacidad'; }
+  termsPath(): string { return this.translate.currentLang === 'en' ? '/terms' : '/terminos'; }
 
   // Message form (huecohouse field set)
   msg = { name: '', email: '', company: '', service: '', budget: '', subject: '', message: '', consent: false };

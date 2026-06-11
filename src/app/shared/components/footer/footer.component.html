@@ -41,6 +41,10 @@
 
   <div class="container bottom-bar">
     <p class="copy">© {{ year }} {{ 'FOOTER.COPYRIGHT' | translate }}</p>
-    <a class="privacy" href="#" (click)="$event.preventDefault()">{{ 'FOOTER.PRIVACY' | translate }}</a>
+    <span class="legal-links">
+      <a [routerLink]="privacyPath()">{{ 'FOOTER.PRIVACY' | translate }}</a>
+      <span aria-hidden="true">·</span>
+      <a [routerLink]="termsPath()">{{ 'FOOTER.TERMS' | translate }}</a>
+    </span>
   </div>
 </footer>

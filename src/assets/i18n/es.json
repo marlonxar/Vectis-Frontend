@@ -242,7 +242,12 @@
     "B2": "$5.000 – $15.000",
     "B3": "$15.000 – $50.000",
     "B4": "Más de $50.000",
-    "CONSENT": "Acepto recibir comunicaciones y el uso de mis datos según la política de privacidad."
+    "CONSENT": "Acepto la Política de Privacidad y los Términos y Condiciones, y el uso de mis datos para responder a mi solicitud.",
+    "CONSENT_PRE": "Acepto la ",
+    "CONSENT_PRIVACY": "Política de Privacidad",
+    "CONSENT_AND": " y los ",
+    "CONSENT_TERMS": "Términos y Condiciones",
+    "CONSENT_POST": ", y el uso de mis datos para responder a mi solicitud."
   },
   "FOOTER": {
     "TAGLINE": "Automatización inteligente. Desarrollo de software. El futuro ya opera.",
@@ -257,7 +262,8 @@
     "SUBSCRIBED": "¡Gracias por suscribirte!",
     "COPYRIGHT": "Vectis Automation Group, Inc. Todos los derechos reservados.",
     "PRIVACY": "Política de Privacidad",
-    "NAV_TITLE": "Navegación"
+    "NAV_TITLE": "Navegación",
+    "TERMS": "Términos y Condiciones"
   },
   "FAQ": {
     "EYEBROW": "FAQ",
@@ -313,5 +319,97 @@
     "TEXT": "La página que buscas no existe o fue movida. Volvamos a un lugar seguro.",
     "HOME": "Volver al inicio",
     "CONTACT": "Contáctanos"
+  },
+  "PRIVACY": {
+    "META_TITLE": "Política de Privacidad — Vectis",
+    "META_DESC": "Cómo Vectis Automation Group recopila, usa y protege tu información personal.",
+    "EYEBROW": "Legal",
+    "TITLE": "Política de Privacidad",
+    "UPDATED": "Última actualización: junio 2026",
+    "INTRO": "En Vectis Automation Group respetamos tu privacidad. Esta política explica qué información recopilamos a través de nuestro sitio web y formularios, y cómo la utilizamos.",
+    "S1": {
+      "H": "Responsable del tratamiento",
+      "B": "Vectis Automation Group, con sede en San José, Costa Rica. Para cualquier consulta sobre tus datos puedes escribirnos a contacto@wearevectis.com."
+    },
+    "S2": {
+      "H": "Información que recopilamos",
+      "B": "Recopilamos la información que nos proporcionas voluntariamente a través de nuestros formularios de contacto, agendado de citas y suscripción al boletín. Esto puede incluir: nombre, correo electrónico, empresa, asunto, presupuesto estimado y el mensaje que nos envías. No recopilamos datos sensibles."
+    },
+    "S3": {
+      "H": "Uso de tu correo y de la información de los formularios",
+      "B": "Podemos usar tu correo electrónico y la información que nos envías mediante los formularios para: responder a tu solicitud, contactarte, agendar reuniones o citas, prepararte propuestas y enviarte comunicaciones e información relacionadas con nuestros servicios. Al enviar un formulario, aceptas que utilicemos esos datos con estas finalidades."
+    },
+    "S4": {
+      "H": "Comunicaciones y boletín",
+      "B": "Si te suscribes a nuestro boletín, usaremos tu correo para enviarte novedades, contenidos y actualizaciones. Puedes darte de baja en cualquier momento usando el enlace de cancelación o escribiéndonos a contacto@wearevectis.com."
+    },
+    "S5": {
+      "H": "Conservación de los datos",
+      "B": "Conservamos tu información únicamente durante el tiempo necesario para cumplir con las finalidades descritas, o mientras mantengamos una relación contigo, salvo que la ley exija un plazo distinto."
+    },
+    "S6": {
+      "H": "Compartir con terceros",
+      "B": "No vendemos ni alquilamos tu información. Solo la compartimos con proveedores de confianza que nos ayudan a operar el sitio y a comunicarnos contigo (por ejemplo, servicios de correo u hospedaje), y siempre bajo obligaciones de confidencialidad."
+    },
+    "S7": {
+      "H": "Cookies y tecnologías similares",
+      "B": "El sitio puede usar cookies o tecnologías similares para funcionar correctamente y, si lo habilitamos, para medir su uso de forma anónima. Puedes controlar las cookies desde la configuración de tu navegador. Si añadimos herramientas de analítica o marketing, mostraremos un aviso de consentimiento."
+    },
+    "S8": {
+      "H": "Tus derechos",
+      "B": "Puedes solicitar el acceso, la rectificación o la eliminación de tus datos personales, así como oponerte a su tratamiento, escribiéndonos a contacto@wearevectis.com. Atenderemos tu solicitud conforme a la legislación aplicable."
+    },
+    "S9": {
+      "H": "Cambios a esta política",
+      "B": "Podemos actualizar esta política ocasionalmente. Publicaremos la versión vigente en esta página con su fecha de actualización."
+    },
+    "CONTACT_LINE": "¿Dudas sobre tu privacidad? Escríbenos a",
+    "BACK": "Volver al inicio"
+  },
+  "TERMS": {
+    "META_TITLE": "Términos y Condiciones — Vectis",
+    "META_DESC": "Términos y condiciones de uso del sitio web y los servicios de Vectis Automation Group.",
+    "EYEBROW": "Legal",
+    "TITLE": "Términos y Condiciones",
+    "UPDATED": "Última actualización: junio 2026",
+    "INTRO": "Estos términos y condiciones regulan el uso del sitio web de Vectis Automation Group y la solicitud de nuestros servicios. Al usar el sitio o enviar un formulario, aceptas estos términos.",
+    "S1": {
+      "H": "Aceptación de los términos",
+      "B": "Al acceder y utilizar este sitio web aceptas quedar vinculado por estos términos. Si no estás de acuerdo, por favor no utilices el sitio."
+    },
+    "S2": {
+      "H": "Uso del sitio",
+      "B": "Te comprometes a usar el sitio de forma lícita y a no realizar acciones que puedan dañarlo, interrumpir su funcionamiento o vulnerar derechos de terceros."
+    },
+    "S3": {
+      "H": "Servicios y propuestas",
+      "B": "La información del sitio es de carácter informativo y no constituye una oferta vinculante. La prestación de servicios se rige por las propuestas o contratos específicos que acordemos por escrito con cada cliente."
+    },
+    "S4": {
+      "H": "Formularios y comunicaciones",
+      "B": "Al enviar un formulario de contacto, agendado o suscripción, declaras que la información proporcionada es veraz y aceptas que Vectis te contacte para dar seguimiento a tu solicitud. El tratamiento de tus datos se rige por nuestra Política de Privacidad."
+    },
+    "S5": {
+      "H": "Propiedad intelectual",
+      "B": "El contenido del sitio (textos, diseño, logotipo y marca Vectis) es propiedad de Vectis Automation Group o de sus licenciantes. No puede reproducirse ni utilizarse sin autorización previa."
+    },
+    "S6": {
+      "H": "Enlaces a terceros",
+      "B": "El sitio puede contener enlaces a sitios de terceros. No somos responsables del contenido ni de las prácticas de privacidad de dichos sitios."
+    },
+    "S7": {
+      "H": "Limitación de responsabilidad",
+      "B": "El sitio se ofrece \"tal cual\". En la medida permitida por la ley, Vectis no será responsable de daños indirectos o derivados del uso del sitio o de la imposibilidad de usarlo."
+    },
+    "S8": {
+      "H": "Modificaciones",
+      "B": "Podemos actualizar estos términos en cualquier momento. La versión vigente se publicará en esta página con su fecha de actualización."
+    },
+    "S9": {
+      "H": "Ley aplicable",
+      "B": "Estos términos se rigen por las leyes de la República de Costa Rica, sin perjuicio de las normas de protección al consumidor que resulten aplicables."
+    },
+    "CONTACT_LINE": "¿Dudas sobre estos términos? Escríbenos a",
+    "BACK": "Volver al inicio"
   }
 }

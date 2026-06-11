@@ -1,4 +1,4 @@
-<header class="nav" [class.scrolled]="scrolled()" role="banner">
+<header class="nav" [class.scrolled]="scrolled() || forceSolid()" role="banner">
   <div class="nav-inner container">
     <a class="brand" href="#inicio" (click)="$event.preventDefault(); go('inicio')"
        [attr.aria-label]="'NAV.HOME' | translate">

@@ -1,18 +1,23 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { RouterLink } from '@angular/router';
 import { ScrollService } from '../../../core/services/scroll.service';
 
 @Component({
   selector: 'app-footer',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslateModule],
+  imports: [CommonModule, FormsModule, TranslateModule, RouterLink],
   templateUrl: './footer.component.html',
   styleUrl: './footer.component.scss',
 })
 export class FooterComponent {
   private readonly scroll = inject(ScrollService);
+  private readonly translate = inject(TranslateService);
+
+  privacyPath(): string { return this.translate.currentLang === 'en' ? '/privacy' : '/privacidad'; }
+  termsPath(): string { return this.translate.currentLang === 'en' ? '/terms' : '/terminos'; }
   readonly year = new Date().getFullYear();
   readonly email = signal('');
   readonly subscribed = signal(false);
