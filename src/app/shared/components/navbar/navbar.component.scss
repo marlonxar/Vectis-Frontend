@@ -1,6 +1,6 @@
 :host { display: contents; }
 
-.nav { position: fixed; inset: 0 0 auto 0; height: var(--nav-h); z-index: var(--z-nav); display: flex; align-items: center;
+.nav { position: fixed; inset: 0 0 auto 0; min-height: var(--nav-h); padding-top: env(safe-area-inset-top, 0px); z-index: var(--z-nav); display: flex; align-items: center;
   transition: background var(--dur) var(--ease), box-shadow var(--dur) var(--ease), height var(--dur) var(--ease);
   --c: #fff; --c-dim: rgba(255,255,255,0.7); /* colors over the black hero */ }
 .nav.scrolled { background: var(--paper); box-shadow: 0 1px 0 var(--line-dark); --c: var(--text); --c-dim: var(--text-2); }
