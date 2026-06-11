@@ -65,7 +65,7 @@ A placeholder lives at `src/assets/images/logo.svg`. Drop in your real logo
 - Los avisos de `npm audit` restantes son: (a) **devDependencies** de build (Angular CLI, esbuild, vite, sigstore, tar…) que **no se incluyen** en el bundle de producción, y (b) avisos XSS de framework (innerHTML / i18n-attr / SVG-attr) que **este sitio estático no utiliza** (no hay binding de HTML/SVG no confiable). No afectan la web publicada.
 - SEO/AIO/GEO: `robots.txt`, `sitemap.xml` con hreflang, JSON-LD (ProfessionalService, SoftwareApplication, FAQPage), Open Graph + Twitter, meta geo. WCAG: skip-link, foco visible, `aria-*`, `prefers-reduced-motion`.
 
-## Diseño (v3 — inspirado en huecohouse + rootstrap)
+## Diseño (v3)
 - **Paleta monocromática** blanco/negro (como huecohouse.com) con el dorado reservado para la textura y acentos. Secciones que alternan negro/blanco/crema.
 - **Tipografía**: una sola familia geométrica, `Outfit` (alternativa libre a Circular Std de huecohouse).
 - **Textura del hero**: campo de filamentos dorados originales en canvas (curl-noise) sobre negro; reacciona al mouse con un vórtice/atracción. Archivo: `core/services/mesh-background.service.ts`. Sin imágenes externas.
