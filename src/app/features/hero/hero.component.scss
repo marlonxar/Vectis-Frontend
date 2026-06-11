@@ -43,8 +43,6 @@
 
 /* Fit everything within one screen on phones */
 @media (max-width: 600px) {
-  .hero { align-items: flex-start; }
-  .hero-inner { padding-top: var(--space-5); }
   .code-line { font-size: 12px; padding: 7px 13px; margin-bottom: var(--space-3); }
   .hero-title { font-size: clamp(30px, 8.5vw, 40px); }
   .hero-sub { font-size: 15px; margin-top: var(--space-3); }
