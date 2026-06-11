@@ -1,0 +1,9 @@
+<div class="scroll-progress" [style.width.%]="progress()" aria-hidden="true"></div>
+<a class="skip-link" href="#main-content">{{ 'A11Y.SKIP_TO_CONTENT' | translate }}</a>
+
+<app-navbar (langChange)="useLang($event)" [currentLang]="currentLang()"></app-navbar>
+
+<router-outlet></router-outlet>
+
+<app-footer></app-footer>
+<app-back-to-top></app-back-to-top>

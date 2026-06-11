@@ -1,0 +1,30 @@
+<section id="faq" class="section sec-light faq" aria-labelledby="faq-title">
+  <div class="container faq-wrap">
+    <header class="faq-head" appReveal>
+      <p class="eyebrow">{{ 'FAQ.EYEBROW' | translate }}</p>
+      <h2 id="faq-title" class="section-title">{{ 'FAQ.TITLE' | translate }}</h2>
+      <p class="lead">{{ 'FAQ.SUBTITLE' | translate }}</p>
+    </header>
+
+    <ul class="faq-list" role="list">
+      <li class="faq-item" *ngFor="let k of visible(); let i = index" [class.open]="isOpen(i)">
+        <h3 class="faq-h">
+          <button type="button" class="faq-q" (click)="toggle(i)"
+                  [attr.aria-expanded]="isOpen(i)" [attr.aria-controls]="'faq-panel-' + i" [id]="'faq-btn-' + i">
+            <span>{{ 'FAQ.' + k + '.Q' | translate }}</span>
+            <span class="faq-ico" aria-hidden="true"><i></i><i></i></span>
+          </button>
+        </h3>
+        <div class="faq-a" [id]="'faq-panel-' + i" role="region" [attr.aria-labelledby]="'faq-btn-' + i" [attr.aria-hidden]="!isOpen(i)">
+          <div class="faq-a-inner"><p>{{ 'FAQ.' + k + '.A' | translate }}</p></div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="faq-more">
+      <button type="button" class="btn btn-dark" (click)="toggleAll()" [attr.aria-expanded]="showAll()">
+        {{ (showAll() ? 'FAQ.SHOW_LESS' : 'FAQ.SHOW_ALL') | translate }}
+      </button>
+    </div>
+  </div>
+</section>

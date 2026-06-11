@@ -1,0 +1,126 @@
+<section id="contacto" class="section sec-dark contact" aria-labelledby="contact-title">
+  <div class="container contact-grid">
+
+    <!-- Left: headline + info -->
+    <div class="contact-intro" appReveal>
+      <p class="eyebrow on-dark">{{ 'CONTACT.EYEBROW' | translate }}</p>
+      <h2 id="contact-title" class="contact-h">{{ 'CONTACT.TITLE' | translate }}</h2>
+      <p class="lead on-dark">{{ 'CONTACT.SUBTITLE' | translate }}</p>
+
+      <dl class="info">
+        <div>
+          <dt>{{ 'CONTACT.INFO_EMAIL' | translate }}</dt>
+          <dd><a href="mailto:contacto@wearevectis.com">contacto&#64;wearevectis.com</a></dd>
+        </div>
+        <div>
+          <dt>{{ 'CONTACT.INFO_PHONE' | translate }}</dt>
+          <dd><a href="tel:+50688880000">+506 8888-0000</a></dd>
+        </div>
+        <div>
+          <dt>{{ 'CONTACT.INFO_STUDIO' | translate }}</dt>
+          <dd>San José, Costa Rica</dd>
+        </div>
+      </dl>
+    </div>
+
+    <!-- Right: form panel -->
+    <div class="contact-panel" appReveal [revealDelay]="120">
+      <div class="mode-toggle" role="tablist" [attr.aria-label]="'CONTACT.MODE_LABEL' | translate">
+        <span class="pill" [class.right]="mode() === 'appointment'" aria-hidden="true"></span>
+        <button type="button" role="tab" [attr.aria-selected]="mode() === 'message'" [class.on]="mode() === 'message'" (click)="setMode('message')">{{ 'CONTACT.MODE_MESSAGE' | translate }}</button>
+        <button type="button" role="tab" [attr.aria-selected]="mode() === 'appointment'" [class.on]="mode() === 'appointment'" (click)="setMode('appointment')">{{ 'CONTACT.MODE_APPOINTMENT' | translate }}</button>
+      </div>
+
+      <!-- MODE A: message -->
+      <form *ngIf="mode() === 'message'" @fadeSwitch (ngSubmit)="submitMessage()" novalidate>
+        <div *ngIf="!msgSent(); else msgOk">
+          <div class="field"><label for="m-name">{{ 'CONTACT.NAME' | translate }} *</label><input id="m-name" name="m-name" [(ngModel)]="msg.name" autocomplete="name" required /></div>
+          <div class="row2">
+            <div class="field"><label for="m-email">{{ 'CONTACT.EMAIL' | translate }} *</label><input id="m-email" name="m-email" type="email" [(ngModel)]="msg.email" autocomplete="email" required /></div>
+            <div class="field"><label for="m-company">{{ 'CONTACT.COMPANY' | translate }}</label><input id="m-company" name="m-company" [(ngModel)]="msg.company" autocomplete="organization" /></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="m-service">{{ 'CONTACT.SERVICE' | translate }}</label>
+              <select id="m-service" name="m-service" [(ngModel)]="msg.service">
+                <option value="">{{ 'CONTACT.SELECT' | translate }}</option>
+                <option *ngFor="let s of serviceKeys" [value]="s">{{ 'SERVICES.' + s + '.TITLE' | translate }}</option>
+              </select>
+            </div>
+            <div class="field"><label for="m-budget">{{ 'CONTACT.BUDGET' | translate }}</label>
+              <select id="m-budget" name="m-budget" [(ngModel)]="msg.budget">
+                <option value="">{{ 'CONTACT.SELECT' | translate }}</option>
+                <option *ngFor="let b of budgetKeys" [value]="b">{{ 'CONTACT.' + b | translate }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label for="m-subject">{{ 'CONTACT.SUBJECT' | translate }} *</label><input id="m-subject" name="m-subject" [(ngModel)]="msg.subject" required /></div>
+          <div class="field"><label for="m-message">{{ 'CONTACT.MESSAGE' | translate }} *</label><textarea id="m-message" name="m-message" rows="4" [(ngModel)]="msg.message" required></textarea></div>
+          <label class="consent"><input type="checkbox" name="m-consent" [(ngModel)]="msg.consent" /> <span>{{ 'CONTACT.CONSENT' | translate }}</span></label>
+          <p class="form-err" *ngIf="msgError()" role="alert">{{ 'CONTACT.ERROR' | translate }}</p>
+          <button type="submit" class="btn btn-gold full">{{ 'CONTACT.SEND' | translate }}</button>
+        </div>
+        <ng-template #msgOk><div class="success" role="status"><span class="check" aria-hidden="true">✓</span><p>{{ 'CONTACT.SUCCESS_MESSAGE' | translate }}</p></div></ng-template>
+      </form>
+
+      <!-- MODE B: appointment wizard -->
+      <div *ngIf="mode() === 'appointment'" @fadeSwitch>
+        <div *ngIf="!apptSent(); else apptOk">
+          <ol class="steps" [attr.aria-label]="'CONTACT.STEPS_LABEL' | translate">
+            <li *ngFor="let n of [1,2,3,4]" [class.active]="step() >= n" [class.current]="step() === n"><span class="dot">{{ n }}</span></li>
+          </ol>
+          <div [@stepTransition]="step()">
+            <div *ngIf="step() === 1" class="step-pane">
+              <h3 class="step-title">{{ 'CONTACT.STEP1_TITLE' | translate }}</h3>
+              <div class="svc-grid">
+                <button type="button" class="svc-card" *ngFor="let s of serviceKeys" [class.sel]="appt.service === s" (click)="appt.service = s" [attr.aria-pressed]="appt.service === s">{{ 'SERVICES.' + s + '.TITLE' | translate }}</button>
+              </div>
+            </div>
+            <div *ngIf="step() === 2" class="step-pane">
+              <h3 class="step-title">{{ 'CONTACT.STEP2_TITLE' | translate }}</h3>
+              <div class="cal">
+                <div class="cal-head">
+                  <button type="button" (click)="prevMonth()" [attr.aria-label]="'CONTACT.PREV_MONTH' | translate">‹</button>
+                  <span class="cal-month">{{ monthLabel() }}</span>
+                  <button type="button" (click)="nextMonth()" [attr.aria-label]="'CONTACT.NEXT_MONTH' | translate">›</button>
+                </div>
+                <div class="cal-grid weekdays"><span *ngFor="let w of weekDays()">{{ w }}</span></div>
+                <div class="cal-grid">
+                  <button type="button" *ngFor="let c of calendar()" class="cal-day" [disabled]="c.disabled" [class.empty]="!c.date" [class.sel]="isSelected(c)" (click)="selectDate(c)">{{ c.date ? c.date.getDate() : '' }}</button>
+                </div>
+              </div>
+              <div class="slots" *ngIf="appt.date">
+                <p class="slots-label">{{ 'CONTACT.PICK_TIME' | translate }}</p>
+                <div class="slot-grid"><button type="button" class="slot" *ngFor="let t of timeSlots" [class.sel]="appt.time === t" (click)="appt.time = t" [attr.aria-pressed]="appt.time === t">{{ t }}</button></div>
+              </div>
+            </div>
+            <div *ngIf="step() === 3" class="step-pane">
+              <h3 class="step-title">{{ 'CONTACT.STEP3_TITLE' | translate }}</h3>
+              <div class="field"><label for="a-name">{{ 'CONTACT.NAME' | translate }} *</label><input id="a-name" name="a-name" [(ngModel)]="appt.name" autocomplete="name" required /></div>
+              <div class="row2">
+                <div class="field"><label for="a-email">{{ 'CONTACT.EMAIL' | translate }} *</label><input id="a-email" name="a-email" type="email" [(ngModel)]="appt.email" autocomplete="email" required /></div>
+                <div class="field"><label for="a-company">{{ 'CONTACT.COMPANY' | translate }}</label><input id="a-company" name="a-company" [(ngModel)]="appt.company" autocomplete="organization" /></div>
+              </div>
+              <div class="field"><label for="a-msg">{{ 'CONTACT.MESSAGE' | translate }}</label><textarea id="a-msg" name="a-msg" rows="3" [(ngModel)]="appt.message"></textarea></div>
+            </div>
+            <div *ngIf="step() === 4" class="step-pane">
+              <h3 class="step-title">{{ 'CONTACT.STEP4_TITLE' | translate }}</h3>
+              <dl class="summary">
+                <div><dt>{{ 'CONTACT.SUM_SERVICE' | translate }}</dt><dd>{{ 'SERVICES.' + appt.service + '.TITLE' | translate }}</dd></div>
+                <div><dt>{{ 'CONTACT.SUM_DATE' | translate }}</dt><dd>{{ formattedDate() }} — {{ appt.time }}</dd></div>
+                <div><dt>{{ 'CONTACT.SUM_NAME' | translate }}</dt><dd>{{ appt.name }}</dd></div>
+                <div><dt>{{ 'CONTACT.SUM_EMAIL' | translate }}</dt><dd>{{ appt.email }}</dd></div>
+                <div *ngIf="appt.company"><dt>{{ 'CONTACT.COMPANY' | translate }}</dt><dd>{{ appt.company }}</dd></div>
+              </dl>
+            </div>
+          </div>
+          <div class="wiz-nav">
+            <button type="button" class="btn btn-outline-light" *ngIf="step() > 1" (click)="back()">← {{ 'CONTACT.BACK' | translate }}</button>
+            <button type="button" class="btn btn-gold" *ngIf="step() < 4" (click)="next()" [disabled]="!canAdvance()">{{ 'CONTACT.NEXT' | translate }} →</button>
+            <button type="button" class="btn btn-gold" *ngIf="step() === 4" (click)="confirmAppointment()">{{ 'CONTACT.CONFIRM' | translate }}</button>
+          </div>
+        </div>
+        <ng-template #apptOk><div class="success" role="status"><span class="check" aria-hidden="true">✓</span><p>{{ 'CONTACT.SUCCESS_APPOINTMENT' | translate }}</p></div></ng-template>
+      </div>
+    </div>
+  </div>
+</section>

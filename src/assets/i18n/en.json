@@ -1,0 +1,317 @@
+{
+  "SEO": {
+    "TITLE": "Vectis Automation Group — Automation & Software Development | San José, Costa Rica",
+    "DESCRIPTION": "Custom software development, intelligent automation and artificial intelligence. Technology agency in San José, Costa Rica."
+  },
+  "A11Y": {
+    "SKIP_TO_CONTENT": "Skip to content",
+    "MAIN_NAV": "Main navigation",
+    "LANG_SWITCH": "Switch language",
+    "OPEN_MENU": "Open menu",
+    "CLOSE_MENU": "Close menu",
+    "BACK_TO_TOP": "Back to top"
+  },
+  "NAV": {
+    "HOME": "Home",
+    "SERVICES": "Services",
+    "PORTFOLIO": "Portfolio",
+    "ABOUT": "About",
+    "CONTACT": "Contact",
+    "CTA": "Book now",
+    "FAQ": "FAQ"
+  },
+  "HERO": {
+    "EYEBROW": "AUTOMATION GROUP",
+    "TITLE_1": "We build the software",
+    "TITLE_2": "that moves your business.",
+    "SUBTITLE": "Custom development, intelligent automation and artificial intelligence. From San José, Costa Rica, for clients all over the world.",
+    "CTA_PRIMARY": "Book a call",
+    "CTA_SECONDARY": "View capabilities",
+    "TRUST_1": "Projects",
+    "TRUST_2": "Satisfaction",
+    "TRUST_3": "Average ROI",
+    "SCROLL": "SCROLL"
+  },
+  "SERVICES": {
+    "EYEBROW": "CAPABILITIES",
+    "TITLE": "Our capabilities",
+    "SUBTITLE": "Senior team across every major digital discipline. We cover the full cycle: strategy, design, engineering and operation.",
+    "WEB": {
+      "TITLE": "Web Development",
+      "DESC": "Fast, accessible and scalable websites and web apps built with the best technologies available."
+    },
+    "AUTOMATION": {
+      "TITLE": "Automations",
+      "DESC": "We eliminate repetitive tasks by connecting your tools and orchestrating intelligent workflows."
+    },
+    "AI": {
+      "TITLE": "Artificial Intelligence",
+      "DESC": "Agents, assistants and AI models integrated into your processes for faster decisions."
+    },
+    "CUSTOM": {
+      "TITLE": "Custom Software",
+      "DESC": "Platforms and systems designed to the exact measure of your operation and business."
+    },
+    "API": {
+      "TITLE": "Integrations & APIs",
+      "DESC": "We connect your systems, platforms and third-party services securely and reliably."
+    },
+    "DATA": {
+      "TITLE": "Data & Analytics",
+      "DESC": "We turn your data into dashboards and actionable metrics for your team."
+    },
+    "TITLE_A": "What we build",
+    "TITLE_B": "for you"
+  },
+  "STATS": {
+    "PROJECTS": "Projects delivered",
+    "SATISFACTION": "Client satisfaction",
+    "ROI": "Average ROI generated",
+    "SUPPORT": "Continuous support"
+  },
+  "PORTFOLIO": {
+    "EYEBROW": "PORTFOLIO & CLIENTS",
+    "TITLE": "Work that drives impact",
+    "CLIENTS_LABEL": "Trusted by leading companies",
+    "TESTIMONIALS_TITLE": "Clients love working with us",
+    "FINTECH": {
+      "TAG": "Fintech · Web",
+      "TITLE": "Payments platform",
+      "DESC": "Digital onboarding and real-time payments, built to scale."
+    },
+    "ANALYTICS": {
+      "TAG": "Data & BI",
+      "TITLE": "Analytics dashboard",
+      "DESC": "Live metrics that turn data into decisions."
+    },
+    "HEALTH": {
+      "TAG": "Health AI",
+      "TITLE": "AI clinical assistant",
+      "DESC": "Smart triage and patient support powered by language models."
+    },
+    "ECOMMERCE": {
+      "TAG": "E-commerce",
+      "TITLE": "Scalable store",
+      "DESC": "High-traffic commerce with inventory automation."
+    },
+    "T1": {
+      "QUOTE": "Vectis transformed our onboarding. What took 3 days now happens in minutes.",
+      "NAME": "Juan Mora",
+      "ROLE": "COO · Fintech Latam"
+    },
+    "T2": {
+      "QUOTE": "The development quality is exceptional. Delivered in record time and the architecture scales effortlessly.",
+      "NAME": "Andrea Solís",
+      "ROLE": "Founder · E-commerce Hub"
+    },
+    "T3": {
+      "QUOTE": "They deployed our AI agent in under two weeks. ROI was visible from the very first month.",
+      "NAME": "Roberto Castro",
+      "ROLE": "CTO · HealthTech CR"
+    },
+    "TITLE_A": "Results that",
+    "TITLE_B": "speak for themselves",
+    "WORK_LABEL": "Selected work",
+    "LOGISTICS": {
+      "TAG": "Automation",
+      "TITLE": "Logistics operations",
+      "DESC": "Route & workflow orchestration that cut costs by 40%."
+    },
+    "EDUCATION": {
+      "TAG": "EdTech / SaaS",
+      "TITLE": "Education platform",
+      "DESC": "Adaptive learning with AI-driven recommendations."
+    },
+    "T4": {
+      "QUOTE": "They integrated into our team like one of us. Clear communication and always on-time delivery.",
+      "NAME": "Mark Thompson",
+      "ROLE": "VP Engineering · Cloud Ventures"
+    },
+    "T5": {
+      "QUOTE": "They automated processes that ate hours of our day. The impact was immediate.",
+      "NAME": "Lucía Fernández",
+      "ROLE": "Operations · Logistics360"
+    },
+    "T6": {
+      "QUOTE": "Senior team, sky-high standards and a flawless final product. We'd work with them again without hesitation.",
+      "NAME": "Daniel Kim",
+      "ROLE": "Product Lead · EdTech Global"
+    },
+    "VIEW": "View project",
+    "HEALTHAPP": {
+      "TAG": "HealthTech · App",
+      "TITLE": "AI health app",
+      "DESC": "Smart triage and patient tracking on mobile."
+    },
+    "AIAGENT": {
+      "TAG": "Artificial Intelligence",
+      "TITLE": "AI agent",
+      "DESC": "Conversational assistant wired into the client's systems."
+    },
+    "SAAS": {
+      "TAG": "SaaS · Cloud",
+      "TITLE": "B2B SaaS platform",
+      "DESC": "Secure, fast multi-tenant product deployed to the cloud."
+    },
+    "INTEGRATION": {
+      "TAG": "Integrations · API",
+      "TITLE": "Integration hub",
+      "DESC": "Connectors and pipelines unifying every tool."
+    }
+  },
+  "ABOUT": {
+    "EYEBROW": "ABOUT US",
+    "TITLE": "Intelligent automation, made in Costa Rica",
+    "P1": "We are Vectis: a team based in San José, Costa Rica, designing and building software, automation and artificial intelligence for clients all over the world.",
+    "P2": "We work side by side with startups and enterprises across continents, embedding into their teams to deeply understand their operations and business.",
+    "P3": "We believe in building technology that runs on its own: reliable, measurable systems designed to scale with you, without borders.",
+    "PRECISION": {
+      "TITLE": "Precision",
+      "DESC": "Every line of code has a clear purpose."
+    },
+    "SPEED": {
+      "TITLE": "Speed",
+      "DESC": "We iterate fast without sacrificing quality."
+    },
+    "IMPACT": {
+      "TITLE": "Impact",
+      "DESC": "We measure results, not just deliverables."
+    },
+    "TRANSPARENCY": {
+      "TITLE": "Transparency",
+      "DESC": "Clear communication throughout the process."
+    },
+    "TITLE_A": "World-class engineering,",
+    "TITLE_B": "made in Costa Rica",
+    "LOCATION": "San José, Costa Rica · Clients worldwide",
+    "PHOTO_ALT": "The Vectis team",
+    "STAT_COUNTRIES": "Countries",
+    "STAT_YEARS": "Years of experience",
+    "STAT_TEAM": "Specialists",
+    "STAT_RETENTION": "Client retention",
+    "MISSION_TITLE": "Mission",
+    "VISION_TITLE": "Vision",
+    "TEAM_LABEL": "Our team",
+    "MISSION": "Empower companies worldwide with software, automation and AI that deliver measurable results.",
+    "VISION": "To be the go-to technology partner for teams building the digital future, without borders.",
+    "TEAM_EYEBROW": "behind the project",
+    "TEAM_TITLE": "The people who build it",
+    "TEAM_SUBTITLE": "A small, senior team obsessed with detail.",
+    "ROLE_ENG": "Software Engineer",
+    "ROLE_OPS": "Sales operations & logistics"
+  },
+  "CONTACT": {
+    "EYEBROW": "CONTACT",
+    "TITLE": "Let's build something worth talking about.",
+    "SUBTITLE": "Tell us about your project. We reply in under 24 hours.",
+    "MODE_LABEL": "Contact type",
+    "MODE_MESSAGE": "Send message",
+    "MODE_APPOINTMENT": "Book appointment",
+    "NAME": "Name",
+    "EMAIL": "Email",
+    "COMPANY": "Company",
+    "SERVICE": "Service of interest",
+    "SERVICE_PLACEHOLDER": "Select a service",
+    "MESSAGE": "Message",
+    "SEND": "Send message",
+    "ERROR": "Please complete the required fields with valid data.",
+    "SUCCESS_MESSAGE": "Message sent! We'll be in touch soon.",
+    "SUCCESS_APPOINTMENT": "Appointment booked! We'll send the confirmation by email.",
+    "STEPS_LABEL": "Booking steps",
+    "STEP1_TITLE": "Which service are you interested in?",
+    "STEP2_TITLE": "Choose date and time",
+    "STEP3_TITLE": "Your details",
+    "STEP4_TITLE": "Confirm your appointment",
+    "PICK_TIME": "Select a time slot",
+    "PREV_MONTH": "Previous month",
+    "NEXT_MONTH": "Next month",
+    "BACK": "Back",
+    "NEXT": "Next",
+    "CONFIRM": "Confirm appointment",
+    "SUM_SERVICE": "Service",
+    "SUM_DATE": "Date and time",
+    "SUM_NAME": "Name",
+    "SUM_EMAIL": "Email",
+    "INFO_EMAIL": "Email us",
+    "INFO_PHONE": "Call us",
+    "INFO_STUDIO": "Location",
+    "SELECT": "Select",
+    "BUDGET": "Budget",
+    "SUBJECT": "Subject",
+    "B1": "Under $5,000",
+    "B2": "$5,000 – $15,000",
+    "B3": "$15,000 – $50,000",
+    "B4": "Over $50,000",
+    "CONSENT": "I agree to receive communications and to the use of my data per the privacy policy."
+  },
+  "FOOTER": {
+    "TAGLINE": "Intelligent automation. Software development. The future is already running.",
+    "SOCIAL": "Social media",
+    "SERVICES_TITLE": "Services",
+    "NEWSLETTER_TITLE": "Updates",
+    "NEWSLETTER_SUB": "Get news about automation, AI and development.",
+    "EMAIL_LABEL": "Email address",
+    "EMAIL_PLACEHOLDER": "you@email.com",
+    "EMAIL_ERROR": "Enter a valid email.",
+    "SUBSCRIBE": "Subscribe",
+    "SUBSCRIBED": "Thanks for subscribing!",
+    "COPYRIGHT": "Vectis Automation Group, Inc. All rights reserved.",
+    "PRIVACY": "Privacy Policy",
+    "NAV_TITLE": "Navigation"
+  },
+  "FAQ": {
+    "EYEBROW": "FAQ",
+    "TITLE": "Frequently asked questions",
+    "SUBTITLE": "Everything you need to know before working with us.",
+    "SHOW_ALL": "View all FAQs",
+    "SHOW_LESS": "Show less",
+    "Q1": {
+      "Q": "What services does Vectis offer?",
+      "A": "We build custom software, websites and web apps, mobile apps, automations and artificial intelligence, plus integrations, APIs and data & analytics solutions."
+    },
+    "Q2": {
+      "Q": "Which technologies do you specialize in?",
+      "A": "We work with Angular, React, Next.js and Node across frontend and backend; Python and LLMs (OpenAI, Claude) for AI; and cloud such as AWS. We pick the stack based on each project's goal."
+    },
+    "Q3": {
+      "Q": "Do you work with clients outside Costa Rica?",
+      "A": "Yes. We're based in San José, Costa Rica, but we work with clients all over the world, remotely and across time zones."
+    },
+    "Q4": {
+      "Q": "How long does a project take?",
+      "A": "It depends on scope. An MVP can be ready in 4–8 weeks; larger projects ship in phases. We give you a clear time and cost estimate up front."
+    },
+    "Q5": {
+      "Q": "What is your process?",
+      "A": "We follow a Discover → Design → Build → Scale cycle, with iterative delivery, constant communication and frequent demos so you see real progress."
+    },
+    "Q6": {
+      "Q": "How much does it cost and how do you charge?",
+      "A": "We offer fixed-scope projects or dedicated monthly teams (staff augmentation). After an intro call we send a proposal with pricing and timeline."
+    },
+    "Q7": {
+      "Q": "Do you offer support and maintenance?",
+      "A": "Yes. We provide ongoing support, monitoring and evolutive maintenance so your product keeps running and improving after launch."
+    },
+    "Q8": {
+      "Q": "Can you integrate with our current tools?",
+      "A": "Absolutely. We build integrations and pipelines with your systems, CRMs, ERPs and third-party services via APIs and webhooks."
+    },
+    "Q9": {
+      "Q": "Do you work with startups and large companies?",
+      "A": "Both. We support startups from MVP and established companies on products at scale, adapting the team and process to each case."
+    },
+    "Q10": {
+      "Q": "How do we start working together?",
+      "A": "Easy: book a call or message us from the Contact section. We'll talk through your idea and propose the next steps."
+    }
+  },
+  "NOTFOUND": {
+    "META_TITLE": "Page not found (404) — Vectis",
+    "EYEBROW": "Error 404",
+    "TITLE": "This page got lost in the code",
+    "TEXT": "The page you're looking for doesn't exist or was moved. Let's get you back on track.",
+    "HOME": "Back to home",
+    "CONTACT": "Contact us"
+  }
+}

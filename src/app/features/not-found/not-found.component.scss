@@ -1,0 +1,13 @@
+.nf { background: var(--ink); min-height: 100vh; min-height: 100svh; display: flex; }
+.nf-sec { position: relative; width: 100%; display: flex; align-items: center; overflow: hidden; padding-top: calc(var(--nav-h) + var(--space-6)); }
+.nf-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.nf-glow { position: absolute; left: 50%; top: 42%; transform: translate(-50%,-50%); width: clamp(360px, 50vw, 620px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle, rgba(231,171,46,0.16), rgba(36,50,104,0.12) 40%, transparent 70%); filter: blur(20px); }
+.nf-wrap { position: relative; z-index: 1; text-align: center; max-width: 640px; margin: 0 auto; }
+.nf-code { font-family: var(--font-sans); font-weight: 800; letter-spacing: -0.04em; line-height: 1;
+  font-size: clamp(96px, 26vw, 240px); margin-bottom: var(--space-3);
+  background: linear-gradient(180deg, #F2C868, #C98F1E); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.nf-title { margin-top: var(--space-2); font-size: clamp(28px, 5vw, 48px); font-weight: 800; letter-spacing: -0.03em; color: var(--text-inv); }
+.nf-text { margin: var(--space-3) auto 0; }
+.nf-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: center; margin-top: var(--space-5); }
+@media (prefers-reduced-motion: reduce) { .nf-glow { filter: blur(20px); } }

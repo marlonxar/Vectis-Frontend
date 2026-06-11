@@ -1,0 +1,59 @@
+<!-- Trusted-by: dual marquee -->
+<section class="trusted sec-warm" aria-label="clients">
+  <div class="container"><p class="trusted-label">{{ 'PORTFOLIO.CLIENTS_LABEL' | translate }}</p></div>
+  <div class="marquee" aria-hidden="true"><div class="track">
+    <span class="m-item" *ngFor="let c of clientsLoop"><span class="m-dot"></span>{{ c }}</span>
+  </div></div>
+  <div class="marquee" aria-hidden="true"><div class="track rev">
+    <span class="m-item" *ngFor="let c of clientsLoop2"><span class="m-dot"></span>{{ c }}</span>
+  </div></div>
+  <ul class="sr-only"><li *ngFor="let c of clients">{{ c }}</li></ul>
+</section>
+
+<section id="portafolio" class="section sec-light portfolio" aria-labelledby="portfolio-title">
+  <div class="container">
+    <header class="sec-head">
+      <p class="eyebrow">{{ 'PORTFOLIO.EYEBROW' | translate }}</p>
+      <h2 id="portfolio-title" class="section-title">{{ 'PORTFOLIO.TITLE' | translate }}</h2>
+    </header>
+
+    <div class="works" [class.in]="shownW()" appInView (inView)="revealW()">
+      <article class="work stagger-item" *ngFor="let p of projects; let i = index" [style.transition-delay.ms]="i * 55" tabindex="0">
+        <div class="work-media">
+          <img [src]="p.img" [alt]="('PORTFOLIO.' + p.key + '.TITLE' | translate)" width="800" height="560" loading="lazy" />
+          <span class="work-idx" aria-hidden="true">{{ (i + 1) < 10 ? '0' : '' }}{{ i + 1 }}</span>
+          <div class="work-hover">
+            <p class="work-desc">{{ 'PORTFOLIO.' + p.key + '.DESC' | translate }}</p>
+            <span class="work-view">{{ 'PORTFOLIO.VIEW' | translate }}
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </div>
+        </div>
+        <div class="work-body">
+          <span class="work-cat">{{ 'PORTFOLIO.' + p.key + '.TAG' | translate }}</span>
+          <h3 class="work-title">{{ 'PORTFOLIO.' + p.key + '.TITLE' | translate }}</h3>
+          <ul class="work-tags" aria-hidden="true"><li *ngFor="let t of p.tags">{{ t }}</li></ul>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <div class="container t-wrap">
+    <h2 class="t-head">{{ 'PORTFOLIO.TESTIMONIALS_TITLE' | translate }}</h2>
+    <div class="t-grid" [class.in]="shownT()" appInView (inView)="revealT()">
+      <figure class="t-card stagger-item" *ngFor="let t of testimonials; let i = index" [style.transition-delay.ms]="i * 70">
+        <div class="t-stars" aria-label="5/5">
+          <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+        </div>
+        <blockquote>{{ 'PORTFOLIO.' + t.key + '.QUOTE' | translate }}</blockquote>
+        <figcaption class="t-author">
+          <img class="t-photo" [src]="t.photo" [alt]="('PORTFOLIO.' + t.key + '.NAME' | translate)" width="46" height="46" loading="lazy" />
+          <span class="meta">
+            <strong>{{ 'PORTFOLIO.' + t.key + '.NAME' | translate }}</strong>
+            <small>{{ 'PORTFOLIO.' + t.key + '.ROLE' | translate }}</small>
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>

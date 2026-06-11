@@ -1,0 +1,46 @@
+:root {
+  /* ---- Monochrome palette (huecohouse-inspired) + gold accent ---- */
+  --ink:        #0A0A0A;   /* black sections */
+  --ink-soft:   #141414;   /* elevated dark surface */
+  --ink-card:   #1A1A1A;   /* dark cards */
+  --paper:      #FFFFFF;   /* light sections */
+  --paper-2:    #F4F2EC;   /* warm off-white alt */
+  --paper-3:    #ECE9E1;   /* slightly deeper warm */
+
+  --gold:       #B8881C;   /* accent on light (large text/lines) */
+  --gold-bright:#E7AB2E;   /* accent on dark + texture */
+  --gold-soft:  #F0C868;
+
+  --text:       #0A0A0A;   /* text on light */
+  --text-2:     #565650;   /* muted on light (AA) */
+  --text-inv:   #FFFFFF;   /* text on dark */
+  --text-inv-2: rgba(255, 255, 255, 0.64); /* muted on dark */
+
+  --line-dark:  rgba(10, 10, 10, 0.12);    /* hairlines on light */
+  --line-light: rgba(255, 255, 255, 0.14); /* hairlines on dark */
+
+  --danger:     #D64545;
+  --success:    #2E9E5B;
+
+  /* ---- Type: single geometric family (Circular alternative) ---- */
+  --font-sans: 'Outfit', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* ---- Spacing (8pt) ---- */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 16px; --space-4: 24px;
+  --space-5: 32px; --space-6: 48px; --space-7: 64px; --space-8: 96px;
+  --space-9: 128px;
+
+  --radius-sm: 4px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --container: 1240px;
+  --nav-h: 80px;
+
+  --z-bg: 0; --z-content: 1; --z-fixed: 40; --z-nav: 100; --z-modal: 1000;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 160ms; --dur: 280ms; --dur-slow: 520ms;
+}

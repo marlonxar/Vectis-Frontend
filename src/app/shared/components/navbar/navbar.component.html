@@ -1,0 +1,37 @@
+<header class="nav" [class.scrolled]="scrolled()" role="banner">
+  <div class="nav-inner container">
+    <a class="brand" href="#inicio" (click)="$event.preventDefault(); go('inicio')"
+       [attr.aria-label]="'NAV.HOME' | translate">
+      <img src="assets/images/logo.svg" alt="Vectis Automation Group" width="40" height="40" />
+      <span class="wordmark">Vectis<i>.</i></span>
+    </a>
+
+    <nav class="nav-links" [attr.aria-label]="'A11Y.MAIN_NAV' | translate">
+      <a *ngFor="let l of links" [href]="'#' + l.id" class="nav-link"
+         [class.active]="activeId() === l.id"
+         [attr.aria-current]="activeId() === l.id ? 'true' : null"
+         (click)="$event.preventDefault(); go(l.id)">{{ l.key | translate }}</a>
+    </nav>
+
+    <div class="nav-actions">
+      <div class="lang-toggle" role="group" [attr.aria-label]="'A11Y.LANG_SWITCH' | translate">
+        <button type="button" [class.on]="currentLang === 'es'" (click)="setLang('es')" [attr.aria-pressed]="currentLang === 'es'">ES</button>
+        <span aria-hidden="true">/</span>
+        <button type="button" [class.on]="currentLang === 'en'" (click)="setLang('en')" [attr.aria-pressed]="currentLang === 'en'">EN</button>
+      </div>
+      <button type="button" class="nav-cta cta-desktop" (click)="go('contacto')">{{ 'NAV.CTA' | translate }}</button>
+      <button type="button" class="hamburger" [class.open]="menuOpen()" (click)="toggleMenu()"
+              [attr.aria-expanded]="menuOpen()"
+              [attr.aria-label]="(menuOpen() ? 'A11Y.CLOSE_MENU' : 'A11Y.OPEN_MENU') | translate">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" *ngIf="menuOpen()" @mobileMenuStagger role="dialog" aria-modal="true"
+     [attr.aria-label]="'A11Y.MAIN_NAV' | translate">
+  <a *ngFor="let l of links; let i = index" [href]="'#' + l.id" (click)="$event.preventDefault(); go(l.id)">
+    <em>0{{ i + 1 }}</em>{{ l.key | translate }}
+  </a>
+</div>

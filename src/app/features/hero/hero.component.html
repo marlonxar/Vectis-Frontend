@@ -1,0 +1,28 @@
+<section id="inicio" class="hero" aria-labelledby="hero-title">
+  <canvas #mesh class="mesh" aria-hidden="true"></canvas>
+  <div class="hero-vignette" aria-hidden="true"></div>
+
+  <div class="container hero-inner">
+    <div class="code-line" @fadeInUp aria-hidden="true">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="prompt">vectis ~ %</span>
+      <span class="typed" [appTypewriter]="codeWords"></span><span class="caret">_</span>
+    </div>
+
+    <h1 id="hero-title" class="hero-title" @fadeInUp>
+      {{ 'HERO.TITLE_1' | translate }} <span class="g">{{ 'HERO.TITLE_2' | translate }}</span>
+    </h1>
+
+    <p class="lead on-dark hero-sub" @fadeInUp>{{ 'HERO.SUBTITLE' | translate }}</p>
+
+    <div class="hero-cta" @fadeInUp>
+      <button type="button" class="btn btn-light" (click)="go('contacto')">{{ 'HERO.CTA_PRIMARY' | translate }}</button>
+      <button type="button" class="btn btn-outline-light" (click)="go('servicios')">{{ 'HERO.CTA_SECONDARY' | translate }}</button>
+    </div>
+  </div>
+
+  <button type="button" class="scroll-hint" (click)="go('servicios')" [attr.aria-label]="'HERO.SCROLL' | translate">
+    <span class="mouse" aria-hidden="true"><i></i></span>
+    <span class="s-lbl">{{ 'HERO.SCROLL' | translate }}</span>
+  </button>
+</section>

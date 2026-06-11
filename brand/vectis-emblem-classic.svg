@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Vectis logo">
+  <defs>
+    <linearGradient id="vGold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F2C868"/>
+      <stop offset="1" stop-color="#D99E22"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="120" r="110" fill="#161A33"/>
+  <circle cx="120" cy="120" r="110" fill="none" stroke="#E7AB2E" stroke-width="3.5"/>
+  <!-- left blade: sharp top tip down to centre vertex -->
+  <polygon points="84,52 93,55 120,148 111,156" fill="url(#vGold)"/>
+  <!-- right blade -->
+  <polygon points="156,52 147,55 120,148 129,156" fill="url(#vGold)"/>
+  <!-- bottom diamond -->
+  <polygon points="120,151 128,167 120,184 112,167" fill="url(#vGold)"/>
+</svg>

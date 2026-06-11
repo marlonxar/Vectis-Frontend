@@ -1,0 +1,10 @@
+.to-top {
+  position: fixed; bottom: 30px; right: 30px; z-index: var(--z-fixed);
+  width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center;
+  background: var(--ink); color: var(--paper);
+  border: 1px solid var(--ink); border-radius: 50%; cursor: pointer;
+  box-shadow: 0 10px 30px -10px rgba(10,10,10,0.5);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.to-top:hover { background: var(--gold-bright); border-color: var(--gold-bright); color: var(--ink); transform: translateY(-3px); }
+@media (max-width: 600px) { .to-top { bottom: 20px; right: 20px; } }

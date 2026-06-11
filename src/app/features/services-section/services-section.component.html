@@ -1,0 +1,64 @@
+<section id="servicios" class="section sec-dark capabilities" aria-labelledby="services-title"
+         appInView (inView)="reveal()">
+  <div class="container">
+    <header class="sec-head" [class.in]="shown()">
+      <p class="eyebrow on-dark">{{ 'SERVICES.EYEBROW' | translate }}</p>
+      <h2 id="services-title" class="section-title">{{ 'SERVICES.TITLE' | translate }}</h2>
+      <p class="lead on-dark">{{ 'SERVICES.SUBTITLE' | translate }}</p>
+    </header>
+
+    <div class="orbit" [class.in]="shown()">
+      <div class="side left">
+        <button type="button" class="node" *ngFor="let s of left()" [class.active]="active() === s.idx"
+                (mouseenter)="setActive(s.idx)" (focus)="setActive(s.idx)" (click)="setActive(s.idx)"
+                [attr.aria-pressed]="active() === s.idx"
+                [attr.aria-label]="('SERVICES.' + s.key + '.TITLE' | translate)">
+          <span class="lbl">{{ 'SERVICES.' + s.key + '.TITLE' | translate }}</span>
+          <span class="ic" aria-hidden="true"><ng-container [ngTemplateOutlet]="ico" [ngTemplateOutletContext]="{ $implicit: s.icon }"></ng-container></span>
+          <span class="wire" aria-hidden="true"></span>
+        </button>
+      </div>
+
+      <div class="orb-col">
+        <div class="orb" aria-hidden="true">
+          <span class="orb-spin"></span>
+          <span class="orb-spin rev"></span>
+          <span class="orb-blob b1"></span>
+          <span class="orb-blob b2"></span>
+          <span class="orb-tex"></span>
+          <span class="orb-shade"></span>
+          <span class="orb-reflect"></span>
+          <span class="orb-glass"></span>
+        </div>
+      </div>
+
+      <div class="side right">
+        <button type="button" class="node" *ngFor="let s of right()" [class.active]="active() === s.idx"
+                (mouseenter)="setActive(s.idx)" (focus)="setActive(s.idx)" (click)="setActive(s.idx)"
+                [attr.aria-pressed]="active() === s.idx"
+                [attr.aria-label]="('SERVICES.' + s.key + '.TITLE' | translate)">
+          <span class="wire" aria-hidden="true"></span>
+          <span class="ic" aria-hidden="true"><ng-container [ngTemplateOutlet]="ico" [ngTemplateOutletContext]="{ $implicit: s.icon }"></ng-container></span>
+          <span class="lbl">{{ 'SERVICES.' + s.key + '.TITLE' | translate }}</span>
+        </button>
+      </div>
+
+      <div class="cap-caption" aria-live="polite">
+        <h3>{{ 'SERVICES.' + services[active()].key + '.TITLE' | translate }}</h3>
+        <p>{{ 'SERVICES.' + services[active()].key + '.DESC' | translate }}</p>
+        <ul class="cap-tags" aria-hidden="true"><li *ngFor="let t of services[active()].tags">{{ t }}</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<ng-template #ico let-name>
+  <ng-container [ngSwitch]="name">
+    <svg *ngSwitchCase="'web'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M3 9h18M7 14h6"/></svg>
+    <svg *ngSwitchCase="'automation'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>
+    <svg *ngSwitchCase="'ai'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="6" width="14" height="12" rx="3"/><path d="M9 11v2M15 11v2M12 3v3M9 18l-1 3M15 18l1 3"/></svg>
+    <svg *ngSwitchCase="'custom'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13 5l-2 14"/></svg>
+    <svg *ngSwitchCase="'api'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="12" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 12h4l4-6M12 12l4 6"/></svg>
+    <svg *ngSwitchCase="'data'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 19V9M10 19V5M15 19v-7M20 19v-4M3 19h18"/></svg>
+  </ng-container>
+</ng-template>
