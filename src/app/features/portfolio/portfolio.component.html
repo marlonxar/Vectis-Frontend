@@ -47,6 +47,7 @@
                 autoplay
                 loop
                 muted
+                [muted]="true"
                 playsinline
                 preload="auto"
                 aria-hidden="true"
@@ -140,6 +141,7 @@
               #listVideo
               [src]="project.videoUrl"
               loop
+              muted
               [muted]="isMuted()"
               playsinline
               preload="metadata"
@@ -174,7 +176,7 @@
 
   @if (hoveredVideo && viewMode() === 'list') {
     <div class="floating-preview" [style.left.px]="mouseX + 20" [style.top.px]="mouseY + 20" aria-hidden="true">
-      <video [src]="hoveredVideo" autoplay loop muted preload="auto" playsinline></video>
+      <video [src]="hoveredVideo" autoplay loop muted [muted]="true" preload="auto" playsinline></video>
     </div>
   }
 </section>

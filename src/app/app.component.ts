@@ -7,11 +7,20 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { BackToTopComponent } from './shared/components/back-to-top/back-to-top.component';
+import { IntroComponent } from './features/intro/intro.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, TranslateModule, RouterOutlet, NavbarComponent, FooterComponent, BackToTopComponent],
+  imports: [
+    CommonModule,
+    TranslateModule,
+    RouterOutlet,
+    NavbarComponent,
+    FooterComponent,
+    BackToTopComponent,
+    IntroComponent
+  ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

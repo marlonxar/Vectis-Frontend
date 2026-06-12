@@ -78,48 +78,11 @@
     "provider": { "@type": "Organization", "name": "Vectis Automation Group", "url": "https://wearevectis.com" }
   }
   </script>
-
-  <style>
-    #vectis-loader{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;
-      align-items:center;justify-content:center;gap:20px;background:#0A0A0A;
-      transition:opacity .6s ease,visibility .6s ease;font-family:'Outfit',sans-serif}
-    #vectis-loader.hidden{opacity:0;visibility:hidden}
-    .vt2-word{font-size:clamp(42px,9vw,76px);font-weight:800;letter-spacing:-.02em;color:#fff;
-      display:inline-flex;align-items:baseline;min-height:1.1em}
-    .vt2-word b{color:#E7AB2E;font-weight:800}
-    .vt2-caret{display:inline-block;width:4px;height:.92em;background:#E7AB2E;margin-left:6px;
-      transform:translateY(.08em);animation:vt2b 1s steps(1) infinite}
-    @keyframes vt2b{50%{opacity:0}}
-    .vt2-line{width:0;height:2px;background:#E7AB2E;border-radius:2px;transition:width .55s ease}
-    @media (prefers-reduced-motion: reduce){.vt2-caret{animation:none}#vectis-loader{transition:none}}
-  </style>
   <script type="application/ld+json">
   {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Qué servicios ofrece Vectis?", "acceptedAnswer": {"@type": "Answer", "text": "Desarrollamos software a la medida, sitios y aplicaciones web, apps móviles, automatizaciones e inteligencia artificial, además de integraciones, APIs y soluciones de datos y analítica."}}, {"@type": "Question", "name": "¿En qué tecnologías se especializan?", "acceptedAnswer": {"@type": "Answer", "text": "Trabajamos con Angular, React, Next.js y Node en el frontend y backend; Python y LLMs (OpenAI, Claude) para IA; y nube como AWS. Elegimos el stack según el objetivo de cada proyecto."}}, {"@type": "Question", "name": "¿Trabajan con clientes fuera de Costa Rica?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. Estamos basados en San José, Costa Rica, pero trabajamos con clientes en todo el mundo, de forma remota y en distintas zonas horarias."}}, {"@type": "Question", "name": "¿Cuánto tarda un proyecto?", "acceptedAnswer": {"@type": "Answer", "text": "Depende del alcance. Un MVP puede estar listo en 4–8 semanas; proyectos más grandes se entregan por fases. Te damos una estimación clara de tiempo y costo desde el inicio."}}, {"@type": "Question", "name": "¿Cómo es su proceso de trabajo?", "acceptedAnswer": {"@type": "Answer", "text": "Seguimos un ciclo de Descubrir → Diseñar → Construir → Escalar, con entregas iterativas, comunicación constante y demos frecuentes para que veas avances reales."}}, {"@type": "Question", "name": "¿Cuánto cuesta y cómo cobran?", "acceptedAnswer": {"@type": "Answer", "text": "Ofrecemos proyectos por alcance cerrado o equipos dedicados por mes (staff augmentation). Tras una llamada inicial te enviamos una propuesta con precio y cronograma."}}, {"@type": "Question", "name": "¿Ofrecen soporte y mantenimiento?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. Damos soporte continuo, monitoreo y mantenimiento evolutivo para que tu producto siga funcionando y mejorando después del lanzamiento."}}, {"@type": "Question", "name": "¿Pueden integrarse con nuestras herramientas actuales?", "acceptedAnswer": {"@type": "Answer", "text": "Claro. Construimos integraciones y pipelines con tus sistemas, CRMs, ERPs y servicios de terceros mediante APIs y webhooks."}}, {"@type": "Question", "name": "¿Trabajan con startups y también con empresas grandes?", "acceptedAnswer": {"@type": "Answer", "text": "Ambas. Acompañamos a startups desde el MVP y a empresas consolidadas en productos a escala, adaptando el equipo y el proceso a cada caso."}}, {"@type": "Question", "name": "¿Cómo empezamos a trabajar juntos?", "acceptedAnswer": {"@type": "Answer", "text": "Muy fácil: agenda una llamada o escríbenos desde la sección de Contacto. Conversamos sobre tu idea y te proponemos los siguientes pasos."}}]}
   </script>
 </head>
 <body>
-  <div id="vectis-loader" role="status" aria-live="polite" aria-label="Cargando Vectis">
-    <div class="vt2-word" aria-hidden="true"><span id="vt2-text"></span><span id="vt2-dot"></span><span class="vt2-caret"></span></div>
-    <span class="vt2-line" id="vt2-line"></span>
-  </div>
   <app-root></app-root>
-
-  <script>
-    (function () {
-      var loader = document.getElementById('vectis-loader');
-      var t = document.getElementById('vt2-text');
-      var dot = document.getElementById('vt2-dot');
-      var line = document.getElementById('vt2-line');
-      var word = 'Vectis', i = 0;
-      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      function finish(){ if (dot) dot.innerHTML = '<b>.</b>'; if (line) line.style.width = '150px'; }
-      function type(){ if (i < word.length) { t.textContent = word.slice(0, ++i); setTimeout(type, 150); } else { finish(); } }
-      if (reduce) { t.textContent = word; finish(); } else { setTimeout(type, 320); }
-      function hide(){ if(!loader) return; loader.classList.add('hidden');
-        setTimeout(function(){ if(loader) loader.style.display='none'; }, 650); }
-      setTimeout(hide, 2500);
-      setTimeout(function(){ if(loader) loader.style.display='none'; }, 4200);
-    })();
-  </script>
 </body>
 </html>
