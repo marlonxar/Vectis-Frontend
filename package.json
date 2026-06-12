@@ -1,7 +1,7 @@
 {
   "name": "vectis-frontend",
   "version": "1.0.0",
-  "description": "Vectis Frontend \u2014 landing page (Angular 20, ES/EN, SEO/WCAG/responsive)",
+  "description": "Vectis Frontend — landing page (Angular 20, ES/EN, SEO/WCAG/responsive)",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -21,6 +21,7 @@
     "@angular/router": "^20.3.0",
     "@ngx-translate/core": "^16.0.4",
     "@ngx-translate/http-loader": "^16.0.1",
+    "gsap": "^3.15.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

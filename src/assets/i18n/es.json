@@ -74,6 +74,41 @@
     "TITLE": "Proyectos que generan impacto",
     "CLIENTS_LABEL": "Empresas que confían en nosotros",
     "TESTIMONIALS_TITLE": "Lo que dicen nuestros clientes",
+    "NUTRIGO": {
+      "CAT": "Web App & Infraestructura",
+      "TITLE": "Nutrigo CRM",
+      "DESC": "Plataforma integral para nutricionistas con automatización de dietas y CRM clínico en la nube."
+    },
+    "PROPERTY": {
+      "CAT": "Playwright & GitHub Actions",
+      "TITLE": "US Property Automation",
+      "DESC": "Pipeline automatizado para el scraping, análisis y monitoreo de propiedades inmobiliarias en EE.UU."
+    },
+    "SEO_AI": {
+      "CAT": "Estrategia Digital",
+      "TITLE": "SEO & AI Optimization",
+      "DESC": "Estrategia y motor inteligente para optimización masiva de contenidos mediante modelos LLM."
+    },
+    "AERO": {
+      "CAT": "Ingeniería Creativa",
+      "TITLE": "Aero Dynamics Showcase",
+      "DESC": "Renderizador y simulador interactivo de fluidos y dinámicas de aire en tiempo real en la web."
+    },
+    "AUDIO": {
+      "CAT": "Soundscape & Web Audio",
+      "TITLE": "Audio Scape Experience",
+      "DESC": "Experiencia interactiva con sintetizadores Web Audio API y visualizadores WebGL reactivos."
+    },
+    "FINTECH_UI": {
+      "CAT": "Diseño UI/UX & Dashboard",
+      "TITLE": "FinTech Dashboard UI",
+      "DESC": "Dashboard de trading y analíticas financieras en tiempo real con transiciones fluidas de microinteracciones."
+    },
+    "DECENTRALIZED": {
+      "CAT": "Web3 & Infraestructura de Nodos",
+      "TITLE": "Decentralized Hub",
+      "DESC": "Protocolo de mensajería cifrada e intercambio descentralizado peer-to-peer optimizado."
+    },
     "FINTECH": {
       "TAG": "Fintech · Web",
       "TITLE": "Plataforma de pagos",

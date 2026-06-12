@@ -74,6 +74,41 @@
     "TITLE": "Work that drives impact",
     "CLIENTS_LABEL": "Trusted by leading companies",
     "TESTIMONIALS_TITLE": "Clients love working with us",
+    "NUTRIGO": {
+      "CAT": "Web App & Infrastructure",
+      "TITLE": "Nutrigo CRM",
+      "DESC": "Comprehensive platform for nutritionists with diet automation and cloud clinical CRM."
+    },
+    "PROPERTY": {
+      "CAT": "Playwright & GitHub Actions",
+      "TITLE": "US Property Automation",
+      "DESC": "Automated pipeline for scraping, analyzing, and monitoring real estate properties in the US."
+    },
+    "SEO_AI": {
+      "CAT": "Digital Strategy",
+      "TITLE": "SEO & AI Optimization",
+      "DESC": "Strategy and smart engine for massive content optimization using LLM models."
+    },
+    "AERO": {
+      "CAT": "Creative Engineering",
+      "TITLE": "Aero Dynamics Showcase",
+      "DESC": "Interactive renderer and simulator of fluids and air dynamics in real-time on the web."
+    },
+    "AUDIO": {
+      "CAT": "Soundscape & Web Audio",
+      "TITLE": "Audio Scape Experience",
+      "DESC": "Interactive experience with Web Audio API synthesizers and reactive WebGL visualizers."
+    },
+    "FINTECH_UI": {
+      "CAT": "UI/UX Design & Dashboard",
+      "TITLE": "FinTech Dashboard UI",
+      "DESC": "Trading dashboard and financial analytics in real-time with fluid microinteraction transitions."
+    },
+    "DECENTRALIZED": {
+      "CAT": "Web3 & Node Infrastructure",
+      "TITLE": "Decentralized Hub",
+      "DESC": "Encrypted messaging protocol and optimized peer-to-peer decentralized exchange."
+    },
     "FINTECH": {
       "TAG": "Fintech · Web",
       "TITLE": "Payments platform",

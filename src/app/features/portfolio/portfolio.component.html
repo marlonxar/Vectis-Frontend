@@ -1,59 +1,140 @@
-<!-- Trusted-by: dual marquee -->
-<section class="trusted sec-warm" aria-label="clients">
-  <div class="container"><p class="trusted-label">{{ 'PORTFOLIO.CLIENTS_LABEL' | translate }}</p></div>
-  <div class="marquee" aria-hidden="true"><div class="track">
-    <span class="m-item" *ngFor="let c of clientsLoop"><span class="m-dot"></span>{{ c }}</span>
-  </div></div>
-  <div class="marquee" aria-hidden="true"><div class="track rev">
-    <span class="m-item" *ngFor="let c of clientsLoop2"><span class="m-dot"></span>{{ c }}</span>
-  </div></div>
-  <ul class="sr-only"><li *ngFor="let c of clients">{{ c }}</li></ul>
-</section>
-
-<section id="portafolio" class="section sec-light portfolio" aria-labelledby="portfolio-title">
-  <div class="container">
+<section #projectsSection class="projects-section" (mousemove)="onMouseMove($event)" id="works" [class.mode-spiral]="viewMode() === 'spiral'" aria-label="Portfolio Showcase">
+  <!-- Top header containing title and view toggle -->
+  <div class="projects-header">
     <header class="sec-head">
-      <p class="eyebrow">{{ 'PORTFOLIO.EYEBROW' | translate }}</p>
-      <h2 id="portfolio-title" class="section-title">{{ 'PORTFOLIO.TITLE' | translate }}</h2>
+      <p class="eyebrow on-dark">{{ 'PORTFOLIO.EYEBROW' | translate }}</p>
     </header>
 
-    <div class="works" [class.in]="shownW()" appInView (inView)="revealW()">
-      <article class="work stagger-item" *ngFor="let p of projects; let i = index" [style.transition-delay.ms]="i * 55" tabindex="0">
-        <div class="work-media">
-          <img [src]="p.img" [alt]="('PORTFOLIO.' + p.key + '.TITLE' | translate)" width="800" height="560" loading="lazy" />
-          <span class="work-idx" aria-hidden="true">{{ (i + 1) < 10 ? '0' : '' }}{{ i + 1 }}</span>
-          <div class="work-hover">
-            <p class="work-desc">{{ 'PORTFOLIO.' + p.key + '.DESC' | translate }}</p>
-            <span class="work-view">{{ 'PORTFOLIO.VIEW' | translate }}
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </span>
-          </div>
-        </div>
-        <div class="work-body">
-          <span class="work-cat">{{ 'PORTFOLIO.' + p.key + '.TAG' | translate }}</span>
-          <h3 class="work-title">{{ 'PORTFOLIO.' + p.key + '.TITLE' | translate }}</h3>
-          <ul class="work-tags" aria-hidden="true"><li *ngFor="let t of p.tags">{{ t }}</li></ul>
-        </div>
-      </article>
+    <!-- VIEW TOGGLE CONTROLLER -->
+    <div class="view-toggle-container">
+      <button class="view-toggle" (click)="toggleViewMode()" aria-label="Toggle view layout mode">
+        <span class="toggle-track"></span>
+        <span class="toggle-thumb" [class.slide-right]="viewMode() === 'list'"></span>
+        <span class="toggle-label spiral-label" [class.active]="viewMode() === 'spiral'">SPIRAL</span>
+        <span class="toggle-label list-label" [class.active]="viewMode() === 'list'">LIST</span>
+      </button>
     </div>
   </div>
 
-  <div class="container t-wrap">
-    <h2 class="t-head">{{ 'PORTFOLIO.TESTIMONIALS_TITLE' | translate }}</h2>
-    <div class="t-grid" [class.in]="shownT()" appInView (inView)="revealT()">
-      <figure class="t-card stagger-item" *ngFor="let t of testimonials; let i = index" [style.transition-delay.ms]="i * 70">
-        <div class="t-stars" aria-label="5/5">
-          <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 17.8 5.9 20.4l1.4-6.8L2.2 9l6.9-.7z"/></svg>
+  <!-- VIEW MODE 1: 3D SPIRAL CAROUSEL -->
+  <div class="spiral-viewport" [class.hidden-mode]="viewMode() !== 'spiral'" [attr.aria-hidden]="viewMode() !== 'spiral' ? 'true' : 'false'">
+    <!-- Ambient overlay text in background behind cards -->
+    <div class="bg-title-track" aria-hidden="true">
+      <span class="bg-word">VECTIS</span>
+      <span class="bg-word-sub">SHOWCASE</span>
+    </div>
+
+    <div class="carousel-world" #carouselWorld>
+      @for (project of projects; track project.titleKey; let i = $index) {
+        <div
+          class="spiral-card"
+          #spiralCard
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="(project.titleKey | translate) + ' - ' + (project.categoryKey | translate) + ' (' + project.year + ')'"
+          [class.active]="activeProjectIndex() === i"
+          (mouseenter)="setHoveredProject(i, project.videoUrl)"
+          (mouseleave)="setHoveredProject(null)"
+          (click)="exploreProject(project)"
+          (keydown.enter)="exploreProject(project)"
+          (keydown.space)="exploreProject(project)"
+        >
+          <div class="card-inner" [style.border-color]="project.color + '44'">
+            <!-- Project Video Background/Preview -->
+            <div class="card-media">
+              <video
+                [src]="project.videoUrl"
+                autoplay
+                loop
+                muted
+                playsinline
+                preload="auto"
+                aria-hidden="true"
+              ></video>
+              <div class="card-gradient-overlay" [style.background]="'linear-gradient(to top, rgba(13,13,13,0.95) 0%, rgba(13,13,13,0.3) 50%, ' + project.color + '10 100%)'"></div>
+            </div>
+
+            <!-- Card Content Overlay -->
+            <div class="card-content">
+              <div class="card-header">
+                <span class="project-num" aria-hidden="true">0{{ i + 1 }} /</span>
+                <span class="project-year">{{ project.year }}</span>
+              </div>
+              <div class="card-body">
+                <h3 class="project-title">{{ project.titleKey | translate }}</h3>
+                <p class="project-desc">{{ project.descriptionKey | translate }}</p>
+              </div>
+              <div class="card-footer">
+                <span class="project-category">{{ project.categoryKey | translate }}</span>
+                <span class="explore-btn" [style.color]="project.color">
+                  EXPLORE <span class="arrow" aria-hidden="true">→</span>
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-        <blockquote>{{ 'PORTFOLIO.' + t.key + '.QUOTE' | translate }}</blockquote>
-        <figcaption class="t-author">
-          <img class="t-photo" [src]="t.photo" [alt]="('PORTFOLIO.' + t.key + '.NAME' | translate)" width="46" height="46" loading="lazy" />
-          <span class="meta">
-            <strong>{{ 'PORTFOLIO.' + t.key + '.NAME' | translate }}</strong>
-            <small>{{ 'PORTFOLIO.' + t.key + '.ROLE' | translate }}</small>
-          </span>
-        </figcaption>
-      </figure>
+      }
+    </div>
+
+    <!-- Navigation & progress dot indicator -->
+    <div class="spiral-navigator">
+      <div class="nav-indicator-line">
+        <div class="nav-progress-bar" [style.width.%]="(activeProjectIndex() / (projects.length - 1)) * 100"></div>
+      </div>
+      <div class="nav-dots">
+        @for (project of projects; track project.titleKey; let i = $index) {
+          <button
+            class="nav-dot"
+            [class.active]="activeProjectIndex() === i"
+            (click)="scrollToIndex(i)"
+            [attr.aria-label]="'Go to project ' + (project.titleKey | translate)"
+          >
+            <span class="dot-num" aria-hidden="true">0{{ i + 1 }}</span>
+            <span class="dot-bullet"></span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Scroll/drag helper instructions -->
+    <div class="exploration-hint" aria-hidden="true">
+      <span class="hint-icon">↕</span>
+      <span class="hint-text">SCROLL OR DRAG TO ROTATE ESPIRAL</span>
     </div>
   </div>
+
+  <!-- VIEW MODE 2: SLEEK MINIMAL LIST -->
+  <div class="projects-list" [class.hidden-mode]="viewMode() !== 'list'" [attr.aria-hidden]="viewMode() !== 'list' ? 'true' : 'false'">
+    @for (project of projects; track project.titleKey; let i = $index) {
+      <div
+        class="project-row"
+        tabindex="0"
+        role="button"
+        [attr.aria-label]="(project.titleKey | translate) + ' - ' + (project.categoryKey | translate) + ' (' + project.year + ')'"
+        (mouseenter)="setHoveredProject(i, project.videoUrl)"
+        (mouseleave)="setHoveredProject(null)"
+        (click)="exploreProject(project)"
+        (keydown.enter)="exploreProject(project)"
+        (keydown.space)="exploreProject(project)"
+      >
+        <div class="project-left">
+          <span class="project-row-num" aria-hidden="true">0{{ i + 1 }} /</span>
+          <div class="title-meta">
+            <span class="project-title">{{ project.titleKey | translate }}</span>
+            <span class="project-category">{{ project.categoryKey | translate }}</span>
+          </div>
+        </div>
+
+        <div class="project-right">
+          <span class="project-year">{{ project.year }}</span>
+        </div>
+      </div>
+    }
+  </div>
+
+  @if (hoveredVideo && viewMode() === 'list') {
+    <div class="floating-preview" [style.left.px]="mouseX + 20" [style.top.px]="mouseY + 20" aria-hidden="true">
+      <video [src]="hoveredVideo" autoplay loop muted preload="auto" playsinline></video>
+    </div>
+  }
 </section>

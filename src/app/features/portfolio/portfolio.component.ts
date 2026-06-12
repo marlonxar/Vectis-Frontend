@@ -1,49 +1,439 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  Component,
+  ElementRef,
+  ViewChild,
+  ViewChildren,
+  QueryList,
+  AfterViewInit,
+  OnInit,
+  OnDestroy,
+  inject,
+  NgZone,
+  PLATFORM_ID,
+  signal,
+} from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
-import { IntersectionObserverDirective } from '../../core/directives/intersection-observer.directive';
+import { gsap } from 'gsap';
 
-interface Project { key: string; img: string; tags: string[]; }
-interface Testimonial { key: string; photo: string; }
+interface Project {
+  titleKey: string;
+  categoryKey: string;
+  year: string;
+  videoUrl: string;
+  descriptionKey: string;
+  color: string;
+}
 
 @Component({
   selector: 'app-portfolio',
   standalone: true,
-  imports: [CommonModule, TranslateModule, IntersectionObserverDirective],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './portfolio.component.html',
   styleUrl: './portfolio.component.scss',
 })
-export class PortfolioComponent {
-  readonly clients = [
-    'FINTECH LATAM', 'RETAIL PRO', 'HEALTHTECH CR', 'LOGISTICS360', 'ECOMMERCE HUB',
-    'PROPTECH MX', 'EDTECH GLOBAL', 'INSURTECH SA', 'CLOUD VENTURES', 'AGRO DIGITAL',
-  ];
-  readonly clientsLoop = [...this.clients, ...this.clients];
-  readonly clientsLoop2 = [...this.clients].reverse().concat([...this.clients].reverse());
+export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
+  private sanitizer = inject(DomSanitizer);
+  private ngZone = inject(NgZone);
+  private platformId = inject(PLATFORM_ID);
 
-  /** 8 dummy projects — edit/extend freely. */
-  readonly projects: Project[] = [
-    { key: 'FINTECH',     img: 'https://picsum.photos/seed/vx-fintech/800/560',  tags: ['Web', 'APIs'] },
-    { key: 'HEALTHAPP',   img: 'https://picsum.photos/seed/vx-health/800/560',   tags: ['Mobile', 'AI'] },
-    { key: 'LOGISTICS',   img: 'https://picsum.photos/seed/vx-logistics/800/560',tags: ['Automation'] },
-    { key: 'AIAGENT',     img: 'https://picsum.photos/seed/vx-ai/800/560',       tags: ['LLM', 'Agents'] },
-    { key: 'ANALYTICS',   img: 'https://picsum.photos/seed/vx-data/800/560',     tags: ['Data', 'BI'] },
-    { key: 'ECOMMERCE',   img: 'https://picsum.photos/seed/vx-ecom/800/560',     tags: ['Web', 'Shopify'] },
-    { key: 'SAAS',        img: 'https://picsum.photos/seed/vx-saas/800/560',     tags: ['SaaS', 'Cloud'] },
-    { key: 'INTEGRATION', img: 'https://picsum.photos/seed/vx-api/800/560',      tags: ['APIs', 'ETL'] },
+  @ViewChildren('spiralCard') cardElements!: QueryList<ElementRef<HTMLDivElement>>;
+  @ViewChild('carouselWorld') carouselWorldEl!: ElementRef<HTMLDivElement>;
+  @ViewChild('projectsSection') projectsSectionEl!: ElementRef<HTMLDivElement>;
+
+  // View state: 'spiral' | 'list'
+  viewMode = signal<'spiral' | 'list'>('spiral');
+
+  projects: Project[] = [
+    {
+      titleKey: 'PORTFOLIO.NUTRIGO.TITLE',
+      categoryKey: 'PORTFOLIO.NUTRIGO.CAT',
+      year: '2026',
+      videoUrl: 'assets/videos/video.mp4',
+      descriptionKey: 'PORTFOLIO.NUTRIGO.DESC',
+      color: '#ff6b6b'
+    },
+    {
+      titleKey: 'PORTFOLIO.PROPERTY.TITLE',
+      categoryKey: 'PORTFOLIO.PROPERTY.CAT',
+      year: '2026',
+      videoUrl: 'assets/videos/video.mp4',
+      descriptionKey: 'PORTFOLIO.PROPERTY.DESC',
+      color: '#00d2d3'
+    },
+    {
+      titleKey: 'PORTFOLIO.SEO_AI.TITLE',
+      categoryKey: 'PORTFOLIO.SEO_AI.CAT',
+      year: '2026',
+      videoUrl: 'assets/videos/video.mp4',
+      descriptionKey: 'PORTFOLIO.SEO_AI.DESC',
+      color: '#feca57'
+    },
+    {
+      titleKey: 'PORTFOLIO.AERO.TITLE',
+      categoryKey: 'PORTFOLIO.AERO.CAT',
+      year: '2025',
+      videoUrl: 'assets/videos/video.mp4',
+      descriptionKey: 'PORTFOLIO.AERO.DESC',
+      color: '#54a0ff'
+    },
+    {
+      titleKey: 'PORTFOLIO.AUDIO.TITLE',
+      categoryKey: 'PORTFOLIO.AUDIO.CAT',
+      year: '2025',
+      videoUrl: 'assets/videos/video.mp4',
+      descriptionKey: 'PORTFOLIO.AUDIO.DESC',
+      color: '#9b5de5'
+    },
+    {
+      titleKey: 'PORTFOLIO.FINTECH_UI.TITLE',
+      categoryKey: 'PORTFOLIO.FINTECH_UI.CAT',
+      year: '2025',
+      videoUrl: 'assets/videos/video.mp4',
+      descriptionKey: 'PORTFOLIO.FINTECH_UI.DESC',
+      color: '#1dd1a1'
+    },
+    {
+      titleKey: 'PORTFOLIO.DECENTRALIZED.TITLE',
+      categoryKey: 'PORTFOLIO.DECENTRALIZED.CAT',
+      year: '2024',
+      videoUrl: 'assets/videos/video.mp4',
+      descriptionKey: 'PORTFOLIO.DECENTRALIZED.DESC',
+      color: '#ff9ff3'
+    }
   ];
 
-  readonly testimonials: Testimonial[] = [
-    { key: 'T1', photo: 'https://i.pravatar.cc/120?img=12' },
-    { key: 'T2', photo: 'https://i.pravatar.cc/120?img=47' },
-    { key: 'T3', photo: 'https://i.pravatar.cc/120?img=33' },
-    { key: 'T4', photo: 'https://i.pravatar.cc/120?img=5' },
-    { key: 'T5', photo: 'https://i.pravatar.cc/120?img=68' },
-    { key: 'T6', photo: 'https://i.pravatar.cc/120?img=24' },
-  ];
+  // Hover variables
+  hoveredVideo: SafeUrl | null = null;
+  hoveredIndex = signal<number | null>(null);
+  mouseX = 0;
+  mouseY = 0;
+  tiltMouseX = 0;
+  tiltMouseY = 0;
 
-  readonly shownW = signal(false);
-  readonly shownT = signal(false);
-  revealW(): void { this.shownW.set(true); }
-  revealT(): void { this.shownT.set(true); }
+  // 3D physics & scrolling variables
+  scrollValue = 0;
+  targetScrollValue = 0;
+  activeProjectIndex = signal<number>(0);
+  
+  // Dragging states
+  isDragging = false;
+  startY = 0;
+  startScrollVal = 0;
+
+  private animationFrameId: number | null = null;
+  private revealFinished = false;
+
+  // Listeners list to destroy later
+  private resizeListener?: () => void;
+  private eventCleanup: Array<() => void> = [];
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      // Listen for custom intro event to trigger fly-in intro animation
+      window.addEventListener('intro-finished', this.onIntroFinished);
+    }
+  }
+
+  ngAfterViewInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.ngZone.runOutsideAngular(() => {
+        this.setupPhysicsLoop();
+        this.setupEventListeners();
+      });
+    }
+  }
+
+  ngOnDestroy() {
+    if (isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('intro-finished', this.onIntroFinished);
+      if (this.animationFrameId) {
+        cancelAnimationFrame(this.animationFrameId);
+      }
+      this.eventCleanup.forEach(clean => clean());
+    }
+  }
+
+  // Handle fly-in entry animation
+  private onIntroFinished = () => {
+    this.revealFinished = true;
+    // Animate the rotation and radius into place
+    gsap.fromTo(
+      this,
+      { targetScrollValue: -3 },
+      {
+        targetScrollValue: 0,
+        duration: 1.8,
+        ease: 'power3.out',
+      }
+    );
+  };
+
+  private setupPhysicsLoop() {
+    const tick = () => {
+      // Linear interpolation (LERP) for physics smoothness
+      const lerpFactor = 0.085;
+      this.scrollValue += (this.targetScrollValue - this.scrollValue) * lerpFactor;
+
+      // Wrap scroll value within projects length boundaries
+      const numProjects = this.projects.length;
+      
+      // Determine active card based on closest scroll value
+      const rawActive = Math.round(this.scrollValue);
+      const activeIdx = ((rawActive % numProjects) + numProjects) % numProjects;
+      
+      if (this.activeProjectIndex() !== activeIdx) {
+        this.ngZone.run(() => {
+          this.activeProjectIndex.set(activeIdx);
+        });
+      }
+
+      if (this.viewMode() === 'spiral') {
+        this.updateSpiralTransforms();
+      }
+
+      this.animationFrameId = requestAnimationFrame(tick);
+    };
+
+    this.animationFrameId = requestAnimationFrame(tick);
+  }
+
+  private updateSpiralTransforms() {
+    const cards = this.cardElements.toArray();
+    if (cards.length === 0) return;
+
+    const numCards = cards.length;
+    // Trigonometric spiral angles
+    const angleStep = 0.85; // ~48 degrees separation in 3D helix
+    const yStep = 130;     // vertical gap
+    
+    // Screen responsiveness check
+    const width = window.innerWidth;
+    let radius = 520;
+    let depthOffset = 450;
+    if (width < 768) {
+      radius = 260;
+      depthOffset = 210;
+    } else if (width < 1200) {
+      radius = 400;
+      depthOffset = 340;
+    }
+
+    cards.forEach((cardRef, i) => {
+      const el = cardRef.nativeElement;
+      
+      // Compute relative spiral offset based on target scroll value
+      let relativeOffset = i - this.scrollValue;
+      
+      // Wrap relative offset to make the spiral loop infinitely [-numCards/2, numCards/2]
+      relativeOffset = ((relativeOffset + numCards / 2) % numCards);
+      if (relativeOffset < 0) {
+        relativeOffset += numCards;
+      }
+      relativeOffset -= numCards / 2;
+
+      const angle = relativeOffset * angleStep;
+      
+      // Coordinates
+      const x = Math.sin(angle) * radius;
+      const z = Math.cos(angle) * radius - depthOffset;
+      const y = relativeOffset * yStep;
+      
+      // Rotations: Face the camera (invert angle) + custom tilt on hover
+      let rotY = angle * (180 / Math.PI);
+      let rotX = 0;
+      let rotZ = 0;
+      
+      // Hover card tilt parallax effect
+      if (this.hoveredIndex() === i) {
+        // Subtle interactive mouse offset
+        rotX = -this.tiltMouseY * 12;
+        rotY += this.tiltMouseX * 12;
+      }
+
+      // Calculate distance/depth opacity fade
+      let opacity = 1;
+      if (z < -800) {
+        opacity = Math.max(0, 1 - (Math.abs(z + 800) / 450));
+      } else if (z > 140) {
+        // Fly-past-screen fade out
+        opacity = Math.max(0, 1 - ((z - 140) / 180));
+      }
+
+      // Scale card slightly if close
+      const baseScale = 1.0;
+      const focusMultiplier = this.hoveredIndex() === i ? 1.05 : 1.0;
+      
+      el.style.transform = `translate3d(${x}px, ${y}px, ${z}px) rotateY(${rotY}deg) rotateX(${rotX}deg) rotateZ(${rotZ}deg) scale(${baseScale * focusMultiplier})`;
+      el.style.opacity = opacity.toString();
+      
+      // Turn off interactions for cards that are too deep or behind screen
+      // Tighter cutoff for mobile to ensure the jump is hidden
+      const hideZCutoff = width < 768 ? -220 : -350;
+      if (z < hideZCutoff || z > 250) {
+        el.style.pointerEvents = 'none';
+        el.style.visibility = 'hidden';
+      } else {
+        el.style.pointerEvents = 'auto';
+        el.style.visibility = 'visible';
+      }
+    });
+  }
+
+  private setupEventListeners() {
+    if (!this.projectsSectionEl) return;
+    const scrollEl = this.projectsSectionEl.nativeElement;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (this.viewMode() !== 'spiral') return;
+      
+      // Capture wheel event strictly inside .bg-title-track OR over any of the cards (.spiral-card)
+      const target = e.target as HTMLElement;
+      const insideTitleTrack = target.closest('.bg-title-track');
+      const insideCard = target.closest('.spiral-card');
+      
+      if (!insideTitleTrack && !insideCard) {
+        return; // Let standard page scrolling handle it
+      }
+      
+      // Prevent page scrolling when inside target scroll regions
+      e.preventDefault();
+      
+      // Update target position
+      const scrollSpeed = 0.0015;
+      this.targetScrollValue += e.deltaY * scrollSpeed;
+    };
+
+    // Dragging gestures (Mouse)
+    const handleMouseDown = (e: MouseEvent) => {
+      if (this.viewMode() !== 'spiral') return;
+      
+      // Skip dragging on clicking interactive elements/buttons
+      if ((e.target as HTMLElement).closest('.view-toggle, button, a')) return;
+
+      this.isDragging = true;
+      this.startY = e.clientY;
+      this.startScrollVal = this.targetScrollValue;
+      document.body.style.cursor = 'grabbing';
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Record mouse coordinates inside viewport (normalized -0.5 to 0.5) for card tilt
+      const rect = window.innerWidth;
+      const rectH = window.innerHeight;
+      this.tiltMouseX = (e.clientX / rect) - 0.5;
+      this.tiltMouseY = (e.clientY / rectH) - 0.5;
+
+      if (this.viewMode() !== 'spiral') return;
+
+      // Safety guard: If mouse button is released outside window or context, cancel dragging state
+      if (e.buttons !== 1 && this.isDragging) {
+        this.isDragging = false;
+        document.body.style.cursor = 'default';
+        return;
+      }
+
+      if (!this.isDragging) return;
+
+      const deltaY = e.clientY - this.startY;
+      const dragSensitivity = 0.005;
+      this.targetScrollValue = this.startScrollVal - (deltaY * dragSensitivity);
+    };
+
+    const handleMouseUp = () => {
+      if (!this.isDragging) return;
+      this.isDragging = false;
+      document.body.style.cursor = 'default';
+    };
+
+    // Touch support (Mobile)
+    const handleTouchStart = (e: TouchEvent) => {
+      if (this.viewMode() !== 'spiral' || e.touches.length === 0) return;
+      if ((e.target as HTMLElement).closest('.view-toggle, button, a')) return;
+
+      this.isDragging = true;
+      this.startY = e.touches[0].clientY;
+      this.startScrollVal = this.targetScrollValue;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!this.isDragging || this.viewMode() !== 'spiral' || e.touches.length === 0) return;
+      // We do not call preventDefault here to allow standard vertical page touch scrolling
+      const deltaY = e.touches[0].clientY - this.startY;
+      const dragSensitivity = 0.008;
+      this.targetScrollValue = this.startScrollVal - (deltaY * dragSensitivity);
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (this.viewMode() !== 'spiral') return;
+      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        this.targetScrollValue -= 1.0;
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        this.targetScrollValue += 1.0;
+      }
+    };
+
+    // Attach listeners - wheel listener must be non-passive (passive: false) to allow preventDefault()
+    scrollEl.addEventListener('wheel', handleWheel, { passive: false });
+    scrollEl.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    
+    scrollEl.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleMouseUp);
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Register cleanups
+    this.eventCleanup.push(() => scrollEl.removeEventListener('wheel', handleWheel));
+    this.eventCleanup.push(() => scrollEl.removeEventListener('mousedown', handleMouseDown));
+    this.eventCleanup.push(() => window.removeEventListener('mousemove', handleMouseMove));
+    this.eventCleanup.push(() => window.removeEventListener('mouseup', handleMouseUp));
+    this.eventCleanup.push(() => scrollEl.removeEventListener('touchstart', handleTouchStart));
+    this.eventCleanup.push(() => window.removeEventListener('touchmove', handleTouchMove));
+    this.eventCleanup.push(() => window.removeEventListener('touchend', handleMouseUp));
+    this.eventCleanup.push(() => window.removeEventListener('keydown', handleKeyDown));
+  }
+
+  onMouseMove(event: MouseEvent) {
+    this.mouseX = event.clientX;
+    this.mouseY = event.clientY;
+  }
+
+  setHoveredProject(index: number | null, videoUrl: string | null = null) {
+    if (index !== null) {
+      this.hoveredIndex.set(index);
+      if (videoUrl) {
+        this.hoveredVideo = this.sanitizer.bypassSecurityTrustUrl(videoUrl);
+      }
+    } else {
+      this.hoveredIndex.set(null);
+      this.hoveredVideo = null;
+    }
+  }
+
+  toggleViewMode() {
+    const mode = this.viewMode() === 'spiral' ? 'list' : 'spiral';
+    this.viewMode.set(mode);
+
+    // Reset target scroll if switching back to spiral
+    if (mode === 'spiral') {
+      this.targetScrollValue = 0;
+      this.scrollValue = -2.5; // Trigger a quick spin reveal
+    }
+  }
+
+  // Utility to scroll directly to a project index in spiral view
+  scrollToIndex(index: number) {
+    this.targetScrollValue = index;
+  }
+
+  // Semantic exploration trigger (accessibility / WCAG semantic support)
+  exploreProject(project: Project) {
+    console.log('Exploring project details for:', project.titleKey);
+    // Expandable details / redirection flow hook
+  }
 }
