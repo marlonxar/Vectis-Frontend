@@ -11,6 +11,7 @@ import {
   NgZone,
   PLATFORM_ID,
   signal,
+  effect,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -41,6 +42,30 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren('spiralCard') cardElements!: QueryList<ElementRef<HTMLDivElement>>;
   @ViewChild('carouselWorld') carouselWorldEl!: ElementRef<HTMLDivElement>;
   @ViewChild('projectsSection') projectsSectionEl!: ElementRef<HTMLDivElement>;
+  @ViewChildren('listVideo') listVideos!: QueryList<ElementRef<HTMLVideoElement>>;
+
+  constructor() {
+    effect(() => {
+      const expandedIdx = this.expandedIndex();
+      // Ensure we query and control videos after the DOM updates
+      requestAnimationFrame(() => {
+        const videos = this.listVideos?.toArray();
+        if (!videos) return;
+
+        videos.forEach((videoRef, idx) => {
+          const video = videoRef.nativeElement;
+          if (idx === expandedIdx) {
+            video.play().catch(err => {
+              console.warn('Playback prevented:', err);
+            });
+          } else {
+            video.pause();
+            video.currentTime = 0;
+          }
+        });
+      });
+    });
+  }
 
   // View state: 'spiral' | 'list'
   viewMode = signal<'spiral' | 'list'>('spiral');
@@ -111,6 +136,10 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   mouseY = 0;
   tiltMouseX = 0;
   tiltMouseY = 0;
+
+  // Accordion drawer variables for list/mobile mode
+  expandedIndex = signal<number | null>(null);
+  isMuted = signal<boolean>(true);
 
   // 3D physics & scrolling variables
   scrollValue = 0;
@@ -405,6 +434,11 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setHoveredProject(index: number | null, videoUrl: string | null = null) {
     if (index !== null) {
+      if (index === this.expandedIndex()) {
+        this.hoveredIndex.set(null);
+        this.hoveredVideo = null;
+        return;
+      }
       this.hoveredIndex.set(index);
       if (videoUrl) {
         this.hoveredVideo = this.sanitizer.bypassSecurityTrustUrl(videoUrl);
@@ -418,6 +452,7 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   toggleViewMode() {
     const mode = this.viewMode() === 'spiral' ? 'list' : 'spiral';
     this.viewMode.set(mode);
+    this.expandedIndex.set(null); // Collapse and reset list video playback
 
     // Reset target scroll if switching back to spiral
     if (mode === 'spiral') {
@@ -435,5 +470,24 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   exploreProject(project: Project) {
     console.log('Exploring project details for:', project.titleKey);
     // Expandable details / redirection flow hook
+  }
+
+  // Accordion drawer handlers (List mode / Mobile version)
+  toggleProjectExpand(index: number) {
+    if (this.expandedIndex() === index) {
+      this.expandedIndex.set(null);
+    } else {
+      this.expandedIndex.set(index);
+      this.isMuted.set(true); // Always start muted
+      
+      // Clear hovering preview for this item immediately
+      this.hoveredIndex.set(null);
+      this.hoveredVideo = null;
+    }
+  }
+
+  toggleMute(event: Event) {
+    event.stopPropagation(); // Avoid triggering list row click closure
+    this.isMuted.update(muted => !muted);
   }
 }
