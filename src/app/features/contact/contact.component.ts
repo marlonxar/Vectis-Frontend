@@ -1,5 +1,5 @@
-import { Component, computed, signal, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, computed, signal, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { stepTransition, fadeSwitch } from '../../shared/animations/page-animations';
@@ -8,6 +8,7 @@ import { RouterLink } from '@angular/router';
 
 type Mode = 'message' | 'appointment';
 interface DayCell { date: Date | null; disabled: boolean; }
+interface Slot { label: string; iso: string; }
 
 @Component({
   selector: 'app-contact',
@@ -19,6 +20,7 @@ interface DayCell { date: Date | null; disabled: boolean; }
 })
 export class ContactComponent {
   private readonly translate = inject(TranslateService);
+  private readonly platformId = inject(PLATFORM_ID);
   readonly mode = signal<Mode>('message');
   privacyPath(): string { return this.translate.currentLang === 'en' ? '/privacy' : '/privacidad'; }
   termsPath(): string { return this.translate.currentLang === 'en' ? '/terms' : '/terminos'; }
@@ -31,11 +33,21 @@ export class ContactComponent {
   // Appointment wizard
   readonly step = signal(1);
   readonly apptSent = signal(false);
-  appt = { service: '', date: null as Date | null, time: '', name: '', email: '', company: '', message: '' };
+  readonly apptSending = signal(false);
+  readonly apptError = signal(false);
+  appt = { service: '', date: null as Date | null, time: '', slotIso: '', name: '', email: '', company: '', message: '' };
 
   readonly serviceKeys = ['AI', 'WEB', 'AUTOMATION', 'CUSTOM', 'API', 'DATA'];
   readonly budgetKeys = ['B1', 'B2', 'B3', 'B4'];
-  readonly timeSlots = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
+  // Shown only as a visual placeholder until Cal.com availability is configured/loaded
+  readonly fallbackSlots = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
+
+  // Cal.com real availability: 'YYYY-MM-DD' -> Slot[]
+  readonly availability = signal<Record<string, Slot[]>>({});
+  readonly loadingSlots = signal(false);
+  private get tz(): string {
+    try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'; } catch { return 'UTC'; }
+  }
 
   private readonly today = new Date();
   readonly viewYear = signal(this.today.getFullYear());
@@ -53,6 +65,8 @@ export class ContactComponent {
 
   readonly calendar = computed<DayCell[]>(() => {
     const y = this.viewYear(); const m = this.viewMonth();
+    const avail = this.availability();
+    const hasAvail = Object.keys(avail).length > 0;
     const first = new Date(y, m, 1);
     const startIdx = (first.getDay() + 6) % 7;
     const daysInMonth = new Date(y, m + 1, 0).getDate();
@@ -61,19 +75,45 @@ export class ContactComponent {
     for (let i = 0; i < startIdx; i++) cells.push({ date: null, disabled: true });
     for (let d = 1; d <= daysInMonth; d++) {
       const date = new Date(y, m, d);
-      const weekend = date.getDay() === 0 || date.getDay() === 6;
-      cells.push({ date, disabled: date < midnight || weekend });
+      const past = date < midnight;
+      let disabled: boolean;
+      if (hasAvail) {
+        const slots = avail[this.dateKey(date)];
+        disabled = past || !slots || slots.length === 0;
+      } else {
+        const weekend = date.getDay() === 0 || date.getDay() === 6;
+        disabled = past || weekend; // placeholder rule until real availability loads
+      }
+      cells.push({ date, disabled });
     }
     return cells;
   });
 
   setMode(m: Mode): void { this.mode.set(m); }
-  prevMonth(): void { let m = this.viewMonth() - 1, y = this.viewYear(); if (m < 0) { m = 11; y--; } this.viewMonth.set(m); this.viewYear.set(y); }
-  nextMonth(): void { let m = this.viewMonth() + 1, y = this.viewYear(); if (m > 11) { m = 0; y++; } this.viewMonth.set(m); this.viewYear.set(y); }
-  selectDate(c: DayCell): void { if (!c.disabled && c.date) this.appt.date = c.date; }
+
+  prevMonth(): void { let m = this.viewMonth() - 1, y = this.viewYear(); if (m < 0) { m = 11; y--; } this.viewMonth.set(m); this.viewYear.set(y); this.onMonthChange(); }
+  nextMonth(): void { let m = this.viewMonth() + 1, y = this.viewYear(); if (m > 11) { m = 0; y++; } this.viewMonth.set(m); this.viewYear.set(y); this.onMonthChange(); }
+  private onMonthChange(): void { this.appt.date = null; this.appt.time = ''; this.appt.slotIso = ''; if (this.step() === 2) this.loadAvailability(); }
+
+  selectDate(c: DayCell): void { if (!c.disabled && c.date) { this.appt.date = c.date; this.appt.time = ''; this.appt.slotIso = ''; } }
   isSelected(c: DayCell): boolean { return !!c.date && !!this.appt.date && c.date.toDateString() === this.appt.date.toDateString(); }
 
-  next(): void { if (this.step() < 4 && this.canAdvance()) this.step.update((s) => s + 1); }
+  /** Slots for the selected day: real Cal.com slots if available, else placeholder labels. */
+  slotsForSelected(): Slot[] {
+    if (!this.appt.date) return [];
+    const real = this.availability()[this.dateKey(this.appt.date)];
+    if (real && real.length) return real;
+    return this.fallbackSlots.map((t) => ({ label: t, iso: '' }));
+  }
+  selectTime(s: Slot): void { this.appt.time = s.label; this.appt.slotIso = s.iso; }
+
+  next(): void {
+    if (this.step() < 4 && this.canAdvance()) {
+      const entering = this.step() + 1;
+      this.step.set(entering);
+      if (entering === 2) this.loadAvailability();
+    }
+  }
   back(): void { if (this.step() > 1) this.step.update((s) => s - 1); }
   canAdvance(): boolean {
     switch (this.step()) {
@@ -102,12 +142,68 @@ export class ContactComponent {
     }, 3500);
   }
 
-  confirmAppointment(): void {
-    this.apptSent.set(true);
-    setTimeout(() => {
-      this.apptSent.set(false); this.step.set(1);
-      this.appt = { service: '', date: null, time: '', name: '', email: '', company: '', message: '' };
-    }, 4000);
+  // --- Cal.com integration (via our serverless /api proxy) ----------------
+  private loadAvailability(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const y = this.viewYear(), m = this.viewMonth();
+    const monthStart = new Date(y, m, 1);
+    const now = new Date();
+    const from = monthStart < now ? now : monthStart;
+    const to = new Date(y, m + 1, 0, 23, 59, 59);
+    this.loadingSlots.set(true);
+    const url = `/api/cal-slots?start=${encodeURIComponent(from.toISOString())}`
+      + `&end=${encodeURIComponent(to.toISOString())}&timeZone=${encodeURIComponent(this.tz)}`;
+    fetch(url)
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('slots'))))
+      .then((data: Record<string, Slot[]>) => this.availability.set(data || {}))
+      .catch(() => this.availability.set({})) // keep placeholder UI
+      .finally(() => this.loadingSlots.set(false));
+  }
+
+  async confirmAppointment(): Promise<void> {
+    this.apptError.set(false);
+    this.apptSending.set(true);
+    const serviceTitle = this.appt.service
+      ? this.translate.instant('SERVICES.' + this.appt.service + '.TITLE') : '';
+    try {
+      const res = await fetch('/api/cal-book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          start: this.appt.slotIso || this.composeIso(),
+          name: this.appt.name,
+          email: this.appt.email,
+          company: this.appt.company,
+          notes: this.appt.message,
+          service: serviceTitle,
+          timeZone: this.tz,
+          language: this.translate.currentLang,
+        }),
+      });
+      if (!res.ok) throw new Error('book');
+      this.apptSending.set(false);
+      this.apptSent.set(true);
+    } catch {
+      this.apptSending.set(false);
+      this.apptError.set(true);
+    }
+  }
+
+  /** Fallback ISO from the picked date + label (used only if a real slot ISO is missing). */
+  private composeIso(): string {
+    if (!this.appt.date) return '';
+    const [h, min] = (this.appt.time || '00:00').split(':').map(Number);
+    const d = new Date(this.appt.date);
+    d.setHours(h || 0, min || 0, 0, 0);
+    return d.toISOString();
+  }
+
+  /** Local 'YYYY-MM-DD' key (matches Cal.com day grouping in the requested timezone). */
+  private dateKey(d: Date): string {
+    const y = d.getFullYear();
+    const m = `${d.getMonth() + 1}`.padStart(2, '0');
+    const day = `${d.getDate()}`.padStart(2, '0');
+    return `${y}-${m}-${day}`;
   }
 
   private validEmail(v: string): boolean { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }

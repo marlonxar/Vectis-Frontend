@@ -64,7 +64,7 @@
     "TITLE_B": "for you"
   },
   "STATS": {
-    "PROJECTS": "Projects delivered",
+    "PROJECTS": "Time you recover each week",
     "SATISFACTION": "Client satisfaction",
     "ROI": "Average ROI generated",
     "SUPPORT": "Continuous support"
@@ -192,14 +192,25 @@
       "TAG": "Integrations · API",
       "TITLE": "Integration hub",
       "DESC": "Connectors and pipelines unifying every tool."
-    }
+    },
+    "A11Y_SECTION": "Project portfolio",
+    "A11Y_TOGGLE": "Toggle view layout",
+    "VIEW_SPIRAL": "SPIRAL",
+    "VIEW_LIST": "LIST",
+    "EXPLORE": "EXPLORE",
+    "A11Y_GOTO": "Go to project",
+    "HINT": "SCROLL OR DRAG TO ROTATE THE SPIRAL",
+    "SOUND_ON": "SOUND ON",
+    "MUTE": "MUTE",
+    "SOUND_ON_A11Y": "Turn on sound",
+    "MUTE_A11Y": "Mute"
   },
   "ABOUT": {
     "EYEBROW": "ABOUT US",
     "TITLE": "Intelligent automation, made in Costa Rica",
-    "P1": "We are Vectis: a team based in San José, Costa Rica, designing and building software, automation and artificial intelligence for clients all over the world.",
-    "P2": "We work side by side with startups and enterprises across continents, embedding into their teams to deeply understand their operations and business.",
-    "P3": "We believe in building technology that runs on its own: reliable, measurable systems designed to scale with you, without borders.",
+    "P1": "We are Vectis: an engineering team in San José, Costa Rica, building software, automation and AI for clients all over the world. “Vectis” means lever in Latin — and that is what we do: with a well-built system, a small company performs like a big one.",
+    "P2": "We build the “invisible employee”: custom systems that connect to the tools you already use and handle repetitive work on their own, tirelessly, around the clock. We don’t sell off-the-shelf software — we build it for you and leave it running.",
+    "P3": "Our philosophy: diagnosis before prescription. First we understand your real problem, then we build. Reliable, measurable technology designed to give back your most expensive resource: time.",
     "PRECISION": {
       "TITLE": "Precision",
       "DESC": "Every line of code has a clear purpose."
@@ -220,9 +231,11 @@
     "TITLE_B": "made in Costa Rica",
     "LOCATION": "San José, Costa Rica · Clients worldwide",
     "PHOTO_ALT": "The Vectis team",
-    "STAT_COUNTRIES": "Countries",
-    "STAT_YEARS": "Years of experience",
-    "STAT_TEAM": "Specialists",
+    "WORLDWIDE_VAL": "Worldwide",
+    "STAT_WORLDWIDE": "Clients all over the world",
+    "STAT_EXPERIENCE": "Years of team experience",
+    "METHOD_VAL": "60/30/10",
+    "STAT_METHOD": "Automation · AI · human oversight",
     "STAT_RETENTION": "Client retention",
     "MISSION_TITLE": "Mission",
     "VISION_TITLE": "Vision",
@@ -252,6 +265,7 @@
     "ERROR": "Please complete the required fields with valid data.",
     "SUCCESS_MESSAGE": "Message sent! We'll be in touch soon.",
     "SUCCESS_APPOINTMENT": "Appointment booked! We'll send the confirmation by email.",
+    "BOOK_ANOTHER": "Book another appointment",
     "STEPS_LABEL": "Booking steps",
     "STEP1_TITLE": "Which service are you interested in?",
     "STEP2_TITLE": "Choose date and time",
@@ -263,6 +277,7 @@
     "BACK": "Back",
     "NEXT": "Next",
     "CONFIRM": "Confirm appointment",
+    "SENDING": "Booking…",
     "SUM_SERVICE": "Service",
     "SUM_DATE": "Date and time",
     "SUM_NAME": "Name",
@@ -320,11 +335,11 @@
     },
     "Q4": {
       "Q": "How long does a project take?",
-      "A": "It depends on scope. An MVP can be ready in 4–8 weeks; larger projects ship in phases. We give you a clear time and cost estimate up front."
+      "A": "Our automation systems are up and running in about 2 weeks: days 1–3 diagnosis, 4–10 build and integration, and 11–14 testing with real data and go-live. Larger projects ship in phases."
     },
     "Q5": {
       "Q": "What is your process?",
-      "A": "We follow a Discover → Design → Build → Scale cycle, with iterative delivery, constant communication and frequent demos so you see real progress."
+      "A": "Diagnosis → Design → Build → Ongoing support. We start by understanding your real problem before proposing a solution, with iterative delivery and frequent demos so you see real progress."
     },
     "Q6": {
       "Q": "How much does it cost and how do you charge?",
@@ -446,5 +461,8 @@
     },
     "CONTACT_LINE": "Questions about these terms? Write to us at",
     "BACK": "Back to home"
+  },
+  "INTRO": {
+    "LOADING": "Loading experience"
   }
 }

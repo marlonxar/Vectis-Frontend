@@ -26,7 +26,7 @@ export class FooterComponent {
   readonly navLinks = [
     { id: 'inicio', key: 'NAV.HOME' },
     { id: 'servicios', key: 'NAV.SERVICES' },
-    { id: 'portafolio', key: 'NAV.PORTFOLIO' },
+    { id: 'works', key: 'NAV.PORTFOLIO' },
     { id: 'nosotros', key: 'NAV.ABOUT' },
     { id: 'contacto', key: 'NAV.CONTACT' },
   ];

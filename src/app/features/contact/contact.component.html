@@ -14,7 +14,7 @@
         </div>
         <div>
           <dt>{{ 'CONTACT.INFO_PHONE' | translate }}</dt>
-          <dd><a href="tel:+50688880000">+506 8888-0000</a></dd>
+          <dd><a href="tel:+50685538779">+506 8553-8779</a></dd>
         </div>
         <div>
           <dt>{{ 'CONTACT.INFO_STUDIO' | translate }}</dt>
@@ -89,8 +89,8 @@
                 </div>
               </div>
               <div class="slots" *ngIf="appt.date">
-                <p class="slots-label">{{ 'CONTACT.PICK_TIME' | translate }}</p>
-                <div class="slot-grid"><button type="button" class="slot" *ngFor="let t of timeSlots" [class.sel]="appt.time === t" (click)="appt.time = t" [attr.aria-pressed]="appt.time === t">{{ t }}</button></div>
+                <p class="slots-label">{{ 'CONTACT.PICK_TIME' | translate }}<span *ngIf="loadingSlots()"> · …</span></p>
+                <div class="slot-grid"><button type="button" class="slot" *ngFor="let s of slotsForSelected()" [class.sel]="appt.time === s.label" (click)="selectTime(s)" [attr.aria-pressed]="appt.time === s.label">{{ s.label }}</button></div>
               </div>
             </div>
             <div *ngIf="step() === 3" class="step-pane">
@@ -111,12 +111,13 @@
                 <div><dt>{{ 'CONTACT.SUM_EMAIL' | translate }}</dt><dd>{{ appt.email }}</dd></div>
                 <div *ngIf="appt.company"><dt>{{ 'CONTACT.COMPANY' | translate }}</dt><dd>{{ appt.company }}</dd></div>
               </dl>
+              <p class="form-err" *ngIf="apptError()" role="alert">{{ 'CONTACT.ERROR' | translate }}</p>
             </div>
           </div>
           <div class="wiz-nav">
-            <button type="button" class="btn btn-outline-light" *ngIf="step() > 1" (click)="back()">← {{ 'CONTACT.BACK' | translate }}</button>
+            <button type="button" class="btn btn-outline-light" *ngIf="step() > 1" (click)="back()" [disabled]="apptSending()">← {{ 'CONTACT.BACK' | translate }}</button>
             <button type="button" class="btn btn-gold" *ngIf="step() < 4" (click)="next()" [disabled]="!canAdvance()">{{ 'CONTACT.NEXT' | translate }} →</button>
-            <button type="button" class="btn btn-gold" *ngIf="step() === 4" (click)="confirmAppointment()">{{ 'CONTACT.CONFIRM' | translate }}</button>
+            <button type="button" class="btn btn-gold" *ngIf="step() === 4" (click)="confirmAppointment()" [disabled]="apptSending()">{{ (apptSending() ? 'CONTACT.SENDING' : 'CONTACT.CONFIRM') | translate }}</button>
           </div>
         </div>
         <ng-template #apptOk><div class="success" role="status"><span class="check" aria-hidden="true">✓</span><p>{{ 'CONTACT.SUCCESS_APPOINTMENT' | translate }}</p></div></ng-template>

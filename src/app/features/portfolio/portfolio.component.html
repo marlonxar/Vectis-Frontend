@@ -1,4 +1,4 @@
-<section #projectsSection class="projects-section" (mousemove)="onMouseMove($event)" id="works" [class.mode-spiral]="viewMode() === 'spiral'" aria-label="Portfolio Showcase">
+<section #projectsSection class="projects-section" (mousemove)="onMouseMove($event)" id="works" [class.mode-spiral]="viewMode() === 'spiral'" [attr.aria-label]="'PORTFOLIO.A11Y_SECTION' | translate">
   <!-- Top header containing title and view toggle -->
   <div class="projects-header">
     <header class="sec-head">
@@ -7,11 +7,11 @@
 
     <!-- VIEW TOGGLE CONTROLLER -->
     <div class="view-toggle-container">
-      <button class="view-toggle" (click)="toggleViewMode()" aria-label="Toggle view layout mode">
+      <button class="view-toggle" (click)="toggleViewMode()" [attr.aria-label]="'PORTFOLIO.A11Y_TOGGLE' | translate">
         <span class="toggle-track"></span>
         <span class="toggle-thumb" [class.slide-right]="viewMode() === 'list'"></span>
-        <span class="toggle-label spiral-label" [class.active]="viewMode() === 'spiral'">SPIRAL</span>
-        <span class="toggle-label list-label" [class.active]="viewMode() === 'list'">LIST</span>
+        <span class="toggle-label spiral-label" [class.active]="viewMode() === 'spiral'">{{ 'PORTFOLIO.VIEW_SPIRAL' | translate }}</span>
+        <span class="toggle-label list-label" [class.active]="viewMode() === 'list'">{{ 'PORTFOLIO.VIEW_LIST' | translate }}</span>
       </button>
     </div>
   </div>
@@ -68,7 +68,7 @@
               <div class="card-footer">
                 <span class="project-category">{{ project.categoryKey | translate }}</span>
                 <span class="explore-btn" [style.color]="project.color">
-                  EXPLORE <span class="arrow" aria-hidden="true">→</span>
+                  {{ 'PORTFOLIO.EXPLORE' | translate }} <span class="arrow" aria-hidden="true">→</span>
                 </span>
               </div>
             </div>
@@ -88,7 +88,7 @@
             class="nav-dot"
             [class.active]="activeProjectIndex() === i"
             (click)="scrollToIndex(i)"
-            [attr.aria-label]="'Go to project ' + (project.titleKey | translate)"
+            [attr.aria-label]="('PORTFOLIO.A11Y_GOTO' | translate) + ' ' + (project.titleKey | translate)"
           >
             <span class="dot-num" aria-hidden="true">0{{ i + 1 }}</span>
             <span class="dot-bullet"></span>
@@ -100,7 +100,7 @@
     <!-- Scroll/drag helper instructions -->
     <div class="exploration-hint" aria-hidden="true">
       <span class="hint-icon">↕</span>
-      <span class="hint-text">SCROLL OR DRAG TO ROTATE ESPIRAL</span>
+      <span class="hint-text">{{ 'PORTFOLIO.HINT' | translate }}</span>
     </div>
   </div>
 
@@ -151,7 +151,7 @@
             <button 
               class="audio-toggle-btn"
               (click)="toggleMute($event)"
-              [attr.aria-label]="isMuted() ? 'Activar sonido' : 'Silenciar'"
+              [attr.aria-label]="(isMuted() ? 'PORTFOLIO.SOUND_ON_A11Y' : 'PORTFOLIO.MUTE_A11Y') | translate"
             >
               @if (isMuted()) {
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
@@ -159,13 +159,13 @@
                   <line x1="23" y1="9" x2="17" y2="15"/>
                   <line x1="17" y1="9" x2="23" y2="15"/>
                 </svg>
-                <span>SOUND ON</span>
+                <span>{{ 'PORTFOLIO.SOUND_ON' | translate }}</span>
               } @else {
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
                   <path d="M11 5L6 9H2v6h4l5 4V5z"/>
                   <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07a10 10 0 0 1 0 14.14"/>
                 </svg>
-                <span>MUTE</span>
+                <span>{{ 'PORTFOLIO.MUTE' | translate }}</span>
               }
             </button>
           </div>

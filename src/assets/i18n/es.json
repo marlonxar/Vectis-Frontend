@@ -64,7 +64,7 @@
     "TITLE_B": "para ti"
   },
   "STATS": {
-    "PROJECTS": "Proyectos entregados",
+    "PROJECTS": "Tiempo que recuperas por semana",
     "SATISFACTION": "Satisfacción del cliente",
     "ROI": "ROI promedio generado",
     "SUPPORT": "Soporte continuo"
@@ -192,14 +192,25 @@
       "TAG": "Integraciones · API",
       "TITLE": "Hub de integraciones",
       "DESC": "Conectores y pipelines que unifican todas las herramientas."
-    }
+    },
+    "A11Y_SECTION": "Portafolio de proyectos",
+    "A11Y_TOGGLE": "Cambiar tipo de vista",
+    "VIEW_SPIRAL": "ESPIRAL",
+    "VIEW_LIST": "LISTA",
+    "EXPLORE": "EXPLORAR",
+    "A11Y_GOTO": "Ir al proyecto",
+    "HINT": "DESPLAZA O ARRASTRA PARA GIRAR LA ESPIRAL",
+    "SOUND_ON": "SONIDO",
+    "MUTE": "SILENCIAR",
+    "SOUND_ON_A11Y": "Activar sonido",
+    "MUTE_A11Y": "Silenciar"
   },
   "ABOUT": {
     "EYEBROW": "NOSOTROS",
     "TITLE": "Automatización inteligente, hecha en Costa Rica",
-    "P1": "Somos Vectis: un equipo basado en San José, Costa Rica, que diseña y construye software, automatización e inteligencia artificial para clientes en todo el mundo.",
-    "P2": "Trabajamos lado a lado con startups y empresas en distintos continentes, integrándonos a sus equipos para entender a fondo su operación y su negocio.",
-    "P3": "Creemos en construir tecnología que opera por sí sola: sistemas confiables, medibles y diseñados para escalar contigo, sin fronteras.",
+    "P1": "Somos Vectis: un equipo de ingeniería en San José, Costa Rica, que construye software, automatización e IA para clientes en todo el mundo. «Vectis» significa palanca en latín — y eso hacemos: con un sistema bien construido, una empresa pequeña rinde como una grande.",
+    "P2": "Construimos el «empleado invisible»: sistemas a la medida que se conectan con las herramientas que ya usas y hacen solos el trabajo repetitivo, sin cansarse, las 24 horas. No vendemos un programa enlatado — lo construimos para ti y lo dejamos funcionando.",
+    "P3": "Nuestra filosofía: diagnóstico antes que prescripción. Primero entendemos tu problema real, después construimos. Tecnología confiable, medible y diseñada para devolverte tu recurso más caro: el tiempo.",
     "PRECISION": {
       "TITLE": "Precisión",
       "DESC": "Cada línea de código tiene un propósito claro."
@@ -220,9 +231,11 @@
     "TITLE_B": "hecha en Costa Rica",
     "LOCATION": "San José, Costa Rica · Clientes en todo el mundo",
     "PHOTO_ALT": "Equipo de Vectis",
-    "STAT_COUNTRIES": "Países",
-    "STAT_YEARS": "Años de experiencia",
-    "STAT_TEAM": "Especialistas",
+    "WORLDWIDE_VAL": "Mundial",
+    "STAT_WORLDWIDE": "Clientes en todo el mundo",
+    "STAT_EXPERIENCE": "Años de experiencia del equipo",
+    "METHOD_VAL": "60/30/10",
+    "STAT_METHOD": "Automatización · IA · control humano",
     "STAT_RETENTION": "Retención de clientes",
     "MISSION_TITLE": "Misión",
     "VISION_TITLE": "Visión",
@@ -252,6 +265,7 @@
     "ERROR": "Por favor completa los campos obligatorios con datos válidos.",
     "SUCCESS_MESSAGE": "¡Mensaje enviado! Te contactaremos pronto.",
     "SUCCESS_APPOINTMENT": "¡Cita agendada! Te enviaremos la confirmación por email.",
+    "BOOK_ANOTHER": "Agendar otra cita",
     "STEPS_LABEL": "Pasos para agendar",
     "STEP1_TITLE": "¿Qué servicio te interesa?",
     "STEP2_TITLE": "Elige fecha y hora",
@@ -263,6 +277,7 @@
     "BACK": "Atrás",
     "NEXT": "Siguiente",
     "CONFIRM": "Confirmar cita",
+    "SENDING": "Agendando…",
     "SUM_SERVICE": "Servicio",
     "SUM_DATE": "Fecha y hora",
     "SUM_NAME": "Nombre",
@@ -320,11 +335,11 @@
     },
     "Q4": {
       "Q": "¿Cuánto tarda un proyecto?",
-      "A": "Depende del alcance. Un MVP puede estar listo en 4–8 semanas; proyectos más grandes se entregan por fases. Te damos una estimación clara de tiempo y costo desde el inicio."
+      "A": "Nuestros sistemas de automatización quedan funcionando en ~2 semanas: días 1–3 diagnóstico, 4–10 construcción e integración, y 11–14 pruebas con datos reales y puesta en marcha. Los proyectos más grandes se entregan por fases."
     },
     "Q5": {
       "Q": "¿Cómo es su proceso de trabajo?",
-      "A": "Seguimos un ciclo de Descubrir → Diseñar → Construir → Escalar, con entregas iterativas, comunicación constante y demos frecuentes para que veas avances reales."
+      "A": "Diagnóstico → Diseño → Construcción → Soporte continuo. Empezamos entendiendo tu problema real antes de proponer una solución, con entregas iterativas y demos frecuentes para que veas avances reales."
     },
     "Q6": {
       "Q": "¿Cuánto cuesta y cómo cobran?",
@@ -446,5 +461,8 @@
     },
     "CONTACT_LINE": "¿Dudas sobre estos términos? Escríbenos a",
     "BACK": "Volver al inicio"
+  },
+  "INTRO": {
+    "LOADING": "Cargando experiencia"
   }
 }

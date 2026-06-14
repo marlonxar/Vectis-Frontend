@@ -35,30 +35,25 @@ export class NavbarComponent implements OnInit, OnDestroy {
   readonly links: NavLink[] = [
     { id: 'inicio', key: 'NAV.HOME' },
     { id: 'servicios', key: 'NAV.SERVICES' },
-    { id: 'portafolio', key: 'NAV.PORTFOLIO' },
+    { id: 'works', key: 'NAV.PORTFOLIO' },
     { id: 'nosotros', key: 'NAV.ABOUT' },
     { id: 'contacto', key: 'NAV.CONTACT' },
     { id: 'faq', key: 'NAV.FAQ' },
   ];
 
-  private observer?: IntersectionObserver;
-
   ngOnInit(): void {
     this.updateSolid(this.router.url);
-    this.router.events.subscribe((e) => { if (e instanceof NavigationEnd) this.updateSolid(e.urlAfterRedirects); });
-    if (!isPlatformBrowser(this.platformId)) return;
-    this.observer = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) this.activeId.set(e.target.id);
+    this.router.events.subscribe((e) => {
+      if (e instanceof NavigationEnd) {
+        this.updateSolid(e.urlAfterRedirects);
+        setTimeout(() => this.updateActive(), 120);
       }
-    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
-    for (const l of this.links) {
-      const el = document.getElementById(l.id);
-      if (el) this.observer.observe(el);
-    }
+    });
+    if (!isPlatformBrowser(this.platformId)) return;
+    setTimeout(() => this.updateActive(), 300);
   }
 
-  ngOnDestroy(): void { this.observer?.disconnect(); this.lockScroll(false); }
+  ngOnDestroy(): void { this.lockScroll(false); }
 
   private updateSolid(url: string): void { this.forceSolid.set(/privac|term/i.test(url)); }
 
@@ -71,6 +66,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
   onScroll(): void {
     if (!this.scroll.isBrowser) return;
     this.scrolled.set(window.scrollY > 40);
+    this.updateActive();
+  }
+
+  /** Scroll-spy: mark the section currently under the probe line as active. */
+  private updateActive(): void {
+    if (!this.scroll.isBrowser) return;
+    const probe = window.innerHeight * 0.35;
+    let current = this.links[0].id;
+    for (const l of this.links) {
+      const el = document.getElementById(l.id);
+      if (el && el.getBoundingClientRect().top <= probe) current = l.id;
+    }
+    this.activeId.set(current);
   }
 
   go(id: string): void {

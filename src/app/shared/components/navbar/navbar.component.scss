@@ -10,12 +10,12 @@
 .brand img { width: 40px; height: 40px; }
 .wordmark { font-family: var(--font-sans); font-size: 23px; font-weight: 800; letter-spacing: -0.02em; color: var(--c); transition: color var(--dur) var(--ease); }
 .wordmark i { color: var(--gold-bright); font-style: normal; }
-.nav.scrolled .wordmark i { color: var(--gold); }
+.nav.scrolled .wordmark i { color: var(--gold-bright); }
 
 .nav-links { display: flex; gap: var(--space-4); }
 .nav-link { font-size: 15px; font-weight: 500; color: var(--c-dim); padding: 6px 2px; position: relative; transition: color var(--dur) var(--ease); }
 .nav-link::after { content: ''; position: absolute; left: 0; bottom: 0; width: 0; height: 2px; background: var(--gold-bright); transition: width var(--dur) var(--ease); }
-.nav.scrolled .nav-link::after { background: var(--gold); }
+.nav.scrolled .nav-link::after { background: var(--gold-bright); }
 .nav-link:hover, .nav-link.active { color: var(--c); }
 .nav-link.active::after { width: 100%; }
 
@@ -23,7 +23,7 @@
 .lang-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
 .lang-toggle button { background: none; border: none; color: var(--c-dim); cursor: pointer; padding: 4px 2px; transition: color var(--dur) var(--ease); }
 .lang-toggle button.on { color: var(--gold-bright); }
-.nav.scrolled .lang-toggle button.on { color: var(--gold); }
+.nav.scrolled .lang-toggle button.on { color: var(--gold-bright); }
 .lang-toggle button:hover { color: var(--c); }
 .lang-toggle span { color: var(--c-dim); opacity: 0.4; }
 
