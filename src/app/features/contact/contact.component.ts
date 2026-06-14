@@ -120,7 +120,7 @@ export class ContactComponent implements AfterViewInit {
     this.turnstileScript = new Promise<void>((resolve) => {
       if (window.turnstile) { resolve(); return; }
       const s = document.createElement('script');
-      s.src = 'https://challenge.cdn.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
       s.async = true; s.defer = true;
       s.onload = () => resolve();
       document.body.appendChild(s);
