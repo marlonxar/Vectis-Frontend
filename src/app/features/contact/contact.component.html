@@ -56,8 +56,11 @@
           <div class="field"><label for="m-subject">{{ 'CONTACT.SUBJECT' | translate }} *</label><input id="m-subject" name="m-subject" [(ngModel)]="msg.subject" required /></div>
           <div class="field"><label for="m-message">{{ 'CONTACT.MESSAGE' | translate }} *</label><textarea id="m-message" name="m-message" rows="4" [(ngModel)]="msg.message" required></textarea></div>
           <div class="consent"><input type="checkbox" id="m-consent" name="m-consent" [(ngModel)]="msg.consent" /><label for="m-consent">{{ 'CONTACT.CONSENT_PRE' | translate }}<a [routerLink]="privacyPath()" target="_blank" rel="noopener">{{ 'CONTACT.CONSENT_PRIVACY' | translate }}</a>{{ 'CONTACT.CONSENT_AND' | translate }}<a [routerLink]="termsPath()" target="_blank" rel="noopener">{{ 'CONTACT.CONSENT_TERMS' | translate }}</a>{{ 'CONTACT.CONSENT_POST' | translate }}</label></div>
+          <!-- Honeypot: hidden from humans, bots tend to fill it -->
+          <input type="text" name="company_website" [(ngModel)]="hp" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div #turnstileBox class="turnstile-box"></div>
           <p class="form-err" *ngIf="msgError()" role="alert">{{ 'CONTACT.ERROR' | translate }}</p>
-          <button type="submit" class="btn btn-gold full">{{ 'CONTACT.SEND' | translate }}</button>
+          <button type="submit" class="btn btn-gold full" [disabled]="msgSending()">{{ (msgSending() ? 'CONTACT.SENDING_MSG' : 'CONTACT.SEND') | translate }}</button>
         </div>
         <ng-template #msgOk><div class="success" role="status"><span class="check" aria-hidden="true">✓</span><p>{{ 'CONTACT.SUCCESS_MESSAGE' | translate }}</p></div></ng-template>
       </form>

@@ -37,6 +37,8 @@
 .consent a { color: var(--gold-bright); text-decoration: underline; text-underline-offset: 2px; }
 .consent a:hover { color: var(--gold-soft); }
 
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.turnstile-box { margin: var(--space-3) 0 var(--space-2); min-height: 65px; }
 .full { width: 100%; margin-top: var(--space-2); }
 .form-err { color: #FF9B9B; font-size: 14px; margin-bottom: var(--space-3); }
 

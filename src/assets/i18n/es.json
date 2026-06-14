@@ -278,6 +278,7 @@
     "NEXT": "Siguiente",
     "CONFIRM": "Confirmar cita",
     "SENDING": "Agendando…",
+    "SENDING_MSG": "Enviando…",
     "SUM_SERVICE": "Servicio",
     "SUM_DATE": "Fecha y hora",
     "SUM_NAME": "Nombre",
