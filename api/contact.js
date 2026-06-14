@@ -59,7 +59,11 @@ module.exports = async (req, res) => {
     step = 'web3forms';
     const w = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      },
       body: JSON.stringify({
         access_key: accessKey,
         subject: `Nuevo mensaje de ${name} — Vectis`,
