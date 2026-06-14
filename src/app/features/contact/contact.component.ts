@@ -36,7 +36,14 @@ export class ContactComponent implements AfterViewInit {
   hp = ''; // honeypot — must stay empty (bots fill it)
   readonly msgSent = signal(false);
   readonly msgError = signal(false);
+  readonly msgCaptcha = signal(false);
   readonly msgSending = signal(false);
+
+  /** True only when all required fields are valid and consent is checked. */
+  canSendMessage(): boolean {
+    return this.validName(this.msg.name) && this.validEmail(this.msg.email)
+      && !!this.msg.subject.trim() && !!this.msg.message.trim() && this.msg.consent;
+  }
 
   // Cloudflare Turnstile site key (pública) — de https://dash.cloudflare.com (Turnstile)
   readonly TURNSTILE_SITE_KEY = '0x4AAAAAADkeMa-48lr1Ewlc';
@@ -187,11 +194,10 @@ export class ContactComponent implements AfterViewInit {
     // Honeypot: if filled, silently pretend success (don't tip off the bot, don't send).
     if (this.hp.trim()) { this.msgSent.set(true); return; }
 
-    if (!this.validName(this.msg.name) || !this.validEmail(this.msg.email) ||
-        !this.msg.subject.trim() || !this.msg.message.trim() || !this.msg.consent || !this.turnstileToken()) {
-      this.msgError.set(true); return;
-    }
+    if (!this.canSendMessage()) { this.msgError.set(true); this.msgCaptcha.set(false); return; }
+    if (!this.turnstileToken()) { this.msgError.set(false); this.msgCaptcha.set(true); return; }
     this.msgError.set(false);
+    this.msgCaptcha.set(false);
     this.msgSending.set(true);
 
     const t = (k: string) => this.translate.instant(k);

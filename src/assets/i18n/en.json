@@ -279,6 +279,7 @@
     "CONFIRM": "Confirm appointment",
     "SENDING": "Booking…",
     "SENDING_MSG": "Sending…",
+    "CAPTCHA_ERROR": "Please complete the anti-bot check and try again.",
     "SUM_SERVICE": "Service",
     "SUM_DATE": "Date and time",
     "SUM_NAME": "Name",

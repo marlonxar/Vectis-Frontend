@@ -279,6 +279,7 @@
     "CONFIRM": "Confirmar cita",
     "SENDING": "Agendando…",
     "SENDING_MSG": "Enviando…",
+    "CAPTCHA_ERROR": "Completa la verificación anti-robot e inténtalo de nuevo.",
     "SUM_SERVICE": "Servicio",
     "SUM_DATE": "Fecha y hora",
     "SUM_NAME": "Nombre",
