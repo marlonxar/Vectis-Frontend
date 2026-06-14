@@ -38,8 +38,6 @@ export class ContactComponent implements AfterViewInit {
   readonly msgError = signal(false);
   readonly msgSending = signal(false);
 
-  // Web3Forms access key — pega tu Access Key pública de https://web3forms.com
-  private readonly WEB3FORMS_KEY = '50609c80-9145-4d34-915c-d80845350532';
   // Cloudflare Turnstile site key (pública) — de https://dash.cloudflare.com (Turnstile)
   readonly TURNSTILE_SITE_KEY = '0x4AAAAAADkeMa-48lr1Ewlc';
   @ViewChild('turnstileBox') private turnstileBox?: ElementRef<HTMLElement>;
@@ -198,25 +196,23 @@ export class ContactComponent implements AfterViewInit {
 
     const t = (k: string) => this.translate.instant(k);
     try {
-      const res = await fetch('https://api.web3forms.com/submit', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          access_key: this.WEB3FORMS_KEY,
-          subject: `Nuevo mensaje de ${this.msg.name} — Vectis`,
-          from_name: 'Vectis · Formulario web',
-          Nombre: this.msg.name,
-          Email: this.msg.email,
-          Empresa: this.msg.company || '—',
-          Servicio: this.msg.service ? t('SERVICES.' + this.msg.service + '.TITLE') : '—',
-          Presupuesto: this.msg.budget ? t('CONTACT.' + this.msg.budget) : '—',
-          Asunto: this.msg.subject,
-          Mensaje: this.msg.message,
-          'cf-turnstile-response': this.turnstileToken(),
+          name: this.msg.name,
+          email: this.msg.email,
+          company: this.msg.company || '',
+          service: this.msg.service ? t('SERVICES.' + this.msg.service + '.TITLE') : '',
+          budget: this.msg.budget ? t('CONTACT.' + this.msg.budget) : '',
+          subject: this.msg.subject,
+          message: this.msg.message,
+          token: this.turnstileToken(),
+          hp: this.hp,
         }),
       });
       const data = await res.json();
-      if (!data || !data.success) throw new Error('web3forms');
+      if (!data || !data.ok) throw new Error('contact');
       this.msgSending.set(false);
       this.msgSent.set(true);
       this.msg = { name: '', email: '', company: '', service: '', budget: '', subject: '', message: '', consent: false };
