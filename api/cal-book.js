@@ -32,11 +32,12 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const metaNotes = [
-      service ? `Servicio: ${service}` : '',
+    // Goes into the booking's "Additional notes" field → syncs to the calendar event description.
+    const description = [
+      service ? `Servicio de interés: ${service}` : '',
       company ? `Empresa: ${company}` : '',
-      notes || '',
-    ].filter(Boolean).join(' · ').slice(0, 480);
+      notes ? `Mensaje: ${notes}` : '',
+    ].filter(Boolean).join('\n');
 
     const payload = {
       start,
@@ -47,7 +48,8 @@ module.exports = async (req, res) => {
         timeZone: timeZone || 'UTC',
         language: language || 'es',
       },
-      metadata: metaNotes ? { notes: metaNotes } : {},
+      ...(description ? { bookingFieldsResponses: { notes: description } } : {}),
+      metadata: service ? { service: String(service).slice(0, 480) } : {},
     };
 
     const r = await fetch(`${CAL_API}/bookings`, {
