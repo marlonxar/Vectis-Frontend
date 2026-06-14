@@ -46,6 +46,8 @@ export class ContactComponent implements AfterViewInit {
       && !!this.msg.subject.trim() && !!this.msg.message.trim() && this.msg.consent;
   }
 
+  // Web3Forms access key (pública) — entrega el correo desde el navegador
+  private readonly WEB3FORMS_KEY = '50609c80-9145-4d34-915c-d80845350532';
   // Cloudflare Turnstile site key (pública) — de https://dash.cloudflare.com (Turnstile)
   readonly TURNSTILE_SITE_KEY = '0x4AAAAAADkeMa-48lr1Ewlc';
   @ViewChild('turnstileBox') private turnstileBox?: ElementRef<HTMLElement>;
@@ -203,29 +205,47 @@ export class ContactComponent implements AfterViewInit {
 
     const t = (k: string) => this.translate.instant(k);
     try {
-      const res = await fetch('/api/contact', {
+      // 1) Validate the Turnstile token server-side (secret stays on the server).
+      const vr = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: this.msg.name,
-          email: this.msg.email,
-          company: this.msg.company || '',
-          service: this.msg.service ? t('SERVICES.' + this.msg.service + '.TITLE') : '',
-          budget: this.msg.budget ? t('CONTACT.' + this.msg.budget) : '',
-          subject: this.msg.subject,
-          message: this.msg.message,
-          token: this.turnstileToken(),
-          hp: this.hp,
-        }),
+        body: JSON.stringify({ token: this.turnstileToken(), hp: this.hp }),
       });
-      const data = await res.json().catch(() => ({} as Record<string, unknown>));
-      if (!res.ok || !data || !data['ok']) {
+      const vd = await vr.json().catch(() => ({} as Record<string, unknown>));
+      if (!vr.ok || !vd['ok']) {
         this.msgSending.set(false);
-        this.msgErrorDetail.set(String(data['error'] || ('HTTP ' + res.status)));
+        this.msgErrorDetail.set(String(vd['error'] || ('HTTP ' + vr.status)));
         this.msgError.set(true);
         this.resetTurnstile();
         return;
       }
+
+      // 2) Deliver the email from the browser (Web3Forms accepts browser requests).
+      const wr = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: this.WEB3FORMS_KEY,
+          subject: `Nuevo mensaje de ${this.msg.name} — Vectis`,
+          from_name: 'Vectis · Formulario web',
+          Nombre: this.msg.name,
+          Email: this.msg.email,
+          Empresa: this.msg.company || '—',
+          Servicio: this.msg.service ? t('SERVICES.' + this.msg.service + '.TITLE') : '—',
+          Presupuesto: this.msg.budget ? t('CONTACT.' + this.msg.budget) : '—',
+          Asunto: this.msg.subject,
+          Mensaje: this.msg.message,
+        }),
+      });
+      const wd = await wr.json().catch(() => ({} as Record<string, unknown>));
+      if (!wd['success']) {
+        this.msgSending.set(false);
+        this.msgErrorDetail.set('delivery_failed');
+        this.msgError.set(true);
+        this.resetTurnstile();
+        return;
+      }
+
       this.msgSending.set(false);
       this.msgErrorDetail.set('');
       this.msgSent.set(true);
