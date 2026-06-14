@@ -8,12 +8,6 @@
 module.exports = async (req, res) => {
   const secret = process.env.CF_TURNSTILE_SECRET;
 
-  // Safe diagnostic (GET ?debug=1) — never exposes the key, only whether it exists.
-  if (req.method === 'GET' && req.query && req.query.debug === '1') {
-    res.status(200).json({ turnstileSecretConfigured: !!secret, node: process.version });
-    return;
-  }
-
   if (req.method !== 'POST') { res.status(405).json({ error: 'method_not_allowed' }); return; }
 
   try {

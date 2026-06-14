@@ -37,7 +37,7 @@
           <div class="field"><label for="m-name">{{ 'CONTACT.NAME' | translate }} *</label><input id="m-name" name="m-name" [(ngModel)]="msg.name" autocomplete="name" required /></div>
           <div class="row2">
             <div class="field"><label for="m-email">{{ 'CONTACT.EMAIL' | translate }} *</label><input id="m-email" name="m-email" type="email" [(ngModel)]="msg.email" autocomplete="email" required /></div>
-            <div class="field"><label for="m-company">{{ 'CONTACT.COMPANY' | translate }}</label><input id="m-company" name="m-company" [(ngModel)]="msg.company" autocomplete="organization" /></div>
+            <div class="field"><label for="m-company">{{ 'CONTACT.COMPANY' | translate }} *</label><input id="m-company" name="m-company" [(ngModel)]="msg.company" autocomplete="organization" required /></div>
           </div>
           <div class="row2">
             <div class="field"><label for="m-service">{{ 'CONTACT.SERVICE' | translate }}</label>
@@ -46,8 +46,8 @@
                 <option *ngFor="let s of serviceKeys" [value]="s">{{ 'SERVICES.' + s + '.TITLE' | translate }}</option>
               </select>
             </div>
-            <div class="field"><label for="m-budget">{{ 'CONTACT.BUDGET' | translate }}</label>
-              <select id="m-budget" name="m-budget" [(ngModel)]="msg.budget">
+            <div class="field"><label for="m-budget">{{ 'CONTACT.BUDGET' | translate }} *</label>
+              <select id="m-budget" name="m-budget" [(ngModel)]="msg.budget" required>
                 <option value="">{{ 'CONTACT.SELECT' | translate }}</option>
                 <option *ngFor="let b of budgetKeys" [value]="b">{{ 'CONTACT.' + b | translate }}</option>
               </select>
@@ -59,7 +59,7 @@
           <!-- Honeypot: hidden from humans, bots tend to fill it -->
           <input type="text" name="company_website" [(ngModel)]="hp" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div #turnstileBox class="turnstile-box"></div>
-          <p class="form-err" *ngIf="msgError()" role="alert">{{ 'CONTACT.ERROR' | translate }}<span *ngIf="msgErrorDetail()"> [{{ msgErrorDetail() }}]</span></p>
+          <p class="form-err" *ngIf="msgError()" role="alert">{{ 'CONTACT.ERROR' | translate }}</p>
           <p class="form-err" *ngIf="msgCaptcha()" role="alert">{{ 'CONTACT.CAPTCHA_ERROR' | translate }}</p>
           <button type="submit" class="btn btn-gold full" [disabled]="msgSending() || !canSendMessage() || !turnstileToken()">{{ (msgSending() ? 'CONTACT.SENDING_MSG' : 'CONTACT.SEND') | translate }}</button>
         </div>

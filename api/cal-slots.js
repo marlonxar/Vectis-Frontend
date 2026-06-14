@@ -13,25 +13,6 @@ module.exports = async (req, res) => {
   const apiKey = process.env.CAL_API_KEY;
   const eventTypeId = process.env.CAL_EVENT_TYPE_ID || '6002107';
 
-  // Safe diagnostic mode (?debug=1): never returns the key, only whether it's set
-  // and what Cal.com replies, so we can verify connectivity.
-  if (req.query.debug === '1') {
-    const tz = req.query.timeZone || 'UTC';
-    const start = req.query.start || new Date().toISOString();
-    const end = req.query.end || new Date(Date.now() + 7 * 86400000).toISOString();
-    const out = { configured: !!apiKey, eventTypeId, results: {} };
-    if (apiKey) {
-      try {
-        const u = `${CAL_API}/slots?eventTypeId=${encodeURIComponent(eventTypeId)}`
-          + `&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&timeZone=${encodeURIComponent(tz)}`;
-        const r = await fetch(u, { headers: { Authorization: `Bearer ${apiKey}`, 'cal-api-version': SLOTS_VERSION } });
-        out.results.v2 = { status: r.status, body: (await r.text()).slice(0, 500) };
-      } catch (e) { out.results.v2 = { error: String(e) }; }
-    }
-    res.status(200).json(out);
-    return;
-  }
-
   if (!apiKey || !eventTypeId) {
     res.status(200).json({}); // not configured → UI shows placeholder calendar
     return;

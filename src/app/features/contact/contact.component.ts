@@ -38,11 +38,11 @@ export class ContactComponent implements AfterViewInit {
   readonly msgError = signal(false);
   readonly msgCaptcha = signal(false);
   readonly msgSending = signal(false);
-  readonly msgErrorDetail = signal('');
 
   /** True only when all required fields are valid and consent is checked. */
   canSendMessage(): boolean {
     return this.validName(this.msg.name) && this.validEmail(this.msg.email)
+      && !!this.msg.company.trim() && !!this.msg.budget
       && !!this.msg.subject.trim() && !!this.msg.message.trim() && this.msg.consent;
   }
 
@@ -214,8 +214,7 @@ export class ContactComponent implements AfterViewInit {
       const vd = await vr.json().catch(() => ({} as Record<string, unknown>));
       if (!vr.ok || !vd['ok']) {
         this.msgSending.set(false);
-        this.msgErrorDetail.set(String(vd['error'] || ('HTTP ' + vr.status)));
-        this.msgError.set(true);
+        this.msgCaptcha.set(true);
         this.resetTurnstile();
         return;
       }
@@ -240,20 +239,17 @@ export class ContactComponent implements AfterViewInit {
       const wd = await wr.json().catch(() => ({} as Record<string, unknown>));
       if (!wd['success']) {
         this.msgSending.set(false);
-        this.msgErrorDetail.set('delivery_failed');
         this.msgError.set(true);
         this.resetTurnstile();
         return;
       }
 
       this.msgSending.set(false);
-      this.msgErrorDetail.set('');
       this.msgSent.set(true);
       this.msg = { name: '', email: '', company: '', service: '', budget: '', subject: '', message: '', consent: false };
       setTimeout(() => { this.msgSent.set(false); this.mountTurnstile(); }, 4000);
     } catch {
       this.msgSending.set(false);
-      this.msgErrorDetail.set('network');
       this.msgError.set(true);
       this.resetTurnstile();
     }
