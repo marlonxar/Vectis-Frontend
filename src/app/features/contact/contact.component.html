@@ -59,7 +59,7 @@
           <!-- Honeypot: hidden from humans, bots tend to fill it -->
           <input type="text" name="company_website" [(ngModel)]="hp" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <div #turnstileBox class="turnstile-box"></div>
-          <p class="form-err" *ngIf="msgError()" role="alert">{{ 'CONTACT.ERROR' | translate }}</p>
+          <p class="form-err" *ngIf="msgError()" role="alert">{{ 'CONTACT.ERROR' | translate }}<span *ngIf="msgErrorDetail()"> [{{ msgErrorDetail() }}]</span></p>
           <p class="form-err" *ngIf="msgCaptcha()" role="alert">{{ 'CONTACT.CAPTCHA_ERROR' | translate }}</p>
           <button type="submit" class="btn btn-gold full" [disabled]="msgSending() || !canSendMessage()">{{ (msgSending() ? 'CONTACT.SENDING_MSG' : 'CONTACT.SEND') | translate }}</button>
         </div>

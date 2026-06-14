@@ -38,6 +38,7 @@ export class ContactComponent implements AfterViewInit {
   readonly msgError = signal(false);
   readonly msgCaptcha = signal(false);
   readonly msgSending = signal(false);
+  readonly msgErrorDetail = signal('');
 
   /** True only when all required fields are valid and consent is checked. */
   canSendMessage(): boolean {
@@ -217,14 +218,22 @@ export class ContactComponent implements AfterViewInit {
           hp: this.hp,
         }),
       });
-      const data = await res.json();
-      if (!data || !data.ok) throw new Error('contact');
+      const data = await res.json().catch(() => ({} as Record<string, unknown>));
+      if (!res.ok || !data || !data['ok']) {
+        this.msgSending.set(false);
+        this.msgErrorDetail.set(String(data['error'] || ('HTTP ' + res.status)));
+        this.msgError.set(true);
+        this.resetTurnstile();
+        return;
+      }
       this.msgSending.set(false);
+      this.msgErrorDetail.set('');
       this.msgSent.set(true);
       this.msg = { name: '', email: '', company: '', service: '', budget: '', subject: '', message: '', consent: false };
       setTimeout(() => { this.msgSent.set(false); this.mountTurnstile(); }, 4000);
     } catch {
       this.msgSending.set(false);
+      this.msgErrorDetail.set('network');
       this.msgError.set(true);
       this.resetTurnstile();
     }
