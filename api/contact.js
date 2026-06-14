@@ -8,10 +8,20 @@
 const WEB3FORMS_FALLBACK = '50609c80-9145-4d34-915c-d80845350532';
 
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') { res.status(405).json({ error: 'method_not_allowed' }); return; }
-
   const secret = process.env.CF_TURNSTILE_SECRET;
   const accessKey = process.env.WEB3FORMS_KEY || WEB3FORMS_FALLBACK;
+
+  // Safe diagnostic (GET ?debug=1) — never exposes the keys, only whether they exist.
+  if (req.method === 'GET' && req.query && req.query.debug === '1') {
+    res.status(200).json({
+      turnstileSecretConfigured: !!secret,
+      web3formsConfigured: !!accessKey,
+      node: process.version,
+    });
+    return;
+  }
+
+  if (req.method !== 'POST') { res.status(405).json({ error: 'method_not_allowed' }); return; }
 
   try {
     const body = typeof req.body === 'object' && req.body !== null ? req.body : JSON.parse(req.body || '{}');
@@ -56,6 +66,6 @@ module.exports = async (req, res) => {
 
     res.status(200).json({ ok: true });
   } catch (e) {
-    res.status(500).json({ error: 'server_error' });
+    res.status(500).json({ error: 'server_error', message: String((e && e.message) || e) });
   }
 };
