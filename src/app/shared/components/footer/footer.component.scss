@@ -42,3 +42,5 @@
 .legal-links a { color: rgba(255,255,255,0.55); transition: color var(--dur) var(--ease); }
 .legal-links a:hover { color: var(--gold-bright); }
 .legal-links span { color: rgba(255,255,255,0.3); }
+
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }

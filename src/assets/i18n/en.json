@@ -311,11 +311,12 @@
     "EMAIL_PLACEHOLDER": "you@email.com",
     "EMAIL_ERROR": "Enter a valid email.",
     "SUBSCRIBE": "Subscribe",
-    "SUBSCRIBED": "Thanks for subscribing!",
+    "SUBSCRIBED": "Almost there! Check your email to confirm your subscription.",
     "COPYRIGHT": "Vectis Automation Group, Inc. All rights reserved.",
     "PRIVACY": "Privacy Policy",
     "NAV_TITLE": "Navigation",
-    "TERMS": "Terms & Conditions"
+    "TERMS": "Terms & Conditions",
+    "ERROR": "Couldn't subscribe. Please try again."
   },
   "FAQ": {
     "EYEBROW": "FAQ",
