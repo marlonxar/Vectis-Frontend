@@ -311,7 +311,7 @@
     "EMAIL_PLACEHOLDER": "you@email.com",
     "EMAIL_ERROR": "Enter a valid email.",
     "SUBSCRIBE": "Subscribe",
-    "SUBSCRIBED": "Almost there! Check your email to confirm your subscription.",
+    "SUBSCRIBED": "Thanks for subscribing!",
     "COPYRIGHT": "Vectis Automation Group, Inc. All rights reserved.",
     "PRIVACY": "Privacy Policy",
     "NAV_TITLE": "Navigation",

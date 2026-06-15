@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
     const r = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: 'Basic ' + auth },
-      body: JSON.stringify({ email_address: clean, status: 'pending' }), // 'pending' = double opt-in (confirmation email)
+      body: JSON.stringify({ email_address: clean, status: 'subscribed' }), // single opt-in (no confirmation email)
     });
     const data = await r.json().catch(() => ({}));
 
