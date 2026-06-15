@@ -74,40 +74,44 @@
     "TITLE": "Proyectos que generan impacto",
     "CLIENTS_LABEL": "Empresas que confían en nosotros",
     "TESTIMONIALS_TITLE": "Lo que dicen nuestros clientes",
-    "NUTRIGO": {
-      "CAT": "Web App & Infraestructura",
-      "TITLE": "Nutrigo CRM",
-      "DESC": "Plataforma integral para nutricionistas con automatización de dietas y CRM clínico en la nube."
+    "CATEGORIES": {
+      "AUTOMATION": "Automatización Inteligente",
+      "OPTIMIZATION": "Posicionamiento y Auditoría",
+      "DEVELOPMENT": "Desarrollo Premium"
     },
-    "PROPERTY": {
-      "CAT": "Playwright & GitHub Actions",
-      "TITLE": "US Property Automation",
-      "DESC": "Pipeline automatizado para el scraping, análisis y monitoreo de propiedades inmobiliarias en EE.UU."
-    },
-    "SEO_AI": {
-      "CAT": "Estrategia Digital",
-      "TITLE": "SEO & AI Optimization",
-      "DESC": "Estrategia y motor inteligente para optimización masiva de contenidos mediante modelos LLM."
-    },
-    "AERO": {
-      "CAT": "Ingeniería Creativa",
-      "TITLE": "Aero Dynamics Showcase",
-      "DESC": "Renderizador y simulador interactivo de fluidos y dinámicas de aire en tiempo real en la web."
-    },
-    "AUDIO": {
-      "CAT": "Soundscape & Web Audio",
-      "TITLE": "Audio Scape Experience",
-      "DESC": "Experiencia interactiva con sintetizadores Web Audio API y visualizadores WebGL reactivos."
-    },
-    "FINTECH_UI": {
-      "CAT": "Diseño UI/UX & Dashboard",
-      "TITLE": "FinTech Dashboard UI",
-      "DESC": "Dashboard de trading y analíticas financieras en tiempo real con transiciones fluidas de microinteracciones."
-    },
-    "DECENTRALIZED": {
-      "CAT": "Web3 & Infraestructura de Nodos",
-      "TITLE": "Decentralized Hub",
-      "DESC": "Protocolo de mensajería cifrada e intercambio descentralizado peer-to-peer optimizado."
+    "SERVICES": {
+      "AI_AGENTS": {
+        "TITLE": "Agentes de IA Autónomos",
+        "DESCRIPTION": "Desarrollo de agentes multi-tarea que ejecutan procesos de negocio complejos, toman decisiones basadas en datos y se integran con tus herramientas diarias sin intervención humana."
+      },
+      "DOC_PROCESSING": {
+        "TITLE": "Procesamiento Inteligente de Documentos",
+        "DESCRIPTION": "Extracción y estructuración automática de datos desde facturas, contratos y PDFs utilizando IA. Elimina la digitación manual y reduce los errores operativos a cero."
+      },
+      "LEAD_SCRAPING": {
+        "TITLE": "Extracción Automatizada de Prospectos",
+        "DESCRIPTION": "Scraping avanzado de datos a gran escala y prospección en frío automatizada. Captura información clave de mercados específicos de forma recurrente y directa a tu base de datos."
+      },
+      "CRM_SYNC": {
+        "TITLE": "Sincronización de CRM y Sistemas",
+        "DESCRIPTION": "Conexión e integración total de tus plataformas (CRMs, ERPs, pasarelas de pago). Flujos de datos bidireccionales en tiempo real para mantener a tu equipo siempre alineado."
+      },
+      "CUSTOMER_SUPPORT": {
+        "TITLE": "Soporte y Respuestas Automatizadas",
+        "DESCRIPTION": "Sistemas de atención al cliente de última generación. Resolución inmediata de consultas frecuentes y escalabilidad de respuestas multi-idioma con tono de marca consistente."
+      },
+      "FINANCIAL_REPORTING": {
+        "TITLE": "Automatización de Reportes Financieros",
+        "DESCRIPTION": "Consolidación automática de ingresos, gastos y métricas operativas. Generación de dashboards visuales de finanzas sin necesidad de compilar hojas de cálculo manualmente."
+      },
+      "SEO_AIO_AUDIT": {
+        "TITLE": "Auditoría SEO, AIO y Posicionamiento",
+        "DESCRIPTION": "Auditorías de optimización avanzada para motores de búsqueda tradicionales y optimización para motores de IA (AIO). Asegura que tu negocio sea la primera opción recomendada por las inteligencias artificiales."
+      },
+      "WEB_DEV": {
+        "TITLE": "Desarrollo de Apps y Páginas Web",
+        "DESCRIPTION": "Diseño y desarrollo de plataformas web interactivas, portafolios premium y aplicaciones a la medida. Interfaces rápidas, responsivas y optimizadas para la conversión de clientes."
+      }
     },
     "FINTECH": {
       "TAG": "Fintech · Web",

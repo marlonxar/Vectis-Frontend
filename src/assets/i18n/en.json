@@ -74,40 +74,44 @@
     "TITLE": "Work that drives impact",
     "CLIENTS_LABEL": "Trusted by leading companies",
     "TESTIMONIALS_TITLE": "Clients love working with us",
-    "NUTRIGO": {
-      "CAT": "Web App & Infrastructure",
-      "TITLE": "Nutrigo CRM",
-      "DESC": "Comprehensive platform for nutritionists with diet automation and cloud clinical CRM."
+    "CATEGORIES": {
+      "AUTOMATION": "Intelligent Automation",
+      "OPTIMIZATION": "Positioning & Audit",
+      "DEVELOPMENT": "Premium Development"
     },
-    "PROPERTY": {
-      "CAT": "Playwright & GitHub Actions",
-      "TITLE": "US Property Automation",
-      "DESC": "Automated pipeline for scraping, analyzing, and monitoring real estate properties in the US."
-    },
-    "SEO_AI": {
-      "CAT": "Digital Strategy",
-      "TITLE": "SEO & AI Optimization",
-      "DESC": "Strategy and smart engine for massive content optimization using LLM models."
-    },
-    "AERO": {
-      "CAT": "Creative Engineering",
-      "TITLE": "Aero Dynamics Showcase",
-      "DESC": "Interactive renderer and simulator of fluids and air dynamics in real-time on the web."
-    },
-    "AUDIO": {
-      "CAT": "Soundscape & Web Audio",
-      "TITLE": "Audio Scape Experience",
-      "DESC": "Interactive experience with Web Audio API synthesizers and reactive WebGL visualizers."
-    },
-    "FINTECH_UI": {
-      "CAT": "UI/UX Design & Dashboard",
-      "TITLE": "FinTech Dashboard UI",
-      "DESC": "Trading dashboard and financial analytics in real-time with fluid microinteraction transitions."
-    },
-    "DECENTRALIZED": {
-      "CAT": "Web3 & Node Infrastructure",
-      "TITLE": "Decentralized Hub",
-      "DESC": "Encrypted messaging protocol and optimized peer-to-peer decentralized exchange."
+    "SERVICES": {
+      "AI_AGENTS": {
+        "TITLE": "Autonomous AI Agents",
+        "DESCRIPTION": "Development of multi-tasking agents that execute complex business processes, make data-driven decisions, and integrate into your daily tools without human intervention."
+      },
+      "DOC_PROCESSING": {
+        "TITLE": "Intelligent Document Processing",
+        "DESCRIPTION": "Automated data extraction and structuring from invoices, contracts, and PDFs using AI. Eliminate manual data entry and reduce operational errors to zero."
+      },
+      "LEAD_SCRAPING": {
+        "TITLE": "Automated Lead Scraping",
+        "DESCRIPTION": "Advanced large-scale web scraping and automated cold outreach. Periodically capture key market data and deliver prospective leads directly into your database."
+      },
+      "CRM_SYNC": {
+        "TITLE": "CRM & Systems Synchronization",
+        "DESCRIPTION": "Seamless connection and integration of your platforms (CRMs, ERPs, payment gateways). Real-time bi-directional data pipelines to keep your team completely aligned."
+      },
+      "CUSTOMER_SUPPORT": {
+        "TITLE": "Automated Support & Response Systems",
+        "DESCRIPTION": "Next-generation customer service workflows. Immediate resolution of FAQs and scalable multi-language replies with a consistent brand voice."
+      },
+      "FINANCIAL_REPORTING": {
+        "TITLE": "Automated Financial Reporting",
+        "DESCRIPTION": "Automatic consolidation of revenue, expenses, and operational metrics. Instant generation of visual financial dashboards without compiling spreadsheets manually."
+      },
+      "SEO_AIO_AUDIT": {
+        "TITLE": "SEO, AIO & Positioning Audit",
+        "DESCRIPTION": "Advanced optimization audits for traditional search engines and AI engine optimization (AIO). Ensure your business is the top recommendation when users ask AI platforms."
+      },
+      "WEB_DEV": {
+        "TITLE": "Web App & Website Development",
+        "DESCRIPTION": "Design and development of interactive web platforms, premium portfolios, and custom applications. Fast, responsive UIs fully optimized for high client conversion."
+      }
     },
     "FINTECH": {
       "TAG": "Fintech · Web",
