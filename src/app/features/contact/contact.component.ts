@@ -51,6 +51,7 @@ export class ContactComponent implements AfterViewInit {
   // Cloudflare Turnstile site key (pública) — de https://dash.cloudflare.com (Turnstile)
   readonly TURNSTILE_SITE_KEY = '0x4AAAAAADkeMa-48lr1Ewlc';
   @ViewChild('turnstileBox') private turnstileBox?: ElementRef<HTMLElement>;
+  @ViewChild('contactPanel') private contactPanel?: ElementRef<HTMLElement>;
   readonly turnstileToken = signal('');
   private turnstileId?: string;
   private turnstileScript?: Promise<void>;
@@ -150,6 +151,11 @@ export class ContactComponent implements AfterViewInit {
     });
   }
 
+  private scrollToPanel(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    setTimeout(() => this.contactPanel?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  }
+
   private resetTurnstile(): void {
     this.turnstileToken.set('');
     try { window.turnstile?.reset(this.turnstileId); } catch { /* noop */ }
@@ -246,6 +252,7 @@ export class ContactComponent implements AfterViewInit {
 
       this.msgSending.set(false);
       this.msgSent.set(true);
+      this.scrollToPanel();
       this.msg = { name: '', email: '', company: '', service: '', budget: '', subject: '', message: '', consent: false };
       setTimeout(() => { this.msgSent.set(false); this.mountTurnstile(); }, 4000);
     } catch {
@@ -297,6 +304,7 @@ export class ContactComponent implements AfterViewInit {
       if (!res.ok) throw new Error('book');
       this.apptSending.set(false);
       this.apptSent.set(true);
+      this.scrollToPanel();
     } catch {
       this.apptSending.set(false);
       this.apptError.set(true);

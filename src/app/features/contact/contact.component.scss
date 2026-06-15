@@ -15,7 +15,7 @@
 .info a:hover { color: var(--gold-bright); }
 
 /* Panel */
-.contact-panel { background: var(--ink-soft); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: clamp(22px, 3vw, 38px); box-shadow: 0 30px 80px -40px rgba(231,171,46,0.18); }
+.contact-panel { background: var(--ink-soft); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: clamp(22px, 3vw, 38px); box-shadow: 0 30px 80px -40px rgba(231,171,46,0.18); scroll-margin-top: 90px; }
 
 .mode-toggle { position: relative; display: grid; grid-template-columns: 1fr 1fr; background: var(--ink); border: 1px solid var(--line-light); border-radius: var(--radius-pill); padding: 5px; margin-bottom: var(--space-5); }
 .mode-toggle .pill { position: absolute; top: 5px; left: 5px; width: calc(50% - 5px); height: calc(100% - 10px); background: var(--gold-bright); border-radius: var(--radius-pill); transition: transform var(--dur) var(--ease); }

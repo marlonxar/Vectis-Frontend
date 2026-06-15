@@ -14,7 +14,7 @@
         </div>
         <div>
           <dt>{{ 'CONTACT.INFO_PHONE' | translate }}</dt>
-          <dd><a href="tel:+50685538779">+506 8553-8779</a></dd>
+          <dd><a href="tel:+50670201149">+506 7020 1149</a></dd>
         </div>
         <div>
           <dt>{{ 'CONTACT.INFO_STUDIO' | translate }}</dt>
@@ -24,7 +24,7 @@
     </div>
 
     <!-- Right: form panel -->
-    <div class="contact-panel" appReveal [revealDelay]="120">
+    <div #contactPanel class="contact-panel" appReveal [revealDelay]="120">
       <div class="mode-toggle" role="tablist" [attr.aria-label]="'CONTACT.MODE_LABEL' | translate">
         <span class="pill" [class.right]="mode() === 'appointment'" aria-hidden="true"></span>
         <button type="button" role="tab" [attr.aria-selected]="mode() === 'message'" [class.on]="mode() === 'message'" (click)="setMode('message')">{{ 'CONTACT.MODE_MESSAGE' | translate }}</button>
