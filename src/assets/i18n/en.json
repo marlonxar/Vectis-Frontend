@@ -299,7 +299,9 @@
     "CONSENT_PRIVACY": "Privacy Policy",
     "CONSENT_AND": " and the ",
     "CONSENT_TERMS": "Terms & Conditions",
-    "CONSENT_POST": ", and the use of my data to respond to my request."
+    "CONSENT_POST": ", and the use of my data to respond to my request.",
+    "PHONE": "Phone",
+    "PHONE_PH": "+506 8888 8888"
   },
   "FOOTER": {
     "TAGLINE": "Intelligent automation. Software development. The future is already running.",
@@ -382,7 +384,7 @@
     "INTRO": "At Vectis Automation Group we respect your privacy. This policy explains what information we collect through our website and forms, and how we use it.",
     "S1": {
       "H": "Data controller",
-      "B": "Vectis Automation Group, based in San José, Costa Rica. For any question about your data, write to us at contacto@wearevectis.com."
+      "B": "Vectis Automation Group, based in San José, Costa Rica. For any question about your data, write to us at contact@wearevectis.com."
     },
     "S2": {
       "H": "Information we collect",
@@ -394,7 +396,7 @@
     },
     "S4": {
       "H": "Communications and newsletter",
-      "B": "If you subscribe to our newsletter, we will use your email to send you news, content and updates. You can unsubscribe at any time using the opt-out link or by writing to contacto@wearevectis.com."
+      "B": "If you subscribe to our newsletter, we will use your email to send you news, content and updates. You can unsubscribe at any time using the opt-out link or by writing to contact@wearevectis.com."
     },
     "S5": {
       "H": "Data retention",
@@ -410,7 +412,7 @@
     },
     "S8": {
       "H": "Your rights",
-      "B": "You can request access, correction or deletion of your personal data, as well as object to its processing, by writing to contacto@wearevectis.com. We will handle your request in accordance with applicable law."
+      "B": "You can request access, correction or deletion of your personal data, as well as object to its processing, by writing to contact@wearevectis.com. We will handle your request in accordance with applicable law."
     },
     "S9": {
       "H": "Changes to this policy",

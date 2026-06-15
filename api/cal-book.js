@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
       ? req.body
       : JSON.parse(req.body || '{}');
 
-    const { start, name, email, company, notes, service, timeZone, language } = body;
+    const { start, name, email, phone, company, notes, service, timeZone, language } = body;
     if (!start || !name || !email) {
       res.status(400).json({ error: 'missing_fields' });
       return;
@@ -35,6 +35,7 @@ module.exports = async (req, res) => {
     // Goes into the booking's "Additional notes" field → syncs to the calendar event description.
     const description = [
       service ? `Servicio de interés: ${service}` : '',
+      phone ? `Teléfono: ${phone}` : '',
       company ? `Empresa: ${company}` : '',
       notes ? `Mensaje: ${notes}` : '',
     ].filter(Boolean).join('\n');
@@ -45,6 +46,7 @@ module.exports = async (req, res) => {
       attendee: {
         name,
         email,
+        ...(phone ? { phoneNumber: String(phone).trim() } : {}),
         timeZone: timeZone || 'UTC',
         language: language || 'es',
       },

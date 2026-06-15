@@ -60,7 +60,7 @@ export class ContactComponent implements AfterViewInit {
   readonly apptSent = signal(false);
   readonly apptSending = signal(false);
   readonly apptError = signal(false);
-  appt = { service: '', date: null as Date | null, time: '', slotIso: '', name: '', email: '', company: '', message: '' };
+  appt = { service: '', date: null as Date | null, time: '', slotIso: '', name: '', email: '', phone: '', company: '', message: '' };
 
   readonly serviceKeys = ['AI', 'WEB', 'AUTOMATION', 'CUSTOM', 'API', 'DATA'];
   readonly budgetKeys = ['B1', 'B2', 'B3', 'B4'];
@@ -183,7 +183,7 @@ export class ContactComponent implements AfterViewInit {
     switch (this.step()) {
       case 1: return !!this.appt.service;
       case 2: return !!this.appt.date && !!this.appt.time;
-      case 3: return this.validName(this.appt.name) && this.validEmail(this.appt.email);
+      case 3: return this.validName(this.appt.name) && this.validEmail(this.appt.email) && this.validPhone(this.appt.phone);
       default: return true;
     }
   }
@@ -286,6 +286,7 @@ export class ContactComponent implements AfterViewInit {
           start: this.appt.slotIso || this.composeIso(),
           name: this.appt.name,
           email: this.appt.email,
+          phone: this.appt.phone,
           company: this.appt.company,
           notes: this.appt.message,
           service: serviceTitle,
@@ -321,4 +322,5 @@ export class ContactComponent implements AfterViewInit {
 
   private validEmail(v: string): boolean { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }
   private validName(v: string): boolean { return v.trim().length >= 2; }
+  private validPhone(v: string): boolean { return (v.match(/\d/g) || []).length >= 8; }
 }

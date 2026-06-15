@@ -299,7 +299,9 @@
     "CONSENT_PRIVACY": "Política de Privacidad",
     "CONSENT_AND": " y los ",
     "CONSENT_TERMS": "Términos y Condiciones",
-    "CONSENT_POST": ", y el uso de mis datos para responder a mi solicitud."
+    "CONSENT_POST": ", y el uso de mis datos para responder a mi solicitud.",
+    "PHONE": "Teléfono",
+    "PHONE_PH": "+506 8888 8888"
   },
   "FOOTER": {
     "TAGLINE": "Automatización inteligente. Desarrollo de software. El futuro ya opera.",
@@ -382,7 +384,7 @@
     "INTRO": "En Vectis Automation Group respetamos tu privacidad. Esta política explica qué información recopilamos a través de nuestro sitio web y formularios, y cómo la utilizamos.",
     "S1": {
       "H": "Responsable del tratamiento",
-      "B": "Vectis Automation Group, con sede en San José, Costa Rica. Para cualquier consulta sobre tus datos puedes escribirnos a contacto@wearevectis.com."
+      "B": "Vectis Automation Group, con sede en San José, Costa Rica. Para cualquier consulta sobre tus datos puedes escribirnos a contact@wearevectis.com."
     },
     "S2": {
       "H": "Información que recopilamos",
@@ -394,7 +396,7 @@
     },
     "S4": {
       "H": "Comunicaciones y boletín",
-      "B": "Si te suscribes a nuestro boletín, usaremos tu correo para enviarte novedades, contenidos y actualizaciones. Puedes darte de baja en cualquier momento usando el enlace de cancelación o escribiéndonos a contacto@wearevectis.com."
+      "B": "Si te suscribes a nuestro boletín, usaremos tu correo para enviarte novedades, contenidos y actualizaciones. Puedes darte de baja en cualquier momento usando el enlace de cancelación o escribiéndonos a contact@wearevectis.com."
     },
     "S5": {
       "H": "Conservación de los datos",
@@ -410,7 +412,7 @@
     },
     "S8": {
       "H": "Tus derechos",
-      "B": "Puedes solicitar el acceso, la rectificación o la eliminación de tus datos personales, así como oponerte a su tratamiento, escribiéndonos a contacto@wearevectis.com. Atenderemos tu solicitud conforme a la legislación aplicable."
+      "B": "Puedes solicitar el acceso, la rectificación o la eliminación de tus datos personales, así como oponerte a su tratamiento, escribiéndonos a contact@wearevectis.com. Atenderemos tu solicitud conforme a la legislación aplicable."
     },
     "S9": {
       "H": "Cambios a esta política",

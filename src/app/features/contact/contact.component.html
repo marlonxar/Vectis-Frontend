@@ -10,7 +10,7 @@
       <dl class="info">
         <div>
           <dt>{{ 'CONTACT.INFO_EMAIL' | translate }}</dt>
-          <dd><a href="mailto:contacto@wearevectis.com">contacto&#64;wearevectis.com</a></dd>
+          <dd><a href="mailto:contact@wearevectis.com">contact&#64;wearevectis.com</a></dd>
         </div>
         <div>
           <dt>{{ 'CONTACT.INFO_PHONE' | translate }}</dt>
@@ -102,8 +102,9 @@
               <div class="field"><label for="a-name">{{ 'CONTACT.NAME' | translate }} *</label><input id="a-name" name="a-name" [(ngModel)]="appt.name" autocomplete="name" required /></div>
               <div class="row2">
                 <div class="field"><label for="a-email">{{ 'CONTACT.EMAIL' | translate }} *</label><input id="a-email" name="a-email" type="email" [(ngModel)]="appt.email" autocomplete="email" required /></div>
-                <div class="field"><label for="a-company">{{ 'CONTACT.COMPANY' | translate }}</label><input id="a-company" name="a-company" [(ngModel)]="appt.company" autocomplete="organization" /></div>
+                <div class="field"><label for="a-phone">{{ 'CONTACT.PHONE' | translate }} *</label><input id="a-phone" name="a-phone" type="tel" [(ngModel)]="appt.phone" autocomplete="tel" [placeholder]="'CONTACT.PHONE_PH' | translate" required /></div>
               </div>
+              <div class="field"><label for="a-company">{{ 'CONTACT.COMPANY' | translate }}</label><input id="a-company" name="a-company" [(ngModel)]="appt.company" autocomplete="organization" /></div>
               <div class="field"><label for="a-msg">{{ 'CONTACT.MESSAGE' | translate }}</label><textarea id="a-msg" name="a-msg" rows="3" [(ngModel)]="appt.message"></textarea></div>
             </div>
             <div *ngIf="step() === 4" class="step-pane">
@@ -113,6 +114,7 @@
                 <div><dt>{{ 'CONTACT.SUM_DATE' | translate }}</dt><dd>{{ formattedDate() }} — {{ appt.time }}</dd></div>
                 <div><dt>{{ 'CONTACT.SUM_NAME' | translate }}</dt><dd>{{ appt.name }}</dd></div>
                 <div><dt>{{ 'CONTACT.SUM_EMAIL' | translate }}</dt><dd>{{ appt.email }}</dd></div>
+                <div><dt>{{ 'CONTACT.PHONE' | translate }}</dt><dd>{{ appt.phone }}</dd></div>
                 <div *ngIf="appt.company"><dt>{{ 'CONTACT.COMPANY' | translate }}</dt><dd>{{ appt.company }}</dd></div>
               </dl>
               <p class="form-err" *ngIf="apptError()" role="alert">{{ 'CONTACT.ERROR' | translate }}</p>
