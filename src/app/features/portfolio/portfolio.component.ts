@@ -127,7 +127,7 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
       titleKey: "PORTFOLIO.SERVICES.SEO_AIO_AUDIT.TITLE",
       categoryKey: "PORTFOLIO.CATEGORIES.OPTIMIZATION",
       year: "2026",
-      videoUrl: "assets/videos/video.mp4",
+      videoUrl: "assets/videos/auditAIO.mp4",
       descriptionKey: "PORTFOLIO.SERVICES.SEO_AIO_AUDIT.DESCRIPTION",
       color: "#EF4444",
     },
