@@ -29,22 +29,22 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private started = false;
   private exited = false;
   private lines: string[] = [];
+  private vMinX = 0; private vMaxX = 0;
 
   // palette
   private readonly LIGHT: RGB = [243, 241, 234];
   private readonly DARK: RGB = [10, 10, 10];
   private readonly INK_TEXT: RGB = [12, 12, 14];
-  // VECTIS vertical gradient: deep blue (bottom) -> gold (mid) -> warm white (top)
+  // brand gradient stops (left -> right): deep blue -> gold -> warm white
   private readonly G_BLUE: RGB = [44, 62, 145];
   private readonly G_GOLD: RGB = [231, 171, 46];
   private readonly G_WHITE: RGB = [255, 243, 214];
 
-  // timeline (ms)
   private readonly T = {
     p1In: 450, p1HoldEnd: 1150, p1Out: 1500,
     bgStart: 1500, bgEnd: 3300,
     p2In: 1660, p2InEnd: 2080,
-    dissolve: 3380, hold: 5100, exit: 5150,
+    dissolve: 3380, cfStart: 4230, cfEnd: 4760, exit: 5200,
   };
 
   ngAfterViewInit(): void {
@@ -83,13 +83,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.resize();
     const c = this.ctx;
     c.fillStyle = 'rgb(10,10,10)'; c.fillRect(0, 0, this.w, this.h);
-    const fs = Math.min(this.h * 0.24, this.w * 0.18);
-    const g = c.createLinearGradient(0, this.h / 2 - fs / 2, 0, this.h / 2 + fs / 2);
-    g.addColorStop(0, 'rgb(255,243,214)'); g.addColorStop(0.5, 'rgb(231,171,46)'); g.addColorStop(1, 'rgb(44,62,145)');
-    c.fillStyle = g; c.textAlign = 'center'; c.textBaseline = 'middle';
-    if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = Math.round(fs * 0.06) + 'px';
-    c.font = `800 ${fs}px 'Outfit', Arial, sans-serif`;
-    c.fillText('VECTIS', this.w / 2, this.h / 2);
+    this.drawBrandText(1);
     window.setTimeout(() => this.exitIntro(), 1300);
   }
 
@@ -110,51 +104,79 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const c = this.ctx;
 
     if (t < this.T.dissolve) {
-      // ----- TEXT PHASES (light -> dark background, normal typography) -----
-      const bgP = this.clamp((t - this.T.bgStart) / (this.T.bgEnd - this.T.bgStart), 0, 1);
-      const bg = this.mix(this.LIGHT, this.DARK, this.ease(bgP));
+      // ----- TEXT PHASES: light -> dark background, normal typography -----
+      const bgP = this.ease(this.clamp((t - this.T.bgStart) / (this.T.bgEnd - this.T.bgStart), 0, 1));
+      const bg = this.mix(this.LIGHT, this.DARK, bgP);
       c.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
       c.fillRect(0, 0, this.w, this.h);
-
-      const textCol = this.mix(this.INK_TEXT, this.LIGHT, this.ease(bgP));
+      const textCol = this.mix(this.INK_TEXT, this.LIGHT, bgP);
       if (t < this.T.p1Out) {
         const a = t < this.T.p1In ? t / this.T.p1In
           : t < this.T.p1HoldEnd ? 1
           : 1 - (t - this.T.p1HoldEnd) / (this.T.p1Out - this.T.p1HoldEnd);
-        this.drawText(this.lines[0], this.clamp(a, 0, 1), textCol, false);
+        this.drawPhrase(this.lines[0], this.clamp(a, 0, 1), textCol);
       } else {
-        const a = this.clamp((t - this.T.p2In) / (this.T.p2InEnd - this.T.p2In), 0, 1);
-        this.drawText(this.lines[1], a, textCol, false);
+        this.drawPhrase(this.lines[1], this.clamp((t - this.T.p2In) / (this.T.p2InEnd - this.T.p2In), 0, 1), textCol);
       }
     } else {
-      // ----- PARTICLE REVEAL (VECTIS, gradient) -----
+      // ----- VECTIS REVEAL: particles converge, then resolve into clean text -----
       if (!this.dissolved) { this.spawnParticles(); this.dissolved = true; }
-      c.fillStyle = 'rgba(10,10,10,0.32)';   // trails
+      c.fillStyle = 'rgba(10,10,10,0.32)';
       c.fillRect(0, 0, this.w, this.h);
-      for (const p of this.particles) {
-        p.vx += (p.tx - p.x) * 0.02; p.vy += (p.ty - p.y) * 0.02;
-        p.vx *= 0.84; p.vy *= 0.84; p.x += p.vx; p.y += p.vy;
-        c.fillStyle = p.c; c.fillRect(p.x, p.y, p.s, p.s);
+
+      const cf = this.clamp((t - this.T.cfStart) / (this.T.cfEnd - this.T.cfStart), 0, 1);
+      const pAlpha = 1 - cf;
+      if (pAlpha > 0.01) {
+        c.save(); c.globalAlpha = pAlpha;
+        for (const p of this.particles) {
+          p.vx += (p.tx - p.x) * 0.02; p.vy += (p.ty - p.y) * 0.02;
+          p.vx *= 0.84; p.vy *= 0.84; p.x += p.vx; p.y += p.vy;
+          c.fillStyle = p.c; c.fillRect(p.x, p.y, p.s, p.s);
+        }
+        c.restore();
       }
+      if (cf > 0) this.drawBrandText(cf);
       if (t >= this.T.exit && !this.exited) { this.exited = true; this.exitIntro(); }
     }
     this.raf = requestAnimationFrame(this.loop);
   };
 
-  private drawText(text: string, alpha: number, col: RGB, brand: boolean): void {
-    if (alpha <= 0) return;
-    const c = this.ctx, w = this.w, h = this.h, base = Math.min(w, h);
+  private brandMetrics(): { fs: number; ls: number } {
+    const fs = Math.min(this.h * 0.24, this.w * 0.18);
+    return { fs, ls: Math.round(fs * 0.06) };
+  }
+
+  /** Clean "VECTIS" with a horizontal blue -> gold -> white gradient (logo-like). */
+  private drawBrandText(alpha: number): void {
+    const c = this.ctx, m = this.brandMetrics();
     c.save();
     c.globalAlpha = alpha;
-    c.fillStyle = `rgb(${col[0]},${col[1]},${col[2]})`;
     c.textAlign = 'center'; c.textBaseline = 'middle';
+    if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = m.ls + 'px';
+    c.font = `800 ${m.fs}px 'Outfit', Arial, sans-serif`;
+    const x0 = this.vMaxX > this.vMinX ? this.vMinX : this.w * 0.3;
+    const x1 = this.vMaxX > this.vMinX ? this.vMaxX : this.w * 0.7;
+    const g = c.createLinearGradient(x0, 0, x1, 0);
+    g.addColorStop(0, this.rgb(this.G_BLUE));
+    g.addColorStop(0.5, this.rgb(this.G_GOLD));
+    g.addColorStop(1, this.rgb(this.G_WHITE));
+    c.fillStyle = g;
+    c.fillText('VECTIS', this.w / 2, this.h / 2);
+    if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = '0px';
+    c.restore();
+  }
+
+  private drawPhrase(text: string, alpha: number, col: RGB): void {
+    if (alpha <= 0) return;
+    const c = this.ctx, w = this.w, h = this.h, base = Math.min(w, h);
+    c.save(); c.globalAlpha = alpha;
+    c.fillStyle = this.rgb(col); c.textAlign = 'center'; c.textBaseline = 'middle';
     const family = "'Outfit', Arial, sans-serif";
     let fs = Math.max(20, Math.min(base * 0.072, w * 0.046));
-    const maxW = w * 0.84;
-    let lines = [text];
+    const maxW = w * 0.84; let lines = [text];
     for (let g = 0; g < 8; g++) {
       c.font = `500 ${fs}px ${family}`;
-      lines = this.wrap(text, maxW);
+      lines = this.wrap(text, maxW, c);
       const widest = Math.max(...lines.map((l) => c.measureText(l).width));
       if (lines.length <= 2 && widest <= maxW) break;
       fs *= 0.9;
@@ -166,11 +188,12 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   }
 
   private spawnParticles(): void {
-    const start = this.sampleText(this.lines[1], false);   // phrase 2 pixels -> dissolve from here
-    const target = this.sampleText('VECTIS', true);        // VECTIS pixels -> reform here
+    const start = this.sampleText(this.lines[1], false);
+    const target = this.sampleText('VECTIS', true);
     if (!target.length) return;
-    let minY = Infinity, maxY = -Infinity;
-    for (const p of target) { if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y; }
+    this.vMinX = Infinity; this.vMaxX = -Infinity;
+    for (const p of target) { if (p.x < this.vMinX) this.vMinX = p.x; if (p.x > this.vMaxX) this.vMaxX = p.x; }
+    const span = Math.max(1, this.vMaxX - this.vMinX);
     const N = Math.min(2800, Math.max(1500, target.length));
     this.particles = [];
     for (let i = 0; i < N; i++) {
@@ -178,19 +201,19 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
       const st = start.length ? start[(Math.random() * start.length) | 0] : { x: Math.random() * this.w, y: Math.random() * this.h };
       this.particles.push({
         x: st.x, y: st.y,
-        tx: tg.x + (Math.random() - 0.5) * 1.6, ty: tg.y + (Math.random() - 0.5) * 1.6,
+        tx: tg.x + (Math.random() - 0.5) * 1.4, ty: tg.y + (Math.random() - 0.5) * 1.4,
         vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.5) * 7,
-        c: this.gradientColor((tg.y - minY) / Math.max(1, maxY - minY)),
-        s: 1.0 + Math.random() * 1.5,
+        c: this.gradientColor((tg.x - this.vMinX) / span),
+        s: 1.0 + Math.random() * 1.4,
       });
     }
   }
 
-  /** frac: 0 = top (white) .. 0.5 = gold .. 1 = bottom (deep blue) */
+  /** Horizontal gradient color: 0 = blue (left) .. 0.5 = gold .. 1 = white (right). */
   private gradientColor(frac: number): string {
     const f = this.clamp(frac, 0, 1);
-    const col = f < 0.5 ? this.mix(this.G_WHITE, this.G_GOLD, f / 0.5) : this.mix(this.G_GOLD, this.G_BLUE, (f - 0.5) / 0.5);
-    return `rgb(${col[0]},${col[1]},${col[2]})`;
+    const col = f < 0.5 ? this.mix(this.G_BLUE, this.G_GOLD, f / 0.5) : this.mix(this.G_GOLD, this.G_WHITE, (f - 0.5) / 0.5);
+    return this.rgb(col);
   }
 
   private sampleText(text: string, brand: boolean): { x: number; y: number }[] {
@@ -199,11 +222,14 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const c = off.getContext('2d')!;
     c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#fff';
     const family = "'Outfit', Arial, sans-serif";
-    const weight = brand ? '800' : '500';
     const maxW = w * 0.84;
-    let fs = brand ? Math.min(h * 0.24, w * 0.18) : Math.max(20, Math.min(base * 0.072, w * 0.046));
+    let fs: number; const weight = brand ? '800' : '500';
     let lines = [text];
-    if (!brand) {
+    if (brand) {
+      const m = this.brandMetrics(); fs = m.fs;
+      if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = m.ls + 'px';
+    } else {
+      fs = Math.max(20, Math.min(base * 0.072, w * 0.046));
       for (let g = 0; g < 8; g++) {
         c.font = `${weight} ${fs}px ${family}`;
         lines = this.wrap(text, maxW, c);
@@ -212,7 +238,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
         fs *= 0.9;
       }
     }
-    if (brand && 'letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = Math.round(fs * 0.06) + 'px';
     c.font = `${weight} ${fs}px ${family}`;
     const lh = fs * 1.22;
     let y = h / 2 - (lines.length * lh) / 2 + lh / 2;
@@ -238,6 +263,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     return lines;
   }
 
+  private rgb(c: RGB): string { return `rgb(${c[0]},${c[1]},${c[2]})`; }
   private mix(a: RGB, b: RGB, t: number): RGB {
     return [Math.round(a[0] + (b[0] - a[0]) * t), Math.round(a[1] + (b[1] - a[1]) * t), Math.round(a[2] + (b[2] - a[2]) * t)];
   }
