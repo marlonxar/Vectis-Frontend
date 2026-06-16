@@ -136,38 +136,43 @@
 
         <!-- Expanded Video Panel with CSS transitions -->
         <div class="project-video-panel" [class.expanded]="expandedIndex() === i" [attr.aria-hidden]="expandedIndex() !== i ? 'true' : 'false'">
-          <div class="video-container">
-            <video
-              #listVideo
-              [src]="project.videoUrl"
-              loop
-              muted
-              [muted]="isMuted()"
-              playsinline
-              preload="metadata"
-            ></video>
-            
-            <!-- Audio Control Toggle -->
-            <button 
-              class="audio-toggle-btn"
-              (click)="toggleMute($event)"
-              [attr.aria-label]="(isMuted() ? 'PORTFOLIO.SOUND_ON_A11Y' : 'PORTFOLIO.MUTE_A11Y') | translate"
-            >
-              @if (isMuted()) {
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
-                  <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-                  <line x1="23" y1="9" x2="17" y2="15"/>
-                  <line x1="17" y1="9" x2="23" y2="15"/>
-                </svg>
-                <span>{{ 'PORTFOLIO.SOUND_ON' | translate }}</span>
-              } @else {
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
-                  <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07a10 10 0 0 1 0 14.14"/>
-                </svg>
-                <span>{{ 'PORTFOLIO.MUTE' | translate }}</span>
-              }
-            </button>
+          <div class="panel-content">
+            <div class="video-container">
+              <video
+                #listVideo
+                [src]="project.videoUrl"
+                loop
+                muted
+                [muted]="isMuted()"
+                playsinline
+                preload="metadata"
+              ></video>
+              
+              <!-- Audio Control Toggle -->
+              <button 
+                class="audio-toggle-btn"
+                (click)="toggleMute($event)"
+                [attr.aria-label]="(isMuted() ? 'PORTFOLIO.SOUND_ON_A11Y' : 'PORTFOLIO.MUTE_A11Y') | translate"
+              >
+                @if (isMuted()) {
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                    <line x1="23" y1="9" x2="17" y2="15"/>
+                    <line x1="17" y1="9" x2="23" y2="15"/>
+                  </svg>
+                  <span>{{ 'PORTFOLIO.SOUND_ON' | translate }}</span>
+                } @else {
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07a10 10 0 0 1 0 14.14"/>
+                  </svg>
+                  <span>{{ 'PORTFOLIO.MUTE' | translate }}</span>
+                }
+              </button>
+            </div>
+            <p class="project-description-list">
+              {{ project.descriptionKey | translate }}
+            </p>
           </div>
         </div>
       </div>
