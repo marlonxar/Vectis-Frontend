@@ -22,8 +22,8 @@ export class AboutComponent {
     { key: 'RETENTION',  value: 98, suffix: '%' },
   ];
   readonly team: Member[] = [
+    { name: 'Sergio Arce',       roleKey: 'CEO', photo: 'assets/images/sergio-arce.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
     { name: 'Marlon Álvarez',    roleKey: 'ENG', photo: 'https://i.pravatar.cc/400?img=12', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
     { name: 'Guillermo Ramírez', roleKey: 'ENG', photo: 'https://i.pravatar.cc/400?img=33', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
-    { name: 'Sergio Arce',       roleKey: 'OPS', photo: 'assets/images/sergio-arce.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
   ];
 }
