@@ -133,7 +133,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     } else {
       // ----- soft-glow cloud that fills the screen, then gathers into VECTIS -----
       if (!this.dissolved) { this.spawnParticles(); this.dissolved = true; }
-      c.fillStyle = 'rgba(10,10,10,0.16)';   // low clear -> smoky motion trails
+      c.fillStyle = 'rgba(10,10,10,0.55)';   // short trail, clears back to black (no gray haze)
       c.fillRect(0, 0, this.w, this.h);
 
       const gather = this.clamp((t - this.T.gatherStart) / (this.T.gatherEnd - this.T.gatherStart), 0, 1);
@@ -153,9 +153,9 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
           p.vx *= 0.94; p.vy *= 0.94;
           p.x += p.vx; p.y += p.vy;
           // gather toward the word
-          p.x += (p.tx - p.x) * gEase * 0.2;
-          p.y += (p.ty - p.y) * gEase * 0.2;
-          const sz = p.bs * (1 - 0.74 * gEase);
+          p.x += (p.tx - p.x) * gEase * 0.27;
+          p.y += (p.ty - p.y) * gEase * 0.27;
+          const sz = p.bs * (1 - 0.86 * gEase);
           c.globalAlpha = p.a * pAlpha;
           c.drawImage(this.sprites[p.sp], p.x - sz, p.y - sz, sz * 2, sz * 2);
         }
@@ -183,8 +183,13 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const x1 = this.vMaxX > this.vMinX ? this.vMaxX : this.w * 0.7;
     const g = c.createLinearGradient(x0, 0, x1, 0);
     g.addColorStop(0, this.rgb(this.G_BLUE));
-    g.addColorStop(0.5, this.rgb(this.G_GOLD));
+    g.addColorStop(0.4, this.rgb(this.G_GOLD));
+    g.addColorStop(0.78, this.rgb(this.G_GOLD));
     g.addColorStop(1, this.rgb(this.G_WHITE));
+    // settle: subtle scale-up + gold glow as it resolves
+    const s = 0.965 + 0.035 * alpha;
+    c.translate(this.w / 2, this.h / 2); c.scale(s, s); c.translate(-this.w / 2, -this.h / 2);
+    c.shadowColor = 'rgba(231,171,46,0.5)'; c.shadowBlur = 24 * alpha;
     c.fillStyle = g;
     c.fillText('VECTIS', this.w / 2, this.h / 2);
     if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = '0px';
@@ -218,7 +223,8 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
 
   private drawPhraseWords(text: string, col: RGB, t: number): void {
     const c = this.ctx; const { fs, lines } = this.phraseLayout(text);
-    c.save(); c.fillStyle = this.rgb(col); c.textBaseline = 'middle'; c.textAlign = 'left';
+    const total = lines.reduce((n, l) => n + l.split(' ').length, 0);
+    c.save(); c.textBaseline = 'middle'; c.textAlign = 'left';
     c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
     const lh = fs * 1.22, spaceW = c.measureText(' ').width;
     let y = this.h / 2 - (lines.length * lh) / 2 + lh / 2; let wi = 0;
@@ -227,7 +233,11 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
       let x = (this.w - c.measureText(ln).width) / 2;
       for (const wd of words) {
         const a = this.clamp((t - (this.T.p2Start + wi * this.T.p2PerWord)) / this.T.p2Fade, 0, 1);
-        if (a > 0) { c.globalAlpha = a; c.fillText(wd, x, y); }
+        if (a > 0) {
+          c.globalAlpha = a;
+          c.fillStyle = wi === total - 1 ? this.rgb(this.G_GOLD) : this.rgb(col);  // emphasize last word
+          c.fillText(wd, x, y);
+        }
         x += c.measureText(wd).width + spaceW; wi++;
       }
       y += lh;
@@ -236,7 +246,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   }
 
   private spawnParticles(): void {
-    const src = this.sampleText(this.lines[1], false);
+    const src = this.sampleLastWord(this.lines[1]);   // dissolve out of the emphasized last word
     const target = this.sampleText('VECTIS', true);
     if (!target.length) return;
     this.vMinX = Infinity; this.vMaxX = -Infinity;
@@ -290,6 +300,35 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const lh = fs * 1.22;
     let y = h / 2 - (lines.length * lh) / 2 + lh / 2;
     for (const ln of lines) { c.fillText(ln, w / 2, y); y += lh; }
+    const data = c.getImageData(0, 0, w, h).data;
+    const step = base < 520 ? 3 : 4;
+    const pts: { x: number; y: number }[] = [];
+    for (let yy = 0; yy < h; yy += step)
+      for (let xx = 0; xx < w; xx += step)
+        if (data[(yy * w + xx) * 4 + 3] > 140) pts.push({ x: xx, y: yy });
+    return pts;
+  }
+
+  /** Pixels of ONLY the last word of a phrase, in its real on-screen position. */
+  private sampleLastWord(text: string): { x: number; y: number }[] {
+    const { fs, lines } = this.phraseLayout(text);
+    const w = this.w, h = this.h, base = Math.min(w, h);
+    const off = document.createElement('canvas'); off.width = w; off.height = h;
+    const c = off.getContext('2d')!;
+    c.fillStyle = '#fff'; c.textBaseline = 'middle'; c.textAlign = 'left';
+    c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
+    const lh = fs * 1.22, spaceW = c.measureText(' ').width;
+    const total = lines.reduce((n, l) => n + l.split(' ').length, 0);
+    let y = h / 2 - (lines.length * lh) / 2 + lh / 2; let wi = 0;
+    for (const ln of lines) {
+      const words = ln.split(' ');
+      let x = (w - c.measureText(ln).width) / 2;
+      for (const wd of words) {
+        if (wi === total - 1) c.fillText(wd, x, y);
+        x += c.measureText(wd).width + spaceW; wi++;
+      }
+      y += lh;
+    }
     const data = c.getImageData(0, 0, w, h).data;
     const step = base < 520 ? 3 : 4;
     const pts: { x: number; y: number }[] = [];
