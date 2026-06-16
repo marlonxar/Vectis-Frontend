@@ -5,6 +5,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
 interface Particle { x: number; y: number; tx: number; ty: number; vx: number; vy: number; c: string; s: number; }
+type RGB = [number, number, number];
 
 @Component({
   selector: 'app-intro',
@@ -22,10 +23,29 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private w = 0; private h = 0; private dpr = 1;
   private particles: Particle[] = [];
   private raf = 0;
-  private timers: number[] = [];
+  private startTime = 0;
+  private dissolved = false;
   private running = false;
   private started = false;
-  private readonly GOLD = ['#E7AB2E', '#B8881C', '#F0C966', '#D7A12A', '#FFE3A0'];
+  private exited = false;
+  private lines: string[] = [];
+
+  // palette
+  private readonly LIGHT: RGB = [243, 241, 234];
+  private readonly DARK: RGB = [10, 10, 10];
+  private readonly INK_TEXT: RGB = [12, 12, 14];
+  // VECTIS vertical gradient: deep blue (bottom) -> gold (mid) -> warm white (top)
+  private readonly G_BLUE: RGB = [44, 62, 145];
+  private readonly G_GOLD: RGB = [231, 171, 46];
+  private readonly G_WHITE: RGB = [255, 243, 214];
+
+  // timeline (ms)
+  private readonly T = {
+    p1In: 450, p1HoldEnd: 1150, p1Out: 1500,
+    bgStart: 1500, bgEnd: 3300,
+    p2In: 1660, p2InEnd: 2080,
+    dissolve: 3380, hold: 5100, exit: 5150,
+  };
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -38,7 +58,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     this.running = false;
     cancelAnimationFrame(this.raf);
-    this.timers.forEach((t) => clearTimeout(t));
     if (isPlatformBrowser(this.platformId)) window.removeEventListener('resize', this.onResize);
   }
 
@@ -48,47 +67,30 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   }
 
   private run(): void {
-    const cv = this.introCanvas.nativeElement;
-    this.ctx = cv.getContext('2d')!;
+    this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
     this.resize();
     window.addEventListener('resize', this.onResize);
-
-    const N = Math.min(2800, Math.max(1500, Math.floor(this.w * 1.7)));
-    for (let i = 0; i < N; i++) {
-      this.particles.push({
-        x: Math.random() * this.w, y: Math.random() * this.h,
-        tx: this.w / 2, ty: this.h / 2, vx: 0, vy: 0,
-        c: this.GOLD[(Math.random() * this.GOLD.length) | 0],
-        s: 1.0 + Math.random() * 1.4,
-      });
-    }
-
-    const lines = this.lang() === 'en'
+    this.lines = this.lang() === 'en'
       ? ['Your time comes back.', 'Repetitive work, automated.', 'VECTIS']
       : ['Tu tiempo vuelve.', 'El trabajo repetitivo, automatizado.', 'VECTIS'];
-
     this.running = true;
+    this.startTime = performance.now();
     this.loop();
-
-    this.setTargets(lines[0], false);
-    this.timers.push(window.setTimeout(() => this.setTargets(lines[1], false), 1850));
-    this.timers.push(window.setTimeout(() => this.setTargets(lines[2], true), 3750));
-    this.timers.push(window.setTimeout(() => this.exitIntro(), 5450));
   }
 
-  /** Reduced-motion fallback: show the brand statically, then exit. */
   private runReduced(): void {
-    const cv = this.introCanvas.nativeElement;
-    this.ctx = cv.getContext('2d')!;
+    this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
     this.resize();
     const c = this.ctx;
-    c.fillStyle = '#0A0A0A'; c.fillRect(0, 0, this.w, this.h);
-    c.fillStyle = '#E7AB2E'; c.textAlign = 'center'; c.textBaseline = 'middle';
-    const fs = Math.min(this.h * 0.22, this.w * 0.18);
+    c.fillStyle = 'rgb(10,10,10)'; c.fillRect(0, 0, this.w, this.h);
+    const fs = Math.min(this.h * 0.24, this.w * 0.18);
+    const g = c.createLinearGradient(0, this.h / 2 - fs / 2, 0, this.h / 2 + fs / 2);
+    g.addColorStop(0, 'rgb(255,243,214)'); g.addColorStop(0.5, 'rgb(231,171,46)'); g.addColorStop(1, 'rgb(44,62,145)');
+    c.fillStyle = g; c.textAlign = 'center'; c.textBaseline = 'middle';
     if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = Math.round(fs * 0.06) + 'px';
     c.font = `800 ${fs}px 'Outfit', Arial, sans-serif`;
     c.fillText('VECTIS', this.w / 2, this.h / 2);
-    this.timers.push(window.setTimeout(() => this.exitIntro(), 1300));
+    window.setTimeout(() => this.exitIntro(), 1300);
   }
 
   private readonly onResize = (): void => { if (this.ctx) this.resize(); };
@@ -97,83 +99,135 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const cv = this.introCanvas.nativeElement;
     this.dpr = Math.min(window.devicePixelRatio || 1, 2);
     this.w = window.innerWidth; this.h = window.innerHeight;
-    cv.width = Math.floor(this.w * this.dpr);
-    cv.height = Math.floor(this.h * this.dpr);
+    cv.width = Math.floor(this.w * this.dpr); cv.height = Math.floor(this.h * this.dpr);
     cv.style.width = this.w + 'px'; cv.style.height = this.h + 'px';
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
   }
 
   private loop = (): void => {
     if (!this.running) return;
+    const t = performance.now() - this.startTime;
     const c = this.ctx;
-    c.fillStyle = 'rgba(10,10,10,0.34)';      // translucent clear -> soft motion trails
-    c.fillRect(0, 0, this.w, this.h);
-    for (const p of this.particles) {
-      p.vx += (p.tx - p.x) * 0.018;
-      p.vy += (p.ty - p.y) * 0.018;
-      p.vx *= 0.84; p.vy *= 0.84;
-      p.x += p.vx; p.y += p.vy;
-      c.fillStyle = p.c;
-      c.fillRect(p.x, p.y, p.s, p.s);
+
+    if (t < this.T.dissolve) {
+      // ----- TEXT PHASES (light -> dark background, normal typography) -----
+      const bgP = this.clamp((t - this.T.bgStart) / (this.T.bgEnd - this.T.bgStart), 0, 1);
+      const bg = this.mix(this.LIGHT, this.DARK, this.ease(bgP));
+      c.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
+      c.fillRect(0, 0, this.w, this.h);
+
+      const textCol = this.mix(this.INK_TEXT, this.LIGHT, this.ease(bgP));
+      if (t < this.T.p1Out) {
+        const a = t < this.T.p1In ? t / this.T.p1In
+          : t < this.T.p1HoldEnd ? 1
+          : 1 - (t - this.T.p1HoldEnd) / (this.T.p1Out - this.T.p1HoldEnd);
+        this.drawText(this.lines[0], this.clamp(a, 0, 1), textCol, false);
+      } else {
+        const a = this.clamp((t - this.T.p2In) / (this.T.p2InEnd - this.T.p2In), 0, 1);
+        this.drawText(this.lines[1], a, textCol, false);
+      }
+    } else {
+      // ----- PARTICLE REVEAL (VECTIS, gradient) -----
+      if (!this.dissolved) { this.spawnParticles(); this.dissolved = true; }
+      c.fillStyle = 'rgba(10,10,10,0.32)';   // trails
+      c.fillRect(0, 0, this.w, this.h);
+      for (const p of this.particles) {
+        p.vx += (p.tx - p.x) * 0.02; p.vy += (p.ty - p.y) * 0.02;
+        p.vx *= 0.84; p.vy *= 0.84; p.x += p.vx; p.y += p.vy;
+        c.fillStyle = p.c; c.fillRect(p.x, p.y, p.s, p.s);
+      }
+      if (t >= this.T.exit && !this.exited) { this.exited = true; this.exitIntro(); }
     }
     this.raf = requestAnimationFrame(this.loop);
   };
 
-  /** Point the particle pool at the pixels of a new phrase (triggers the morph). */
-  private setTargets(text: string, brand: boolean): void {
-    const pts = this.sampleText(text, brand);
-    if (!pts.length) return;
-    for (const p of this.particles) {
-      const pt = pts[(Math.random() * pts.length) | 0];
-      p.tx = pt.x + (Math.random() - 0.5) * 1.6;
-      p.ty = pt.y + (Math.random() - 0.5) * 1.6;
-      p.vx += (Math.random() - 0.5) * 6;       // kick -> scatter then reform
-      p.vy += (Math.random() - 0.5) * 6;
+  private drawText(text: string, alpha: number, col: RGB, brand: boolean): void {
+    if (alpha <= 0) return;
+    const c = this.ctx, w = this.w, h = this.h, base = Math.min(w, h);
+    c.save();
+    c.globalAlpha = alpha;
+    c.fillStyle = `rgb(${col[0]},${col[1]},${col[2]})`;
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    const family = "'Outfit', Arial, sans-serif";
+    let fs = Math.max(20, Math.min(base * 0.072, w * 0.046));
+    const maxW = w * 0.84;
+    let lines = [text];
+    for (let g = 0; g < 8; g++) {
+      c.font = `500 ${fs}px ${family}`;
+      lines = this.wrap(text, maxW);
+      const widest = Math.max(...lines.map((l) => c.measureText(l).width));
+      if (lines.length <= 2 && widest <= maxW) break;
+      fs *= 0.9;
+    }
+    const lh = fs * 1.22;
+    let y = h / 2 - (lines.length * lh) / 2 + lh / 2;
+    for (const ln of lines) { c.fillText(ln, w / 2, y); y += lh; }
+    c.restore();
+  }
+
+  private spawnParticles(): void {
+    const start = this.sampleText(this.lines[1], false);   // phrase 2 pixels -> dissolve from here
+    const target = this.sampleText('VECTIS', true);        // VECTIS pixels -> reform here
+    if (!target.length) return;
+    let minY = Infinity, maxY = -Infinity;
+    for (const p of target) { if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y; }
+    const N = Math.min(2800, Math.max(1500, target.length));
+    this.particles = [];
+    for (let i = 0; i < N; i++) {
+      const tg = target[(Math.random() * target.length) | 0];
+      const st = start.length ? start[(Math.random() * start.length) | 0] : { x: Math.random() * this.w, y: Math.random() * this.h };
+      this.particles.push({
+        x: st.x, y: st.y,
+        tx: tg.x + (Math.random() - 0.5) * 1.6, ty: tg.y + (Math.random() - 0.5) * 1.6,
+        vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.5) * 7,
+        c: this.gradientColor((tg.y - minY) / Math.max(1, maxY - minY)),
+        s: 1.0 + Math.random() * 1.5,
+      });
     }
   }
 
-  /** Render text to an offscreen canvas and return its opaque pixel coordinates. */
+  /** frac: 0 = top (white) .. 0.5 = gold .. 1 = bottom (deep blue) */
+  private gradientColor(frac: number): string {
+    const f = this.clamp(frac, 0, 1);
+    const col = f < 0.5 ? this.mix(this.G_WHITE, this.G_GOLD, f / 0.5) : this.mix(this.G_GOLD, this.G_BLUE, (f - 0.5) / 0.5);
+    return `rgb(${col[0]},${col[1]},${col[2]})`;
+  }
+
   private sampleText(text: string, brand: boolean): { x: number; y: number }[] {
     const w = this.w, h = this.h, base = Math.min(w, h);
     const off = document.createElement('canvas'); off.width = w; off.height = h;
     const c = off.getContext('2d')!;
     c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#fff';
     const family = "'Outfit', Arial, sans-serif";
-    const weight = brand ? '800' : '700';
-    const maxW = w * 0.82;
-
-    let fontSize = brand ? Math.min(h * 0.24, w * 0.18) : Math.min(base * 0.085, w * 0.052);
-    fontSize = Math.max(20, fontSize);
-    let lines: string[] = [text];
-
+    const weight = brand ? '800' : '500';
+    const maxW = w * 0.84;
+    let fs = brand ? Math.min(h * 0.24, w * 0.18) : Math.max(20, Math.min(base * 0.072, w * 0.046));
+    let lines = [text];
     if (!brand) {
-      for (let guard = 0; guard < 8; guard++) {
-        c.font = `${weight} ${fontSize}px ${family}`;
-        lines = this.wrap(c, text, maxW);
+      for (let g = 0; g < 8; g++) {
+        c.font = `${weight} ${fs}px ${family}`;
+        lines = this.wrap(text, maxW, c);
         const widest = Math.max(...lines.map((l) => c.measureText(l).width));
         if (lines.length <= 2 && widest <= maxW) break;
-        fontSize *= 0.9;
+        fs *= 0.9;
       }
     }
-    if (brand && 'letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = Math.round(fontSize * 0.06) + 'px';
-
-    c.font = `${weight} ${fontSize}px ${family}`;
-    const lh = fontSize * 1.18;
+    if (brand && 'letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = Math.round(fs * 0.06) + 'px';
+    c.font = `${weight} ${fs}px ${family}`;
+    const lh = fs * 1.22;
     let y = h / 2 - (lines.length * lh) / 2 + lh / 2;
     for (const ln of lines) { c.fillText(ln, w / 2, y); y += lh; }
-
     const data = c.getImageData(0, 0, w, h).data;
     const step = base < 520 ? 3 : 4;
     const pts: { x: number; y: number }[] = [];
-    for (let yy = 0; yy < h; yy += step) {
-      for (let xx = 0; xx < w; xx += step) {
+    for (let yy = 0; yy < h; yy += step)
+      for (let xx = 0; xx < w; xx += step)
         if (data[(yy * w + xx) * 4 + 3] > 140) pts.push({ x: xx, y: yy });
-      }
-    }
     return pts;
   }
 
-  private wrap(c: CanvasRenderingContext2D, text: string, maxW: number): string[] {
+  private wrap(text: string, maxW: number, ctx?: CanvasRenderingContext2D): string[] {
+    const c = ctx || this.ctx;
     const words = text.split(' '); const lines: string[] = []; let cur = '';
     for (const wd of words) {
       const t = cur ? cur + ' ' + wd : wd;
@@ -183,6 +237,12 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     if (cur) lines.push(cur);
     return lines;
   }
+
+  private mix(a: RGB, b: RGB, t: number): RGB {
+    return [Math.round(a[0] + (b[0] - a[0]) * t), Math.round(a[1] + (b[1] - a[1]) * t), Math.round(a[2] + (b[2] - a[2]) * t)];
+  }
+  private clamp(v: number, lo: number, hi: number): number { return v < lo ? lo : v > hi ? hi : v; }
+  private ease(t: number): number { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
 
   private exitIntro(): void {
     this.running = false;
