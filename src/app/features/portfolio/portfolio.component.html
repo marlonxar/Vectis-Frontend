@@ -184,4 +184,59 @@
       <video [src]="hoveredVideo" autoplay loop muted [muted]="true" preload="auto" playsinline></video>
     </div>
   }
+
+  <!-- PROJECT DETAIL MODAL / POPUP -->
+  @if (activeModalProject(); as project) {
+    <div class="project-modal-backdrop" (click)="closeProjectModal()" aria-modal="true" role="dialog">
+      <div class="project-modal-content" (click)="$event.stopPropagation()">
+        <!-- Close Button -->
+        <button class="modal-close-btn" (click)="closeProjectModal()" aria-label="Close modal">×</button>
+        
+        <div class="modal-body-layout">
+          <!-- Video Side (60%) -->
+          <div class="modal-video-container">
+            <video
+              [src]="project.videoUrl"
+              autoplay
+              loop
+              [muted]="isModalMuted()"
+              playsinline
+            ></video>
+            
+            <!-- Audio Toggle Button -->
+            <button 
+              class="audio-toggle-btn"
+              (click)="toggleModalMute($event)"
+              [attr.aria-label]="(isModalMuted() ? 'PORTFOLIO.SOUND_ON_A11Y' : 'PORTFOLIO.MUTE_A11Y') | translate"
+            >
+              @if (isModalMuted()) {
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
+                  <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                  <line x1="23" y1="9" x2="17" y2="15"/>
+                  <line x1="17" y1="9" x2="23" y2="15"/>
+                </svg>
+                <span>{{ 'PORTFOLIO.SOUND_ON' | translate }}</span>
+              } @else {
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle;">
+                  <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07a10 10 0 0 1 0 14.14"/>
+                </svg>
+                <span>{{ 'PORTFOLIO.MUTE' | translate }}</span>
+              }
+            </button>
+          </div>
+          
+          <!-- Text Details Side (40%) -->
+          <div class="modal-info-container">
+            <div class="modal-header-info">
+              <span class="project-year">{{ project.year }}</span>
+              <span class="project-category">{{ project.categoryKey | translate }}</span>
+            </div>
+            <h3 class="modal-project-title">{{ project.titleKey | translate }}</h3>
+            <p class="modal-project-desc">{{ project.descriptionKey | translate }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </section>

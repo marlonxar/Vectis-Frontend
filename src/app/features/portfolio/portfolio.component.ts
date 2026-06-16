@@ -153,6 +153,10 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   expandedIndex = signal<number | null>(null);
   isMuted = signal<boolean>(true);
 
+  // Modal variables for spiral view details
+  activeModalProject = signal<Project | null>(null);
+  isModalMuted = signal<boolean>(true);
+
   // 3D physics & scrolling variables
   scrollValue = 0;
   targetScrollValue = 0;
@@ -269,9 +273,12 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
     if (width < 768) {
       radius = 260;
       depthOffset = 210;
+    } else if (width <= 1024) {
+      radius = 350;
+      depthOffset = 320;
     } else if (width < 1200) {
-      radius = 400;
-      depthOffset = 340;
+      radius = 440;
+      depthOffset = 380;
     }
 
     cards.forEach((cardRef, i) => {
@@ -516,8 +523,21 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Semantic exploration trigger (accessibility / WCAG semantic support)
   exploreProject(project: Project) {
-    console.log("Exploring project details for:", project.titleKey);
-    // Expandable details / redirection flow hook
+    this.openProjectModal(project);
+  }
+
+  openProjectModal(project: Project) {
+    this.activeModalProject.set(project);
+    this.isModalMuted.set(true);
+  }
+
+  closeProjectModal() {
+    this.activeModalProject.set(null);
+  }
+
+  toggleModalMute(event: Event) {
+    event.stopPropagation();
+    this.isModalMuted.update((muted) => !muted);
   }
 
   // Accordion drawer handlers (List mode / Mobile version)
