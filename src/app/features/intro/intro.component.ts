@@ -4,7 +4,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
-interface Particle { x: number; y: number; tx: number; ty: number; vx: number; vy: number; c: string; s: number; gd: number; }
+interface Particle { x: number; y: number; u: number; off: number; fx: number; fy: number; sp: number; s: number; a: number; }
 type RGB = [number, number, number];
 
 @Component({
@@ -20,6 +20,8 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
 
   private ctx!: CanvasRenderingContext2D;
+  private bg!: HTMLCanvasElement;
+  private sprites: HTMLCanvasElement[] = [];
   private w = 0; private h = 0; private dpr = 1;
   private particles: Particle[] = [];
   private raf = 0;
@@ -29,24 +31,22 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private started = false;
   private exited = false;
   private lines: string[] = [];
-  private vMinX = 0; private vMaxX = 0; private vSpan = 1;
+  private vMinX = 0; private vMaxX = 0;
 
-  private readonly LIGHT: RGB = [243, 241, 234];
-  private readonly DARK: RGB = [10, 10, 10];
-  private readonly INK_TEXT: RGB = [12, 12, 14];
-  private readonly G_BLUE: RGB = [44, 62, 145];
-  private readonly G_GOLD: RGB = [231, 171, 46];
-  private readonly G_WHITE: RGB = [255, 243, 214];
-  // sharp particle palette (gold-heavy, some white + blue), mixed across the cloud
-  private readonly DOTS = ['#E7AB2E', '#E7AB2E', '#F0C966', '#FFE9B8', '#FFF3D6', '#3A4DA8', '#2C3E91'];
+  private readonly CHAR: RGB = [40, 35, 60];      // charcoal text on white
+  // pastel particle palette: purple, pink, blue
+  private readonly PAL: RGB[] = [[150, 120, 215], [228, 140, 190], [110, 150, 230], [180, 150, 225]];
+  // final wordmark gradient (blue -> purple -> pink)
+  private readonly W_BLUE: RGB = [110, 150, 230];
+  private readonly W_PURP: RGB = [150, 118, 214];
+  private readonly W_PINK: RGB = [228, 140, 190];
 
   private readonly T = {
-    p1In: 450, p1HoldEnd: 1000, p1Out: 1300,
-    fadeStart: 1300, fadeEnd: 1850,
-    p2Start: 1950, p2PerWord: 240, p2Fade: 320,
-    dissolve: 3300, gatherStart: 4250, gatherEnd: 5050,
-    stagger: 620, gatherDur: 650,
-    cfStart: 4750, cfEnd: 5450, exit: 5560,
+    p1In: 400, p1Hold: 1050, p1Out: 1350,
+    hoyIn: 1550, hoyHold: 2050, hoyOut: 2330,
+    p2In: 2550, p2Fade: 360, p2OutStart: 3300,
+    dissolve: 3500, convergeStart: 4600,
+    cfStart: 5150, cfEnd: 5650, exit: 5800,
   };
 
   ngAfterViewInit(): void {
@@ -73,8 +73,8 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.resize();
     window.addEventListener('resize', this.onResize);
     this.lines = this.lang() === 'en'
-      ? ['Your time comes back.', 'Repetitive work, automated.', 'VECTIS']
-      : ['Tu tiempo vuelve.', 'El trabajo repetitivo, automatizado.', 'VECTIS'];
+      ? ['Your time comes back.', 'Today', 'Repetitive work, automated.', 'Vectis']
+      : ['Tu tiempo vuelve.', 'Hoy', 'El trabajo repetitivo automatizado.', 'Vectis'];
     this.running = true;
     this.startTime = performance.now();
     this.loop();
@@ -83,9 +83,9 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private runReduced(): void {
     this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
     this.resize();
-    this.ctx.fillStyle = 'rgb(10,10,10)'; this.ctx.fillRect(0, 0, this.w, this.h);
+    this.ctx.drawImage(this.bg, 0, 0, this.w, this.h);
     this.vMinX = this.w * 0.3; this.vMaxX = this.w * 0.7;
-    this.drawBrandText(this.w);
+    this.drawBrand('Vectis', 1);
     window.setTimeout(() => this.exitIntro(), 1300);
   }
 
@@ -98,96 +98,181 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     cv.width = Math.floor(this.w * this.dpr); cv.height = Math.floor(this.h * this.dpr);
     cv.style.width = this.w + 'px'; cv.style.height = this.h + 'px';
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    this.bg = this.buildBg();
+    if (!this.sprites.length) this.sprites = this.PAL.map((c) => this.makeSprite(c));
+  }
+
+  private buildBg(): HTMLCanvasElement {
+    const cv = document.createElement('canvas'); cv.width = this.w; cv.height = this.h;
+    const c = cv.getContext('2d')!;
+    c.fillStyle = '#ffffff'; c.fillRect(0, 0, this.w, this.h);
+    const r = Math.max(this.w, this.h);
+    const g1 = c.createRadialGradient(this.w * 0.24, this.h * 0.18, 0, this.w * 0.24, this.h * 0.18, r * 0.75);
+    g1.addColorStop(0, 'rgba(150,130,215,0.16)'); g1.addColorStop(1, 'rgba(150,130,215,0)');
+    c.fillStyle = g1; c.fillRect(0, 0, this.w, this.h);
+    const g2 = c.createRadialGradient(this.w * 0.82, this.h * 0.86, 0, this.w * 0.82, this.h * 0.86, r * 0.7);
+    g2.addColorStop(0, 'rgba(230,150,195,0.16)'); g2.addColorStop(1, 'rgba(230,150,195,0)');
+    c.fillStyle = g2; c.fillRect(0, 0, this.w, this.h);
+    return cv;
+  }
+
+  private makeSprite(color: RGB): HTMLCanvasElement {
+    const s = 48; const cv = document.createElement('canvas'); cv.width = s; cv.height = s;
+    const x = cv.getContext('2d')!;
+    const g = x.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+    g.addColorStop(0, `rgba(${color[0]},${color[1]},${color[2]},0.95)`);
+    g.addColorStop(0.45, `rgba(${color[0]},${color[1]},${color[2]},0.5)`);
+    g.addColorStop(1, `rgba(${color[0]},${color[1]},${color[2]},0)`);
+    x.fillStyle = g; x.fillRect(0, 0, s, s);
+    return cv;
   }
 
   private loop = (): void => {
     if (!this.running) return;
     const t = performance.now() - this.startTime;
     const c = this.ctx;
+    c.drawImage(this.bg, 0, 0, this.w, this.h);   // white + pastel base every frame
 
     if (t < this.T.dissolve) {
-      // ----- light -> dark clean crossfade, normal typography -----
-      const bgP = this.ease(this.clamp((t - this.T.fadeStart) / (this.T.fadeEnd - this.T.fadeStart), 0, 1));
-      const bg = this.mix(this.LIGHT, this.DARK, bgP);
-      c.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
-      c.fillRect(0, 0, this.w, this.h);
+      // ----- elegant centered phrases -----
       if (t < this.T.p1Out) {
-        const a = t < this.T.p1In ? t / this.T.p1In
-          : t < this.T.p1HoldEnd ? 1
-          : 1 - (t - this.T.p1HoldEnd) / (this.T.p1Out - this.T.p1HoldEnd);
-        this.drawPhrase(this.lines[0], this.clamp(a, 0, 1), this.INK_TEXT);
-      } else if (t >= this.T.p2Start) {
-        this.drawPhraseWords(this.lines[1], t);
+        this.drawCentered(this.lines[0], this.ramp(t, this.T.p1In, this.T.p1Hold, this.T.p1Out), false);
+      } else if (t < this.T.hoyOut) {
+        this.drawCentered(this.lines[1], this.ramp(t, this.T.hoyIn, this.T.hoyHold, this.T.hoyOut), true);
+      } else if (t >= this.T.p2In) {
+        this.drawPhrase2(t);
       }
     } else {
-      // ----- sharp particle cloud fills the screen, swirls, forms VECTIS left->right -----
+      // ----- particle ribbon -> reconstruct into Vectis -----
       if (!this.dissolved) { this.spawnParticles(); this.dissolved = true; }
-      c.fillStyle = 'rgb(10,10,10)';     // opaque -> crisp dots, pure black background
-      c.fillRect(0, 0, this.w, this.h);
-
-      const globalGather = this.clamp((t - this.T.gatherStart) / (this.T.gatherEnd - this.T.gatherStart), 0, 1);
-      const flow = 1 - globalGather;
       const time = t * 0.001;
       const cx = this.w / 2, cy = this.h / 2;
-      const dth = 0.05 * flow;
-      const cosT = Math.cos(dth), sinT = Math.sin(dth);
+      const ribbon = t < this.T.convergeStart;
+      const scroll = (t - this.T.dissolve) * 0.00016;
       const reveal = this.ease(this.clamp((t - this.T.cfStart) / (this.T.cfEnd - this.T.cfStart), 0, 1));
-      const revealX = this.vMinX + (this.vSpan * 1.12) * reveal;
-      const edge = this.vSpan * 0.10;
-
+      c.save();
       for (const p of this.particles) {
-        const gp = this.ease(this.clamp((t - (this.T.gatherStart + p.gd * this.T.stagger)) / this.T.gatherDur, 0, 1));
-        p.vx += Math.sin(p.y * 0.010 + time * 1.6) * 0.6 * flow;
-        p.vy += Math.cos(p.x * 0.010 + time * 1.4) * 0.6 * flow;
-        p.vx *= 0.965; p.vy *= 0.965;
-        p.x += p.vx; p.y += p.vy;
-        if (flow > 0.02) {                       // global swirl (giro)
-          const dx = p.x - cx, dy = p.y - cy;
-          p.x = cx + dx * cosT - dy * sinT;
-          p.y = cy + dx * sinT + dy * cosT;
+        let tx: number, ty: number, k: number;
+        if (ribbon) {
+          const uu = (p.u + scroll) % 1;
+          tx = -0.14 * this.w + 1.28 * this.w * uu;
+          ty = cy + Math.sin(uu * Math.PI * 2.4 + time * 1.3) * this.h * 0.16 + p.off;
+          k = 0.07;
+        } else {
+          tx = p.fx; ty = p.fy; k = 0.16;
         }
-        p.x += (p.tx - p.x) * gp * 0.32;          // gather to its letter
-        p.y += (p.ty - p.y) * gp * 0.32;
-        const pa = this.clamp((p.tx - (revealX - edge)) / edge, 0, 1);   // fade where text has formed
-        if (pa > 0.02) { c.globalAlpha = pa; c.fillStyle = p.c; c.fillRect(p.x, p.y, p.s, p.s); }
+        p.x += (tx - p.x) * k; p.y += (ty - p.y) * k;
+        const a = p.a * (1 - reveal);
+        if (a > 0.01) {
+          c.globalAlpha = a;
+          c.drawImage(this.sprites[p.sp], p.x - p.s, p.y - p.s, p.s * 2, p.s * 2);
+        }
       }
-      c.globalAlpha = 1;
-      if (reveal > 0) this.drawBrandText(revealX);   // crisp VECTIS revealed left->right
+      c.restore();
+      if (reveal > 0) this.drawBrand('Vectis', reveal);
       if (t >= this.T.exit && !this.exited) { this.exited = true; this.exitIntro(); }
+      void cx;
     }
     this.raf = requestAnimationFrame(this.loop);
   };
 
-  private brandMetrics(): { fs: number; ls: number } {
-    const fs = Math.min(this.h * 0.24, this.w * 0.18);
-    return { fs, ls: Math.round(fs * 0.06) };
+  private ramp(t: number, inT: number, hold: number, out: number): number {
+    if (t < inT) return this.ease(this.clamp(t / inT, 0, 1));
+    if (t < hold) return 1;
+    return 1 - this.ease(this.clamp((t - hold) / (out - hold), 0, 1));
   }
 
-  /** Crisp "VECTIS" clipped to [0, clipX] -> reveals left to right; gold-dominant gradient + glow. */
-  private drawBrandText(clipX: number): void {
+  private brandMetrics(): { fs: number; ls: number } {
+    const fs = Math.min(this.h * 0.2, this.w * 0.16);
+    return { fs, ls: Math.round(fs * 0.02) };
+  }
+
+  private drawBrand(text: string, alpha: number): void {
     const c = this.ctx, m = this.brandMetrics();
-    c.save();
-    c.beginPath(); c.rect(0, 0, clipX, this.h); c.clip();
-    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.save(); c.globalAlpha = alpha; c.textAlign = 'center'; c.textBaseline = 'middle';
     if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = m.ls + 'px';
-    c.font = `800 ${m.fs}px 'Outfit', Arial, sans-serif`;
-    const x0 = this.vMaxX > this.vMinX ? this.vMinX : this.w * 0.3;
-    const x1 = this.vMaxX > this.vMinX ? this.vMaxX : this.w * 0.7;
-    const g = c.createLinearGradient(x0, 0, x1, 0);
-    g.addColorStop(0, this.rgb(this.G_BLUE));
-    g.addColorStop(0.4, this.rgb(this.G_GOLD));
-    g.addColorStop(0.78, this.rgb(this.G_GOLD));
-    g.addColorStop(1, this.rgb(this.G_WHITE));
-    c.shadowColor = 'rgba(231,171,46,0.45)'; c.shadowBlur = 22;
-    c.fillStyle = g;
-    c.fillText('VECTIS', this.w / 2, this.h / 2);
+    c.font = `700 ${m.fs}px 'Outfit', Arial, sans-serif`;
+    const half = c.measureText(text).width / 2;
+    const g = c.createLinearGradient(this.w / 2 - half, 0, this.w / 2 + half, 0);
+    g.addColorStop(0, this.rgb(this.W_BLUE)); g.addColorStop(0.5, this.rgb(this.W_PURP)); g.addColorStop(1, this.rgb(this.W_PINK));
+    c.shadowColor = 'rgba(150,120,215,0.35)'; c.shadowBlur = 26 * alpha;
+    c.fillStyle = g; c.fillText(text, this.w / 2, this.h / 2);
     if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = '0px';
     c.restore();
   }
 
+  private drawCentered(text: string, alpha: number, gradient: boolean): void {
+    if (alpha <= 0) return;
+    const c = this.ctx, base = Math.min(this.w, this.h);
+    c.save(); c.globalAlpha = alpha; c.textAlign = 'center'; c.textBaseline = 'middle';
+    const fs = Math.max(22, Math.min(base * 0.07, this.w * 0.05));
+    c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
+    if (gradient) {
+      const half = c.measureText(text).width / 2;
+      const g = c.createLinearGradient(this.w / 2 - half, 0, this.w / 2 + half, 0);
+      g.addColorStop(0, this.rgb(this.W_PURP)); g.addColorStop(1, this.rgb(this.W_PINK));
+      c.fillStyle = g;
+    } else { c.fillStyle = this.rgb(this.CHAR); }
+    c.fillText(text, this.w / 2, this.h / 2);
+    c.restore();
+  }
+
+  private drawPhrase2(t: number): void {
+    const c = this.ctx; const { fs, lines } = this.phraseLayout(this.lines[2]);
+    const total = lines.reduce((n, l) => n + l.split(' ').length, 0);
+    const inA = this.ease(this.clamp((t - this.T.p2In) / this.T.p2Fade, 0, 1));
+    const outA = 1 - this.ease(this.clamp((t - this.T.p2OutStart) / (this.T.dissolve - this.T.p2OutStart), 0, 1));
+    c.save(); c.textBaseline = 'middle'; c.textAlign = 'left';
+    c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
+    const lh = fs * 1.24, spaceW = c.measureText(' ').width;
+    let y = this.h / 2 - (lines.length * lh) / 2 + lh / 2; let wi = 0;
+    for (const ln of lines) {
+      const words = ln.split(' ');
+      let x = (this.w - c.measureText(ln).width) / 2;
+      for (const wd of words) {
+        const last = wi === total - 1;
+        const ww = c.measureText(wd).width;
+        c.globalAlpha = last ? inA : inA * outA;       // last word ("automatizado") stays, others fade out
+        if (last) {
+          const g = c.createLinearGradient(x, 0, x + ww, 0);
+          g.addColorStop(0, this.rgb(this.W_PURP)); g.addColorStop(1, this.rgb(this.W_PINK));
+          c.fillStyle = g;
+        } else { c.fillStyle = this.rgb(this.CHAR); }
+        c.fillText(wd, x, y);
+        x += ww + spaceW; wi++;
+      }
+      y += lh;
+    }
+    c.globalAlpha = 1; c.restore();
+  }
+
+  private spawnParticles(): void {
+    const src = this.sampleLastWord(this.lines[2]);
+    const target = this.sampleText(this.lines[3], true);
+    if (!target.length) return;
+    this.vMinX = Infinity; this.vMaxX = -Infinity;
+    for (const p of target) { if (p.x < this.vMinX) this.vMinX = p.x; if (p.x > this.vMaxX) this.vMaxX = p.x; }
+    const base = Math.min(this.w, this.h);
+    const N = base < 560 ? 2200 : 4200;
+    this.particles = [];
+    for (let i = 0; i < N; i++) {
+      const tg = target[(Math.random() * target.length) | 0];
+      const st = src.length ? src[(Math.random() * src.length) | 0] : { x: this.w / 2, y: this.h / 2 };
+      this.particles.push({
+        x: st.x, y: st.y,
+        u: Math.random(),
+        off: (Math.random() - 0.5) * this.h * 0.22,
+        fx: tg.x + (Math.random() - 0.5) * 1.6, fy: tg.y + (Math.random() - 0.5) * 1.6,
+        sp: (Math.random() * this.sprites.length) | 0,
+        s: 2.4 + Math.random() * 4,
+        a: 0.4 + Math.random() * 0.35,
+      });
+    }
+  }
+
   private phraseLayout(text: string): { fs: number; lines: string[] } {
     const c = this.ctx, base = Math.min(this.w, this.h);
-    let fs = Math.max(20, Math.min(base * 0.072, this.w * 0.046));
+    let fs = Math.max(20, Math.min(base * 0.064, this.w * 0.044));
     const maxW = this.w * 0.84; let lines = [text];
     for (let g = 0; g < 8; g++) {
       c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
@@ -199,105 +284,42 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     return { fs, lines };
   }
 
-  private drawPhrase(text: string, alpha: number, col: RGB): void {
-    if (alpha <= 0) return;
-    const c = this.ctx; const { fs, lines } = this.phraseLayout(text);
-    c.save(); c.globalAlpha = alpha; c.fillStyle = this.rgb(col);
-    c.textAlign = 'center'; c.textBaseline = 'middle';
-    c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
-    const lh = fs * 1.22; let y = this.h / 2 - (lines.length * lh) / 2 + lh / 2;
-    for (const ln of lines) { c.fillText(ln, this.w / 2, y); y += lh; }
-    c.restore();
-  }
-
-  private drawPhraseWords(text: string, t: number): void {
-    const c = this.ctx; const { fs, lines } = this.phraseLayout(text);
-    const total = lines.reduce((n, l) => n + l.split(' ').length, 0);
-    const GOLDL: RGB = [240, 201, 102];
-    c.save(); c.textBaseline = 'middle'; c.textAlign = 'left';
-    c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
-    const lh = fs * 1.22, spaceW = c.measureText(' ').width;
-    let y = this.h / 2 - (lines.length * lh) / 2 + lh / 2; let wi = 0;
-    for (const ln of lines) {
-      const words = ln.split(' ');
-      let x = (this.w - c.measureText(ln).width) / 2;
-      for (const wd of words) {
-        const start = this.T.p2Start + wi * this.T.p2PerWord;
-        const a = this.clamp((t - start) / this.T.p2Fade, 0, 1);
-        if (a > 0) {
-          const ww = c.measureText(wd).width;
-          c.globalAlpha = a;
-          if (wi === total - 1) {
-            const g = c.createLinearGradient(x, 0, x + ww, 0);
-            g.addColorStop(0, this.rgb(this.G_GOLD));
-            g.addColorStop(1, this.rgb(this.G_WHITE));
-            c.fillStyle = g;
-          } else {
-            const cp = this.clamp((t - start) / (this.T.p2Fade * 1.8), 0, 1);
-            c.fillStyle = this.rgb(this.mix(GOLDL, this.LIGHT, cp));
-          }
-          c.fillText(wd, x, y);
-        }
-        x += c.measureText(wd).width + spaceW; wi++;
-      }
-      y += lh;
-    }
-    c.globalAlpha = 1; c.restore();
-  }
-
-  private spawnParticles(): void {
-    const target = this.sampleText('VECTIS', true);
-    if (!target.length) return;
-    this.vMinX = Infinity; this.vMaxX = -Infinity;
-    for (const p of target) { if (p.x < this.vMinX) this.vMinX = p.x; if (p.x > this.vMaxX) this.vMaxX = p.x; }
-    this.vSpan = Math.max(1, this.vMaxX - this.vMinX);
-    const cx = this.w / 2, cy = this.h / 2;
-    const base = Math.min(this.w, this.h);
-    const N = base < 560 ? 2600 : 5500;
-    this.particles = [];
-    for (let i = 0; i < N; i++) {
-      const tg = target[(Math.random() * target.length) | 0];
-      // start spread across (almost) the whole screen, with rotational velocity -> swirl
-      const x = Math.random() * this.w;
-      const y = this.h * 0.08 + Math.random() * this.h * 0.84;
-      const dx = x - cx, dy = y - cy;
-      this.particles.push({
-        x, y,
-        tx: tg.x + (Math.random() - 0.5) * 1.6, ty: tg.y + (Math.random() - 0.5) * 1.6,
-        vx: -dy * 0.018 + (Math.random() - 0.5) * 3,
-        vy: dx * 0.018 + (Math.random() - 0.5) * 3,
-        c: this.DOTS[(Math.random() * this.DOTS.length) | 0],
-        s: 1.4 + Math.random() * 1.6,
-        gd: this.clamp((tg.x - this.vMinX) / this.vSpan, 0, 1),   // left letters gather first
-      });
-    }
+  private sampleLastWord(text: string): { x: number; y: number }[] {
+    const { fs, lines } = this.phraseLayout(text);
+    return this.sampleLayout(lines, fs, '500', false, lines.reduce((n, l) => n + l.split(' ').length, 0) - 1);
   }
 
   private sampleText(text: string, brand: boolean): { x: number; y: number }[] {
+    if (brand) {
+      const m = this.brandMetrics();
+      return this.sampleLayout([text], m.fs, '700', true, -1);
+    }
+    const { fs, lines } = this.phraseLayout(text);
+    return this.sampleLayout(lines, fs, '500', false, -1);
+  }
+
+  /** Render given lines to an offscreen canvas and return opaque pixels.
+   *  onlyWord >= 0 restricts to that global word index. */
+  private sampleLayout(lines: string[], fs: number, weight: string, brand: boolean, onlyWord: number): { x: number; y: number }[] {
     const w = this.w, h = this.h, base = Math.min(w, h);
     const off = document.createElement('canvas'); off.width = w; off.height = h;
     const c = off.getContext('2d')!;
-    c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#fff';
-    const family = "'Outfit', Arial, sans-serif";
-    const maxW = w * 0.84;
-    let fs: number; const weight = brand ? '800' : '500'; let lines = [text];
-    if (brand) {
-      const m = this.brandMetrics(); fs = m.fs;
-      if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = m.ls + 'px';
+    c.fillStyle = '#fff'; c.textBaseline = 'middle';
+    if (brand && 'letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = this.brandMetrics().ls + 'px';
+    c.font = `${weight} ${fs}px 'Outfit', Arial, sans-serif`;
+    const lh = fs * 1.24, spaceW = c.measureText(' ').width;
+    let y = h / 2 - (lines.length * lh) / 2 + lh / 2;
+    if (onlyWord < 0) {
+      c.textAlign = 'center';
+      for (const ln of lines) { c.fillText(ln, w / 2, y); y += lh; }
     } else {
-      fs = Math.max(20, Math.min(base * 0.072, w * 0.046));
-      for (let g = 0; g < 8; g++) {
-        c.font = `${weight} ${fs}px ${family}`;
-        lines = this.wrap(text, maxW, c);
-        const widest = Math.max(...lines.map((l) => c.measureText(l).width));
-        if (lines.length <= 2 && widest <= maxW) break;
-        fs *= 0.9;
+      c.textAlign = 'left'; let wi = 0;
+      for (const ln of lines) {
+        let x = (w - c.measureText(ln).width) / 2;
+        for (const wd of ln.split(' ')) { if (wi === onlyWord) c.fillText(wd, x, y); x += c.measureText(wd).width + spaceW; wi++; }
+        y += lh;
       }
     }
-    c.font = `${weight} ${fs}px ${family}`;
-    const lh = fs * 1.22;
-    let y = h / 2 - (lines.length * lh) / 2 + lh / 2;
-    for (const ln of lines) { c.fillText(ln, w / 2, y); y += lh; }
     const data = c.getImageData(0, 0, w, h).data;
     const step = base < 520 ? 3 : 4;
     const pts: { x: number; y: number }[] = [];
@@ -320,9 +342,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   }
 
   private rgb(c: RGB): string { return `rgb(${c[0]},${c[1]},${c[2]})`; }
-  private mix(a: RGB, b: RGB, t: number): RGB {
-    return [Math.round(a[0] + (b[0] - a[0]) * t), Math.round(a[1] + (b[1] - a[1]) * t), Math.round(a[2] + (b[2] - a[2]) * t)];
-  }
   private clamp(v: number, lo: number, hi: number): number { return v < lo ? lo : v > hi ? hi : v; }
   private ease(t: number): number { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
 
