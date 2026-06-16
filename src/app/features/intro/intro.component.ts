@@ -4,7 +4,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
-interface Particle { x: number; y: number; tx: number; ty: number; vx: number; vy: number; sp: number; bs: number; a: number; }
+interface Particle { x: number; y: number; tx: number; ty: number; vx: number; vy: number; c: string; s: number; gd: number; }
 type RGB = [number, number, number];
 
 @Component({
@@ -22,7 +22,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private ctx!: CanvasRenderingContext2D;
   private w = 0; private h = 0; private dpr = 1;
   private particles: Particle[] = [];
-  private sprites: HTMLCanvasElement[] = [];
   private raf = 0;
   private startTime = 0;
   private dissolved = false;
@@ -30,7 +29,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private started = false;
   private exited = false;
   private lines: string[] = [];
-  private vMinX = 0; private vMaxX = 0;
+  private vMinX = 0; private vMaxX = 0; private vSpan = 1;
 
   private readonly LIGHT: RGB = [243, 241, 234];
   private readonly DARK: RGB = [10, 10, 10];
@@ -38,15 +37,16 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private readonly G_BLUE: RGB = [44, 62, 145];
   private readonly G_GOLD: RGB = [231, 171, 46];
   private readonly G_WHITE: RGB = [255, 243, 214];
-  // soft-glow particle colors (mixed cloud): mostly gold, some white & blue
-  private readonly CLOUD: RGB[] = [[231, 171, 46], [240, 201, 102], [255, 243, 214], [70, 96, 190], [44, 62, 145]];
+  // sharp particle palette (gold-heavy, some white + blue), mixed across the cloud
+  private readonly DOTS = ['#E7AB2E', '#E7AB2E', '#F0C966', '#FFE9B8', '#FFF3D6', '#3A4DA8', '#2C3E91'];
 
   private readonly T = {
-    p1In: 450, p1HoldEnd: 1000, p1Out: 1320,
-    wipeStart: 1300, wipeEnd: 1950,
-    p2Start: 2050, p2PerWord: 240, p2Fade: 320,
-    dissolve: 3300, gatherStart: 4350, gatherEnd: 5100,
-    cfStart: 4900, cfEnd: 5400, exit: 5500,
+    p1In: 450, p1HoldEnd: 1000, p1Out: 1300,
+    fadeStart: 1300, fadeEnd: 1850,
+    p2Start: 1950, p2PerWord: 240, p2Fade: 320,
+    dissolve: 3300, gatherStart: 4250, gatherEnd: 5050,
+    stagger: 620, gatherDur: 650,
+    cfStart: 4750, cfEnd: 5450, exit: 5560,
   };
 
   ngAfterViewInit(): void {
@@ -71,7 +71,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private run(): void {
     this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
     this.resize();
-    this.sprites = this.CLOUD.map((c) => this.makeSprite(c));
     window.addEventListener('resize', this.onResize);
     this.lines = this.lang() === 'en'
       ? ['Your time comes back.', 'Repetitive work, automated.', 'VECTIS']
@@ -85,19 +84,9 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
     this.resize();
     this.ctx.fillStyle = 'rgb(10,10,10)'; this.ctx.fillRect(0, 0, this.w, this.h);
-    this.drawBrandText(1);
+    this.vMinX = this.w * 0.3; this.vMaxX = this.w * 0.7;
+    this.drawBrandText(this.w);
     window.setTimeout(() => this.exitIntro(), 1300);
-  }
-
-  private makeSprite(color: RGB): HTMLCanvasElement {
-    const s = 64; const cv = document.createElement('canvas'); cv.width = s; cv.height = s;
-    const x = cv.getContext('2d')!;
-    const g = x.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
-    g.addColorStop(0, `rgba(${color[0]},${color[1]},${color[2]},0.95)`);
-    g.addColorStop(0.35, `rgba(${color[0]},${color[1]},${color[2]},0.4)`);
-    g.addColorStop(1, `rgba(${color[0]},${color[1]},${color[2]},0)`);
-    x.fillStyle = g; x.fillRect(0, 0, s, s);
-    return cv;
   }
 
   private readonly onResize = (): void => { if (this.ctx) this.resize(); };
@@ -117,60 +106,53 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const c = this.ctx;
 
     if (t < this.T.dissolve) {
-      if (t < this.T.wipeEnd) {
-        // ----- light stage + phrase 1, then a page-wipe to dark -----
-        c.fillStyle = this.rgb(this.LIGHT); c.fillRect(0, 0, this.w, this.h);
+      // ----- light -> dark clean crossfade, normal typography -----
+      const bgP = this.ease(this.clamp((t - this.T.fadeStart) / (this.T.fadeEnd - this.T.fadeStart), 0, 1));
+      const bg = this.mix(this.LIGHT, this.DARK, bgP);
+      c.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
+      c.fillRect(0, 0, this.w, this.h);
+      if (t < this.T.p1Out) {
         const a = t < this.T.p1In ? t / this.T.p1In
           : t < this.T.p1HoldEnd ? 1
           : 1 - (t - this.T.p1HoldEnd) / (this.T.p1Out - this.T.p1HoldEnd);
         this.drawPhrase(this.lines[0], this.clamp(a, 0, 1), this.INK_TEXT);
-        if (t >= this.T.wipeStart) {
-          this.drawWipe(this.ease(this.clamp((t - this.T.wipeStart) / (this.T.wipeEnd - this.T.wipeStart), 0, 1)));
-        }
-      } else {
-        // ----- dark stage + phrase 2 (word-by-word, gold -> white) -----
-        c.fillStyle = this.rgb(this.DARK); c.fillRect(0, 0, this.w, this.h);
+      } else if (t >= this.T.p2Start) {
         this.drawPhraseWords(this.lines[1], t);
       }
     } else {
-      // ----- soft-glow cloud that fills the screen, then gathers into VECTIS -----
+      // ----- sharp particle cloud fills the screen, swirls, forms VECTIS left->right -----
       if (!this.dissolved) { this.spawnParticles(); this.dissolved = true; }
-      c.fillStyle = 'rgba(10,10,10,0.62)';   // short trail, clears back to black (no gray haze)
+      c.fillStyle = 'rgb(10,10,10)';     // opaque -> crisp dots, pure black background
       c.fillRect(0, 0, this.w, this.h);
 
-      const gather = this.clamp((t - this.T.gatherStart) / (this.T.gatherEnd - this.T.gatherStart), 0, 1);
-      const gEase = this.ease(gather);
-      const flow = 1 - gather;
+      const globalGather = this.clamp((t - this.T.gatherStart) / (this.T.gatherEnd - this.T.gatherStart), 0, 1);
+      const flow = 1 - globalGather;
       const time = t * 0.001;
       const cx = this.w / 2, cy = this.h / 2;
-      const dth = 0.045 * flow;                 // global rotation (swirl) while not gathering
+      const dth = 0.05 * flow;
       const cosT = Math.cos(dth), sinT = Math.sin(dth);
-      const cf = this.clamp((t - this.T.cfStart) / (this.T.cfEnd - this.T.cfStart), 0, 1);
-      const pAlpha = 1 - cf;
+      const reveal = this.ease(this.clamp((t - this.T.cfStart) / (this.T.cfEnd - this.T.cfStart), 0, 1));
+      const revealX = this.vMinX + (this.vSpan * 1.12) * reveal;
+      const edge = this.vSpan * 0.10;
 
-      if (pAlpha > 0.01) {
-        c.save();
-        c.globalCompositeOperation = 'lighter';
-        for (const p of this.particles) {
-          // turbulent flow (smoke-like, mixes the cloud)
-          p.vx += Math.sin(p.y * 0.011 + time * 1.7) * 0.7 * flow;
-          p.vy += Math.cos(p.x * 0.011 + time * 1.5) * 0.7 * flow;
-          p.vx *= 0.95; p.vy *= 0.95;
-          p.x += p.vx; p.y += p.vy;
-          if (flow > 0.02) {                      // rotate the whole cloud around center
-            const dx = p.x - cx, dy = p.y - cy;
-            p.x = cx + dx * cosT - dy * sinT;
-            p.y = cy + dx * sinT + dy * cosT;
-          }
-          p.x += (p.tx - p.x) * gEase * 0.27;     // gather into VECTIS
-          p.y += (p.ty - p.y) * gEase * 0.27;
-          const sz = p.bs * (1 - 0.86 * gEase);
-          c.globalAlpha = p.a * pAlpha;
-          c.drawImage(this.sprites[p.sp], p.x - sz, p.y - sz, sz * 2, sz * 2);
+      for (const p of this.particles) {
+        const gp = this.ease(this.clamp((t - (this.T.gatherStart + p.gd * this.T.stagger)) / this.T.gatherDur, 0, 1));
+        p.vx += Math.sin(p.y * 0.010 + time * 1.6) * 0.6 * flow;
+        p.vy += Math.cos(p.x * 0.010 + time * 1.4) * 0.6 * flow;
+        p.vx *= 0.965; p.vy *= 0.965;
+        p.x += p.vx; p.y += p.vy;
+        if (flow > 0.02) {                       // global swirl (giro)
+          const dx = p.x - cx, dy = p.y - cy;
+          p.x = cx + dx * cosT - dy * sinT;
+          p.y = cy + dx * sinT + dy * cosT;
         }
-        c.restore();
+        p.x += (p.tx - p.x) * gp * 0.32;          // gather to its letter
+        p.y += (p.ty - p.y) * gp * 0.32;
+        const pa = this.clamp((p.tx - (revealX - edge)) / edge, 0, 1);   // fade where text has formed
+        if (pa > 0.02) { c.globalAlpha = pa; c.fillStyle = p.c; c.fillRect(p.x, p.y, p.s, p.s); }
       }
-      if (cf > 0) this.drawBrandText(cf);
+      c.globalAlpha = 1;
+      if (reveal > 0) this.drawBrandText(revealX);   // crisp VECTIS revealed left->right
       if (t >= this.T.exit && !this.exited) { this.exited = true; this.exitIntro(); }
     }
     this.raf = requestAnimationFrame(this.loop);
@@ -181,10 +163,11 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     return { fs, ls: Math.round(fs * 0.06) };
   }
 
-  private drawBrandText(alpha: number): void {
+  /** Crisp "VECTIS" clipped to [0, clipX] -> reveals left to right; gold-dominant gradient + glow. */
+  private drawBrandText(clipX: number): void {
     const c = this.ctx, m = this.brandMetrics();
     c.save();
-    c.globalAlpha = alpha;
+    c.beginPath(); c.rect(0, 0, clipX, this.h); c.clip();
     c.textAlign = 'center'; c.textBaseline = 'middle';
     if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = m.ls + 'px';
     c.font = `800 ${m.fs}px 'Outfit', Arial, sans-serif`;
@@ -195,10 +178,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     g.addColorStop(0.4, this.rgb(this.G_GOLD));
     g.addColorStop(0.78, this.rgb(this.G_GOLD));
     g.addColorStop(1, this.rgb(this.G_WHITE));
-    // settle: subtle scale-up + gold glow as it resolves
-    const s = 0.965 + 0.035 * alpha;
-    c.translate(this.w / 2, this.h / 2); c.scale(s, s); c.translate(-this.w / 2, -this.h / 2);
-    c.shadowColor = 'rgba(231,171,46,0.5)'; c.shadowBlur = 24 * alpha;
+    c.shadowColor = 'rgba(231,171,46,0.45)'; c.shadowBlur = 22;
     c.fillStyle = g;
     c.fillText('VECTIS', this.w / 2, this.h / 2);
     if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = '0px';
@@ -248,13 +228,11 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
           const ww = c.measureText(wd).width;
           c.globalAlpha = a;
           if (wi === total - 1) {
-            // emphasized word -> gold->white gradient across it (hero style)
             const g = c.createLinearGradient(x, 0, x + ww, 0);
             g.addColorStop(0, this.rgb(this.G_GOLD));
             g.addColorStop(1, this.rgb(this.G_WHITE));
             c.fillStyle = g;
           } else {
-            // each word fades in warm gold -> white
             const cp = this.clamp((t - start) / (this.T.p2Fade * 1.8), 0, 1);
             c.fillStyle = this.rgb(this.mix(GOLDL, this.LIGHT, cp));
           }
@@ -267,46 +245,30 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     c.globalAlpha = 1; c.restore();
   }
 
-  /** Page-wipe: a dark slanted panel sweeps in from the right with a gold leading edge. */
-  private drawWipe(wp: number): void {
-    const c = this.ctx, w = this.w, h = this.h, slant = w * 0.05;
-    const edge = w * (1 - wp);
-    c.save();
-    c.fillStyle = this.rgb(this.DARK);
-    c.beginPath();
-    c.moveTo(edge + slant, 0); c.lineTo(edge - slant, h);
-    c.lineTo(w + slant, h); c.lineTo(w + slant, 0); c.closePath(); c.fill();
-    c.strokeStyle = 'rgba(231,171,46,0.9)'; c.lineWidth = 3;
-    c.beginPath(); c.moveTo(edge + slant, 0); c.lineTo(edge - slant, h); c.stroke();
-    c.restore();
-  }
-
   private spawnParticles(): void {
-    const src = this.sampleLastWord(this.lines[1]);   // dissolve out of the emphasized last word
     const target = this.sampleText('VECTIS', true);
     if (!target.length) return;
     this.vMinX = Infinity; this.vMaxX = -Infinity;
     for (const p of target) { if (p.x < this.vMinX) this.vMinX = p.x; if (p.x > this.vMaxX) this.vMaxX = p.x; }
+    this.vSpan = Math.max(1, this.vMaxX - this.vMinX);
     const cx = this.w / 2, cy = this.h / 2;
     const base = Math.min(this.w, this.h);
-    const N = base < 560 ? 1500 : 3400;
+    const N = base < 560 ? 2600 : 5500;
     this.particles = [];
     for (let i = 0; i < N; i++) {
       const tg = target[(Math.random() * target.length) | 0];
-      const st = src.length ? src[(Math.random() * src.length) | 0] : { x: cx, y: cy };
-      const ang = Math.atan2(st.y - cy, st.x - cx) + (Math.random() - 0.5) * 1.4;
-      const sp = 9 + Math.random() * 22;
-      // weight: mostly gold (0,1), some white (2), some blue (3,4)
-      const r = Math.random();
-      const sprite = r < 0.55 ? (Math.random() < 0.5 ? 0 : 1) : r < 0.75 ? 2 : (Math.random() < 0.5 ? 3 : 4);
+      // start spread across (almost) the whole screen, with rotational velocity -> swirl
+      const x = Math.random() * this.w;
+      const y = this.h * 0.08 + Math.random() * this.h * 0.84;
+      const dx = x - cx, dy = y - cy;
       this.particles.push({
-        x: st.x, y: st.y,
-        tx: tg.x + (Math.random() - 0.5) * 2, ty: tg.y + (Math.random() - 0.5) * 2,
-        vx: Math.cos(ang) * sp - Math.sin(ang) * sp * 0.5,
-        vy: Math.sin(ang) * sp + Math.cos(ang) * sp * 0.5,
-        sp: sprite,
-        bs: 5 + Math.random() * 16,
-        a: 0.06 + Math.random() * 0.12,
+        x, y,
+        tx: tg.x + (Math.random() - 0.5) * 1.6, ty: tg.y + (Math.random() - 0.5) * 1.6,
+        vx: -dy * 0.018 + (Math.random() - 0.5) * 3,
+        vy: dx * 0.018 + (Math.random() - 0.5) * 3,
+        c: this.DOTS[(Math.random() * this.DOTS.length) | 0],
+        s: 1.4 + Math.random() * 1.6,
+        gd: this.clamp((tg.x - this.vMinX) / this.vSpan, 0, 1),   // left letters gather first
       });
     }
   }
@@ -336,35 +298,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const lh = fs * 1.22;
     let y = h / 2 - (lines.length * lh) / 2 + lh / 2;
     for (const ln of lines) { c.fillText(ln, w / 2, y); y += lh; }
-    const data = c.getImageData(0, 0, w, h).data;
-    const step = base < 520 ? 3 : 4;
-    const pts: { x: number; y: number }[] = [];
-    for (let yy = 0; yy < h; yy += step)
-      for (let xx = 0; xx < w; xx += step)
-        if (data[(yy * w + xx) * 4 + 3] > 140) pts.push({ x: xx, y: yy });
-    return pts;
-  }
-
-  /** Pixels of ONLY the last word of a phrase, in its real on-screen position. */
-  private sampleLastWord(text: string): { x: number; y: number }[] {
-    const { fs, lines } = this.phraseLayout(text);
-    const w = this.w, h = this.h, base = Math.min(w, h);
-    const off = document.createElement('canvas'); off.width = w; off.height = h;
-    const c = off.getContext('2d')!;
-    c.fillStyle = '#fff'; c.textBaseline = 'middle'; c.textAlign = 'left';
-    c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
-    const lh = fs * 1.22, spaceW = c.measureText(' ').width;
-    const total = lines.reduce((n, l) => n + l.split(' ').length, 0);
-    let y = h / 2 - (lines.length * lh) / 2 + lh / 2; let wi = 0;
-    for (const ln of lines) {
-      const words = ln.split(' ');
-      let x = (w - c.measureText(ln).width) / 2;
-      for (const wd of words) {
-        if (wi === total - 1) c.fillText(wd, x, y);
-        x += c.measureText(wd).width + spaceW; wi++;
-      }
-      y += lh;
-    }
     const data = c.getImageData(0, 0, w, h).data;
     const step = base < 520 ? 3 : 4;
     const pts: { x: number; y: number }[] = [];
