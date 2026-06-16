@@ -42,11 +42,11 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private readonly CLOUD: RGB[] = [[231, 171, 46], [240, 201, 102], [255, 243, 214], [70, 96, 190], [44, 62, 145]];
 
   private readonly T = {
-    p1In: 450, p1HoldEnd: 1100, p1Out: 1450,
-    bgStart: 1500, bgEnd: 3100,
-    p2Start: 1680, p2PerWord: 240, p2Fade: 320,
-    dissolve: 3150, gatherStart: 4150, gatherEnd: 4980,
-    cfStart: 4780, cfEnd: 5300, exit: 5400,
+    p1In: 450, p1HoldEnd: 1000, p1Out: 1320,
+    wipeStart: 1300, wipeEnd: 1950,
+    p2Start: 2050, p2PerWord: 240, p2Fade: 320,
+    dissolve: 3300, gatherStart: 4350, gatherEnd: 5100,
+    cfStart: 4900, cfEnd: 5400, exit: 5500,
   };
 
   ngAfterViewInit(): void {
@@ -117,29 +117,34 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const c = this.ctx;
 
     if (t < this.T.dissolve) {
-      const bgP = this.ease(this.clamp((t - this.T.bgStart) / (this.T.bgEnd - this.T.bgStart), 0, 1));
-      const bg = this.mix(this.LIGHT, this.DARK, bgP);
-      c.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
-      c.fillRect(0, 0, this.w, this.h);
-      const textCol = this.mix(this.INK_TEXT, this.LIGHT, bgP);
-      if (t < this.T.p1Out) {
+      if (t < this.T.wipeEnd) {
+        // ----- light stage + phrase 1, then a page-wipe to dark -----
+        c.fillStyle = this.rgb(this.LIGHT); c.fillRect(0, 0, this.w, this.h);
         const a = t < this.T.p1In ? t / this.T.p1In
           : t < this.T.p1HoldEnd ? 1
           : 1 - (t - this.T.p1HoldEnd) / (this.T.p1Out - this.T.p1HoldEnd);
-        this.drawPhrase(this.lines[0], this.clamp(a, 0, 1), textCol);
+        this.drawPhrase(this.lines[0], this.clamp(a, 0, 1), this.INK_TEXT);
+        if (t >= this.T.wipeStart) {
+          this.drawWipe(this.ease(this.clamp((t - this.T.wipeStart) / (this.T.wipeEnd - this.T.wipeStart), 0, 1)));
+        }
       } else {
-        this.drawPhraseWords(this.lines[1], textCol, t);
+        // ----- dark stage + phrase 2 (word-by-word, gold -> white) -----
+        c.fillStyle = this.rgb(this.DARK); c.fillRect(0, 0, this.w, this.h);
+        this.drawPhraseWords(this.lines[1], t);
       }
     } else {
       // ----- soft-glow cloud that fills the screen, then gathers into VECTIS -----
       if (!this.dissolved) { this.spawnParticles(); this.dissolved = true; }
-      c.fillStyle = 'rgba(10,10,10,0.55)';   // short trail, clears back to black (no gray haze)
+      c.fillStyle = 'rgba(10,10,10,0.62)';   // short trail, clears back to black (no gray haze)
       c.fillRect(0, 0, this.w, this.h);
 
       const gather = this.clamp((t - this.T.gatherStart) / (this.T.gatherEnd - this.T.gatherStart), 0, 1);
       const gEase = this.ease(gather);
       const flow = 1 - gather;
       const time = t * 0.001;
+      const cx = this.w / 2, cy = this.h / 2;
+      const dth = 0.045 * flow;                 // global rotation (swirl) while not gathering
+      const cosT = Math.cos(dth), sinT = Math.sin(dth);
       const cf = this.clamp((t - this.T.cfStart) / (this.T.cfEnd - this.T.cfStart), 0, 1);
       const pAlpha = 1 - cf;
 
@@ -148,12 +153,16 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
         c.globalCompositeOperation = 'lighter';
         for (const p of this.particles) {
           // turbulent flow (smoke-like, mixes the cloud)
-          p.vx += Math.sin(p.y * 0.011 + time * 1.7) * 0.5 * flow;
-          p.vy += Math.cos(p.x * 0.011 + time * 1.5) * 0.5 * flow;
-          p.vx *= 0.94; p.vy *= 0.94;
+          p.vx += Math.sin(p.y * 0.011 + time * 1.7) * 0.7 * flow;
+          p.vy += Math.cos(p.x * 0.011 + time * 1.5) * 0.7 * flow;
+          p.vx *= 0.95; p.vy *= 0.95;
           p.x += p.vx; p.y += p.vy;
-          // gather toward the word
-          p.x += (p.tx - p.x) * gEase * 0.27;
+          if (flow > 0.02) {                      // rotate the whole cloud around center
+            const dx = p.x - cx, dy = p.y - cy;
+            p.x = cx + dx * cosT - dy * sinT;
+            p.y = cy + dx * sinT + dy * cosT;
+          }
+          p.x += (p.tx - p.x) * gEase * 0.27;     // gather into VECTIS
           p.y += (p.ty - p.y) * gEase * 0.27;
           const sz = p.bs * (1 - 0.86 * gEase);
           c.globalAlpha = p.a * pAlpha;
@@ -221,9 +230,10 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     c.restore();
   }
 
-  private drawPhraseWords(text: string, col: RGB, t: number): void {
+  private drawPhraseWords(text: string, t: number): void {
     const c = this.ctx; const { fs, lines } = this.phraseLayout(text);
     const total = lines.reduce((n, l) => n + l.split(' ').length, 0);
+    const GOLDL: RGB = [240, 201, 102];
     c.save(); c.textBaseline = 'middle'; c.textAlign = 'left';
     c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
     const lh = fs * 1.22, spaceW = c.measureText(' ').width;
@@ -232,10 +242,22 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
       const words = ln.split(' ');
       let x = (this.w - c.measureText(ln).width) / 2;
       for (const wd of words) {
-        const a = this.clamp((t - (this.T.p2Start + wi * this.T.p2PerWord)) / this.T.p2Fade, 0, 1);
+        const start = this.T.p2Start + wi * this.T.p2PerWord;
+        const a = this.clamp((t - start) / this.T.p2Fade, 0, 1);
         if (a > 0) {
+          const ww = c.measureText(wd).width;
           c.globalAlpha = a;
-          c.fillStyle = wi === total - 1 ? this.rgb(this.G_GOLD) : this.rgb(col);  // emphasize last word
+          if (wi === total - 1) {
+            // emphasized word -> gold->white gradient across it (hero style)
+            const g = c.createLinearGradient(x, 0, x + ww, 0);
+            g.addColorStop(0, this.rgb(this.G_GOLD));
+            g.addColorStop(1, this.rgb(this.G_WHITE));
+            c.fillStyle = g;
+          } else {
+            // each word fades in warm gold -> white
+            const cp = this.clamp((t - start) / (this.T.p2Fade * 1.8), 0, 1);
+            c.fillStyle = this.rgb(this.mix(GOLDL, this.LIGHT, cp));
+          }
           c.fillText(wd, x, y);
         }
         x += c.measureText(wd).width + spaceW; wi++;
@@ -243,6 +265,20 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
       y += lh;
     }
     c.globalAlpha = 1; c.restore();
+  }
+
+  /** Page-wipe: a dark slanted panel sweeps in from the right with a gold leading edge. */
+  private drawWipe(wp: number): void {
+    const c = this.ctx, w = this.w, h = this.h, slant = w * 0.05;
+    const edge = w * (1 - wp);
+    c.save();
+    c.fillStyle = this.rgb(this.DARK);
+    c.beginPath();
+    c.moveTo(edge + slant, 0); c.lineTo(edge - slant, h);
+    c.lineTo(w + slant, h); c.lineTo(w + slant, 0); c.closePath(); c.fill();
+    c.strokeStyle = 'rgba(231,171,46,0.9)'; c.lineWidth = 3;
+    c.beginPath(); c.moveTo(edge + slant, 0); c.lineTo(edge - slant, h); c.stroke();
+    c.restore();
   }
 
   private spawnParticles(): void {
@@ -253,13 +289,13 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     for (const p of target) { if (p.x < this.vMinX) this.vMinX = p.x; if (p.x > this.vMaxX) this.vMaxX = p.x; }
     const cx = this.w / 2, cy = this.h / 2;
     const base = Math.min(this.w, this.h);
-    const N = base < 560 ? 950 : 1700;
+    const N = base < 560 ? 1500 : 3400;
     this.particles = [];
     for (let i = 0; i < N; i++) {
       const tg = target[(Math.random() * target.length) | 0];
       const st = src.length ? src[(Math.random() * src.length) | 0] : { x: cx, y: cy };
-      const ang = Math.atan2(st.y - cy, st.x - cx) + (Math.random() - 0.5) * 1.2;
-      const sp = 5 + Math.random() * 16;
+      const ang = Math.atan2(st.y - cy, st.x - cx) + (Math.random() - 0.5) * 1.4;
+      const sp = 9 + Math.random() * 22;
       // weight: mostly gold (0,1), some white (2), some blue (3,4)
       const r = Math.random();
       const sprite = r < 0.55 ? (Math.random() < 0.5 ? 0 : 1) : r < 0.75 ? 2 : (Math.random() < 0.5 ? 3 : 4);
