@@ -1,226 +1,198 @@
 import {
-  Component,
-  ElementRef,
-  ViewChild,
-  AfterViewInit,
-  inject,
-  PLATFORM_ID,
+  Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, inject, PLATFORM_ID,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { gsap } from 'gsap';
+import { TranslateModule } from '@ngx-translate/core';
+
+interface Particle { x: number; y: number; tx: number; ty: number; vx: number; vy: number; c: string; s: number; }
 
 @Component({
   selector: 'app-intro',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslateModule],
   templateUrl: './intro.component.html',
   styleUrl: './intro.component.scss',
 })
-export class IntroComponent implements AfterViewInit {
-  @ViewChild('introContainer', { static: true }) introContainer!: ElementRef;
+export class IntroComponent implements AfterViewInit, OnDestroy {
+  @ViewChild('introContainer', { static: true }) introContainer!: ElementRef<HTMLElement>;
+  @ViewChild('introCanvas', { static: true }) introCanvas!: ElementRef<HTMLCanvasElement>;
+  private readonly platformId = inject(PLATFORM_ID);
 
-  private platformId = inject(PLATFORM_ID);
+  private ctx!: CanvasRenderingContext2D;
+  private w = 0; private h = 0; private dpr = 1;
+  private particles: Particle[] = [];
+  private raf = 0;
+  private timers: number[] = [];
+  private running = false;
+  private started = false;
+  private readonly GOLD = ['#E7AB2E', '#B8881C', '#F0C966', '#D7A12A', '#FFE3A0'];
 
-  ngAfterViewInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      setTimeout(() => {
-        this.startBounceExperience();
-      }, 20);
-    }
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const go = () => { if (this.started) return; this.started = true; reduce ? this.runReduced() : this.run(); };
+    const fonts = (document as unknown as { fonts?: { ready: Promise<unknown> } }).fonts;
+    if (fonts && fonts.ready) { fonts.ready.then(go); window.setTimeout(go, 600); } else { go(); }
   }
 
-  startBounceExperience() {
-    const ball = document.querySelector('.glass-sphere');
-    const shadow = document.querySelector('.floor-shadow');
-    const loadingText = document.querySelector('.loading-text');
-    const vectisText = document.querySelector('.vectis-reveal');
-    const brandTitle = document.querySelector('.brand-title');
-
-    const p1 = document.querySelector('.p1');
-    const p2 = document.querySelector('.p2');
-    const p3 = document.querySelector('.p3');
-    const p4 = document.querySelector('.p4');
-
-    if (!ball || !shadow) {
-      return;
-    }
-
-    // Reset de seguridad limpio anti-caché
-    gsap.set(ball, { y: -450, opacity: 0, scale: 1, scaleX: 1, scaleY: 1, force3D: true });
-    gsap.set(shadow, { scale: 0, opacity: 0, force3D: true });
-    if (vectisText) {
-      gsap.set(vectisText, { transform: 'translate(-50%, -50%) scale(0.01)', opacity: 0 });
-    }
-    if (brandTitle) {
-      gsap.set(brandTitle, { textContent: 'BIENVENIDO', opacity: 0.8 });
-    }
-
-    // LÍNEA DE TIEMPO SECUENCIAL ORIGINAL SÍNCRONA
-    const tl = gsap.timeline({
-      onComplete: () => this.exitIntro(),
-    });
-
-    // 1. CAÍDA INICIAL (Español activo por defecto)
-    tl.to(ball, { y: 0, opacity: 1, duration: 0.55, ease: 'power2.in', force3D: true }, 0).to(
-      shadow,
-      { scale: 1, opacity: 0.8, duration: 0.55, ease: 'power2.in', force3D: true },
-      0,
-    );
-
-    // 2. REBOTE 1 (Alto)
-    tl.to(ball, {
-      scaleY: 0.6,
-      scaleX: 1.3,
-      duration: 0.07,
-      yoyo: true,
-      repeat: 1,
-      ease: 'sine.inOut',
-    })
-      // Transición controlada a Inglés durante el ascenso
-      .to(brandTitle, { opacity: 0, duration: 0.15, ease: 'power1.inOut' }, '<')
-      .set(brandTitle, { textContent: 'WELCOME' })
-      .to(brandTitle, { opacity: 0.8, duration: 0.15, ease: 'power1.inOut' })
-      .to(ball, { y: -160, duration: 0.45, ease: 'power1.out', force3D: true }, '<')
-      .to(
-        shadow,
-        { scale: 0.3, opacity: 0.2, duration: 0.45, ease: 'power1.out', force3D: true },
-        '<',
-      )
-      .to(ball, { y: 0, duration: 0.42, ease: 'power1.in', force3D: true })
-      .to(
-        shadow,
-        { scale: 1, opacity: 0.8, duration: 0.42, ease: 'power1.in', force3D: true },
-        '<',
-      );
-
-    // 3. REBOTE 2 (Medio)
-    tl.to(ball, {
-      scaleY: 0.75,
-      scaleX: 1.15,
-      duration: 0.06,
-      yoyo: true,
-      repeat: 1,
-      ease: 'sine.inOut',
-    })
-      // Transición controlada a Francés durante el segundo ascenso
-      .to(brandTitle, { opacity: 0, duration: 0.12, ease: 'power1.inOut' }, '<')
-      .set(brandTitle, { textContent: 'BIENVENUE' })
-      .to(brandTitle, { opacity: 0.8, duration: 0.12, ease: 'power1.inOut' })
-      .to(ball, { y: -70, duration: 0.35, ease: 'power1.out', force3D: true }, '<')
-      .to(
-        shadow,
-        { scale: 0.5, opacity: 0.3, duration: 0.35, ease: 'power1.out', force3D: true },
-        '<',
-      )
-      .to(ball, { y: 0, duration: 0.32, ease: 'power1.in', force3D: true })
-      .to(
-        shadow,
-        { scale: 1, opacity: 0.8, duration: 0.32, ease: 'power1.in', force3D: true },
-        '<',
-      );
-
-    // 4. REBOTE 3 (Corto Asentamiento)
-    tl.to(ball, {
-      scaleY: 0.9,
-      scaleX: 1.05,
-      duration: 0.05,
-      yoyo: true,
-      repeat: 1,
-      ease: 'sine.inOut',
-    })
-      .to(ball, { y: -20, duration: 0.22, ease: 'power1.out', force3D: true })
-      .to(
-        shadow,
-        { scale: 0.7, opacity: 0.5, duration: 0.22, ease: 'power1.out', force3D: true },
-        '<',
-      )
-      .to(ball, { y: 0, duration: 0.2, ease: 'power1.in', force3D: true })
-      .to(shadow, { scale: 1, opacity: 0.8, duration: 0.2, ease: 'power1.in', force3D: true }, '<');
-
-    // --- SECUENCIA DE EXPLOSIÓN LIMPIA ---
-    if (brandTitle && loadingText) {
-      tl.to([brandTitle, loadingText], { opacity: 0, duration: 0.15 });
-    }
-
-    tl.to({}, { duration: 0.1 });
-
-    // A) Estallido de la burbuja
-    tl.to(ball, {
-      scale: 2.5,
-      opacity: 0,
-      filter: 'contrast(200%) brightness(130%)',
-      duration: 0.14,
-      ease: 'power3.out',
-      force3D: true,
-    }).to(shadow, { scale: 0, opacity: 0, duration: 0.12, ease: 'power3.out' }, '<');
-
-    // B) Lanzamiento de partículas de cristal doradas
-    if (p1 && p2 && p3 && p4) {
-      tl.to(
-        p1,
-        { x: -140, y: -140, opacity: 1, scale: 0.4, duration: 0.18, ease: 'power4.out' },
-        '<',
-      )
-        .to(
-          p2,
-          { x: 120, y: -140, opacity: 1, scale: 0.4, duration: 0.18, ease: 'power4.out' },
-          '<',
-        )
-        .to(
-          p3,
-          { x: -100, y: 100, opacity: 1, scale: 0.4, duration: 0.18, ease: 'power4.out' },
-          '<',
-        )
-        .to(
-          p4,
-          { x: 130, y: 110, opacity: 1, scale: 0.4, duration: 0.18, ease: 'power4.out' },
-          '<',
-        );
-
-      tl.to([p1, p2, p3, p4], { opacity: 0, scale: 0, duration: 0.15, ease: 'power2.in' });
-    }
-
-    // C) "WE ARE VECTIS" explota escalándose masivamente de forma responsive
-    if (vectisText) {
-      tl.to(
-        vectisText,
-        {
-          transform: 'translate(-50%, -50%) scale(1)',
-          opacity: 1,
-          duration: 0.4,
-          ease: 'back.out(1.5)',
-          force3D: true,
-        },
-        '<',
-      );
-
-      tl.to(
-        vectisText,
-        {
-          transform: 'translate(-50%, -50%) scale(9)',
-          opacity: 0,
-          duration: 0.8,
-          ease: 'power2.in',
-          force3D: true,
-        },
-        '+=0.4',
-      );
-    }
+  ngOnDestroy(): void {
+    this.running = false;
+    cancelAnimationFrame(this.raf);
+    this.timers.forEach((t) => clearTimeout(t));
+    if (isPlatformBrowser(this.platformId)) window.removeEventListener('resize', this.onResize);
   }
 
-  exitIntro() {
-    if (isPlatformBrowser(this.platformId)) {
-      gsap.to(this.introContainer.nativeElement, {
-        opacity: 0,
-        duration: 0.6,
-        ease: 'power2.out',
-        onComplete: () => {
-          this.introContainer.nativeElement.style.display = 'none';
-          // Trigger custom reveal animation event for projects
-          const event = new CustomEvent('intro-finished');
-          window.dispatchEvent(event);
-        },
+  private lang(): 'es' | 'en' {
+    const p = window.location.pathname.toLowerCase();
+    return (p === '/en' || p.startsWith('/en/')) ? 'en' : 'es';
+  }
+
+  private run(): void {
+    const cv = this.introCanvas.nativeElement;
+    this.ctx = cv.getContext('2d')!;
+    this.resize();
+    window.addEventListener('resize', this.onResize);
+
+    const N = Math.min(2800, Math.max(1500, Math.floor(this.w * 1.7)));
+    for (let i = 0; i < N; i++) {
+      this.particles.push({
+        x: Math.random() * this.w, y: Math.random() * this.h,
+        tx: this.w / 2, ty: this.h / 2, vx: 0, vy: 0,
+        c: this.GOLD[(Math.random() * this.GOLD.length) | 0],
+        s: 1.0 + Math.random() * 1.4,
       });
     }
+
+    const lines = this.lang() === 'en'
+      ? ['Your time comes back.', 'Repetitive work, automated.', 'VECTIS']
+      : ['Tu tiempo vuelve.', 'El trabajo repetitivo, automatizado.', 'VECTIS'];
+
+    this.running = true;
+    this.loop();
+
+    this.setTargets(lines[0], false);
+    this.timers.push(window.setTimeout(() => this.setTargets(lines[1], false), 1850));
+    this.timers.push(window.setTimeout(() => this.setTargets(lines[2], true), 3750));
+    this.timers.push(window.setTimeout(() => this.exitIntro(), 5450));
+  }
+
+  /** Reduced-motion fallback: show the brand statically, then exit. */
+  private runReduced(): void {
+    const cv = this.introCanvas.nativeElement;
+    this.ctx = cv.getContext('2d')!;
+    this.resize();
+    const c = this.ctx;
+    c.fillStyle = '#0A0A0A'; c.fillRect(0, 0, this.w, this.h);
+    c.fillStyle = '#E7AB2E'; c.textAlign = 'center'; c.textBaseline = 'middle';
+    const fs = Math.min(this.h * 0.22, this.w * 0.18);
+    if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = Math.round(fs * 0.06) + 'px';
+    c.font = `800 ${fs}px 'Outfit', Arial, sans-serif`;
+    c.fillText('VECTIS', this.w / 2, this.h / 2);
+    this.timers.push(window.setTimeout(() => this.exitIntro(), 1300));
+  }
+
+  private readonly onResize = (): void => { if (this.ctx) this.resize(); };
+
+  private resize(): void {
+    const cv = this.introCanvas.nativeElement;
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.w = window.innerWidth; this.h = window.innerHeight;
+    cv.width = Math.floor(this.w * this.dpr);
+    cv.height = Math.floor(this.h * this.dpr);
+    cv.style.width = this.w + 'px'; cv.style.height = this.h + 'px';
+    this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+  }
+
+  private loop = (): void => {
+    if (!this.running) return;
+    const c = this.ctx;
+    c.fillStyle = 'rgba(10,10,10,0.34)';      // translucent clear -> soft motion trails
+    c.fillRect(0, 0, this.w, this.h);
+    for (const p of this.particles) {
+      p.vx += (p.tx - p.x) * 0.018;
+      p.vy += (p.ty - p.y) * 0.018;
+      p.vx *= 0.84; p.vy *= 0.84;
+      p.x += p.vx; p.y += p.vy;
+      c.fillStyle = p.c;
+      c.fillRect(p.x, p.y, p.s, p.s);
+    }
+    this.raf = requestAnimationFrame(this.loop);
+  };
+
+  /** Point the particle pool at the pixels of a new phrase (triggers the morph). */
+  private setTargets(text: string, brand: boolean): void {
+    const pts = this.sampleText(text, brand);
+    if (!pts.length) return;
+    for (const p of this.particles) {
+      const pt = pts[(Math.random() * pts.length) | 0];
+      p.tx = pt.x + (Math.random() - 0.5) * 1.6;
+      p.ty = pt.y + (Math.random() - 0.5) * 1.6;
+      p.vx += (Math.random() - 0.5) * 6;       // kick -> scatter then reform
+      p.vy += (Math.random() - 0.5) * 6;
+    }
+  }
+
+  /** Render text to an offscreen canvas and return its opaque pixel coordinates. */
+  private sampleText(text: string, brand: boolean): { x: number; y: number }[] {
+    const w = this.w, h = this.h, base = Math.min(w, h);
+    const off = document.createElement('canvas'); off.width = w; off.height = h;
+    const c = off.getContext('2d')!;
+    c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#fff';
+    const family = "'Outfit', Arial, sans-serif";
+    const weight = brand ? '800' : '700';
+    const maxW = w * 0.82;
+
+    let fontSize = brand ? Math.min(h * 0.24, w * 0.18) : Math.min(base * 0.085, w * 0.052);
+    fontSize = Math.max(20, fontSize);
+    let lines: string[] = [text];
+
+    if (!brand) {
+      for (let guard = 0; guard < 8; guard++) {
+        c.font = `${weight} ${fontSize}px ${family}`;
+        lines = this.wrap(c, text, maxW);
+        const widest = Math.max(...lines.map((l) => c.measureText(l).width));
+        if (lines.length <= 2 && widest <= maxW) break;
+        fontSize *= 0.9;
+      }
+    }
+    if (brand && 'letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = Math.round(fontSize * 0.06) + 'px';
+
+    c.font = `${weight} ${fontSize}px ${family}`;
+    const lh = fontSize * 1.18;
+    let y = h / 2 - (lines.length * lh) / 2 + lh / 2;
+    for (const ln of lines) { c.fillText(ln, w / 2, y); y += lh; }
+
+    const data = c.getImageData(0, 0, w, h).data;
+    const step = base < 520 ? 3 : 4;
+    const pts: { x: number; y: number }[] = [];
+    for (let yy = 0; yy < h; yy += step) {
+      for (let xx = 0; xx < w; xx += step) {
+        if (data[(yy * w + xx) * 4 + 3] > 140) pts.push({ x: xx, y: yy });
+      }
+    }
+    return pts;
+  }
+
+  private wrap(c: CanvasRenderingContext2D, text: string, maxW: number): string[] {
+    const words = text.split(' '); const lines: string[] = []; let cur = '';
+    for (const wd of words) {
+      const t = cur ? cur + ' ' + wd : wd;
+      if (c.measureText(t).width <= maxW || !cur) cur = t;
+      else { lines.push(cur); cur = wd; }
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  }
+
+  private exitIntro(): void {
+    this.running = false;
+    cancelAnimationFrame(this.raf);
+    const el = this.introContainer.nativeElement;
+    el.style.transition = 'opacity 0.6s ease';
+    el.style.opacity = '0';
+    window.setTimeout(() => {
+      el.style.display = 'none';
+      window.dispatchEvent(new CustomEvent('intro-finished'));
+    }, 620);
   }
 }
