@@ -4,7 +4,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
-interface Particle { x: number; y: number; tx: number; ty: number; vx: number; vy: number; c: string; s: number; k: number; }
+interface Particle { x: number; y: number; tx: number; ty: number; vx: number; vy: number; c: string; s: number; }
 type RGB = [number, number, number];
 
 @Component({
@@ -31,20 +31,19 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private lines: string[] = [];
   private vMinX = 0; private vMaxX = 0;
 
-  // palette
   private readonly LIGHT: RGB = [243, 241, 234];
   private readonly DARK: RGB = [10, 10, 10];
   private readonly INK_TEXT: RGB = [12, 12, 14];
-  // brand gradient stops (left -> right): deep blue -> gold -> warm white
   private readonly G_BLUE: RGB = [44, 62, 145];
   private readonly G_GOLD: RGB = [231, 171, 46];
   private readonly G_WHITE: RGB = [255, 243, 214];
 
   private readonly T = {
-    p1In: 450, p1HoldEnd: 1150, p1Out: 1500,
-    bgStart: 1500, bgEnd: 3300,
-    p2In: 1660, p2InEnd: 2080,
-    dissolve: 3300, cfStart: 4500, cfEnd: 5000, exit: 5400,
+    p1In: 450, p1HoldEnd: 1100, p1Out: 1450,
+    bgStart: 1500, bgEnd: 3100,
+    p2Start: 1680, p2PerWord: 240, p2Fade: 320,
+    dissolve: 3200, gatherStart: 4150, gatherEnd: 4950,
+    cfStart: 4760, cfEnd: 5260, exit: 5360,
   };
 
   ngAfterViewInit(): void {
@@ -81,8 +80,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private runReduced(): void {
     this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
     this.resize();
-    const c = this.ctx;
-    c.fillStyle = 'rgb(10,10,10)'; c.fillRect(0, 0, this.w, this.h);
+    this.ctx.fillStyle = 'rgb(10,10,10)'; this.ctx.fillRect(0, 0, this.w, this.h);
     this.drawBrandText(1);
     window.setTimeout(() => this.exitIntro(), 1300);
   }
@@ -104,7 +102,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const c = this.ctx;
 
     if (t < this.T.dissolve) {
-      // ----- TEXT PHASES: light -> dark background, normal typography -----
+      // ----- TEXT PHASES: light -> dark, normal typography -----
       const bgP = this.ease(this.clamp((t - this.T.bgStart) / (this.T.bgEnd - this.T.bgStart), 0, 1));
       const bg = this.mix(this.LIGHT, this.DARK, bgP);
       c.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
@@ -116,21 +114,34 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
           : 1 - (t - this.T.p1HoldEnd) / (this.T.p1Out - this.T.p1HoldEnd);
         this.drawPhrase(this.lines[0], this.clamp(a, 0, 1), textCol);
       } else {
-        this.drawPhrase(this.lines[1], this.clamp((t - this.T.p2In) / (this.T.p2InEnd - this.T.p2In), 0, 1), textCol);
+        this.drawPhraseWords(this.lines[1], textCol, t);   // word-by-word typing
       }
     } else {
-      // ----- VECTIS REVEAL: particles converge, then resolve into clean text -----
+      // ----- VECTIS: explode -> swirl (remolino) -> gather -> clean text -----
       if (!this.dissolved) { this.spawnParticles(); this.dissolved = true; }
-      c.fillStyle = 'rgba(10,10,10,0.32)';
+      c.fillStyle = 'rgba(10,10,10,0.30)';
       c.fillRect(0, 0, this.w, this.h);
+
+      const gather = this.clamp((t - this.T.gatherStart) / (this.T.gatherEnd - this.T.gatherStart), 0, 1);
+      const gEase = gather * gather;
+      const swirl = 1 - gather;
+      const cx = this.w / 2, cy = this.h / 2;
+      const dth = 0.05 * swirl;
+      const cos = Math.cos(dth), sin = Math.sin(dth);
 
       const cf = this.clamp((t - this.T.cfStart) / (this.T.cfEnd - this.T.cfStart), 0, 1);
       const pAlpha = 1 - cf;
       if (pAlpha > 0.01) {
         c.save(); c.globalAlpha = pAlpha;
         for (const p of this.particles) {
-          p.vx += (p.tx - p.x) * p.k; p.vy += (p.ty - p.y) * p.k;
-          p.vx *= 0.86; p.vy *= 0.86; p.x += p.vx; p.y += p.vy;
+          p.x += p.vx; p.y += p.vy; p.vx *= 0.965; p.vy *= 0.965;   // explosion coast
+          if (swirl > 0.02) {                                       // global swirl
+            const dx = p.x - cx, dy = p.y - cy;
+            p.x = cx + dx * cos - dy * sin;
+            p.y = cy + dx * sin + dy * cos;
+          }
+          p.x += (p.tx - p.x) * gEase * 0.2;                        // gather to word
+          p.y += (p.ty - p.y) * gEase * 0.2;
           c.fillStyle = p.c; c.fillRect(p.x, p.y, p.s, p.s);
         }
         c.restore();
@@ -146,7 +157,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     return { fs, ls: Math.round(fs * 0.06) };
   }
 
-  /** Clean "VECTIS" with a horizontal blue -> gold -> white gradient (logo-like). */
   private drawBrandText(alpha: number): void {
     const c = this.ctx, m = this.brandMetrics();
     c.save();
@@ -166,56 +176,78 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     c.restore();
   }
 
-  private drawPhrase(text: string, alpha: number, col: RGB): void {
-    if (alpha <= 0) return;
-    const c = this.ctx, w = this.w, h = this.h, base = Math.min(w, h);
-    c.save(); c.globalAlpha = alpha;
-    c.fillStyle = this.rgb(col); c.textAlign = 'center'; c.textBaseline = 'middle';
-    const family = "'Outfit', Arial, sans-serif";
-    let fs = Math.max(20, Math.min(base * 0.072, w * 0.046));
-    const maxW = w * 0.84; let lines = [text];
+  private phraseLayout(text: string): { fs: number; lines: string[] } {
+    const c = this.ctx, base = Math.min(this.w, this.h);
+    let fs = Math.max(20, Math.min(base * 0.072, this.w * 0.046));
+    const maxW = this.w * 0.84; let lines = [text];
     for (let g = 0; g < 8; g++) {
-      c.font = `500 ${fs}px ${family}`;
+      c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
       lines = this.wrap(text, maxW, c);
       const widest = Math.max(...lines.map((l) => c.measureText(l).width));
       if (lines.length <= 2 && widest <= maxW) break;
       fs *= 0.9;
     }
-    const lh = fs * 1.22;
-    let y = h / 2 - (lines.length * lh) / 2 + lh / 2;
-    for (const ln of lines) { c.fillText(ln, w / 2, y); y += lh; }
+    return { fs, lines };
+  }
+
+  private drawPhrase(text: string, alpha: number, col: RGB): void {
+    if (alpha <= 0) return;
+    const c = this.ctx; const { fs, lines } = this.phraseLayout(text);
+    c.save(); c.globalAlpha = alpha; c.fillStyle = this.rgb(col);
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
+    const lh = fs * 1.22; let y = this.h / 2 - (lines.length * lh) / 2 + lh / 2;
+    for (const ln of lines) { c.fillText(ln, this.w / 2, y); y += lh; }
     c.restore();
   }
 
+  /** Phrase 2 revealed word by word (stable centered layout). */
+  private drawPhraseWords(text: string, col: RGB, t: number): void {
+    const c = this.ctx; const { fs, lines } = this.phraseLayout(text);
+    c.save(); c.fillStyle = this.rgb(col); c.textBaseline = 'middle'; c.textAlign = 'left';
+    c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
+    const lh = fs * 1.22, spaceW = c.measureText(' ').width;
+    let y = this.h / 2 - (lines.length * lh) / 2 + lh / 2;
+    let wi = 0;
+    for (const ln of lines) {
+      const words = ln.split(' ');
+      let x = (this.w - c.measureText(ln).width) / 2;
+      for (const wd of words) {
+        const a = this.clamp((t - (this.T.p2Start + wi * this.T.p2PerWord)) / this.T.p2Fade, 0, 1);
+        if (a > 0) { c.globalAlpha = a; c.fillText(wd, x, y); }
+        x += c.measureText(wd).width + spaceW; wi++;
+      }
+      y += lh;
+    }
+    c.globalAlpha = 1; c.restore();
+  }
+
   private spawnParticles(): void {
+    const src = this.sampleText(this.lines[1], false);
     const target = this.sampleText('VECTIS', true);
     if (!target.length) return;
     this.vMinX = Infinity; this.vMaxX = -Infinity;
     for (const p of target) { if (p.x < this.vMinX) this.vMinX = p.x; if (p.x > this.vMaxX) this.vMaxX = p.x; }
     const span = Math.max(1, this.vMaxX - this.vMinX);
-    const center = (this.vMinX + this.vMaxX) / 2;
-    const N = Math.min(2800, Math.max(1500, target.length));
+    const cx = this.w / 2, cy = this.h / 2;
+    const N = Math.min(4200, Math.max(2400, target.length * 2));
     this.particles = [];
     for (let i = 0; i < N; i++) {
       const tg = target[(Math.random() * target.length) | 0];
-      // Each particle streams in from the side its letter sits on (matches the gradient).
-      const fromLeft = tg.x < center;
-      const margin = this.w * (0.06 + Math.random() * 0.55);
-      const sx = fromLeft ? -margin : this.w + margin;
-      const sy = this.h * 0.5 + (Math.random() - 0.5) * this.h * 0.72;
+      const st = src.length ? src[(Math.random() * src.length) | 0] : { x: cx, y: cy };
+      const ang = Math.atan2(st.y - cy, st.x - cx) + (Math.random() - 0.5) * 0.6;
+      const sp = 8 + Math.random() * 15;
       this.particles.push({
-        x: sx, y: sy,
+        x: st.x, y: st.y,
         tx: tg.x + (Math.random() - 0.5) * 1.4, ty: tg.y + (Math.random() - 0.5) * 1.4,
-        vx: (fromLeft ? 1 : -1) * (2 + Math.random() * 5),
-        vy: (Math.random() - 0.5) * 3,
+        vx: Math.cos(ang) * sp - Math.sin(ang) * sp * 0.55,   // radial + tangential -> spiral
+        vy: Math.sin(ang) * sp + Math.cos(ang) * sp * 0.55,
         c: this.gradientColor((tg.x - this.vMinX) / span),
         s: 1.0 + Math.random() * 1.5,
-        k: 0.014 + Math.random() * 0.013,   // varied pull -> flowing, staggered arrival
       });
     }
   }
 
-  /** Horizontal gradient color: 0 = blue (left) .. 0.5 = gold .. 1 = white (right). */
   private gradientColor(frac: number): string {
     const f = this.clamp(frac, 0, 1);
     const col = f < 0.5 ? this.mix(this.G_BLUE, this.G_GOLD, f / 0.5) : this.mix(this.G_GOLD, this.G_WHITE, (f - 0.5) / 0.5);
@@ -229,8 +261,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#fff';
     const family = "'Outfit', Arial, sans-serif";
     const maxW = w * 0.84;
-    let fs: number; const weight = brand ? '800' : '500';
-    let lines = [text];
+    let fs: number; const weight = brand ? '800' : '500'; let lines = [text];
     if (brand) {
       const m = this.brandMetrics(); fs = m.fs;
       if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = m.ls + 'px';
