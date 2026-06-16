@@ -174,6 +174,18 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       // Listen for custom intro event to trigger fly-in intro animation
       window.addEventListener("intro-finished", this.onIntroFinished);
+      this.checkScreenSize();
+      const resizeHandler = () => this.checkScreenSize();
+      window.addEventListener("resize", resizeHandler);
+      this.eventCleanup.push(() => window.removeEventListener("resize", resizeHandler));
+    }
+  }
+
+  private checkScreenSize() {
+    if (window.innerWidth < 768) {
+      if (this.viewMode() !== "list") {
+        this.viewMode.set("list");
+      }
     }
   }
 
