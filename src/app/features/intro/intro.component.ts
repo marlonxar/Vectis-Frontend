@@ -4,7 +4,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
-interface Particle { x: number; y: number; tx: number; ty: number; vx: number; vy: number; c: string; s: number; }
+interface Particle { x: number; y: number; tx: number; ty: number; vx: number; vy: number; c: string; s: number; k: number; }
 type RGB = [number, number, number];
 
 @Component({
@@ -44,7 +44,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     p1In: 450, p1HoldEnd: 1150, p1Out: 1500,
     bgStart: 1500, bgEnd: 3300,
     p2In: 1660, p2InEnd: 2080,
-    dissolve: 3380, cfStart: 4230, cfEnd: 4760, exit: 5200,
+    dissolve: 3300, cfStart: 4500, cfEnd: 5000, exit: 5400,
   };
 
   ngAfterViewInit(): void {
@@ -129,8 +129,8 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
       if (pAlpha > 0.01) {
         c.save(); c.globalAlpha = pAlpha;
         for (const p of this.particles) {
-          p.vx += (p.tx - p.x) * 0.02; p.vy += (p.ty - p.y) * 0.02;
-          p.vx *= 0.84; p.vy *= 0.84; p.x += p.vx; p.y += p.vy;
+          p.vx += (p.tx - p.x) * p.k; p.vy += (p.ty - p.y) * p.k;
+          p.vx *= 0.86; p.vy *= 0.86; p.x += p.vx; p.y += p.vy;
           c.fillStyle = p.c; c.fillRect(p.x, p.y, p.s, p.s);
         }
         c.restore();
@@ -188,23 +188,29 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   }
 
   private spawnParticles(): void {
-    const start = this.sampleText(this.lines[1], false);
     const target = this.sampleText('VECTIS', true);
     if (!target.length) return;
     this.vMinX = Infinity; this.vMaxX = -Infinity;
     for (const p of target) { if (p.x < this.vMinX) this.vMinX = p.x; if (p.x > this.vMaxX) this.vMaxX = p.x; }
     const span = Math.max(1, this.vMaxX - this.vMinX);
+    const center = (this.vMinX + this.vMaxX) / 2;
     const N = Math.min(2800, Math.max(1500, target.length));
     this.particles = [];
     for (let i = 0; i < N; i++) {
       const tg = target[(Math.random() * target.length) | 0];
-      const st = start.length ? start[(Math.random() * start.length) | 0] : { x: Math.random() * this.w, y: Math.random() * this.h };
+      // Each particle streams in from the side its letter sits on (matches the gradient).
+      const fromLeft = tg.x < center;
+      const margin = this.w * (0.06 + Math.random() * 0.55);
+      const sx = fromLeft ? -margin : this.w + margin;
+      const sy = this.h * 0.5 + (Math.random() - 0.5) * this.h * 0.72;
       this.particles.push({
-        x: st.x, y: st.y,
+        x: sx, y: sy,
         tx: tg.x + (Math.random() - 0.5) * 1.4, ty: tg.y + (Math.random() - 0.5) * 1.4,
-        vx: (Math.random() - 0.5) * 7, vy: (Math.random() - 0.5) * 7,
+        vx: (fromLeft ? 1 : -1) * (2 + Math.random() * 5),
+        vy: (Math.random() - 0.5) * 3,
         c: this.gradientColor((tg.x - this.vMinX) / span),
-        s: 1.0 + Math.random() * 1.4,
+        s: 1.0 + Math.random() * 1.5,
+        k: 0.014 + Math.random() * 0.013,   // varied pull -> flowing, staggered arrival
       });
     }
   }
