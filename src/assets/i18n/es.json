@@ -481,5 +481,10 @@
   },
   "INTRO": {
     "LOADING": "Cargando experiencia"
+  },
+  "PHILOSOPHY": {
+    "EYEBROW": "Nuestra filosofía",
+    "QUOTE": "Diagnóstico antes que prescripción.",
+    "SUB": "Primero entendemos tu problema real. Después construimos."
   }
 }
