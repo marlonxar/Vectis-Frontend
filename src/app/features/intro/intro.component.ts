@@ -34,18 +34,19 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private vMinX = 0; private vMaxX = 0;
 
   private readonly CHAR: RGB = [44, 40, 64];
-  // soft, desaturated pastels (lavender, pink, blue) — no neon
-  private readonly PAL: RGB[] = [[198, 188, 224], [232, 204, 220], [196, 210, 238], [212, 200, 230]];
+  // very soft pastels, close to white -> particles read as motion, not as dots
+  private readonly PAL: RGB[] = [[210, 202, 232], [236, 216, 228], [206, 218, 242], [222, 214, 236]];
   private readonly W_BLUE: RGB = [150, 175, 232];
   private readonly W_PURP: RGB = [176, 152, 216];
   private readonly W_PINK: RGB = [230, 178, 206];
 
+  // Typography is the hero; the particle sequence is just a brief, understated bridge.
   private readonly T = {
-    p1In: 400, p1Hold: 1050, p1Out: 1350,
-    hoyIn: 1550, hoyHold: 2150, hoyOut: 2430,
-    p2In: 2650, p2Fade: 380,
-    dissolve: 3550, convergeStart: 4500, convergeEnd: 5500,
-    cfStart: 5050, cfEnd: 5850, exit: 6000,
+    p1In: 400, p1Hold: 1100, p1Out: 1420,
+    hoyIn: 1600, hoyHold: 2200, hoyOut: 2480,
+    p2In: 2700, p2Fade: 380,
+    dissolve: 3550, convergeStart: 3950, convergeEnd: 4550,
+    cfStart: 4250, cfEnd: 4750, exit: 5050,
   };
 
   ngAfterViewInit(): void {
@@ -84,7 +85,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.resize();
     this.ctx.drawImage(this.bg, 0, 0, this.w, this.h);
     this.vMinX = this.w * 0.3; this.vMaxX = this.w * 0.7;
-    this.drawBrand('Vectis', 1, 1);
+    this.drawBrand('Vectis', 1);
     window.setTimeout(() => this.exitIntro(), 1300);
   }
 
@@ -151,20 +152,20 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
 
       c.save();
       for (const p of this.particles) {
-        // procedural turbulence (invisible force fields) + gentle global drift
-        const fx = Math.sin(p.y * 0.009 + time * 0.8) + 0.6 * Math.sin(p.y * 0.021 - time * 1.4) + 0.4 * Math.sin(p.x * 0.015 + time);
-        const fy = Math.cos(p.x * 0.009 + time * 1.0) + 0.6 * Math.cos(p.x * 0.019 + time * 0.7) + 0.4 * Math.cos(p.y * 0.013 - time * 1.2);
-        p.vx += (fx * 0.18 + 0.05) * flowS;
-        p.vy += (fy * 0.18) * flowS;
-        p.vx *= 0.93; p.vy *= 0.93;
+        // contained procedural drift (invisible force field); calm, not a spectacle
+        const fx = Math.sin(p.y * 0.010 + time * 0.8) + 0.5 * Math.sin(p.x * 0.016 + time);
+        const fy = Math.cos(p.x * 0.010 + time * 1.0) + 0.5 * Math.cos(p.y * 0.014 - time * 1.1);
+        p.vx += (fx * 0.10 + 0.03) * flowS;
+        p.vy += (fy * 0.10) * flowS;
+        p.vx *= 0.9; p.vy *= 0.9;
         p.x += p.vx; p.y += p.vy;
-        p.x += (p.fx - p.x) * gp * 0.2;       // gather into the logo
-        p.y += (p.fy - p.y) * gp * 0.2;
+        p.x += (p.fx - p.x) * gp * 0.16;       // quietly settle into place
+        p.y += (p.fy - p.y) * gp * 0.16;
         const a = p.a * (1 - reveal);
         if (a > 0.01) { c.globalAlpha = a; c.drawImage(this.sprites[p.sp], p.x - p.s, p.y - p.s, p.s * 2, p.s * 2); }
       }
       c.restore();
-      if (reveal > 0) this.drawBrand('Vectis', reveal, reveal);   // emerge: blur -> sharp
+      if (reveal > 0) this.drawBrand('Vectis', reveal);   // emerges already crisp (no blur)
       if (t >= this.T.exit && !this.exited) { this.exited = true; this.exitIntro(); }
     }
     this.raf = requestAnimationFrame(this.loop);
@@ -181,8 +182,8 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     return { fs, ls: Math.round(fs * 0.02) };
   }
 
-  /** sharpen: 0 = very blurred, 1 = crisp (logo emerges from the cloud). */
-  private drawBrand(text: string, alpha: number, sharpen: number): void {
+  /** Crisp logo (no blur, no scale, no glow) — it should feel discovered, not performed. */
+  private drawBrand(text: string, alpha: number): void {
     const c = this.ctx, m = this.brandMetrics();
     c.save(); c.globalAlpha = alpha; c.textAlign = 'center'; c.textBaseline = 'middle';
     if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = m.ls + 'px';
@@ -190,11 +191,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const half = c.measureText(text).width / 2;
     const g = c.createLinearGradient(this.w / 2 - half, 0, this.w / 2 + half, 0);
     g.addColorStop(0, this.rgb(this.W_BLUE)); g.addColorStop(0.5, this.rgb(this.W_PURP)); g.addColorStop(1, this.rgb(this.W_PINK));
-    const blur = (1 - sharpen) * 16;
-    try { c.filter = `blur(${blur}px)`; } catch { /* unsupported */ }
-    c.shadowColor = 'rgba(176,152,216,0.3)'; c.shadowBlur = 22 * sharpen;
     c.fillStyle = g; c.fillText(text, this.w / 2, this.h / 2);
-    try { c.filter = 'none'; } catch { /* noop */ }
     if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = '0px';
     c.restore();
   }
@@ -248,19 +245,19 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.vMinX = Infinity; this.vMaxX = -Infinity;
     for (const p of target) { if (p.x < this.vMinX) this.vMinX = p.x; if (p.x > this.vMaxX) this.vMaxX = p.x; }
     const base = Math.min(this.w, this.h);
-    const N = base < 560 ? 3200 : 6500;
+    const N = base < 560 ? 2000 : 3600;       // fewer particles — less is more
     this.particles = [];
     for (let i = 0; i < N; i++) {
       const tg = target[(Math.random() * target.length) | 0];
       const st = src.length ? src[(Math.random() * src.length) | 0] : { x: this.w / 2, y: this.h / 2 };
-      const ang = Math.random() * Math.PI * 2, sp = 6 + Math.random() * 14;  // born with velocity (instant break)
+      const ang = Math.random() * Math.PI * 2, sp = 4 + Math.random() * 8;  // contained burst
       this.particles.push({
         x: st.x, y: st.y,
         vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
         fx: tg.x + (Math.random() - 0.5) * 1.6, fy: tg.y + (Math.random() - 0.5) * 1.6,
         sp: (Math.random() * this.sprites.length) | 0,
-        s: 0.7 + Math.random() * 1.1,         // micro dust (~70% smaller)
-        a: 0.3 + Math.random() * 0.35,
+        s: 0.6 + Math.random() * 1.0,         // micro dust
+        a: 0.18 + Math.random() * 0.22,       // low opacity — motion first, particles second
       });
     }
   }
