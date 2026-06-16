@@ -24,13 +24,14 @@
     "EYEBROW": "AUTOMATION GROUP",
     "TITLE_1": "We build the software",
     "TITLE_2": "that moves your business.",
-    "SUBTITLE": "Custom development, intelligent automation and artificial intelligence. From San José, Costa Rica, for clients all over the world.",
+    "SUBTITLE": "We automate the repetitive work that steals your hours and money. Custom software, automation and AI — from San José, Costa Rica, for clients all over the world.",
     "CTA_PRIMARY": "Book a call",
     "CTA_SECONDARY": "View capabilities",
     "TRUST_1": "Projects",
     "TRUST_2": "Satisfaction",
     "TRUST_3": "Average ROI",
-    "SCROLL": "SCROLL"
+    "SCROLL": "SCROLL",
+    "TAGLINE": "Diagnosis before prescription."
   },
   "SERVICES": {
     "EYEBROW": "CAPABILITIES",
@@ -65,9 +66,11 @@
   },
   "STATS": {
     "PROJECTS": "Time you recover each week",
-    "SATISFACTION": "Client satisfaction",
-    "ROI": "Average ROI generated",
-    "SUPPORT": "Continuous support"
+    "SATISFACTION": "Refund if we don't save you 15+ hrs/week",
+    "ROI": "From first meeting to a live system",
+    "SUPPORT": "Continuous support",
+    "GUARANTEE_VAL": "Guarantee",
+    "WEEKS_VAL": "2 wks"
   },
   "PORTFOLIO": {
     "EYEBROW": "PORTFOLIO & CLIENTS",
@@ -249,9 +252,13 @@
     "TEAM_EYEBROW": "behind the project",
     "TEAM_TITLE": "The people who build it",
     "TEAM_SUBTITLE": "A small, senior team obsessed with detail.",
-    "ROLE_ENG": "Software Engineer",
+    "ROLE_ENG": "Co-founder & Software Engineer",
     "ROLE_OPS": "Sales operations & logistics",
-    "ROLE_CEO": "CEO & Head of Growth"
+    "ROLE_CEO": "CEO & Head of Growth",
+    "CUSTOM_VAL": "Custom",
+    "STAT_CUSTOM": "Every system built for one specific client",
+    "SENIOR_VAL": "Senior",
+    "STAT_SENIOR": "Engineers behind every project"
   },
   "CONTACT": {
     "EYEBROW": "CONTACT",
@@ -319,7 +326,7 @@
     "EMAIL_ERROR": "Enter a valid email.",
     "SUBSCRIBE": "Subscribe",
     "SUBSCRIBED": "Thanks for subscribing!",
-    "COPYRIGHT": "Vectis Automation Group, Inc. All rights reserved.",
+    "COPYRIGHT": "Vectis Automation Group. All rights reserved.",
     "PRIVACY": "Privacy Policy",
     "NAV_TITLE": "Navigation",
     "TERMS": "Terms & Conditions",
@@ -333,7 +340,7 @@
     "SHOW_LESS": "Show less",
     "Q1": {
       "Q": "What services does Vectis offer?",
-      "A": "We build custom software, websites and web apps, mobile apps, automations and artificial intelligence, plus integrations, APIs and data & analytics solutions."
+      "A": "We build custom software, websites and web apps, mobile apps, automations and artificial intelligence, plus integrations, APIs and data & analytics solutions. With particular strength in automating repetitive administrative processes."
     },
     "Q2": {
       "Q": "Which technologies do you specialize in?",

@@ -52,3 +52,5 @@
   .scroll-hint { bottom: 16px; }
 }
 @media (max-height: 700px) and (min-width: 601px) { .hero-title { font-size: clamp(32px, 5vw, 56px); } .hero-sub { margin-top: var(--space-3); } }
+
+.hero-tagline { margin-top: var(--space-3); font-family: var(--font-mono); font-size: 14px; letter-spacing: 0.04em; color: var(--gold-bright); font-style: italic; }
