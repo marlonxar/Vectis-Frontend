@@ -79,7 +79,7 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
       titleKey: "PORTFOLIO.SERVICES.AI_AGENTS.TITLE",
       categoryKey: "PORTFOLIO.CATEGORIES.AUTOMATION",
       year: "2026",
-      videoUrl: "assets/videos/ai-agents.mp4",
+      videoUrl: "assets/videos/n8n_workflow_run_4K.mp4",
       descriptionKey: "PORTFOLIO.SERVICES.AI_AGENTS.DESCRIPTION",
       color: "#6366F1",
     },
