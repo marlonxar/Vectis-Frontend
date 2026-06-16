@@ -4,7 +4,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
-interface Particle { x: number; y: number; tx: number; ty: number; vx: number; vy: number; c: string; s: number; }
+interface Particle { x: number; y: number; tx: number; ty: number; vx: number; vy: number; sp: number; bs: number; a: number; }
 type RGB = [number, number, number];
 
 @Component({
@@ -22,6 +22,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private ctx!: CanvasRenderingContext2D;
   private w = 0; private h = 0; private dpr = 1;
   private particles: Particle[] = [];
+  private sprites: HTMLCanvasElement[] = [];
   private raf = 0;
   private startTime = 0;
   private dissolved = false;
@@ -37,13 +38,15 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private readonly G_BLUE: RGB = [44, 62, 145];
   private readonly G_GOLD: RGB = [231, 171, 46];
   private readonly G_WHITE: RGB = [255, 243, 214];
+  // soft-glow particle colors (mixed cloud): mostly gold, some white & blue
+  private readonly CLOUD: RGB[] = [[231, 171, 46], [240, 201, 102], [255, 243, 214], [70, 96, 190], [44, 62, 145]];
 
   private readonly T = {
     p1In: 450, p1HoldEnd: 1100, p1Out: 1450,
     bgStart: 1500, bgEnd: 3100,
     p2Start: 1680, p2PerWord: 240, p2Fade: 320,
-    dissolve: 3200, gatherStart: 4150, gatherEnd: 4950,
-    cfStart: 4760, cfEnd: 5260, exit: 5360,
+    dissolve: 3150, gatherStart: 4150, gatherEnd: 4980,
+    cfStart: 4780, cfEnd: 5300, exit: 5400,
   };
 
   ngAfterViewInit(): void {
@@ -68,6 +71,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private run(): void {
     this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
     this.resize();
+    this.sprites = this.CLOUD.map((c) => this.makeSprite(c));
     window.addEventListener('resize', this.onResize);
     this.lines = this.lang() === 'en'
       ? ['Your time comes back.', 'Repetitive work, automated.', 'VECTIS']
@@ -83,6 +87,17 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.ctx.fillStyle = 'rgb(10,10,10)'; this.ctx.fillRect(0, 0, this.w, this.h);
     this.drawBrandText(1);
     window.setTimeout(() => this.exitIntro(), 1300);
+  }
+
+  private makeSprite(color: RGB): HTMLCanvasElement {
+    const s = 64; const cv = document.createElement('canvas'); cv.width = s; cv.height = s;
+    const x = cv.getContext('2d')!;
+    const g = x.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+    g.addColorStop(0, `rgba(${color[0]},${color[1]},${color[2]},0.95)`);
+    g.addColorStop(0.35, `rgba(${color[0]},${color[1]},${color[2]},0.4)`);
+    g.addColorStop(1, `rgba(${color[0]},${color[1]},${color[2]},0)`);
+    x.fillStyle = g; x.fillRect(0, 0, s, s);
+    return cv;
   }
 
   private readonly onResize = (): void => { if (this.ctx) this.resize(); };
@@ -102,7 +117,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const c = this.ctx;
 
     if (t < this.T.dissolve) {
-      // ----- TEXT PHASES: light -> dark, normal typography -----
       const bgP = this.ease(this.clamp((t - this.T.bgStart) / (this.T.bgEnd - this.T.bgStart), 0, 1));
       const bg = this.mix(this.LIGHT, this.DARK, bgP);
       c.fillStyle = `rgb(${bg[0]},${bg[1]},${bg[2]})`;
@@ -114,35 +128,36 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
           : 1 - (t - this.T.p1HoldEnd) / (this.T.p1Out - this.T.p1HoldEnd);
         this.drawPhrase(this.lines[0], this.clamp(a, 0, 1), textCol);
       } else {
-        this.drawPhraseWords(this.lines[1], textCol, t);   // word-by-word typing
+        this.drawPhraseWords(this.lines[1], textCol, t);
       }
     } else {
-      // ----- VECTIS: explode -> swirl (remolino) -> gather -> clean text -----
+      // ----- soft-glow cloud that fills the screen, then gathers into VECTIS -----
       if (!this.dissolved) { this.spawnParticles(); this.dissolved = true; }
-      c.fillStyle = 'rgba(10,10,10,0.30)';
+      c.fillStyle = 'rgba(10,10,10,0.16)';   // low clear -> smoky motion trails
       c.fillRect(0, 0, this.w, this.h);
 
       const gather = this.clamp((t - this.T.gatherStart) / (this.T.gatherEnd - this.T.gatherStart), 0, 1);
-      const gEase = gather * gather;
-      const swirl = 1 - gather;
-      const cx = this.w / 2, cy = this.h / 2;
-      const dth = 0.05 * swirl;
-      const cos = Math.cos(dth), sin = Math.sin(dth);
-
+      const gEase = this.ease(gather);
+      const flow = 1 - gather;
+      const time = t * 0.001;
       const cf = this.clamp((t - this.T.cfStart) / (this.T.cfEnd - this.T.cfStart), 0, 1);
       const pAlpha = 1 - cf;
+
       if (pAlpha > 0.01) {
-        c.save(); c.globalAlpha = pAlpha;
+        c.save();
+        c.globalCompositeOperation = 'lighter';
         for (const p of this.particles) {
-          p.x += p.vx; p.y += p.vy; p.vx *= 0.965; p.vy *= 0.965;   // explosion coast
-          if (swirl > 0.02) {                                       // global swirl
-            const dx = p.x - cx, dy = p.y - cy;
-            p.x = cx + dx * cos - dy * sin;
-            p.y = cy + dx * sin + dy * cos;
-          }
-          p.x += (p.tx - p.x) * gEase * 0.2;                        // gather to word
+          // turbulent flow (smoke-like, mixes the cloud)
+          p.vx += Math.sin(p.y * 0.011 + time * 1.7) * 0.5 * flow;
+          p.vy += Math.cos(p.x * 0.011 + time * 1.5) * 0.5 * flow;
+          p.vx *= 0.94; p.vy *= 0.94;
+          p.x += p.vx; p.y += p.vy;
+          // gather toward the word
+          p.x += (p.tx - p.x) * gEase * 0.2;
           p.y += (p.ty - p.y) * gEase * 0.2;
-          c.fillStyle = p.c; c.fillRect(p.x, p.y, p.s, p.s);
+          const sz = p.bs * (1 - 0.74 * gEase);
+          c.globalAlpha = p.a * pAlpha;
+          c.drawImage(this.sprites[p.sp], p.x - sz, p.y - sz, sz * 2, sz * 2);
         }
         c.restore();
       }
@@ -201,14 +216,12 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     c.restore();
   }
 
-  /** Phrase 2 revealed word by word (stable centered layout). */
   private drawPhraseWords(text: string, col: RGB, t: number): void {
     const c = this.ctx; const { fs, lines } = this.phraseLayout(text);
     c.save(); c.fillStyle = this.rgb(col); c.textBaseline = 'middle'; c.textAlign = 'left';
     c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
     const lh = fs * 1.22, spaceW = c.measureText(' ').width;
-    let y = this.h / 2 - (lines.length * lh) / 2 + lh / 2;
-    let wi = 0;
+    let y = this.h / 2 - (lines.length * lh) / 2 + lh / 2; let wi = 0;
     for (const ln of lines) {
       const words = ln.split(' ');
       let x = (this.w - c.measureText(ln).width) / 2;
@@ -228,30 +241,28 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     if (!target.length) return;
     this.vMinX = Infinity; this.vMaxX = -Infinity;
     for (const p of target) { if (p.x < this.vMinX) this.vMinX = p.x; if (p.x > this.vMaxX) this.vMaxX = p.x; }
-    const span = Math.max(1, this.vMaxX - this.vMinX);
     const cx = this.w / 2, cy = this.h / 2;
-    const N = Math.min(4200, Math.max(2400, target.length * 2));
+    const base = Math.min(this.w, this.h);
+    const N = base < 560 ? 950 : 1700;
     this.particles = [];
     for (let i = 0; i < N; i++) {
       const tg = target[(Math.random() * target.length) | 0];
       const st = src.length ? src[(Math.random() * src.length) | 0] : { x: cx, y: cy };
-      const ang = Math.atan2(st.y - cy, st.x - cx) + (Math.random() - 0.5) * 0.6;
-      const sp = 8 + Math.random() * 15;
+      const ang = Math.atan2(st.y - cy, st.x - cx) + (Math.random() - 0.5) * 1.2;
+      const sp = 5 + Math.random() * 16;
+      // weight: mostly gold (0,1), some white (2), some blue (3,4)
+      const r = Math.random();
+      const sprite = r < 0.55 ? (Math.random() < 0.5 ? 0 : 1) : r < 0.75 ? 2 : (Math.random() < 0.5 ? 3 : 4);
       this.particles.push({
         x: st.x, y: st.y,
-        tx: tg.x + (Math.random() - 0.5) * 1.4, ty: tg.y + (Math.random() - 0.5) * 1.4,
-        vx: Math.cos(ang) * sp - Math.sin(ang) * sp * 0.55,   // radial + tangential -> spiral
-        vy: Math.sin(ang) * sp + Math.cos(ang) * sp * 0.55,
-        c: this.gradientColor((tg.x - this.vMinX) / span),
-        s: 1.0 + Math.random() * 1.5,
+        tx: tg.x + (Math.random() - 0.5) * 2, ty: tg.y + (Math.random() - 0.5) * 2,
+        vx: Math.cos(ang) * sp - Math.sin(ang) * sp * 0.5,
+        vy: Math.sin(ang) * sp + Math.cos(ang) * sp * 0.5,
+        sp: sprite,
+        bs: 5 + Math.random() * 16,
+        a: 0.06 + Math.random() * 0.12,
       });
     }
-  }
-
-  private gradientColor(frac: number): string {
-    const f = this.clamp(frac, 0, 1);
-    const col = f < 0.5 ? this.mix(this.G_BLUE, this.G_GOLD, f / 0.5) : this.mix(this.G_GOLD, this.G_WHITE, (f - 0.5) / 0.5);
-    return this.rgb(col);
   }
 
   private sampleText(text: string, brand: boolean): { x: number; y: number }[] {
