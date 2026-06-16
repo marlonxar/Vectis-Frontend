@@ -103,7 +103,7 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
       titleKey: "PORTFOLIO.SERVICES.CRM_SYNC.TITLE",
       categoryKey: "PORTFOLIO.CATEGORIES.AUTOMATION",
       year: "2026",
-      videoUrl: "assets/videos/video.mp4",
+      videoUrl: "assets/videos/integration_bridge_sync_4K.mp4",
       descriptionKey: "PORTFOLIO.SERVICES.CRM_SYNC.DESCRIPTION",
       color: "#F59E0B",
     },
