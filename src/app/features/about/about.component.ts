@@ -23,7 +23,7 @@ export class AboutComponent {
   ];
   readonly team: Member[] = [
     { name: 'Sergio Arce',       roleKey: 'CEO', photo: 'assets/images/sergio-arce.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
-    { name: 'Marlon Álvarez',    roleKey: 'ENG', photo: 'https://i.pravatar.cc/400?img=12', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
+    { name: 'Marlon Álvarez',    roleKey: 'ENG', photo: 'assets/images/marlon-alvarez.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
     { name: 'Guillermo Ramírez', roleKey: 'ENG', photo: 'assets/images/guillermo-ramirez.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
   ];
 }
