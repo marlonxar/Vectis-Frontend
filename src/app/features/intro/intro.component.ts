@@ -71,6 +71,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     try { seen = sessionStorage.getItem('vectisIntroSeen') === '1'; } catch { /* noop */ }
     if (seen) { this.finishImmediately(); return; }
     try { sessionStorage.setItem('vectisIntroSeen', '1'); } catch { /* noop */ }
+    this.lockScroll();   // no scrolling while the intro is on screen → hero is seen first
     this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const go = () => { if (this.started) return; this.started = true; this.reduced ? this.runReduced() : this.run(); };
     // Make sure the exact Outfit weights are decoded before frame 1 (correct wordmark).
@@ -88,6 +89,31 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.focusMain();
   }
 
+  private prevHtmlOverflow = '';
+  private prevBodyOverflow = '';
+  private scrollLocked = false;
+
+  private lockScroll(): void {
+    try {
+      const d = document.documentElement, b = document.body;
+      this.prevHtmlOverflow = d.style.overflow; this.prevBodyOverflow = b.style.overflow;
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      window.scrollTo(0, 0);
+      d.style.overflow = 'hidden'; b.style.overflow = 'hidden';
+      this.scrollLocked = true;
+    } catch { /* noop */ }
+  }
+
+  private unlockScroll(): void {
+    if (!this.scrollLocked) return;
+    try {
+      window.scrollTo(0, 0);   // start at the top → hero is the first thing seen
+      document.documentElement.style.overflow = this.prevHtmlOverflow;
+      document.body.style.overflow = this.prevBodyOverflow;
+      this.scrollLocked = false;
+    } catch { /* noop */ }
+  }
+
   /** Move keyboard/SR focus into the page once the intro is gone. */
   private focusMain(): void {
     try {
@@ -103,6 +129,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       window.removeEventListener('resize', this.onResize);
       window.removeEventListener('keydown', this.onKey);
+      this.unlockScroll();
     }
   }
 
@@ -531,6 +558,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     }
     window.setTimeout(() => {
       el.style.display = 'none';
+      this.unlockScroll();
       window.dispatchEvent(new CustomEvent('intro-finished'));
       this.focusMain();
     }, 720);
