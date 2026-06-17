@@ -4,8 +4,11 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
-interface Particle { x: number; y: number; vx: number; vy: number; fx: number; fy: number; sp: number; s: number; a: number; }
 type RGB = [number, number, number];
+interface Blob {
+  col: RGB; x0: number; y0: number; r: number; amp: number;
+  sa: number; sb: number; pa: number; pb: number; alpha: number;
+}
 
 @Component({
   selector: 'app-intro',
@@ -20,33 +23,35 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
 
   private ctx!: CanvasRenderingContext2D;
-  private bg!: HTMLCanvasElement;
-  private sprites: HTMLCanvasElement[] = [];
+  private sc!: HTMLCanvasElement;       // small offscreen for the fluid field
+  private sctx!: CanvasRenderingContext2D;
+  private sw = 0; private sh = 0;
   private w = 0; private h = 0; private dpr = 1;
-  private particles: Particle[] = [];
+  private blobs: Blob[] = [];
   private raf = 0;
   private startTime = 0;
-  private dissolved = false;
   private running = false;
   private started = false;
   private exited = false;
   private lines: string[] = [];
-  private vMinX = 0; private vMaxX = 0;
 
-  private readonly CHAR: RGB = [44, 40, 64];
-  // very soft pastels, close to white -> particles read as motion, not as dots
-  private readonly PAL: RGB[] = [[210, 202, 232], [236, 216, 228], [206, 218, 242], [222, 214, 236]];
-  private readonly W_BLUE: RGB = [150, 175, 232];
-  private readonly W_PURP: RGB = [176, 152, 216];
-  private readonly W_PINK: RGB = [230, 178, 206];
+  private readonly BASE: RGB = [11, 0, 20];   // deep near-black violet
+  // electric violet, deep purple, hot pink, soft orange, warm yellow
+  private readonly PALETTE: RGB[] = [
+    [138, 61, 255], [58, 12, 163], [255, 45, 155], [255, 79, 176],
+    [255, 122, 69], [255, 209, 102], [120, 40, 230], [255, 90, 150],
+  ];
+  private readonly ACCENT_A: RGB = [255, 122, 69];   // orange
+  private readonly ACCENT_B: RGB = [255, 209, 102];  // yellow
+  private readonly VIOLET: RGB = [150, 90, 255];
+  private readonly PINK: RGB = [255, 90, 170];
 
-  // Typography is the hero; the particle sequence is just a brief, understated bridge.
   private readonly T = {
-    p1In: 400, p1Hold: 1100, p1Out: 1420,
-    hoyIn: 1600, hoyHold: 2200, hoyOut: 2480,
-    p2In: 2700, p2Fade: 380,
-    dissolve: 3550, convergeStart: 3950, convergeEnd: 4550,
-    cfStart: 4250, cfEnd: 4750, exit: 5050,
+    bgIn: 600,
+    p1In: 700, p1Hold: 1700, p1Out: 2050,
+    hoyIn: 2200, hoyHold: 2900, hoyOut: 3200,
+    p2In: 3400, p2Hold: 4500, p2Out: 4850,
+    brandIn: 5050, hold: 6100, exit: 6200,
   };
 
   ngAfterViewInit(): void {
@@ -72,6 +77,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
     this.resize();
     window.addEventListener('resize', this.onResize);
+    this.makeBlobs();
     this.lines = this.lang() === 'en'
       ? ['Your time comes back.', 'Today', 'Repetitive work, automated.', 'Vectis']
       : ['Tu tiempo vuelve.', 'Hoy', 'El trabajo repetitivo automatizado.', 'Vectis'];
@@ -82,14 +88,13 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
 
   private runReduced(): void {
     this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
-    this.resize();
-    this.ctx.drawImage(this.bg, 0, 0, this.w, this.h);
-    this.vMinX = this.w * 0.3; this.vMaxX = this.w * 0.7;
-    this.drawBrand('Vectis', 1);
-    window.setTimeout(() => this.exitIntro(), 1300);
+    this.resize(); this.makeBlobs();
+    this.renderField(0);
+    this.drawCentered('Vectis', 1, 'brand');
+    window.setTimeout(() => this.exitIntro(), 1400);
   }
 
-  private readonly onResize = (): void => { if (this.ctx) this.resize(); };
+  private readonly onResize = (): void => { if (this.ctx) { this.resize(); } };
 
   private resize(): void {
     const cv = this.introCanvas.nativeElement;
@@ -98,126 +103,112 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     cv.width = Math.floor(this.w * this.dpr); cv.height = Math.floor(this.h * this.dpr);
     cv.style.width = this.w + 'px'; cv.style.height = this.h + 'px';
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    this.bg = this.buildBg();
-    if (!this.sprites.length) this.sprites = this.PAL.map((c) => this.makeSprite(c));
+    // tiny offscreen: upscaling it produces ultra-soft, edgeless fluid fields
+    this.sw = Math.max(40, Math.round(this.w * 0.14));
+    this.sh = Math.max(40, Math.round(this.h * 0.14));
+    if (!this.sc) { this.sc = document.createElement('canvas'); this.sctx = this.sc.getContext('2d')!; }
+    this.sc.width = this.sw; this.sc.height = this.sh;
   }
 
-  private buildBg(): HTMLCanvasElement {
-    const cv = document.createElement('canvas'); cv.width = this.w; cv.height = this.h;
-    const c = cv.getContext('2d')!;
-    c.fillStyle = '#ffffff'; c.fillRect(0, 0, this.w, this.h);
-    const r = Math.max(this.w, this.h);
-    const g1 = c.createRadialGradient(this.w * 0.26, this.h * 0.2, 0, this.w * 0.26, this.h * 0.2, r * 0.85);
-    g1.addColorStop(0, 'rgba(170,155,220,0.07)'); g1.addColorStop(1, 'rgba(170,155,220,0)');
-    c.fillStyle = g1; c.fillRect(0, 0, this.w, this.h);
-    const g2 = c.createRadialGradient(this.w * 0.8, this.h * 0.85, 0, this.w * 0.8, this.h * 0.85, r * 0.8);
-    g2.addColorStop(0, 'rgba(232,170,200,0.06)'); g2.addColorStop(1, 'rgba(232,170,200,0)');
-    c.fillStyle = g2; c.fillRect(0, 0, this.w, this.h);
-    return cv;
+  private makeBlobs(): void {
+    const rnd = (a: number, b: number) => a + Math.random() * (b - a);
+    this.blobs = this.PALETTE.map((col, i) => ({
+      col,
+      x0: rnd(0.1, 0.9), y0: rnd(0.1, 0.9),
+      r: rnd(0.45, 0.8),
+      amp: rnd(0.12, 0.26),
+      sa: rnd(0.05, 0.13) * (i % 2 ? 1 : -1),   // slow, mixed directions
+      sb: rnd(0.03, 0.09) * (i % 3 ? -1 : 1),
+      pa: rnd(0, Math.PI * 2), pb: rnd(0, Math.PI * 2),
+      alpha: i < 4 ? 0.55 : 0.8,                 // back layer dimmer, front brighter
+    }));
   }
 
-  private makeSprite(color: RGB): HTMLCanvasElement {
-    const s = 40; const cv = document.createElement('canvas'); cv.width = s; cv.height = s;
-    const x = cv.getContext('2d')!;
-    const g = x.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
-    g.addColorStop(0, `rgba(${color[0]},${color[1]},${color[2]},0.9)`);
-    g.addColorStop(0.5, `rgba(${color[0]},${color[1]},${color[2]},0.4)`);
-    g.addColorStop(1, `rgba(${color[0]},${color[1]},${color[2]},0)`);
-    x.fillStyle = g; x.fillRect(0, 0, s, s);
-    return cv;
+  /** Draw the fluid gradient field (tiny canvas, additive, then upscaled = soft liquid). */
+  private renderField(time: number): void {
+    const s = this.sctx, sw = this.sw, sh = this.sh;
+    s.globalCompositeOperation = 'source-over';
+    s.fillStyle = `rgb(${this.BASE[0]},${this.BASE[1]},${this.BASE[2]})`;
+    s.fillRect(0, 0, sw, sh);
+    s.globalCompositeOperation = 'lighter';
+    for (const b of this.blobs) {
+      // organic, non-repeating drift (two incommensurate sines per axis)
+      const px = (b.x0 + b.amp * Math.sin(time * b.sa + b.pa) + b.amp * 0.6 * Math.sin(time * b.sb * 1.7 + b.pb)) * sw;
+      const py = (b.y0 + b.amp * Math.cos(time * b.sb + b.pb) + b.amp * 0.6 * Math.cos(time * b.sa * 1.3 + b.pa)) * sh;
+      const rad = b.r * sw;
+      const g = s.createRadialGradient(px, py, 0, px, py, rad);
+      g.addColorStop(0, `rgba(${b.col[0]},${b.col[1]},${b.col[2]},${b.alpha})`);
+      g.addColorStop(1, `rgba(${b.col[0]},${b.col[1]},${b.col[2]},0)`);
+      s.fillStyle = g; s.fillRect(0, 0, sw, sh);
+    }
+    s.globalCompositeOperation = 'source-over';
+    this.ctx.imageSmoothingEnabled = true;
+    this.ctx.imageSmoothingQuality = 'high';
+    this.ctx.drawImage(this.sc, 0, 0, this.w, this.h);
   }
 
   private loop = (): void => {
     if (!this.running) return;
     const t = performance.now() - this.startTime;
-    const c = this.ctx;
-    c.drawImage(this.bg, 0, 0, this.w, this.h);
+    const time = t * 0.001;
 
-    if (t < this.T.dissolve) {
-      // ----- phrases: stable & perfectly readable until the last moment -----
-      if (t < this.T.p1Out) {
-        this.drawCentered(this.lines[0], this.ramp(t, this.T.p1In, this.T.p1Hold, this.T.p1Out), false);
-      } else if (t < this.T.hoyOut) {
-        this.drawCentered(this.lines[1], this.ramp(t, this.T.hoyIn, this.T.hoyHold, this.T.hoyOut), true);
-      } else if (t >= this.T.p2In) {
-        this.drawPhrase2(this.ease(this.clamp((t - this.T.p2In) / this.T.p2Fade, 0, 1)));
-      }
-    } else {
-      // ----- instant shatter -> turbulent particle field -> logo emerges -----
-      if (!this.dissolved) { this.spawnParticles(); this.dissolved = true; }
-      const time = t * 0.001;
-      const gp = this.ease(this.clamp((t - this.T.convergeStart) / (this.T.convergeEnd - this.T.convergeStart), 0, 1));
-      const flowS = 1 - gp;
-      const reveal = this.ease(this.clamp((t - this.T.cfStart) / (this.T.cfEnd - this.T.cfStart), 0, 1));
+    this.renderField(time);
+    // bg eases in from black; living motion continues under all the text
+    const bgA = this.ease(this.clamp(t / this.T.bgIn, 0, 1));
+    if (bgA < 1) { this.ctx.save(); this.ctx.globalAlpha = 1 - bgA; this.ctx.fillStyle = 'rgb(11,0,20)'; this.ctx.fillRect(0, 0, this.w, this.h); this.ctx.restore(); }
 
-      c.save();
-      for (const p of this.particles) {
-        // contained procedural drift (invisible force field); calm, not a spectacle
-        const fx = Math.sin(p.y * 0.010 + time * 0.8) + 0.5 * Math.sin(p.x * 0.016 + time);
-        const fy = Math.cos(p.x * 0.010 + time * 1.0) + 0.5 * Math.cos(p.y * 0.014 - time * 1.1);
-        p.vx += (fx * 0.10 + 0.03) * flowS;
-        p.vy += (fy * 0.10) * flowS;
-        p.vx *= 0.9; p.vy *= 0.9;
-        p.x += p.vx; p.y += p.vy;
-        p.x += (p.fx - p.x) * gp * 0.16;       // quietly settle into place
-        p.y += (p.fy - p.y) * gp * 0.16;
-        const a = p.a * (1 - reveal);
-        if (a > 0.01) { c.globalAlpha = a; c.drawImage(this.sprites[p.sp], p.x - p.s, p.y - p.s, p.s * 2, p.s * 2); }
-      }
-      c.restore();
-      if (reveal > 0) this.drawBrand('Vectis', reveal);   // emerges already crisp (no blur)
-      if (t >= this.T.exit && !this.exited) { this.exited = true; this.exitIntro(); }
+    if (t < this.T.p1Out) {
+      this.drawCentered(this.lines[0], this.ramp(t, this.T.p1In, this.T.p1Hold, this.T.p1Out), 'white');
+    } else if (t < this.T.hoyOut) {
+      this.drawCentered(this.lines[1], this.ramp(t, this.T.hoyIn, this.T.hoyHold, this.T.hoyOut), 'violet');
+    } else if (t < this.T.p2Out) {
+      this.drawPhrase2(this.ramp(t, this.T.p2In, this.T.p2Hold, this.T.p2Out));
+    } else if (t >= this.T.brandIn) {
+      this.drawCentered(this.lines[3], this.ease(this.clamp((t - this.T.brandIn) / 600, 0, 1)), 'brand');
     }
+
+    if (t >= this.T.exit && !this.exited) { this.exited = true; this.exitIntro(); }
     this.raf = requestAnimationFrame(this.loop);
   };
 
   private ramp(t: number, inT: number, hold: number, out: number): number {
-    if (t < inT) return this.ease(this.clamp(t / inT, 0, 1));
+    if (t < inT) return this.ease(this.clamp((t - (inT - 500)) / 500, 0, 1));
     if (t < hold) return 1;
     return 1 - this.ease(this.clamp((t - hold) / (out - hold), 0, 1));
   }
 
-  private brandMetrics(): { fs: number; ls: number } {
-    const fs = Math.min(this.h * 0.2, this.w * 0.16);
-    return { fs, ls: Math.round(fs * 0.02) };
+  private fontPx(kind: 'white' | 'violet' | 'brand'): number {
+    const base = Math.min(this.w, this.h);
+    return kind === 'brand' ? Math.min(this.h * 0.2, this.w * 0.16) : Math.max(22, Math.min(base * 0.07, this.w * 0.05));
   }
 
-  /** Crisp logo (no blur, no scale, no glow) — it should feel discovered, not performed. */
-  private drawBrand(text: string, alpha: number): void {
-    const c = this.ctx, m = this.brandMetrics();
-    c.save(); c.globalAlpha = alpha; c.textAlign = 'center'; c.textBaseline = 'middle';
-    if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = m.ls + 'px';
-    c.font = `700 ${m.fs}px 'Outfit', Arial, sans-serif`;
-    const half = c.measureText(text).width / 2;
-    const g = c.createLinearGradient(this.w / 2 - half, 0, this.w / 2 + half, 0);
-    g.addColorStop(0, this.rgb(this.W_BLUE)); g.addColorStop(0.5, this.rgb(this.W_PURP)); g.addColorStop(1, this.rgb(this.W_PINK));
-    c.fillStyle = g; c.fillText(text, this.w / 2, this.h / 2);
-    if ('letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = '0px';
-    c.restore();
-  }
-
-  private drawCentered(text: string, alpha: number, gradient: boolean): void {
+  private drawCentered(text: string, alpha: number, kind: 'white' | 'violet' | 'brand'): void {
     if (alpha <= 0) return;
-    const c = this.ctx, base = Math.min(this.w, this.h);
+    const c = this.ctx;
     c.save(); c.globalAlpha = alpha; c.textAlign = 'center'; c.textBaseline = 'middle';
-    const fs = Math.max(22, Math.min(base * 0.07, this.w * 0.05));
-    c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
-    if (gradient) {
+    const fs = this.fontPx(kind);
+    const weight = kind === 'brand' ? 700 : 500;
+    c.font = `${weight} ${fs}px 'Outfit', Arial, sans-serif`;
+    c.shadowColor = 'rgba(20,0,30,0.45)'; c.shadowBlur = fs * 0.4;
+    if (kind === 'violet') {
       const half = c.measureText(text).width / 2;
       const g = c.createLinearGradient(this.w / 2 - half, 0, this.w / 2 + half, 0);
-      g.addColorStop(0, this.rgb(this.W_PURP)); g.addColorStop(1, this.rgb(this.W_PINK));
+      g.addColorStop(0, this.rgb(this.VIOLET)); g.addColorStop(1, this.rgb(this.PINK));
       c.fillStyle = g;
-    } else { c.fillStyle = this.rgb(this.CHAR); }
+    } else {
+      c.fillStyle = '#ffffff';
+    }
     c.fillText(text, this.w / 2, this.h / 2);
     c.restore();
   }
 
-  /** Phrase 2 stays fully readable; last word ("automatizado") in pastel gradient. */
   private drawPhrase2(alpha: number): void {
+    if (alpha <= 0) return;
     const c = this.ctx; const { fs, lines } = this.phraseLayout(this.lines[2]);
     const total = lines.reduce((n, l) => n + l.split(' ').length, 0);
     c.save(); c.globalAlpha = alpha; c.textBaseline = 'middle'; c.textAlign = 'left';
     c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
+    c.shadowColor = 'rgba(20,0,30,0.45)'; c.shadowBlur = fs * 0.4;
     const lh = fs * 1.24, spaceW = c.measureText(' ').width;
     let y = this.h / 2 - (lines.length * lh) / 2 + lh / 2; let wi = 0;
     for (const ln of lines) {
@@ -227,39 +218,15 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
         const ww = c.measureText(wd).width;
         if (wi === total - 1) {
           const g = c.createLinearGradient(x, 0, x + ww, 0);
-          g.addColorStop(0, this.rgb(this.W_PURP)); g.addColorStop(1, this.rgb(this.W_PINK));
+          g.addColorStop(0, this.rgb(this.ACCENT_A)); g.addColorStop(1, this.rgb(this.ACCENT_B));
           c.fillStyle = g;
-        } else { c.fillStyle = this.rgb(this.CHAR); }
+        } else { c.fillStyle = '#ffffff'; }
         c.fillText(wd, x, y);
         x += ww + spaceW; wi++;
       }
       y += lh;
     }
     c.restore();
-  }
-
-  private spawnParticles(): void {
-    const src = this.sampleLastWord(this.lines[2]);
-    const target = this.sampleText(this.lines[3], true);
-    if (!target.length) return;
-    this.vMinX = Infinity; this.vMaxX = -Infinity;
-    for (const p of target) { if (p.x < this.vMinX) this.vMinX = p.x; if (p.x > this.vMaxX) this.vMaxX = p.x; }
-    const base = Math.min(this.w, this.h);
-    const N = base < 560 ? 2000 : 3600;       // fewer particles — less is more
-    this.particles = [];
-    for (let i = 0; i < N; i++) {
-      const tg = target[(Math.random() * target.length) | 0];
-      const st = src.length ? src[(Math.random() * src.length) | 0] : { x: this.w / 2, y: this.h / 2 };
-      const ang = Math.random() * Math.PI * 2, sp = 4 + Math.random() * 8;  // contained burst
-      this.particles.push({
-        x: st.x, y: st.y,
-        vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
-        fx: tg.x + (Math.random() - 0.5) * 1.6, fy: tg.y + (Math.random() - 0.5) * 1.6,
-        sp: (Math.random() * this.sprites.length) | 0,
-        s: 0.6 + Math.random() * 1.0,         // micro dust
-        a: 0.18 + Math.random() * 0.22,       // low opacity — motion first, particles second
-      });
-    }
   }
 
   private phraseLayout(text: string): { fs: number; lines: string[] } {
@@ -276,48 +243,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     return { fs, lines };
   }
 
-  private sampleLastWord(text: string): { x: number; y: number }[] {
-    const { fs, lines } = this.phraseLayout(text);
-    return this.sampleLayout(lines, fs, '500', false, lines.reduce((n, l) => n + l.split(' ').length, 0) - 1);
-  }
-
-  private sampleText(text: string, brand: boolean): { x: number; y: number }[] {
-    if (brand) { const m = this.brandMetrics(); return this.sampleLayout([text], m.fs, '700', true, -1); }
-    const { fs, lines } = this.phraseLayout(text);
-    return this.sampleLayout(lines, fs, '500', false, -1);
-  }
-
-  private sampleLayout(lines: string[], fs: number, weight: string, brand: boolean, onlyWord: number): { x: number; y: number }[] {
-    const w = this.w, h = this.h, base = Math.min(w, h);
-    const off = document.createElement('canvas'); off.width = w; off.height = h;
-    const c = off.getContext('2d')!;
-    c.fillStyle = '#fff'; c.textBaseline = 'middle';
-    if (brand && 'letterSpacing' in c) (c as unknown as { letterSpacing: string }).letterSpacing = this.brandMetrics().ls + 'px';
-    c.font = `${weight} ${fs}px 'Outfit', Arial, sans-serif`;
-    const lh = fs * 1.24, spaceW = c.measureText(' ').width;
-    let y = h / 2 - (lines.length * lh) / 2 + lh / 2;
-    if (onlyWord < 0) {
-      c.textAlign = 'center';
-      for (const ln of lines) { c.fillText(ln, w / 2, y); y += lh; }
-    } else {
-      c.textAlign = 'left'; let wi = 0;
-      for (const ln of lines) {
-        let x = (w - c.measureText(ln).width) / 2;
-        for (const wd of ln.split(' ')) { if (wi === onlyWord) c.fillText(wd, x, y); x += c.measureText(wd).width + spaceW; wi++; }
-        y += lh;
-      }
-    }
-    const data = c.getImageData(0, 0, w, h).data;
-    const step = base < 520 ? 3 : 4;
-    const pts: { x: number; y: number }[] = [];
-    for (let yy = 0; yy < h; yy += step)
-      for (let xx = 0; xx < w; xx += step)
-        if (data[(yy * w + xx) * 4 + 3] > 140) pts.push({ x: xx, y: yy });
-    return pts;
-  }
-
-  private wrap(text: string, maxW: number, ctx?: CanvasRenderingContext2D): string[] {
-    const c = ctx || this.ctx;
+  private wrap(text: string, maxW: number, c: CanvasRenderingContext2D): string[] {
     const words = text.split(' '); const lines: string[] = []; let cur = '';
     for (const wd of words) {
       const t = cur ? cur + ' ' + wd : wd;
@@ -336,11 +262,11 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.running = false;
     cancelAnimationFrame(this.raf);
     const el = this.introContainer.nativeElement;
-    el.style.transition = 'opacity 0.6s ease';
+    el.style.transition = 'opacity 0.7s ease';
     el.style.opacity = '0';
     window.setTimeout(() => {
       el.style.display = 'none';
       window.dispatchEvent(new CustomEvent('intro-finished'));
-    }, 620);
+    }, 720);
   }
 }
