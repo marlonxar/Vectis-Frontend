@@ -1,8 +1,9 @@
 .intro-container {
   position: fixed;
   inset: 0;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
+  height: 100dvh;
   background-color: #0b0b0d;
   z-index: 9999;
   overflow: hidden;
@@ -14,4 +15,78 @@
   width: 100%;
   height: 100%;
   display: block;
+}
+
+.skip-hint {
+  position: absolute;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 38px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(170, 174, 182, 0.62);
+  font-family: 'Outfit', Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  animation: skipHintIn 0.8s ease forwards 1.2s;
+  transition: color 0.18s ease;
+}
+
+.skip-hint .kc { transition: border-color 0.18s ease, background-color 0.18s ease; }
+
+/* while the background flashes white, darken the hint so it stays legible */
+.intro-container.switch-light .skip-hint { color: rgba(36, 38, 44, 0.9); }
+.intro-container.switch-light .skip-hint .kc {
+  border-color: rgba(36, 38, 44, 0.45);
+  background: rgba(0, 0, 0, 0.06);
+}
+
+@keyframes skipHintIn {
+  to { opacity: 1; }
+}
+
+.skip-hint .keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.skip-hint .kc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(170, 174, 182, 0.32);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.skip-hint .kc.kc-wide { width: 34px; }
+
+.skip-hint .kc svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+.skip-hint .kc.kc-wide svg { width: 26px; }
+
+.skip-hint .skip-mobile { display: none; }
+
+/* Touch / small screens: only a short text, no key icons */
+@media (hover: none), (max-width: 640px) {
+  .skip-hint .keys,
+  .skip-hint .skip-desktop { display: none; }
+  .skip-hint .skip-mobile { display: inline; }
+  .skip-hint { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-hint { animation: none; opacity: 1; }
 }

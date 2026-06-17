@@ -1,7 +1,7 @@
 {
   "SEO": {
-    "TITLE": "Vectis Automation Group — Automatización & Desarrollo de Software | San José, Costa Rica",
-    "DESCRIPTION": "Desarrollo de software a medida, automatización inteligente e inteligencia artificial. Agencia tecnológica en San José, Costa Rica."
+    "TITLE": "Vectis Automation Group — Automatización con IA & Software a Medida | Costa Rica",
+    "DESCRIPTION": "Software a medida, automatización con IA y agentes inteligentes que eliminan el trabajo repetitivo. Desde San José, Costa Rica, para clientes en todo el mundo."
   },
   "A11Y": {
     "SKIP_TO_CONTENT": "Saltar al contenido",
@@ -264,6 +264,7 @@
     "EYEBROW": "CONTACTO",
     "TITLE": "Construyamos algo que valga la pena.",
     "SUBTITLE": "Cuéntanos sobre tu proyecto. Te respondemos en menos de 24 horas.",
+    "WHATSAPP": "Escríbenos por WhatsApp",
     "MODE_LABEL": "Tipo de contacto",
     "MODE_MESSAGE": "Enviar mensaje",
     "MODE_APPOINTMENT": "Agendar cita",
@@ -480,7 +481,9 @@
     "BACK": "Volver al inicio"
   },
   "INTRO": {
-    "LOADING": "Cargando experiencia"
+    "LOADING": "Cargando experiencia",
+    "SKIP": "para saltar la intro",
+    "SKIP_MOBILE": "Toca para saltar la intro"
   },
   "PHILOSOPHY": {
     "EYEBROW": "Nuestra filosofía",

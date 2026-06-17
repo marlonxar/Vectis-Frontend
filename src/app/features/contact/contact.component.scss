@@ -93,3 +93,24 @@
 
 @media (max-width: 920px) { .contact-grid { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .row2, .svc-grid { grid-template-columns: 1fr; } .slot-grid { grid-template-columns: repeat(2, 1fr); } .wiz-nav { flex-direction: column-reverse; } }
+
+/* WhatsApp quick-contact button */
+.wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #07321b;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 8px 24px -10px rgba(37, 211, 102, 0.6);
+}
+.wa-btn:hover { transform: translateY(-2px); background: #20c25c; box-shadow: 0 12px 30px -10px rgba(37, 211, 102, 0.7); }
+.wa-btn:active { transform: translateY(0); }
+.wa-btn svg { flex: none; }

@@ -49,7 +49,8 @@
                 muted
                 [muted]="true"
                 playsinline
-                preload="auto"
+                preload="metadata"
+                disablepictureinpicture
                 aria-hidden="true"
               ></video>
               <div class="card-gradient-overlay" [style.background]="'linear-gradient(to top, rgba(13,13,13,0.95) 0%, rgba(13,13,13,0.3) 50%, ' + project.color + '10 100%)'"></div>
@@ -201,6 +202,7 @@
               loop
               [muted]="isModalMuted()"
               playsinline
+              preload="metadata"
             ></video>
             
             <!-- Audio Toggle Button -->
