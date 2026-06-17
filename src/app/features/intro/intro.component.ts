@@ -5,9 +5,9 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
 
 type RGB = [number, number, number];
-interface Blob {
-  col: RGB; x0: number; y0: number; r: number; amp: number;
-  sa: number; sb: number; pa: number; pb: number; alpha: number;
+interface Cell {
+  x: number; y: number; w: number; h: number;
+  col: RGB; delay: number; fade: number; glow: boolean; accent: boolean; aA: number; dark: boolean;
 }
 
 @Component({
@@ -23,44 +23,31 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);
 
   private ctx!: CanvasRenderingContext2D;
-  private sc!: HTMLCanvasElement;       // small offscreen for the fluid field
-  private sctx!: CanvasRenderingContext2D;
-  private sw = 0; private sh = 0;
   private w = 0; private h = 0; private dpr = 1;
-  private blobs: Blob[] = [];
+  private cells: Cell[] = [];
   private raf = 0;
   private startTime = 0;
   private running = false;
   private started = false;
   private exited = false;
-  private lines: string[] = [];
 
-  private readonly BASE: RGB = [248, 246, 241];   // light, airy
-  // Vectis palette: gold + blue (with light variants), elegant
-  private readonly PALETTE: RGB[] = [
-    [231, 171, 46], [240, 201, 102], [184, 136, 28], [44, 62, 145],
-    [60, 92, 196], [120, 150, 230], [231, 171, 46], [70, 96, 185],
-  ];
-  private readonly ACCENT_A: RGB = [231, 171, 46];   // gold (emphasis words)
-  private readonly ACCENT_B: RGB = [184, 136, 28];   // deep gold
-  private readonly VIOLET: RGB = [231, 171, 46];     // "Hoy" -> gold gradient
-  private readonly PINK: RGB = [184, 136, 28];
-  private readonly INK: RGB = [22, 24, 52];          // phrases + final "Vectis" (solid)
+  private readonly BASE: RGB = [11, 11, 13];        // #0B0B0D
+  private readonly PRIMARY: RGB = [20, 20, 24];      // #141418
+  private readonly SECONDARY: RGB = [28, 28, 34];    // #1C1C22
+  private readonly HIGHLIGHT: RGB = [43, 43, 53];    // #2B2B35
+  private readonly ACCENT: RGB = [232, 232, 232];    // soft off-white, very low opacity
 
-  private readonly T = {
-    bgIn: 600,
-    p1In: 700, p1Hold: 1700, p1Out: 2050,
-    hoyIn: 2200, hoyHold: 2900, hoyOut: 3200,
-    p2In: 3400, p2Hold: 4500, p2Out: 4850,
-    brandIn: 5050, hold: 6100, exit: 6200,
-  };
+  private readonly SPREAD = 1700;   // region activation delays span this
+  private readonly SETTLE = 170;    // glow settle-back
+  private readonly HOLD_END = 2500; // calm stable state
+  private readonly EXIT = 2650;
 
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const go = () => { if (this.started) return; this.started = true; reduce ? this.runReduced() : this.run(); };
     const fonts = (document as unknown as { fonts?: { ready: Promise<unknown> } }).fonts;
-    if (fonts && fonts.ready) { fonts.ready.then(go); window.setTimeout(go, 600); } else { go(); }
+    if (fonts && fonts.ready) { fonts.ready.then(go); window.setTimeout(go, 300); } else { go(); }
   }
 
   ngOnDestroy(): void {
@@ -69,19 +56,11 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) window.removeEventListener('resize', this.onResize);
   }
 
-  private lang(): 'es' | 'en' {
-    const p = window.location.pathname.toLowerCase();
-    return (p === '/en' || p.startsWith('/en/')) ? 'en' : 'es';
-  }
-
   private run(): void {
     this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
     this.resize();
     window.addEventListener('resize', this.onResize);
-    this.makeBlobs();
-    this.lines = this.lang() === 'en'
-      ? ['Your time comes back.', 'Today', 'Repetitive work, automated.', 'Vectis']
-      : ['Tu tiempo vuelve.', 'Hoy', 'El trabajo repetitivo automatizado.', 'Vectis'];
+    this.buildCells();
     this.running = true;
     this.startTime = performance.now();
     this.loop();
@@ -89,13 +68,12 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
 
   private runReduced(): void {
     this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
-    this.resize(); this.makeBlobs();
-    this.renderField(0);
-    this.drawCentered('Vectis', 1, 'brand');
-    window.setTimeout(() => this.exitIntro(), 1400);
+    this.resize(); this.buildCells();
+    this.renderFrame(99999);   // final stable state
+    window.setTimeout(() => this.exitIntro(), 900);
   }
 
-  private readonly onResize = (): void => { if (this.ctx) { this.resize(); } };
+  private readonly onResize = (): void => { if (this.ctx) { this.resize(); this.buildCells(); } };
 
   private resize(): void {
     const cv = this.introCanvas.nativeElement;
@@ -104,157 +82,89 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     cv.width = Math.floor(this.w * this.dpr); cv.height = Math.floor(this.h * this.dpr);
     cv.style.width = this.w + 'px'; cv.style.height = this.h + 'px';
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    // tiny offscreen: upscaling it produces ultra-soft, edgeless fluid fields
-    this.sw = Math.max(40, Math.round(this.w * 0.14));
-    this.sh = Math.max(40, Math.round(this.h * 0.14));
-    if (!this.sc) { this.sc = document.createElement('canvas'); this.sctx = this.sc.getContext('2d')!; }
-    this.sc.width = this.sw; this.sc.height = this.sh;
   }
 
-  private makeBlobs(): void {
-    const rnd = (a: number, b: number) => a + Math.random() * (b - a);
-    this.blobs = this.PALETTE.map((col, i) => ({
-      col,
-      x0: rnd(0.1, 0.9), y0: rnd(0.1, 0.9),
-      r: rnd(0.45, 0.8),
-      amp: rnd(0.12, 0.26),
-      sa: rnd(0.03, 0.08) * (i % 2 ? 1 : -1),   // very slow, elegant
-      sb: rnd(0.02, 0.06) * (i % 3 ? -1 : 1),
-      pa: rnd(0, Math.PI * 2), pb: rnd(0, Math.PI * 2),
-      alpha: i < 4 ? 0.20 : 0.34,                // soft pigment tint on light
-    }));
-  }
+  private buildCells(): void {
+    const ch = this.clamp(Math.round(Math.min(this.w, this.h) / 26), 18, 32);
+    const cw = Math.round(ch * 1.35);
+    const gap = 3;
+    const cols = Math.ceil(this.w / (cw + gap));
+    const rows = Math.ceil(this.h / (ch + gap));
+    const ph1 = Math.random() * 6.28, ph2 = Math.random() * 6.28, ph3 = Math.random() * 6.28;
+    this.cells = [];
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const nx = i / cols, ny = j / rows;
+        // 2D value-noise-ish field -> organic density waves (not row/column sweeps)
+        let n = 0.5 + 0.5 * (
+          0.5 * Math.sin(nx * 6.3 + ny * 4.1 + ph1)
+          + 0.3 * Math.sin(nx * 3.7 - ny * 5.3 + ph2)
+          + 0.2 * Math.sin((nx + ny) * 4.0 + ph3));
+        n = this.clamp(n, 0, 1);
+        const delay = n * this.SPREAD + Math.random() * 260;
 
-  /** Draw the fluid gradient field (tiny canvas, additive, then upscaled = soft liquid). */
-  private renderField(time: number): void {
-    const s = this.sctx, sw = this.sw, sh = this.sh;
-    s.globalCompositeOperation = 'source-over';
-    s.fillStyle = `rgb(${this.BASE[0]},${this.BASE[1]},${this.BASE[2]})`;
-    s.fillRect(0, 0, sw, sh);
-    s.globalCompositeOperation = 'source-over';   // tint the light base like soft pigment
-    for (const b of this.blobs) {
-      // organic, non-repeating drift (two incommensurate sines per axis)
-      const px = (b.x0 + b.amp * Math.sin(time * b.sa + b.pa) + b.amp * 0.6 * Math.sin(time * b.sb * 1.7 + b.pb)) * sw;
-      const py = (b.y0 + b.amp * Math.cos(time * b.sb + b.pb) + b.amp * 0.6 * Math.cos(time * b.sa * 1.3 + b.pa)) * sh;
-      const rad = b.r * sw;
-      const g = s.createRadialGradient(px, py, 0, px, py, rad);
-      g.addColorStop(0, `rgba(${b.col[0]},${b.col[1]},${b.col[2]},${b.alpha})`);
-      g.addColorStop(1, `rgba(${b.col[0]},${b.col[1]},${b.col[2]},0)`);
-      s.fillStyle = g; s.fillRect(0, 0, sw, sh);
+        // weighted target: some stay dark, varied brightness for depth
+        const r = Math.random();
+        let col: RGB; let dark = false; let accent = false; let aA = 0;
+        if (r < 0.22) { col = this.BASE; dark = true; }
+        else if (r < 0.58) col = this.PRIMARY;
+        else if (r < 0.83) col = this.SECONDARY;
+        else if (r < 0.965) col = this.HIGHLIGHT;
+        else { col = this.BASE; accent = true; aA = 0.05 + Math.random() * 0.08; }
+
+        this.cells.push({
+          x: i * (cw + gap), y: j * (ch + gap), w: cw, h: ch,
+          col, delay, fade: 110 + Math.random() * 140,
+          glow: !dark && !accent && Math.random() < 0.12,
+          accent, aA, dark,
+        });
+      }
     }
-    s.globalCompositeOperation = 'source-over';
-    this.ctx.imageSmoothingEnabled = true;
-    this.ctx.imageSmoothingQuality = 'high';
-    this.ctx.drawImage(this.sc, 0, 0, this.w, this.h);
   }
 
   private loop = (): void => {
     if (!this.running) return;
     const t = performance.now() - this.startTime;
-    const time = t * 0.001;
-
-    this.renderField(time);
-    // bg eases in from black; living motion continues under all the text
-    const bgA = this.ease(this.clamp(t / this.T.bgIn, 0, 1));
-    if (bgA < 1) { this.ctx.save(); this.ctx.globalAlpha = 1 - bgA; this.ctx.fillStyle = 'rgb(248,246,241)'; this.ctx.fillRect(0, 0, this.w, this.h); this.ctx.restore(); }
-
-    if (t < this.T.p1Out) {
-      this.drawCentered(this.lines[0], this.ramp(t, this.T.p1In, this.T.p1Hold, this.T.p1Out), 'white');
-    } else if (t < this.T.hoyOut) {
-      this.drawCentered(this.lines[1], this.ramp(t, this.T.hoyIn, this.T.hoyHold, this.T.hoyOut), 'violet');
-    } else if (t < this.T.p2Out) {
-      this.drawPhrase2(this.ramp(t, this.T.p2In, this.T.p2Hold, this.T.p2Out));
-    } else if (t >= this.T.brandIn) {
-      this.drawCentered(this.lines[3], this.ease(this.clamp((t - this.T.brandIn) / 600, 0, 1)), 'brand');
-    }
-
-    if (t >= this.T.exit && !this.exited) { this.exited = true; this.exitIntro(); }
+    this.renderFrame(t);
+    if (t >= this.EXIT && !this.exited) { this.exited = true; this.exitIntro(); }
     this.raf = requestAnimationFrame(this.loop);
   };
 
-  private ramp(t: number, inT: number, hold: number, out: number): number {
-    if (t < inT) return this.ease(this.clamp((t - (inT - 500)) / 500, 0, 1));
-    if (t < hold) return 1;
-    return 1 - this.ease(this.clamp((t - hold) / (out - hold), 0, 1));
-  }
-
-  private fontPx(kind: 'white' | 'violet' | 'brand'): number {
-    const base = Math.min(this.w, this.h);
-    return kind === 'brand' ? Math.min(this.h * 0.2, this.w * 0.16) : Math.max(22, Math.min(base * 0.07, this.w * 0.05));
-  }
-
-  private drawCentered(text: string, alpha: number, kind: 'white' | 'violet' | 'brand'): void {
-    if (alpha <= 0) return;
+  private renderFrame(t: number): void {
     const c = this.ctx;
-    c.save(); c.globalAlpha = alpha; c.textAlign = 'center'; c.textBaseline = 'middle';
-    const fs = this.fontPx(kind);
-    const weight = kind === 'brand' ? 700 : 500;
-    c.font = `${weight} ${fs}px 'Outfit', Arial, sans-serif`;
-    c.shadowColor = 'rgba(255,255,255,0.55)'; c.shadowBlur = fs * 0.28;   // soft halo on light bg
-    if (kind === 'violet') {
-      const half = c.measureText(text).width / 2;
-      const g = c.createLinearGradient(this.w / 2 - half, 0, this.w / 2 + half, 0);
-      g.addColorStop(0, this.rgb(this.VIOLET)); g.addColorStop(1, this.rgb(this.PINK));
-      c.fillStyle = g;
-    } else {
-      c.fillStyle = this.rgb(this.INK);   // phrases + final "Vectis" -> solid (no gradient)
-    }
-    c.fillText(text, this.w / 2, this.h / 2);
-    c.restore();
-  }
-
-  private drawPhrase2(alpha: number): void {
-    if (alpha <= 0) return;
-    const c = this.ctx; const { fs, lines } = this.phraseLayout(this.lines[2]);
-    const total = lines.reduce((n, l) => n + l.split(' ').length, 0);
-    c.save(); c.globalAlpha = alpha; c.textBaseline = 'middle'; c.textAlign = 'left';
-    c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
-    c.shadowColor = 'rgba(255,255,255,0.55)'; c.shadowBlur = fs * 0.28;
-    const lh = fs * 1.24, spaceW = c.measureText(' ').width;
-    let y = this.h / 2 - (lines.length * lh) / 2 + lh / 2; let wi = 0;
-    for (const ln of lines) {
-      const words = ln.split(' ');
-      let x = (this.w - c.measureText(ln).width) / 2;
-      for (const wd of words) {
-        const ww = c.measureText(wd).width;
-        if (wi === total - 1) {
-          const g = c.createLinearGradient(x, 0, x + ww, 0);
-          g.addColorStop(0, this.rgb(this.ACCENT_A)); g.addColorStop(1, this.rgb(this.ACCENT_B));
-          c.fillStyle = g;
-        } else { c.fillStyle = this.rgb(this.INK); }
-        c.fillText(wd, x, y);
-        x += ww + spaceW; wi++;
+    c.fillStyle = this.rgb(this.BASE);
+    c.fillRect(0, 0, this.w, this.h);
+    for (const cell of this.cells) {
+      if (cell.dark) continue;                 // stays at base
+      const local = t - cell.delay;
+      if (local <= 0) continue;
+      if (cell.accent) {
+        const p = this.ease(this.clamp(local / cell.fade, 0, 1));
+        c.globalAlpha = p * cell.aA;
+        c.fillStyle = this.rgb(this.ACCENT);
+        c.fillRect(cell.x, cell.y, cell.w, cell.h);
+        c.globalAlpha = 1;
+        continue;
       }
-      y += lh;
+      let col: RGB;
+      if (local < cell.fade) {
+        const p = this.ease(local / cell.fade);
+        col = this.mix(this.BASE, cell.glow ? this.brighten(cell.col) : cell.col, p);
+      } else if (cell.glow && local < cell.fade + this.SETTLE) {
+        const q = this.ease((local - cell.fade) / this.SETTLE);
+        col = this.mix(this.brighten(cell.col), cell.col, q);
+      } else {
+        col = cell.col;
+      }
+      c.fillStyle = this.rgb(col);
+      c.fillRect(cell.x, cell.y, cell.w, cell.h);
     }
-    c.restore();
   }
 
-  private phraseLayout(text: string): { fs: number; lines: string[] } {
-    const c = this.ctx, base = Math.min(this.w, this.h);
-    let fs = Math.max(20, Math.min(base * 0.064, this.w * 0.044));
-    const maxW = this.w * 0.84; let lines = [text];
-    for (let g = 0; g < 8; g++) {
-      c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
-      lines = this.wrap(text, maxW, c);
-      const widest = Math.max(...lines.map((l) => c.measureText(l).width));
-      if (lines.length <= 2 && widest <= maxW) break;
-      fs *= 0.9;
-    }
-    return { fs, lines };
+  private brighten(c: RGB): RGB { return this.mix(c, [70, 70, 84], 0.6); }
+  private mix(a: RGB, b: RGB, t: number): RGB {
+    return [Math.round(a[0] + (b[0] - a[0]) * t), Math.round(a[1] + (b[1] - a[1]) * t), Math.round(a[2] + (b[2] - a[2]) * t)];
   }
-
-  private wrap(text: string, maxW: number, c: CanvasRenderingContext2D): string[] {
-    const words = text.split(' '); const lines: string[] = []; let cur = '';
-    for (const wd of words) {
-      const t = cur ? cur + ' ' + wd : wd;
-      if (c.measureText(t).width <= maxW || !cur) cur = t;
-      else { lines.push(cur); cur = wd; }
-    }
-    if (cur) lines.push(cur);
-    return lines;
-  }
-
   private rgb(c: RGB): string { return `rgb(${c[0]},${c[1]},${c[2]})`; }
   private clamp(v: number, lo: number, hi: number): number { return v < lo ? lo : v > hi ? hi : v; }
   private ease(t: number): number { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
@@ -263,11 +173,11 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.running = false;
     cancelAnimationFrame(this.raf);
     const el = this.introContainer.nativeElement;
-    el.style.transition = 'opacity 0.7s ease';
+    el.style.transition = 'opacity 0.6s ease';
     el.style.opacity = '0';
     window.setTimeout(() => {
       el.style.display = 'none';
       window.dispatchEvent(new CustomEvent('intro-finished'));
-    }, 720);
+    }, 620);
   }
 }
