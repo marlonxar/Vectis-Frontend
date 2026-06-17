@@ -35,16 +35,17 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private exited = false;
   private lines: string[] = [];
 
-  private readonly BASE: RGB = [11, 0, 20];   // deep near-black violet
-  // electric violet, deep purple, hot pink, soft orange, warm yellow
+  private readonly BASE: RGB = [248, 246, 241];   // light, airy
+  // Vectis palette: gold + blue (with light variants), elegant
   private readonly PALETTE: RGB[] = [
-    [138, 61, 255], [58, 12, 163], [255, 45, 155], [255, 79, 176],
-    [255, 122, 69], [255, 209, 102], [120, 40, 230], [255, 90, 150],
+    [231, 171, 46], [240, 201, 102], [184, 136, 28], [44, 62, 145],
+    [60, 92, 196], [120, 150, 230], [231, 171, 46], [70, 96, 185],
   ];
-  private readonly ACCENT_A: RGB = [255, 122, 69];   // orange
-  private readonly ACCENT_B: RGB = [255, 209, 102];  // yellow
-  private readonly VIOLET: RGB = [150, 90, 255];
-  private readonly PINK: RGB = [255, 90, 170];
+  private readonly ACCENT_A: RGB = [231, 171, 46];   // gold (emphasis words)
+  private readonly ACCENT_B: RGB = [184, 136, 28];   // deep gold
+  private readonly VIOLET: RGB = [231, 171, 46];     // "Hoy" -> gold gradient
+  private readonly PINK: RGB = [184, 136, 28];
+  private readonly INK: RGB = [22, 24, 52];          // phrases + final "Vectis" (solid)
 
   private readonly T = {
     bgIn: 600,
@@ -117,10 +118,10 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
       x0: rnd(0.1, 0.9), y0: rnd(0.1, 0.9),
       r: rnd(0.45, 0.8),
       amp: rnd(0.12, 0.26),
-      sa: rnd(0.05, 0.13) * (i % 2 ? 1 : -1),   // slow, mixed directions
-      sb: rnd(0.03, 0.09) * (i % 3 ? -1 : 1),
+      sa: rnd(0.03, 0.08) * (i % 2 ? 1 : -1),   // very slow, elegant
+      sb: rnd(0.02, 0.06) * (i % 3 ? -1 : 1),
       pa: rnd(0, Math.PI * 2), pb: rnd(0, Math.PI * 2),
-      alpha: i < 4 ? 0.55 : 0.8,                 // back layer dimmer, front brighter
+      alpha: i < 4 ? 0.20 : 0.34,                // soft pigment tint on light
     }));
   }
 
@@ -130,7 +131,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     s.globalCompositeOperation = 'source-over';
     s.fillStyle = `rgb(${this.BASE[0]},${this.BASE[1]},${this.BASE[2]})`;
     s.fillRect(0, 0, sw, sh);
-    s.globalCompositeOperation = 'lighter';
+    s.globalCompositeOperation = 'source-over';   // tint the light base like soft pigment
     for (const b of this.blobs) {
       // organic, non-repeating drift (two incommensurate sines per axis)
       const px = (b.x0 + b.amp * Math.sin(time * b.sa + b.pa) + b.amp * 0.6 * Math.sin(time * b.sb * 1.7 + b.pb)) * sw;
@@ -155,7 +156,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.renderField(time);
     // bg eases in from black; living motion continues under all the text
     const bgA = this.ease(this.clamp(t / this.T.bgIn, 0, 1));
-    if (bgA < 1) { this.ctx.save(); this.ctx.globalAlpha = 1 - bgA; this.ctx.fillStyle = 'rgb(11,0,20)'; this.ctx.fillRect(0, 0, this.w, this.h); this.ctx.restore(); }
+    if (bgA < 1) { this.ctx.save(); this.ctx.globalAlpha = 1 - bgA; this.ctx.fillStyle = 'rgb(248,246,241)'; this.ctx.fillRect(0, 0, this.w, this.h); this.ctx.restore(); }
 
     if (t < this.T.p1Out) {
       this.drawCentered(this.lines[0], this.ramp(t, this.T.p1In, this.T.p1Hold, this.T.p1Out), 'white');
@@ -189,14 +190,14 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const fs = this.fontPx(kind);
     const weight = kind === 'brand' ? 700 : 500;
     c.font = `${weight} ${fs}px 'Outfit', Arial, sans-serif`;
-    c.shadowColor = 'rgba(20,0,30,0.45)'; c.shadowBlur = fs * 0.4;
+    c.shadowColor = 'rgba(255,255,255,0.55)'; c.shadowBlur = fs * 0.28;   // soft halo on light bg
     if (kind === 'violet') {
       const half = c.measureText(text).width / 2;
       const g = c.createLinearGradient(this.w / 2 - half, 0, this.w / 2 + half, 0);
       g.addColorStop(0, this.rgb(this.VIOLET)); g.addColorStop(1, this.rgb(this.PINK));
       c.fillStyle = g;
     } else {
-      c.fillStyle = '#ffffff';
+      c.fillStyle = this.rgb(this.INK);   // phrases + final "Vectis" -> solid (no gradient)
     }
     c.fillText(text, this.w / 2, this.h / 2);
     c.restore();
@@ -208,7 +209,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const total = lines.reduce((n, l) => n + l.split(' ').length, 0);
     c.save(); c.globalAlpha = alpha; c.textBaseline = 'middle'; c.textAlign = 'left';
     c.font = `500 ${fs}px 'Outfit', Arial, sans-serif`;
-    c.shadowColor = 'rgba(20,0,30,0.45)'; c.shadowBlur = fs * 0.4;
+    c.shadowColor = 'rgba(255,255,255,0.55)'; c.shadowBlur = fs * 0.28;
     const lh = fs * 1.24, spaceW = c.measureText(' ').width;
     let y = this.h / 2 - (lines.length * lh) / 2 + lh / 2; let wi = 0;
     for (const ln of lines) {
@@ -220,7 +221,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
           const g = c.createLinearGradient(x, 0, x + ww, 0);
           g.addColorStop(0, this.rgb(this.ACCENT_A)); g.addColorStop(1, this.rgb(this.ACCENT_B));
           c.fillStyle = g;
-        } else { c.fillStyle = '#ffffff'; }
+        } else { c.fillStyle = this.rgb(this.INK); }
         c.fillText(wd, x, y);
         x += ww + spaceW; wi++;
       }
