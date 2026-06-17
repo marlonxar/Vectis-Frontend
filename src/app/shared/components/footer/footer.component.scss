@@ -28,9 +28,9 @@
 .news-msg.err { color: #FF9B9B; } .news-msg.ok { color: var(--success); }
 
 /* Single, clean bottom bar */
-.bottom-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; padding-block: var(--space-4); border-top: 1px solid var(--line-light); font-size: 13px; color: rgba(255,255,255,0.45); }
+.bottom-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; padding-block: var(--space-4); border-top: 1px solid var(--line-light); font-size: 13px; color: rgba(255,255,255,0.66); }
 .contact-mini { display: flex; flex-wrap: wrap; gap: 10px; }
-.contact-mini a, .privacy { color: rgba(255,255,255,0.55); transition: color var(--dur) var(--ease); }
+.contact-mini a, .privacy { color: rgba(255,255,255,0.66); transition: color var(--dur) var(--ease); }
 .contact-mini a:hover, .privacy:hover { color: var(--gold-bright); }
 
 @media (max-width: 880px) {
@@ -39,8 +39,8 @@
 }
 
 .legal-links { display: inline-flex; gap: 10px; align-items: center; }
-.legal-links a { color: rgba(255,255,255,0.55); transition: color var(--dur) var(--ease); }
+.legal-links a { color: rgba(255,255,255,0.66); transition: color var(--dur) var(--ease); }
 .legal-links a:hover { color: var(--gold-bright); }
-.legal-links span { color: rgba(255,255,255,0.3); }
+.legal-links span { color: rgba(255,255,255,0.5); }
 
 .hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }

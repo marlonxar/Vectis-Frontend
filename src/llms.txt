@@ -1,0 +1,26 @@
+# Vectis Automation Group
+
+> Software a medida, automatización con IA y agentes inteligentes que eliminan el trabajo repetitivo. Desde San José, Costa Rica, para clientes en todo el mundo. Filosofía: diagnóstico antes que prescripción.
+
+## Páginas
+
+- [Inicio (ES)](https://wearevectis.com/): Servicios, capacidades, portafolio y contacto de Vectis.
+- [Home (EN)](https://wearevectis.com/en): English version of the Vectis site.
+- [Política de privacidad](https://wearevectis.com/privacidad): Cómo recopilamos y usamos los datos.
+- [Términos y condiciones](https://wearevectis.com/terminos): Términos de uso del sitio y los servicios.
+
+## Servicios
+
+- [Desarrollo Web](https://wearevectis.com/#servicios): Sitios y aplicaciones web rápidas, accesibles y escalables.
+- [Automatizaciones](https://wearevectis.com/#servicios): Eliminamos tareas repetitivas conectando tus herramientas y orquestando flujos.
+- [Inteligencia Artificial](https://wearevectis.com/#servicios): Agentes, asistentes y modelos de IA integrados a tus procesos.
+- [Software a Medida](https://wearevectis.com/#servicios): Plataformas y sistemas diseñados a la medida de tu operación.
+- [Integraciones & APIs](https://wearevectis.com/#servicios): Conectamos tus sistemas, plataformas y servicios de terceros.
+- [Data & Analytics](https://wearevectis.com/#servicios): Tus datos convertidos en dashboards y métricas accionables.
+
+## Contacto
+
+- [Sección de contacto](https://wearevectis.com/#contacto): Agenda una llamada o envíanos un mensaje.
+- Email: contact@wearevectis.com
+- WhatsApp / Tel: +506 7020 1149
+- Ubicación: San José, Costa Rica (clientes en todo el mundo)
