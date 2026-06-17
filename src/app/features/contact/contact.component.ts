@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, PLATFORM_ID } from '@angular/core';
+import { Component, computed, signal, inject, PLATFORM_ID, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -10,6 +10,12 @@ type Mode = 'message' | 'appointment';
 interface DayCell { date: Date | null; disabled: boolean; }
 interface Slot { label: string; iso: string; }
 
+interface TurnstileApi {
+  render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+  reset: (id?: string) => void;
+}
+declare global { interface Window { turnstile?: TurnstileApi; } }
+
 @Component({
   selector: 'app-contact',
   standalone: true,
@@ -18,7 +24,7 @@ interface Slot { label: string; iso: string; }
   styleUrl: './contact.component.scss',
   animations: [stepTransition, fadeSwitch],
 })
-export class ContactComponent {
+export class ContactComponent implements AfterViewInit {
   private readonly translate = inject(TranslateService);
   private readonly platformId = inject(PLATFORM_ID);
   readonly mode = signal<Mode>('message');
@@ -27,15 +33,35 @@ export class ContactComponent {
 
   // Message form (huecohouse field set)
   msg = { name: '', email: '', company: '', service: '', budget: '', subject: '', message: '', consent: false };
+  hp = ''; // honeypot — must stay empty (bots fill it)
   readonly msgSent = signal(false);
   readonly msgError = signal(false);
+  readonly msgCaptcha = signal(false);
+  readonly msgSending = signal(false);
+
+  /** True only when all required fields are valid and consent is checked. */
+  canSendMessage(): boolean {
+    return this.validName(this.msg.name) && this.validEmail(this.msg.email)
+      && !!this.msg.company.trim() && !!this.msg.budget
+      && !!this.msg.subject.trim() && !!this.msg.message.trim() && this.msg.consent;
+  }
+
+  // Web3Forms access key (pública) — entrega el correo desde el navegador
+  private readonly WEB3FORMS_KEY = '50609c80-9145-4d34-915c-d80845350532';
+  // Cloudflare Turnstile site key (pública) — de https://dash.cloudflare.com (Turnstile)
+  readonly TURNSTILE_SITE_KEY = '0x4AAAAAADkeMa-48lr1Ewlc';
+  @ViewChild('turnstileBox') private turnstileBox?: ElementRef<HTMLElement>;
+  @ViewChild('contactPanel') private contactPanel?: ElementRef<HTMLElement>;
+  readonly turnstileToken = signal('');
+  private turnstileId?: string;
+  private turnstileScript?: Promise<void>;
 
   // Appointment wizard
   readonly step = signal(1);
   readonly apptSent = signal(false);
   readonly apptSending = signal(false);
   readonly apptError = signal(false);
-  appt = { service: '', date: null as Date | null, time: '', slotIso: '', name: '', email: '', company: '', message: '' };
+  appt = { service: '', date: null as Date | null, time: '', slotIso: '', name: '', email: '', phone: '', company: '', message: '' };
 
   readonly serviceKeys = ['AI', 'WEB', 'AUTOMATION', 'CUSTOM', 'API', 'DATA'];
   readonly budgetKeys = ['B1', 'B2', 'B3', 'B4'];
@@ -89,7 +115,51 @@ export class ContactComponent {
     return cells;
   });
 
-  setMode(m: Mode): void { this.mode.set(m); }
+  ngAfterViewInit(): void { if (this.mode() === 'message') this.mountTurnstile(); }
+
+  setMode(m: Mode): void { this.mode.set(m); if (m === 'message') this.mountTurnstile(); }
+
+  private loadTurnstileScript(): Promise<void> {
+    if (this.turnstileScript) return this.turnstileScript;
+    this.turnstileScript = new Promise<void>((resolve) => {
+      if (window.turnstile) { resolve(); return; }
+      const s = document.createElement('script');
+      s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      s.async = true; s.defer = true;
+      s.onload = () => resolve();
+      document.body.appendChild(s);
+    });
+    return this.turnstileScript;
+  }
+
+  private mountTurnstile(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    this.loadTurnstileScript().then(() => {
+      setTimeout(() => {
+        const el = this.turnstileBox?.nativeElement;
+        if (!el || !window.turnstile) return;
+        el.innerHTML = '';
+        this.turnstileToken.set('');
+        this.turnstileId = window.turnstile.render(el, {
+          sitekey: this.TURNSTILE_SITE_KEY,
+          theme: 'dark',
+          callback: (token: string) => this.turnstileToken.set(token),
+          'expired-callback': () => this.turnstileToken.set(''),
+          'error-callback': () => this.turnstileToken.set(''),
+        });
+      }, 60);
+    });
+  }
+
+  private scrollToPanel(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    setTimeout(() => this.contactPanel?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  }
+
+  private resetTurnstile(): void {
+    this.turnstileToken.set('');
+    try { window.turnstile?.reset(this.turnstileId); } catch { /* noop */ }
+  }
 
   prevMonth(): void { let m = this.viewMonth() - 1, y = this.viewYear(); if (m < 0) { m = 11; y--; } this.viewMonth.set(m); this.viewYear.set(y); this.onMonthChange(); }
   nextMonth(): void { let m = this.viewMonth() + 1, y = this.viewYear(); if (m > 11) { m = 0; y++; } this.viewMonth.set(m); this.viewYear.set(y); this.onMonthChange(); }
@@ -119,7 +189,7 @@ export class ContactComponent {
     switch (this.step()) {
       case 1: return !!this.appt.service;
       case 2: return !!this.appt.date && !!this.appt.time;
-      case 3: return this.validName(this.appt.name) && this.validEmail(this.appt.email);
+      case 3: return this.validName(this.appt.name) && this.validEmail(this.appt.email) && this.validPhone(this.appt.phone);
       default: return true;
     }
   }
@@ -129,17 +199,67 @@ export class ContactComponent {
     return this.appt.date.toLocaleDateString(locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
   }
 
-  submitMessage(): void {
-    if (!this.validName(this.msg.name) || !this.validEmail(this.msg.email) ||
-        !this.msg.subject.trim() || !this.msg.message.trim() || !this.msg.consent) {
-      this.msgError.set(true); return;
-    }
+  async submitMessage(): Promise<void> {
+    // Honeypot: if filled, silently pretend success (don't tip off the bot, don't send).
+    if (this.hp.trim()) { this.msgSent.set(true); return; }
+
+    if (!this.canSendMessage()) { this.msgError.set(true); this.msgCaptcha.set(false); return; }
+    if (!this.turnstileToken()) { this.msgError.set(false); this.msgCaptcha.set(true); return; }
     this.msgError.set(false);
-    this.msgSent.set(true);
-    setTimeout(() => {
-      this.msgSent.set(false);
+    this.msgCaptcha.set(false);
+    this.msgSending.set(true);
+
+    const t = (k: string) => this.translate.instant(k);
+    try {
+      // 1) Validate the Turnstile token server-side (secret stays on the server).
+      const vr = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: this.turnstileToken(), hp: this.hp }),
+      });
+      const vd = await vr.json().catch(() => ({} as Record<string, unknown>));
+      if (!vr.ok || !vd['ok']) {
+        this.msgSending.set(false);
+        this.msgCaptcha.set(true);
+        this.resetTurnstile();
+        return;
+      }
+
+      // 2) Deliver the email from the browser (Web3Forms accepts browser requests).
+      const wr = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: this.WEB3FORMS_KEY,
+          subject: `Nuevo mensaje de ${this.msg.name} — Vectis`,
+          from_name: 'Vectis · Formulario web',
+          Nombre: this.msg.name,
+          Email: this.msg.email,
+          Empresa: this.msg.company || '—',
+          Servicio: this.msg.service ? t('SERVICES.' + this.msg.service + '.TITLE') : '—',
+          Presupuesto: this.msg.budget ? t('CONTACT.' + this.msg.budget) : '—',
+          Asunto: this.msg.subject,
+          Mensaje: this.msg.message,
+        }),
+      });
+      const wd = await wr.json().catch(() => ({} as Record<string, unknown>));
+      if (!wd['success']) {
+        this.msgSending.set(false);
+        this.msgError.set(true);
+        this.resetTurnstile();
+        return;
+      }
+
+      this.msgSending.set(false);
+      this.msgSent.set(true);
+      this.scrollToPanel();
       this.msg = { name: '', email: '', company: '', service: '', budget: '', subject: '', message: '', consent: false };
-    }, 3500);
+      setTimeout(() => { this.msgSent.set(false); this.mountTurnstile(); }, 4000);
+    } catch {
+      this.msgSending.set(false);
+      this.msgError.set(true);
+      this.resetTurnstile();
+    }
   }
 
   // --- Cal.com integration (via our serverless /api proxy) ----------------
@@ -173,6 +293,7 @@ export class ContactComponent {
           start: this.appt.slotIso || this.composeIso(),
           name: this.appt.name,
           email: this.appt.email,
+          phone: this.appt.phone,
           company: this.appt.company,
           notes: this.appt.message,
           service: serviceTitle,
@@ -183,6 +304,7 @@ export class ContactComponent {
       if (!res.ok) throw new Error('book');
       this.apptSending.set(false);
       this.apptSent.set(true);
+      this.scrollToPanel();
     } catch {
       this.apptSending.set(false);
       this.apptError.set(true);
@@ -208,4 +330,5 @@ export class ContactComponent {
 
   private validEmail(v: string): boolean { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }
   private validName(v: string): boolean { return v.trim().length >= 2; }
+  private validPhone(v: string): boolean { return (v.match(/\d/g) || []).length >= 8; }
 }

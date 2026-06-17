@@ -5,7 +5,10 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-html, body { margin: 0; padding: 0; background: var(--paper); min-height: 100%; overflow-x: hidden; }
+/* overflow-x: clip (not hidden) — `hidden` on the root makes it a scroll container,
+   which on iOS Safari breaks position:fixed + safe-area insets (content bled above the navbar
+   on Dynamic Island iPhones). `clip` hides horizontal overflow without that side effect. */
+html, body { margin: 0; padding: 0; background: var(--paper); min-height: 100%; overflow-x: clip; }
 ::selection { background: var(--gold-bright); color: var(--ink); }
 
 .container { width: 100%; max-width: var(--container); margin: 0 auto; padding-inline: clamp(22px, 5vw, 64px); }

@@ -17,13 +17,13 @@ interface Member { name: string; roleKey: string; photo: string; linkedin: strin
 export class AboutComponent {
   readonly values = ['PRECISION', 'SPEED', 'IMPACT', 'TRANSPARENCY'];
   readonly stats: Stat[] = [
-    { key: 'WORLDWIDE',  textKey: 'WORLDWIDE_VAL' },
+    { key: 'CUSTOM',     textKey: 'CUSTOM_VAL' },
     { key: 'EXPERIENCE', value: 10, prefix: '+' },
-    { key: 'RETENTION',  value: 98, suffix: '%' },
+    { key: 'SENIOR',     textKey: 'SENIOR_VAL' },
   ];
   readonly team: Member[] = [
-    { name: 'Marlon Álvarez',    roleKey: 'ENG', photo: 'https://i.pravatar.cc/400?img=12', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
-    { name: 'Guillermo Ramírez', roleKey: 'ENG', photo: 'https://i.pravatar.cc/400?img=33', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
-    { name: 'Sergio Arce',       roleKey: 'OPS', photo: 'https://i.pravatar.cc/400?img=15', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
+    { name: 'Sergio Arce',       roleKey: 'CEO', photo: 'assets/images/sergio-arce.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
+    { name: 'Marlon Álvarez',    roleKey: 'ENG', photo: 'assets/images/marlon-alvarez.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
+    { name: 'Guillermo Ramírez', roleKey: 'ENG', photo: 'assets/images/guillermo-ramirez.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
   ];
 }

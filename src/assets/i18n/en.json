@@ -1,7 +1,7 @@
 {
   "SEO": {
-    "TITLE": "Vectis Automation Group — Automation & Software Development | San José, Costa Rica",
-    "DESCRIPTION": "Custom software development, intelligent automation and artificial intelligence. Technology agency in San José, Costa Rica."
+    "TITLE": "Vectis Automation Group — AI Automation & Custom Software | Costa Rica",
+    "DESCRIPTION": "Custom software, AI automation and intelligent agents that eliminate repetitive work. From San José, Costa Rica, for clients worldwide."
   },
   "A11Y": {
     "SKIP_TO_CONTENT": "Skip to content",
@@ -24,13 +24,14 @@
     "EYEBROW": "AUTOMATION GROUP",
     "TITLE_1": "We build the software",
     "TITLE_2": "that moves your business.",
-    "SUBTITLE": "Custom development, intelligent automation and artificial intelligence. From San José, Costa Rica, for clients all over the world.",
+    "SUBTITLE": "We automate the repetitive work that steals your hours and money. Custom software, automation and AI — from San José, Costa Rica, for clients all over the world.",
     "CTA_PRIMARY": "Book a call",
     "CTA_SECONDARY": "View capabilities",
     "TRUST_1": "Projects",
     "TRUST_2": "Satisfaction",
     "TRUST_3": "Average ROI",
-    "SCROLL": "SCROLL"
+    "SCROLL": "SCROLL",
+    "TAGLINE": "Diagnosis before prescription."
   },
   "SERVICES": {
     "EYEBROW": "CAPABILITIES",
@@ -65,49 +66,55 @@
   },
   "STATS": {
     "PROJECTS": "Time you recover each week",
-    "SATISFACTION": "Client satisfaction",
-    "ROI": "Average ROI generated",
-    "SUPPORT": "Continuous support"
+    "SATISFACTION": "Refund if we don't save you 15+ hrs/week",
+    "ROI": "From first meeting to a live system",
+    "SUPPORT": "Continuous support",
+    "GUARANTEE_VAL": "Guarantee",
+    "WEEKS_VAL": "2 wks"
   },
   "PORTFOLIO": {
     "EYEBROW": "PORTFOLIO & CLIENTS",
     "TITLE": "Work that drives impact",
     "CLIENTS_LABEL": "Trusted by leading companies",
     "TESTIMONIALS_TITLE": "Clients love working with us",
-    "NUTRIGO": {
-      "CAT": "Web App & Infrastructure",
-      "TITLE": "Nutrigo CRM",
-      "DESC": "Comprehensive platform for nutritionists with diet automation and cloud clinical CRM."
+    "CATEGORIES": {
+      "AUTOMATION": "Intelligent Automation",
+      "OPTIMIZATION": "Positioning & Audit",
+      "DEVELOPMENT": "Premium Development"
     },
-    "PROPERTY": {
-      "CAT": "Playwright & GitHub Actions",
-      "TITLE": "US Property Automation",
-      "DESC": "Automated pipeline for scraping, analyzing, and monitoring real estate properties in the US."
-    },
-    "SEO_AI": {
-      "CAT": "Digital Strategy",
-      "TITLE": "SEO & AI Optimization",
-      "DESC": "Strategy and smart engine for massive content optimization using LLM models."
-    },
-    "AERO": {
-      "CAT": "Creative Engineering",
-      "TITLE": "Aero Dynamics Showcase",
-      "DESC": "Interactive renderer and simulator of fluids and air dynamics in real-time on the web."
-    },
-    "AUDIO": {
-      "CAT": "Soundscape & Web Audio",
-      "TITLE": "Audio Scape Experience",
-      "DESC": "Interactive experience with Web Audio API synthesizers and reactive WebGL visualizers."
-    },
-    "FINTECH_UI": {
-      "CAT": "UI/UX Design & Dashboard",
-      "TITLE": "FinTech Dashboard UI",
-      "DESC": "Trading dashboard and financial analytics in real-time with fluid microinteraction transitions."
-    },
-    "DECENTRALIZED": {
-      "CAT": "Web3 & Node Infrastructure",
-      "TITLE": "Decentralized Hub",
-      "DESC": "Encrypted messaging protocol and optimized peer-to-peer decentralized exchange."
+    "SERVICES": {
+      "AI_AGENTS": {
+        "TITLE": "Autonomous AI Agents",
+        "DESCRIPTION": "Development of multi-tasking agents that execute complex business processes, make data-driven decisions, and integrate into your daily tools without human intervention."
+      },
+      "DOC_PROCESSING": {
+        "TITLE": "Intelligent Document Processing",
+        "DESCRIPTION": "Automated data extraction and structuring from invoices, contracts, and PDFs using AI. Eliminate manual data entry and reduce operational errors to zero."
+      },
+      "LEAD_SCRAPING": {
+        "TITLE": "Automated Lead Scraping",
+        "DESCRIPTION": "Advanced large-scale web scraping and automated cold outreach. Periodically capture key market data and deliver prospective leads directly into your database."
+      },
+      "CRM_SYNC": {
+        "TITLE": "CRM & Systems Synchronization",
+        "DESCRIPTION": "Seamless connection and integration of your platforms (CRMs, ERPs, payment gateways). Real-time bi-directional data pipelines to keep your team completely aligned."
+      },
+      "CUSTOMER_SUPPORT": {
+        "TITLE": "Automated Support & Response Systems",
+        "DESCRIPTION": "Next-generation customer service workflows. Immediate resolution of FAQs and scalable multi-language replies with a consistent brand voice."
+      },
+      "FINANCIAL_REPORTING": {
+        "TITLE": "Automated Financial Reporting",
+        "DESCRIPTION": "Automatic consolidation of revenue, expenses, and operational metrics. Instant generation of visual financial dashboards without compiling spreadsheets manually."
+      },
+      "SEO_AIO_AUDIT": {
+        "TITLE": "SEO, AIO & Positioning Audit",
+        "DESCRIPTION": "Advanced optimization audits for traditional search engines and AI engine optimization (AIO). Ensure your business is the top recommendation when users ask AI platforms."
+      },
+      "WEB_DEV": {
+        "TITLE": "Web App & Website Development",
+        "DESCRIPTION": "Design and development of interactive web platforms, premium portfolios, and custom applications. Fast, responsive UIs fully optimized for high client conversion."
+      }
     },
     "FINTECH": {
       "TAG": "Fintech · Web",
@@ -245,13 +252,19 @@
     "TEAM_EYEBROW": "behind the project",
     "TEAM_TITLE": "The people who build it",
     "TEAM_SUBTITLE": "A small, senior team obsessed with detail.",
-    "ROLE_ENG": "Software Engineer",
-    "ROLE_OPS": "Sales operations & logistics"
+    "ROLE_ENG": "Co-founder & Software Engineer",
+    "ROLE_OPS": "Sales operations & logistics",
+    "ROLE_CEO": "Co-Founder & CEO",
+    "CUSTOM_VAL": "Custom",
+    "STAT_CUSTOM": "Every system built for one specific client",
+    "SENIOR_VAL": "Senior",
+    "STAT_SENIOR": "Engineers behind every project"
   },
   "CONTACT": {
     "EYEBROW": "CONTACT",
     "TITLE": "Let's build something worth talking about.",
     "SUBTITLE": "Tell us about your project. We reply in under 24 hours.",
+    "WHATSAPP": "Message us on WhatsApp",
     "MODE_LABEL": "Contact type",
     "MODE_MESSAGE": "Send message",
     "MODE_APPOINTMENT": "Book appointment",
@@ -278,6 +291,8 @@
     "NEXT": "Next",
     "CONFIRM": "Confirm appointment",
     "SENDING": "Booking…",
+    "SENDING_MSG": "Sending…",
+    "CAPTCHA_ERROR": "Please complete the anti-bot check and try again.",
     "SUM_SERVICE": "Service",
     "SUM_DATE": "Date and time",
     "SUM_NAME": "Name",
@@ -297,7 +312,9 @@
     "CONSENT_PRIVACY": "Privacy Policy",
     "CONSENT_AND": " and the ",
     "CONSENT_TERMS": "Terms & Conditions",
-    "CONSENT_POST": ", and the use of my data to respond to my request."
+    "CONSENT_POST": ", and the use of my data to respond to my request.",
+    "PHONE": "Phone",
+    "PHONE_PH": "+506 8888 8888"
   },
   "FOOTER": {
     "TAGLINE": "Intelligent automation. Software development. The future is already running.",
@@ -310,10 +327,11 @@
     "EMAIL_ERROR": "Enter a valid email.",
     "SUBSCRIBE": "Subscribe",
     "SUBSCRIBED": "Thanks for subscribing!",
-    "COPYRIGHT": "Vectis Automation Group, Inc. All rights reserved.",
+    "COPYRIGHT": "Vectis Automation Group. All rights reserved.",
     "PRIVACY": "Privacy Policy",
     "NAV_TITLE": "Navigation",
-    "TERMS": "Terms & Conditions"
+    "TERMS": "Terms & Conditions",
+    "ERROR": "Couldn't subscribe. Please try again."
   },
   "FAQ": {
     "EYEBROW": "FAQ",
@@ -323,7 +341,7 @@
     "SHOW_LESS": "Show less",
     "Q1": {
       "Q": "What services does Vectis offer?",
-      "A": "We build custom software, websites and web apps, mobile apps, automations and artificial intelligence, plus integrations, APIs and data & analytics solutions."
+      "A": "We build custom software, websites and web apps, mobile apps, automations and artificial intelligence, plus integrations, APIs and data & analytics solutions. With particular strength in automating repetitive administrative processes."
     },
     "Q2": {
       "Q": "Which technologies do you specialize in?",
@@ -379,7 +397,7 @@
     "INTRO": "At Vectis Automation Group we respect your privacy. This policy explains what information we collect through our website and forms, and how we use it.",
     "S1": {
       "H": "Data controller",
-      "B": "Vectis Automation Group, based in San José, Costa Rica. For any question about your data, write to us at contacto@wearevectis.com."
+      "B": "Vectis Automation Group, based in San José, Costa Rica. For any question about your data, write to us at contact@wearevectis.com."
     },
     "S2": {
       "H": "Information we collect",
@@ -391,7 +409,7 @@
     },
     "S4": {
       "H": "Communications and newsletter",
-      "B": "If you subscribe to our newsletter, we will use your email to send you news, content and updates. You can unsubscribe at any time using the opt-out link or by writing to contacto@wearevectis.com."
+      "B": "If you subscribe to our newsletter, we will use your email to send you news, content and updates. You can unsubscribe at any time using the opt-out link or by writing to contact@wearevectis.com."
     },
     "S5": {
       "H": "Data retention",
@@ -407,7 +425,7 @@
     },
     "S8": {
       "H": "Your rights",
-      "B": "You can request access, correction or deletion of your personal data, as well as object to its processing, by writing to contacto@wearevectis.com. We will handle your request in accordance with applicable law."
+      "B": "You can request access, correction or deletion of your personal data, as well as object to its processing, by writing to contact@wearevectis.com. We will handle your request in accordance with applicable law."
     },
     "S9": {
       "H": "Changes to this policy",
@@ -463,6 +481,13 @@
     "BACK": "Back to home"
   },
   "INTRO": {
-    "LOADING": "Loading experience"
+    "LOADING": "Loading experience",
+    "SKIP": "to skip intro",
+    "SKIP_MOBILE": "Press to skip intro"
+  },
+  "PHILOSOPHY": {
+    "EYEBROW": "Our philosophy",
+    "QUOTE": "Diagnosis before prescription.",
+    "SUB": "First we understand your real problem. Then we build."
   }
 }

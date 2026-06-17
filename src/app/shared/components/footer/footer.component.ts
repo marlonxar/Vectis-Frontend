@@ -20,8 +20,11 @@ export class FooterComponent {
   termsPath(): string { return this.translate.currentLang === 'en' ? '/terms' : '/terminos'; }
   readonly year = new Date().getFullYear();
   readonly email = signal('');
+  hp = ''; // honeypot — must stay empty
   readonly subscribed = signal(false);
   readonly invalid = signal(false);
+  readonly subError = signal(false);
+  readonly sending = signal(false);
 
   readonly navLinks = [
     { id: 'inicio', key: 'NAV.HOME' },
@@ -33,10 +36,24 @@ export class FooterComponent {
 
   go(id: string): void { this.scroll.scrollToId(id); }
 
-  subscribe(): void {
+  async subscribe(): Promise<void> {
+    if (this.hp.trim()) { this.subscribed.set(true); return; } // honeypot
     const v = this.email().trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { this.invalid.set(true); return; }
-    this.invalid.set(false); this.subscribed.set(true); this.email.set('');
-    setTimeout(() => this.subscribed.set(false), 4000);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) { this.invalid.set(true); this.subError.set(false); return; }
+    this.invalid.set(false); this.subError.set(false); this.sending.set(true);
+    try {
+      const res = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: v, hp: this.hp }),
+      });
+      const data = await res.json().catch(() => ({} as Record<string, unknown>));
+      this.sending.set(false);
+      if (!res.ok || !data['ok']) { this.subError.set(true); return; }
+      this.subscribed.set(true); this.email.set('');
+      setTimeout(() => this.subscribed.set(false), 6000);
+    } catch {
+      this.sending.set(false); this.subError.set(true);
+    }
   }
 }

@@ -8,3 +8,5 @@
 .num { font-size: clamp(40px, 5.5vw, 74px); font-weight: 800; color: var(--gold-bright); letter-spacing: -0.04em; line-height: 1; font-variant-numeric: tabular-nums; }
 .label { font-size: 13px; font-weight: 600; letter-spacing: 0.06em; color: var(--text-inv-2); text-transform: uppercase; }
 @media (max-width: 720px) { .stats-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-5); } .stat { border-left: none; } }
+
+.num.txt { font-size: clamp(24px, 3vw, 38px); font-variant-numeric: normal; }

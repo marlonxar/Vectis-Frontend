@@ -33,6 +33,7 @@ export class AppComponent implements OnInit {
 
   readonly currentLang = signal<'es' | 'en'>('es');
   readonly progress = signal(0);
+  readonly showIntro = signal(false);
 
   @HostListener('window:scroll')
   onScroll(): void {
@@ -42,6 +43,11 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Show the intro loader only when the site is opened on the home page (not on
+    // privacy, terms, 404, etc.).
+    const path = (this.doc.defaultView?.location.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
+    this.showIntro.set(path === '/' || path === '/en');
+
     this.useLang(this.detectLang());
     this.updateCanonical(this.router.url);
     this.router.events.subscribe((e) => { if (e instanceof NavigationEnd) this.updateCanonical(e.urlAfterRedirects); });

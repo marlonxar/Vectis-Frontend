@@ -15,7 +15,7 @@
 .info a:hover { color: var(--gold-bright); }
 
 /* Panel */
-.contact-panel { background: var(--ink-soft); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: clamp(22px, 3vw, 38px); box-shadow: 0 30px 80px -40px rgba(231,171,46,0.18); }
+.contact-panel { background: var(--ink-soft); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: clamp(22px, 3vw, 38px); box-shadow: 0 30px 80px -40px rgba(231,171,46,0.18); scroll-margin-top: 90px; }
 
 .mode-toggle { position: relative; display: grid; grid-template-columns: 1fr 1fr; background: var(--ink); border: 1px solid var(--line-light); border-radius: var(--radius-pill); padding: 5px; margin-bottom: var(--space-5); }
 .mode-toggle .pill { position: absolute; top: 5px; left: 5px; width: calc(50% - 5px); height: calc(100% - 10px); background: var(--gold-bright); border-radius: var(--radius-pill); transition: transform var(--dur) var(--ease); }
@@ -37,7 +37,10 @@
 .consent a { color: var(--gold-bright); text-decoration: underline; text-underline-offset: 2px; }
 .consent a:hover { color: var(--gold-soft); }
 
+.hp-field { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.turnstile-box { margin: var(--space-3) 0 var(--space-2); min-height: 65px; }
 .full { width: 100%; margin-top: var(--space-2); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .form-err { color: #FF9B9B; font-size: 14px; margin-bottom: var(--space-3); }
 
 .success { text-align: center; padding: var(--space-6) 0; }
@@ -90,3 +93,24 @@
 
 @media (max-width: 920px) { .contact-grid { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .row2, .svc-grid { grid-template-columns: 1fr; } .slot-grid { grid-template-columns: repeat(2, 1fr); } .wiz-nav { flex-direction: column-reverse; } }
+
+/* WhatsApp quick-contact button */
+.wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: #25d366;
+  color: #07321b;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 8px 24px -10px rgba(37, 211, 102, 0.6);
+}
+.wa-btn:hover { transform: translateY(-2px); background: #20c25c; box-shadow: 0 12px 30px -10px rgba(37, 211, 102, 0.7); }
+.wa-btn:active { transform: translateY(0); }
+.wa-btn svg { flex: none; }

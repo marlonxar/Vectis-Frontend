@@ -1,8 +1,12 @@
-// Vercel serverless function — creates a real Cal.com booking (which syncs to your
-// connected Google Calendar). Keeps the API key server-side; the frontend never sees it.
+// Vercel serverless function — creates a real Cal.com booking via API v2.
+// The booking syncs to the Google Calendar connected in Cal.com. The API key
+// stays server-side; the frontend never sees it.
 // Env vars:
 //   CAL_API_KEY        -> your Cal.com API key
-//   CAL_EVENT_TYPE_ID  -> numeric event type id to book
+//   CAL_EVENT_TYPE_ID  -> numeric event type id (defaults to the 30-min event)
+
+const CAL_API = 'https://api.cal.com/v2';
+const BOOKINGS_VERSION = '2024-08-13';
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -22,34 +26,41 @@ module.exports = async (req, res) => {
       ? req.body
       : JSON.parse(req.body || '{}');
 
-    const { start, name, email, company, notes, service, timeZone, language } = body;
+    const { start, name, email, phone, company, notes, service, timeZone, language } = body;
     if (!start || !name || !email) {
       res.status(400).json({ error: 'missing_fields' });
       return;
     }
 
-    const notesParts = [
-      service ? `Servicio: ${service}` : '',
+    // Goes into the booking's "Additional notes" field → syncs to the calendar event description.
+    const description = [
+      service ? `Servicio de interés: ${service}` : '',
+      phone ? `Teléfono: ${phone}` : '',
       company ? `Empresa: ${company}` : '',
-      notes || '',
-    ].filter(Boolean);
+      notes ? `Mensaje: ${notes}` : '',
+    ].filter(Boolean).join('\n');
 
     const payload = {
-      eventTypeId: Number(eventTypeId),
       start,
-      responses: {
+      eventTypeId: Number(eventTypeId),
+      attendee: {
         name,
         email,
-        notes: notesParts.join(' · '),
+        ...(phone ? { phoneNumber: String(phone).trim() } : {}),
+        timeZone: timeZone || 'UTC',
+        language: language || 'es',
       },
-      timeZone: timeZone || 'UTC',
-      language: language || 'es',
-      metadata: {},
+      ...(description ? { bookingFieldsResponses: { notes: description } } : {}),
+      metadata: service ? { service: String(service).slice(0, 480) } : {},
     };
 
-    const r = await fetch(`https://api.cal.com/v1/bookings?apiKey=${encodeURIComponent(apiKey)}`, {
+    const r = await fetch(`${CAL_API}/bookings`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+        'cal-api-version': BOOKINGS_VERSION,
+      },
       body: JSON.stringify(payload),
     });
     const data = await r.json();
@@ -59,7 +70,8 @@ module.exports = async (req, res) => {
       return;
     }
 
-    res.status(200).json({ ok: true, id: (data && (data.id || (data.booking && data.booking.id))) || null });
+    const booking = (data && data.data) || data;
+    res.status(200).json({ ok: true, id: (booking && (booking.uid || booking.id)) || null });
   } catch (e) {
     res.status(500).json({ error: 'server_error' });
   }

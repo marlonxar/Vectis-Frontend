@@ -1,7 +1,7 @@
 {
   "SEO": {
-    "TITLE": "Vectis Automation Group — Automatización & Desarrollo de Software | San José, Costa Rica",
-    "DESCRIPTION": "Desarrollo de software a medida, automatización inteligente e inteligencia artificial. Agencia tecnológica en San José, Costa Rica."
+    "TITLE": "Vectis Automation Group — Automatización con IA & Software a Medida | Costa Rica",
+    "DESCRIPTION": "Software a medida, automatización con IA y agentes inteligentes que eliminan el trabajo repetitivo. Desde San José, Costa Rica, para clientes en todo el mundo."
   },
   "A11Y": {
     "SKIP_TO_CONTENT": "Saltar al contenido",
@@ -24,13 +24,14 @@
     "EYEBROW": "AUTOMATION GROUP",
     "TITLE_1": "Construimos el software",
     "TITLE_2": "que mueve tu negocio.",
-    "SUBTITLE": "Desarrollo a medida, automatización inteligente e inteligencia artificial. Desde San José, Costa Rica, para clientes en todo el mundo.",
+    "SUBTITLE": "Automatizamos el trabajo repetitivo que te roba horas y dinero. Software a medida, automatización e IA — desde San José, Costa Rica, para clientes en todo el mundo.",
     "CTA_PRIMARY": "Agenda una llamada",
     "CTA_SECONDARY": "Ver capacidades",
     "TRUST_1": "Proyectos",
     "TRUST_2": "Satisfacción",
     "TRUST_3": "ROI promedio",
-    "SCROLL": "SCROLL"
+    "SCROLL": "SCROLL",
+    "TAGLINE": "Diagnóstico antes que prescripción."
   },
   "SERVICES": {
     "EYEBROW": "CAPACIDADES",
@@ -65,49 +66,55 @@
   },
   "STATS": {
     "PROJECTS": "Tiempo que recuperas por semana",
-    "SATISFACTION": "Satisfacción del cliente",
-    "ROI": "ROI promedio generado",
-    "SUPPORT": "Soporte continuo"
+    "SATISFACTION": "Devolución si no ahorramos 15+ h/semana",
+    "ROI": "De la primera reunión al sistema funcionando",
+    "SUPPORT": "Soporte continuo",
+    "GUARANTEE_VAL": "Garantía",
+    "WEEKS_VAL": "2 sem"
   },
   "PORTFOLIO": {
     "EYEBROW": "PORTAFOLIO & CLIENTES",
     "TITLE": "Proyectos que generan impacto",
     "CLIENTS_LABEL": "Empresas que confían en nosotros",
     "TESTIMONIALS_TITLE": "Lo que dicen nuestros clientes",
-    "NUTRIGO": {
-      "CAT": "Web App & Infraestructura",
-      "TITLE": "Nutrigo CRM",
-      "DESC": "Plataforma integral para nutricionistas con automatización de dietas y CRM clínico en la nube."
+    "CATEGORIES": {
+      "AUTOMATION": "Automatización Inteligente",
+      "OPTIMIZATION": "Posicionamiento y Auditoría",
+      "DEVELOPMENT": "Desarrollo Premium"
     },
-    "PROPERTY": {
-      "CAT": "Playwright & GitHub Actions",
-      "TITLE": "US Property Automation",
-      "DESC": "Pipeline automatizado para el scraping, análisis y monitoreo de propiedades inmobiliarias en EE.UU."
-    },
-    "SEO_AI": {
-      "CAT": "Estrategia Digital",
-      "TITLE": "SEO & AI Optimization",
-      "DESC": "Estrategia y motor inteligente para optimización masiva de contenidos mediante modelos LLM."
-    },
-    "AERO": {
-      "CAT": "Ingeniería Creativa",
-      "TITLE": "Aero Dynamics Showcase",
-      "DESC": "Renderizador y simulador interactivo de fluidos y dinámicas de aire en tiempo real en la web."
-    },
-    "AUDIO": {
-      "CAT": "Soundscape & Web Audio",
-      "TITLE": "Audio Scape Experience",
-      "DESC": "Experiencia interactiva con sintetizadores Web Audio API y visualizadores WebGL reactivos."
-    },
-    "FINTECH_UI": {
-      "CAT": "Diseño UI/UX & Dashboard",
-      "TITLE": "FinTech Dashboard UI",
-      "DESC": "Dashboard de trading y analíticas financieras en tiempo real con transiciones fluidas de microinteracciones."
-    },
-    "DECENTRALIZED": {
-      "CAT": "Web3 & Infraestructura de Nodos",
-      "TITLE": "Decentralized Hub",
-      "DESC": "Protocolo de mensajería cifrada e intercambio descentralizado peer-to-peer optimizado."
+    "SERVICES": {
+      "AI_AGENTS": {
+        "TITLE": "Agentes de IA Autónomos",
+        "DESCRIPTION": "Desarrollo de agentes multi-tarea que ejecutan procesos de negocio complejos, toman decisiones basadas en datos y se integran con tus herramientas diarias sin intervención humana."
+      },
+      "DOC_PROCESSING": {
+        "TITLE": "Procesamiento Inteligente de Documentos",
+        "DESCRIPTION": "Extracción y estructuración automática de datos desde facturas, contratos y PDFs utilizando IA. Elimina la digitación manual y reduce los errores operativos a cero."
+      },
+      "LEAD_SCRAPING": {
+        "TITLE": "Extracción Automatizada de Prospectos",
+        "DESCRIPTION": "Scraping avanzado de datos a gran escala y prospección en frío automatizada. Captura información clave de mercados específicos de forma recurrente y directa a tu base de datos."
+      },
+      "CRM_SYNC": {
+        "TITLE": "Sincronización de CRM y Sistemas",
+        "DESCRIPTION": "Conexión e integración total de tus plataformas (CRMs, ERPs, pasarelas de pago). Flujos de datos bidireccionales en tiempo real para mantener a tu equipo siempre alineado."
+      },
+      "CUSTOMER_SUPPORT": {
+        "TITLE": "Soporte y Respuestas Automatizadas",
+        "DESCRIPTION": "Sistemas de atención al cliente de última generación. Resolución inmediata de consultas frecuentes y escalabilidad de respuestas multi-idioma con tono de marca consistente."
+      },
+      "FINANCIAL_REPORTING": {
+        "TITLE": "Automatización de Reportes Financieros",
+        "DESCRIPTION": "Consolidación automática de ingresos, gastos y métricas operativas. Generación de dashboards visuales de finanzas sin necesidad de compilar hojas de cálculo manualmente."
+      },
+      "SEO_AIO_AUDIT": {
+        "TITLE": "Auditoría SEO, AIO y Posicionamiento",
+        "DESCRIPTION": "Auditorías de optimización avanzada para motores de búsqueda tradicionales y optimización para motores de IA (AIO). Asegura que tu negocio sea la primera opción recomendada por las inteligencias artificiales."
+      },
+      "WEB_DEV": {
+        "TITLE": "Desarrollo de Apps y Páginas Web",
+        "DESCRIPTION": "Diseño y desarrollo de plataformas web interactivas, portafolios premium y aplicaciones a la medida. Interfaces rápidas, responsivas y optimizadas para la conversión de clientes."
+      }
     },
     "FINTECH": {
       "TAG": "Fintech · Web",
@@ -245,13 +252,19 @@
     "TEAM_EYEBROW": "detrás del proyecto",
     "TEAM_TITLE": "Las personas que lo construyen",
     "TEAM_SUBTITLE": "Un equipo pequeño y senior, obsesionado con el detalle.",
-    "ROLE_ENG": "Software Engineer",
-    "ROLE_OPS": "Operaciones de ventas y logística"
+    "ROLE_ENG": "Co-founder & Software Engineer",
+    "ROLE_OPS": "Operaciones de ventas y logística",
+    "ROLE_CEO": "Co-Founder & CEO",
+    "CUSTOM_VAL": "A medida",
+    "STAT_CUSTOM": "Cada sistema diseñado para un cliente específico",
+    "SENIOR_VAL": "Senior",
+    "STAT_SENIOR": "Ingenieros detrás de cada proyecto"
   },
   "CONTACT": {
     "EYEBROW": "CONTACTO",
     "TITLE": "Construyamos algo que valga la pena.",
     "SUBTITLE": "Cuéntanos sobre tu proyecto. Te respondemos en menos de 24 horas.",
+    "WHATSAPP": "Escríbenos por WhatsApp",
     "MODE_LABEL": "Tipo de contacto",
     "MODE_MESSAGE": "Enviar mensaje",
     "MODE_APPOINTMENT": "Agendar cita",
@@ -278,6 +291,8 @@
     "NEXT": "Siguiente",
     "CONFIRM": "Confirmar cita",
     "SENDING": "Agendando…",
+    "SENDING_MSG": "Enviando…",
+    "CAPTCHA_ERROR": "Completa la verificación anti-robot e inténtalo de nuevo.",
     "SUM_SERVICE": "Servicio",
     "SUM_DATE": "Fecha y hora",
     "SUM_NAME": "Nombre",
@@ -297,7 +312,9 @@
     "CONSENT_PRIVACY": "Política de Privacidad",
     "CONSENT_AND": " y los ",
     "CONSENT_TERMS": "Términos y Condiciones",
-    "CONSENT_POST": ", y el uso de mis datos para responder a mi solicitud."
+    "CONSENT_POST": ", y el uso de mis datos para responder a mi solicitud.",
+    "PHONE": "Teléfono",
+    "PHONE_PH": "+506 8888 8888"
   },
   "FOOTER": {
     "TAGLINE": "Automatización inteligente. Desarrollo de software. El futuro ya opera.",
@@ -310,10 +327,11 @@
     "EMAIL_ERROR": "Ingresa un email válido.",
     "SUBSCRIBE": "Suscribirse",
     "SUBSCRIBED": "¡Gracias por suscribirte!",
-    "COPYRIGHT": "Vectis Automation Group, Inc. Todos los derechos reservados.",
+    "COPYRIGHT": "Vectis Automation Group. Todos los derechos reservados.",
     "PRIVACY": "Política de Privacidad",
     "NAV_TITLE": "Navegación",
-    "TERMS": "Términos y Condiciones"
+    "TERMS": "Términos y Condiciones",
+    "ERROR": "No se pudo suscribir. Intenta de nuevo."
   },
   "FAQ": {
     "EYEBROW": "FAQ",
@@ -323,7 +341,7 @@
     "SHOW_LESS": "Ver menos",
     "Q1": {
       "Q": "¿Qué servicios ofrece Vectis?",
-      "A": "Desarrollamos software a la medida, sitios y aplicaciones web, apps móviles, automatizaciones e inteligencia artificial, además de integraciones, APIs y soluciones de datos y analítica."
+      "A": "Desarrollamos software a la medida, sitios y aplicaciones web, apps móviles, automatizaciones e inteligencia artificial, además de integraciones, APIs y soluciones de datos y analítica. Con especial fortaleza en la automatización de procesos administrativos repetitivos."
     },
     "Q2": {
       "Q": "¿En qué tecnologías se especializan?",
@@ -379,7 +397,7 @@
     "INTRO": "En Vectis Automation Group respetamos tu privacidad. Esta política explica qué información recopilamos a través de nuestro sitio web y formularios, y cómo la utilizamos.",
     "S1": {
       "H": "Responsable del tratamiento",
-      "B": "Vectis Automation Group, con sede en San José, Costa Rica. Para cualquier consulta sobre tus datos puedes escribirnos a contacto@wearevectis.com."
+      "B": "Vectis Automation Group, con sede en San José, Costa Rica. Para cualquier consulta sobre tus datos puedes escribirnos a contact@wearevectis.com."
     },
     "S2": {
       "H": "Información que recopilamos",
@@ -391,7 +409,7 @@
     },
     "S4": {
       "H": "Comunicaciones y boletín",
-      "B": "Si te suscribes a nuestro boletín, usaremos tu correo para enviarte novedades, contenidos y actualizaciones. Puedes darte de baja en cualquier momento usando el enlace de cancelación o escribiéndonos a contacto@wearevectis.com."
+      "B": "Si te suscribes a nuestro boletín, usaremos tu correo para enviarte novedades, contenidos y actualizaciones. Puedes darte de baja en cualquier momento usando el enlace de cancelación o escribiéndonos a contact@wearevectis.com."
     },
     "S5": {
       "H": "Conservación de los datos",
@@ -407,7 +425,7 @@
     },
     "S8": {
       "H": "Tus derechos",
-      "B": "Puedes solicitar el acceso, la rectificación o la eliminación de tus datos personales, así como oponerte a su tratamiento, escribiéndonos a contacto@wearevectis.com. Atenderemos tu solicitud conforme a la legislación aplicable."
+      "B": "Puedes solicitar el acceso, la rectificación o la eliminación de tus datos personales, así como oponerte a su tratamiento, escribiéndonos a contact@wearevectis.com. Atenderemos tu solicitud conforme a la legislación aplicable."
     },
     "S9": {
       "H": "Cambios a esta política",
@@ -463,6 +481,13 @@
     "BACK": "Volver al inicio"
   },
   "INTRO": {
-    "LOADING": "Cargando experiencia"
+    "LOADING": "Cargando experiencia",
+    "SKIP": "para saltar la intro",
+    "SKIP_MOBILE": "Toca para saltar la intro"
+  },
+  "PHILOSOPHY": {
+    "EYEBROW": "Nuestra filosofía",
+    "QUOTE": "Diagnóstico antes que prescripción.",
+    "SUB": "Primero entendemos tu problema real. Después construimos."
   }
 }
