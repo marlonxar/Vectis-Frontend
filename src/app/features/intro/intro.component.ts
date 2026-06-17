@@ -45,7 +45,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private exited = false;
   private reduced = false;
   private lightState = false;
-  private filterOK = false;   // canvas ctx.filter support (older iOS Safari lacks it)
   private phrase1 = 'Tu tiempo vuelve.';
   private phrase2 = 'El trabajo repetitivo, automatizado.';
 
@@ -162,7 +161,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
       this.phrase1 = 'Get your time back.';
       this.phrase2 = 'Repetitive work, automated.';
     }
-    this.detectFilter();
     this.readGold();
     this.video = document.createElement('video');
     this.video.src = 'assets/videos/background.mp4';
@@ -175,14 +173,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.running = true;
     this.startTime = performance.now();
     this.loop();
-  }
-
-  /** Detect canvas ctx.filter support (Safari added it late; older iOS lacks it). */
-  private detectFilter(): void {
-    try {
-      const p = document.createElement('canvas').getContext('2d');
-      if (p) { p.filter = 'grayscale(1)'; this.filterOK = p.filter === 'grayscale(1)'; }
-    } catch { this.filterOK = false; }
   }
 
   /** Pull the brand gold from --gold-bright so the dot/underline stay in sync with the theme. */
@@ -201,7 +191,6 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private runReduced(): void {
     this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
     this.resize();
-    this.detectFilter();
     this.readGold();
     this.makeSprites();
     this.computeParticles();
@@ -301,7 +290,11 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     c.fillStyle = this.vignette; c.fillRect(0, 0, this.w, this.h);
   }
 
-  /** Draw the video cover-fit, desaturated + darkened (or washed white during the switch). */
+  /**
+   * Draw the video cover-fit, desaturated + darkened (or washed white during the switch).
+   * Uses canvas blend modes (not ctx.filter): Safari accepts ctx.filter but does NOT apply it
+   * to drawImage of a <video>, so the video stayed in colour (blue) on iOS.
+   */
   private drawVideoLayer(mode: 'dark' | 'white'): void {
     const c = this.ctx;
     c.fillStyle = this.rgb(this.BASE); c.fillRect(0, 0, this.w, this.h);
@@ -312,33 +305,27 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const dw = vw * scale, dh = vh * scale;
     const dx = (this.w - dw) / 2, dy = (this.h - dh) / 2;
 
-    if (this.filterOK) {
+    c.drawImage(this.video, dx, dy, dw, dh);
+
+    // desaturate to grayscale ('color' blend with a gray source removes hue + saturation)
+    c.save();
+    c.globalCompositeOperation = 'color';
+    c.fillStyle = 'rgb(128,128,128)';
+    c.fillRect(0, 0, this.w, this.h);
+    c.restore();
+
+    if (mode === 'dark') {
       c.save();
-      c.filter = mode === 'white'
-        ? 'grayscale(1) brightness(1.9) contrast(0.85)'
-        : 'grayscale(1) contrast(1.05) brightness(0.5)';
-      c.drawImage(this.video, dx, dy, dw, dh);
-      c.restore();
-    } else {
-      // Fallback (older iOS Safari has no canvas ctx.filter): desaturate + darken via blend modes
-      c.drawImage(this.video, dx, dy, dw, dh);
-      c.save();
-      c.globalCompositeOperation = 'saturation';          // → grayscale
-      c.fillStyle = 'hsl(0,0%,50%)';
+      c.globalCompositeOperation = 'multiply';   // darken (~brightness 0.5)
+      c.fillStyle = 'rgb(120,120,120)';
       c.fillRect(0, 0, this.w, this.h);
       c.restore();
-      if (mode === 'dark') {
-        c.save();
-        c.globalCompositeOperation = 'multiply';           // → ~brightness 0.5
-        c.fillStyle = 'rgb(120,120,120)';
-        c.fillRect(0, 0, this.w, this.h);
-        c.restore();
-      }
+      c.fillStyle = 'rgba(9,9,11,0.4)';
+      c.fillRect(0, 0, this.w, this.h);
+    } else {
+      c.fillStyle = 'rgba(255,255,255,0.8)';
+      c.fillRect(0, 0, this.w, this.h);
     }
-
-    const whiteScrim = this.filterOK ? 'rgba(255,255,255,0.62)' : 'rgba(255,255,255,0.8)';
-    c.fillStyle = mode === 'white' ? whiteScrim : 'rgba(9,9,11,0.4)';
-    c.fillRect(0, 0, this.w, this.h);
   }
 
   /** Video (desaturated + darkened) revealed by the grid bottom -> top. */
