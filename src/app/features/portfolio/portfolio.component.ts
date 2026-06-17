@@ -47,8 +47,20 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChildren("listVideo") listVideos!: QueryList<
     ElementRef<HTMLVideoElement>
   >;
+  @ViewChildren("spiralVideo") spiralVideos!: QueryList<
+    ElementRef<HTMLVideoElement>
+  >;
+
+  private sectionInView = false;
+  private spiralIO?: IntersectionObserver;
 
   constructor() {
+    // Play/pause the spiral videos when the view mode changes (e.g. mobile forces 'list')
+    effect(() => {
+      this.viewMode();
+      requestAnimationFrame(() => this.updateSpiralPlayback());
+    });
+
     effect(() => {
       const expandedIdx = this.expandedIndex();
       // Ensure we query and control videos after the DOM updates
@@ -198,8 +210,40 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
       this.ngZone.runOutsideAngular(() => {
         this.setupPhysicsLoop();
         this.setupEventListeners();
+        this.setupSectionObserver();
       });
     }
+  }
+
+  /** Only decode/play the spiral videos while the portfolio section is on screen. */
+  private setupSectionObserver() {
+    const el = this.projectsSectionEl?.nativeElement;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      this.sectionInView = true;
+      this.updateSpiralPlayback();
+      return;
+    }
+    this.spiralIO = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) this.sectionInView = e.isIntersecting;
+        this.updateSpiralPlayback();
+      },
+      { root: null, rootMargin: "300px 0px", threshold: 0 },
+    );
+    this.spiralIO.observe(el);
+    this.eventCleanup.push(() => this.spiralIO?.disconnect());
+  }
+
+  private updateSpiralPlayback() {
+    const shouldPlay = this.sectionInView && this.viewMode() === "spiral";
+    this.spiralVideos?.forEach((ref) => {
+      const v = ref.nativeElement;
+      if (shouldPlay) {
+        v.play().catch(() => { /* ignored */ });
+      } else {
+        v.pause();
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -208,6 +252,7 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.animationFrameId) {
         cancelAnimationFrame(this.animationFrameId);
       }
+      this.spiralIO?.disconnect();
       this.eventCleanup.forEach((clean) => clean());
     }
   }

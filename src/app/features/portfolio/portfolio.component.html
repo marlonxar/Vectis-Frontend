@@ -43,13 +43,13 @@
             <!-- Project Video Background/Preview -->
             <div class="card-media">
               <video
+                #spiralVideo
                 [src]="project.videoUrl"
-                autoplay
                 loop
                 muted
                 [muted]="true"
                 playsinline
-                preload="metadata"
+                preload="none"
                 disablepictureinpicture
                 aria-hidden="true"
               ></video>
