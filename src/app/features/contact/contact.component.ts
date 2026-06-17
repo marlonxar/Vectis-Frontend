@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject, PLATFORM_ID, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, computed, signal, inject, PLATFORM_ID, AfterViewInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -24,7 +24,7 @@ declare global { interface Window { turnstile?: TurnstileApi; } }
   styleUrl: './contact.component.scss',
   animations: [stepTransition, fadeSwitch],
 })
-export class ContactComponent implements AfterViewInit {
+export class ContactComponent implements AfterViewInit, OnDestroy {
   private readonly translate = inject(TranslateService);
   private readonly platformId = inject(PLATFORM_ID);
   readonly mode = signal<Mode>('message');
@@ -55,6 +55,7 @@ export class ContactComponent implements AfterViewInit {
   readonly turnstileToken = signal('');
   private turnstileId?: string;
   private turnstileScript?: Promise<void>;
+  private turnstileIO?: IntersectionObserver;
 
   // Appointment wizard
   readonly step = signal(1);
@@ -115,7 +116,25 @@ export class ContactComponent implements AfterViewInit {
     return cells;
   });
 
-  ngAfterViewInit(): void { if (this.mode() === 'message') this.mountTurnstile(); }
+  // Defer Turnstile (~327 KB) until the contact section approaches the viewport,
+  // so it is not downloaded/executed on every initial page load.
+  ngAfterViewInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    const el = this.contactPanel?.nativeElement;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      if (this.mode() === 'message') this.mountTurnstile();
+      return;
+    }
+    this.turnstileIO = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        this.turnstileIO?.disconnect();
+        if (this.mode() === 'message') this.mountTurnstile();
+      }
+    }, { root: null, rootMargin: '400px 0px', threshold: 0 });
+    this.turnstileIO.observe(el);
+  }
+
+  ngOnDestroy(): void { this.turnstileIO?.disconnect(); }
 
   setMode(m: Mode): void { this.mode.set(m); if (m === 'message') this.mountTurnstile(); }
 
