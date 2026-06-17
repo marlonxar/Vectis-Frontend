@@ -45,6 +45,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private exited = false;
   private reduced = false;
   private lightState = false;
+  private filterOK = false;   // canvas ctx.filter support (older iOS Safari lacks it)
   private phrase1 = 'Tu tiempo vuelve.';
   private phrase2 = 'El trabajo repetitivo, automatizado.';
 
@@ -161,6 +162,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
       this.phrase1 = 'Get your time back.';
       this.phrase2 = 'Repetitive work, automated.';
     }
+    this.detectFilter();
     this.readGold();
     this.video = document.createElement('video');
     this.video.src = 'assets/videos/background.mp4';
@@ -173,6 +175,14 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     this.running = true;
     this.startTime = performance.now();
     this.loop();
+  }
+
+  /** Detect canvas ctx.filter support (Safari added it late; older iOS lacks it). */
+  private detectFilter(): void {
+    try {
+      const p = document.createElement('canvas').getContext('2d');
+      if (p) { p.filter = 'grayscale(1)'; this.filterOK = p.filter === 'grayscale(1)'; }
+    } catch { this.filterOK = false; }
   }
 
   /** Pull the brand gold from --gold-bright so the dot/underline stay in sync with the theme. */
@@ -191,6 +201,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   private runReduced(): void {
     this.ctx = this.introCanvas.nativeElement.getContext('2d')!;
     this.resize();
+    this.detectFilter();
     this.readGold();
     this.makeSprites();
     this.computeParticles();
@@ -249,13 +260,13 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
       this.drawPhrase(this.phrase1, this.P1_START, t, '#ffffff', false, 1);
     } else if (t < this.SWITCH_END) {
       // SWITCH: video stays, washed light/white, letters turn black (interruptor)
-      this.drawVideoLayer('grayscale(1) brightness(1.9) contrast(0.85)', 'rgba(255,255,255,0.62)');
+      this.drawVideoLayer('white');
       const sw = t - this.SWITCH_START;                       // crisp white peak on the flip
       if (sw < 130) { c.globalAlpha = this.clamp(1 - sw / 130, 0, 1) * 0.7; c.fillStyle = '#ffffff'; c.fillRect(0, 0, this.w, this.h); c.globalAlpha = 1; }
       this.drawPhrase(this.phrase1, this.P1_START, t, '#0a0a0a', true, 1);
     } else if (t < this.V_START) {
       // back to dark video, second phrase types in, fades out quickly before the finale
-      this.drawVideoLayer('grayscale(1) contrast(1.05) brightness(0.5)', 'rgba(9,9,11,0.4)');
+      this.drawVideoLayer('dark');
       const out = this.clamp((this.V_START - t) / 220, 0, 1);
       this.drawPhrase(this.phrase2, this.P2_START, t, '#ffffff', false, out);
     } else {
@@ -290,26 +301,50 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     c.fillStyle = this.vignette; c.fillRect(0, 0, this.w, this.h);
   }
 
-  /** Draw the video cover-fit with a CSS filter + a color scrim on top. */
-  private drawVideoLayer(filter: string, scrim: string): void {
+  /** Draw the video cover-fit, desaturated + darkened (or washed white during the switch). */
+  private drawVideoLayer(mode: 'dark' | 'white'): void {
     const c = this.ctx;
     c.fillStyle = this.rgb(this.BASE); c.fillRect(0, 0, this.w, this.h);
-    if (this.videoReady && this.video.videoWidth) {
-      const vw = this.video.videoWidth, vh = this.video.videoHeight;
-      const scale = Math.max(this.w / vw, this.h / vh);
-      const dw = vw * scale, dh = vh * scale;
+    if (!(this.videoReady && this.video.videoWidth)) return;
+
+    const vw = this.video.videoWidth, vh = this.video.videoHeight;
+    const scale = Math.max(this.w / vw, this.h / vh);
+    const dw = vw * scale, dh = vh * scale;
+    const dx = (this.w - dw) / 2, dy = (this.h - dh) / 2;
+
+    if (this.filterOK) {
       c.save();
-      c.filter = filter;
-      c.drawImage(this.video, (this.w - dw) / 2, (this.h - dh) / 2, dw, dh);
+      c.filter = mode === 'white'
+        ? 'grayscale(1) brightness(1.9) contrast(0.85)'
+        : 'grayscale(1) contrast(1.05) brightness(0.5)';
+      c.drawImage(this.video, dx, dy, dw, dh);
       c.restore();
-      c.fillStyle = scrim; c.fillRect(0, 0, this.w, this.h);
+    } else {
+      // Fallback (older iOS Safari has no canvas ctx.filter): desaturate + darken via blend modes
+      c.drawImage(this.video, dx, dy, dw, dh);
+      c.save();
+      c.globalCompositeOperation = 'saturation';          // → grayscale
+      c.fillStyle = 'hsl(0,0%,50%)';
+      c.fillRect(0, 0, this.w, this.h);
+      c.restore();
+      if (mode === 'dark') {
+        c.save();
+        c.globalCompositeOperation = 'multiply';           // → ~brightness 0.5
+        c.fillStyle = 'rgb(120,120,120)';
+        c.fillRect(0, 0, this.w, this.h);
+        c.restore();
+      }
     }
+
+    const whiteScrim = this.filterOK ? 'rgba(255,255,255,0.62)' : 'rgba(255,255,255,0.8)';
+    c.fillStyle = mode === 'white' ? whiteScrim : 'rgba(9,9,11,0.4)';
+    c.fillRect(0, 0, this.w, this.h);
   }
 
   /** Video (desaturated + darkened) revealed by the grid bottom -> top. */
   private renderBackground(t: number): void {
     const c = this.ctx;
-    this.drawVideoLayer('grayscale(1) contrast(1.05) brightness(0.5)', 'rgba(9,9,11,0.4)');
+    this.drawVideoLayer('dark');
     for (const cell of this.cells) {
       const local = t - cell.delay;
       const coverA = local <= 0 ? 1 : 1 - this.ease(this.clamp(local / cell.fade, 0, 1));
@@ -470,7 +505,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     const el = t - this.V_START;
     const tSec = el / 1000;
     const bgA = this.clamp(1 - el / this.BG_FADE, 0, 1);
-    this.drawVideoLayer('grayscale(1) contrast(1.05) brightness(0.5)', 'rgba(9,9,11,0.4)');
+    this.drawVideoLayer('dark');
     if (bgA < 1) { c.fillStyle = this.rgb(this.BASE); c.globalAlpha = 1 - bgA; c.fillRect(0, 0, this.w, this.h); c.globalAlpha = 1; }
     if (!this.whiteSprite) return;
 
