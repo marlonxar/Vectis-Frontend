@@ -19,6 +19,7 @@ create table if not exists public.flows (
   status             text not null default 'DRAFT' check (status in ('ACTIVE','INACTIVE','DRAFT')),
   logo_url           text,
   background_url     text,                             -- image OR video URL
+  avatar_url         text,                             -- assistant avatar (optional; defaults to the built-in mascot)
   accent_color       text default '#E7AB2E',           -- widget accent
   intro_title        text,                             -- e.g. "Entendamos tu proyecto en 5 minutos"
   intro_subtitle     text,
@@ -42,6 +43,9 @@ create table if not exists public.flow_questions (
   created_at   timestamptz not null default now()
 );
 create index if not exists flow_questions_flow_id_idx on public.flow_questions(flow_id, order_index);
+
+-- if the flows table already existed, make sure the avatar column is present
+alter table public.flows add column if not exists avatar_url text;
 
 create table if not exists public.submissions (
   id           uuid primary key default gen_random_uuid(),

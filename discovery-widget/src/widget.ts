@@ -19,7 +19,7 @@ interface Flow {
   id: string; public_key: string; name: string; language: 'en' | 'es';
   status: 'ACTIVE' | 'INACTIVE' | 'DRAFT';
   logo_url: string | null; background_url: string | null; accent_color: string | null;
-  intro_title: string | null; intro_subtitle: string | null;
+  intro_title: string | null; intro_subtitle: string | null; avatar_url: string | null;
 }
 interface Question {
   id: string; type: QType; key: string; label: string;
@@ -113,8 +113,13 @@ const CSS = `
 
 /* stacked, conversational questions */
 .da-stack{ display:flex; flex-direction:column; gap:22px; }
-.da-qblock{ position:relative; padding-left:2px; }
+.da-qblock{ position:relative; display:flex; gap:12px; align-items:flex-start; }
 .da-qblock.enter{ animation:da-floatin .65s cubic-bezier(.2,.7,.2,1) both; }
+.da-avatar{ flex:0 0 auto; width:40px; height:40px; margin-top:2px; }
+.da-avatar svg, .da-avatar img{ width:40px; height:40px; display:block; border-radius:12px; }
+.da-avatar.speaking{ animation:da-pulse 1.1s ease-in-out infinite; transform-origin:center; }
+@keyframes da-pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.09); } }
+.da-qbubble{ flex:1 1 auto; min-width:0; }
 @keyframes da-floatin{ from{ opacity:0; transform:translateY(22px) scale(.985); } to{ opacity:1; transform:none; } }
 .da-qnum{ font-size:12px; letter-spacing:.1em; font-weight:700; color:var(--da-accent); margin:0 0 6px; }
 .da-q{ font-size:20px; font-weight:700; margin:0 0 6px; letter-spacing:-.01em; }
@@ -215,7 +220,6 @@ const CSS = `
 .da-page .da-center .da-badge{ margin:0 0 6px; }
 .da-page .da-center p{ margin-left:0; margin-right:0; max-width:48ch; }
 /* conversation-thread accent per question */
-.da-page .da-qblock{ padding-left:16px; border-left:2px solid color-mix(in srgb, var(--da-accent) 38%, var(--da-line)); }
 
 .da-pagefoot{ position:relative; z-index:2; flex:0 0 auto; padding:14px 24px 20px; text-align:center; font-size:13px; transition:color .35s ease; }
 .da-theme-dark .da-pagefoot{ color:rgba(255,255,255,.8); }
@@ -227,7 +231,7 @@ const CSS = `
 @keyframes da-fade{ from{ opacity:0; } to{ opacity:1; } }
 @media (max-width:560px){ .da-page-panel{ border-radius:16px; } .da-pagehead img{ height:34px; } }
 
-@media (prefers-reduced-motion: reduce){ .da-overlay,.da-panel,.da-btn{ transition:none; } .da-qblock.enter,.da-page-panel,.da-pagehead{ animation:none; } }
+@media (prefers-reduced-motion: reduce){ .da-overlay,.da-panel,.da-btn{ transition:none; } .da-qblock.enter,.da-page-panel,.da-pagehead,.da-avatar.speaking{ animation:none; } }
 `;
 
 /* ------------------------------------------------------------- storage -- */
@@ -277,6 +281,9 @@ const I = {
   sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
   moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z"/></svg>',
 };
+
+// Default Vectis assistant mascot (used when a flow has no avatar_url).
+const MASCOT = '<svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="vmascot" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F2C868"/><stop offset="1" stop-color="#D99A22"/></linearGradient></defs><line x1="48" y1="16" x2="48" y2="7" stroke="#E7AB2E" stroke-width="3" stroke-linecap="round"/><circle cx="48" cy="5.5" r="4" fill="#F2C868"/><rect x="10" y="16" width="76" height="68" rx="23" fill="#0D1024"/><rect x="10" y="16" width="76" height="68" rx="23" fill="none" stroke="#E7AB2E" stroke-opacity="0.45" stroke-width="2"/><circle cx="36" cy="44" r="6" fill="#F4F0E6"/><circle cx="60" cy="44" r="6" fill="#F4F0E6"/><circle cx="37.6" cy="45" r="2.2" fill="#0D1024"/><circle cx="61.6" cy="45" r="2.2" fill="#0D1024"/><path d="M33 60 L48 72 L63 60" fill="none" stroke="url(#vmascot)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isVideo = (u: string) => /\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(u);
 function esc(s: string): string { return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!)); }
@@ -439,13 +446,17 @@ class Widget {
     const q = this.questions[index - 1];
     const block = document.createElement('div'); block.className = 'da-qblock' + (animate ? ' enter' : '');
     block.setAttribute('data-block', String(index));
+    const avatar = this.flow?.avatar_url ? `<img src="${esc(this.flow.avatar_url)}" alt="" />` : MASCOT;
     block.innerHTML =
-      `<p class="da-qnum">${pad2(index)} / ${pad2(this.questions.length)}</p>
-       <h3 class="da-q">${esc(q.label)}${q.required ? '' : ` <span style="font-weight:500;font-size:14px;color:var(--da-ink-2)">(${esc(this.t.optional)})</span>`}</h3>
-       ${q.help_text ? `<p class="da-help">${esc(q.help_text)}</p>` : ''}
-       ${q.audio_url ? `<button class="da-audio" data-act="audio" data-url="${esc(q.audio_url)}" aria-label="${esc(this.t.listen)}">${I.play}<span>${esc(this.t.listen)}</span></button>` : ''}
-       ${this.fieldHtml(q)}
-       <p class="da-err" data-err role="alert"></p>`;
+      `<div class="da-avatar" aria-hidden="true">${avatar}</div>
+       <div class="da-qbubble">
+         <p class="da-qnum">${pad2(index)} / ${pad2(this.questions.length)}</p>
+         <h3 class="da-q">${esc(q.label)}${q.required ? '' : ` <span style="font-weight:500;font-size:14px;color:var(--da-ink-2)">(${esc(this.t.optional)})</span>`}</h3>
+         ${q.help_text ? `<p class="da-help">${esc(q.help_text)}</p>` : ''}
+         ${q.audio_url ? `<button class="da-audio" data-act="audio" data-url="${esc(q.audio_url)}" aria-label="${esc(this.t.listen)}">${I.play}<span>${esc(this.t.listen)}</span></button>` : ''}
+         ${this.fieldHtml(q)}
+         <p class="da-err" data-err role="alert"></p>
+       </div>`;
     stack.appendChild(block); this.wireBlock(block, q);
     if (animate) { const fld = block.querySelector<HTMLElement>('input,textarea,select,.da-opt'); fld && setTimeout(() => { fld.focus(); block.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 80); }
   }
@@ -555,13 +566,19 @@ class Widget {
   }
 
   /* ---- audio ---- */
+  private speakingAvatar: Element | null = null;
   private toggleAudio(btn: HTMLElement): void {
     const url = btn.getAttribute('data-url')!;
     if (this.audioEl && !this.audioEl.paused && this.audioEl.src === url) { this.stopAudio(); btn.innerHTML = `${I.play}<span>${esc(this.t.listen)}</span>`; return; }
     this.stopAudio(); this.audioEl = new Audio(url); this.audioEl.play().catch(() => { /* needs gesture; this click is one */ });
-    btn.innerHTML = `${I.pause}<span>${esc(this.t.listen)}</span>`; this.audioEl.onended = () => { btn.innerHTML = `${I.play}<span>${esc(this.t.listen)}</span>`; };
+    btn.innerHTML = `${I.pause}<span>${esc(this.t.listen)}</span>`;
+    const av = btn.closest('.da-qblock')?.querySelector('.da-avatar'); if (av) { av.classList.add('speaking'); this.speakingAvatar = av; }
+    this.audioEl.onended = () => { btn.innerHTML = `${I.play}<span>${esc(this.t.listen)}</span>`; this.speakingAvatar?.classList.remove('speaking'); this.speakingAvatar = null; };
   }
-  private stopAudio(): void { if (this.audioEl) { try { this.audioEl.pause(); } catch { /* noop */ } this.audioEl = null; } }
+  private stopAudio(): void {
+    if (this.audioEl) { try { this.audioEl.pause(); } catch { /* noop */ } this.audioEl = null; }
+    this.speakingAvatar?.classList.remove('speaking'); this.speakingAvatar = null;
+  }
 
   /* ---- helpers ---- */
   private currentPanel(): HTMLElement | null { return this.root.querySelector('.da-panel'); }
