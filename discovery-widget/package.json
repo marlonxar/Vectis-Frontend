@@ -1,0 +1,13 @@
+{
+  "name": "discovery-assistant-widget",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Embeddable Shadow-DOM discovery/onboarding widget (vanilla TS).",
+  "scripts": {
+    "build": "esbuild src/widget.ts --bundle --minify --format=iife --target=es2019 --outfile=dist/widget.js && node -e \"require('fs').mkdirSync('../src/assets/discovery',{recursive:true});require('fs').copyFileSync('dist/widget.js','../src/assets/discovery/widget.js')\"",
+    "dev": "esbuild src/widget.ts --bundle --format=iife --target=es2019 --outfile=dist/widget.js --watch"
+  },
+  "devDependencies": {
+    "esbuild": "^0.23.0"
+  }
+}
