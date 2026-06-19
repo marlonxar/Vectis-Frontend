@@ -14,8 +14,8 @@ interface DiscoveryAssistantApi { init: (cfg: { key: string; target: string; pag
   standalone: true,
   template: `<div #host class="da-host" [id]="hostId"></div>`,
   styles: [`
-    :host { position: fixed; inset: 0; z-index: 10000; display: block; overflow: auto; background: #0a1024; }
-    .da-host { min-height: 100%; }
+    :host { position: fixed; inset: 0; z-index: 10000; display: block; overflow: hidden; background: #08080b; }
+    .da-host { height: 100%; }
   `],
 })
 export class DiscoveryComponent implements AfterViewInit {

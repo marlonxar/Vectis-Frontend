@@ -172,7 +172,7 @@ const CSS = `
 @media (max-width:560px){ .da-overlay{ padding:0; } .da-panel{ max-width:100%; max-height:100%; height:100%; border-radius:0; } }
 
 /* ---- full-page mode (day / night) ---- */
-.da-page{ position:relative; min-height:100dvh; min-height:100vh; display:flex; flex-direction:column; overflow:hidden; transition:color .35s ease; }
+.da-page{ position:relative; height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden; transition:color .35s ease; }
 .da-page.da-theme-dark{ --da-ink:#f3f3f5; --da-ink-2:#a7adba; --da-surface:#16171c; --da-line:#2a2c34; color:#fff; }
 .da-page.da-theme-light{ --da-ink:#14161c; --da-ink-2:#5b6170; --da-surface:#ffffff; --da-line:#e7e7ea; color:#14161c; }
 
@@ -189,8 +189,10 @@ const CSS = `
     linear-gradient(150deg,#f3f1ea,#ffffff 55%,#eceef4); }
 .da-page .da-bg::after{ background:linear-gradient(180deg,rgba(8,8,10,.5),rgba(8,8,10,.78)); }
 
-.da-pagehead{ position:relative; z-index:1; padding:22px 26px; display:flex; align-items:center; justify-content:center; animation:da-fade .5s ease both; }
+.da-pagehead{ position:relative; z-index:2; flex:0 0 auto; padding:18px 26px 14px; display:flex; align-items:center; justify-content:center; animation:da-fade .5s ease both; }
+.da-pagehead-c{ display:flex; flex-direction:column; align-items:center; gap:8px; }
 .da-pagehead img{ height:40px; width:auto; border-radius:8px; }
+.da-pagetitle{ margin:0; font-size:15px; font-weight:800; letter-spacing:.01em; }
 .da-theme-btn{ position:absolute; right:18px; top:50%; transform:translateY(-50%); width:40px; height:40px; border-radius:10px;
   border:1px solid var(--da-line); background:transparent; color:inherit; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
   transition:border-color .2s ease, transform .2s ease; }
@@ -198,7 +200,7 @@ const CSS = `
 .da-theme-btn:active{ transform:translateY(-50%) scale(.92); }
 .da-theme-btn svg{ width:18px; height:18px; }
 
-.da-pagebody{ position:relative; z-index:1; flex:1; width:100%; max-width:640px; margin:0 auto; padding:8px 22px 36px;
+.da-pagebody{ position:relative; z-index:1; flex:1 1 auto; min-height:0; overflow-y:auto; width:100%; max-width:640px; margin:0 auto; padding:8px 22px 28px;
   display:flex; flex-direction:column; justify-content:flex-start; }
 .da-page-panel{ background:color-mix(in srgb, var(--da-surface) 90%, transparent); border:1px solid var(--da-line);
   border-radius:20px; overflow:visible; max-height:none; box-shadow:0 24px 70px -28px rgba(0,0,0,.55);
@@ -215,7 +217,7 @@ const CSS = `
 /* conversation-thread accent per question */
 .da-page .da-qblock{ padding-left:16px; border-left:2px solid color-mix(in srgb, var(--da-accent) 38%, var(--da-line)); }
 
-.da-pagefoot{ position:relative; z-index:1; padding:18px 24px 26px; text-align:center; font-size:13px; transition:color .35s ease; }
+.da-pagefoot{ position:relative; z-index:2; flex:0 0 auto; padding:14px 24px 20px; text-align:center; font-size:13px; transition:color .35s ease; }
 .da-theme-dark .da-pagefoot{ color:rgba(255,255,255,.8); }
 .da-theme-light .da-pagefoot{ color:rgba(20,22,28,.66); }
 .da-pagefoot a{ color:var(--da-accent); text-decoration:none; font-weight:700; }
@@ -422,7 +424,7 @@ class Widget {
     const themeBtn = `<button class="da-theme-btn" data-act="theme" aria-label="${esc(this.t.themeToggle)}">${this.theme === 'dark' ? I.sun : I.moon}</button>`;
     wrap.innerHTML =
       `${bg}
-       <header class="da-pagehead">${logo}${themeBtn}</header>
+       <header class="da-pagehead"><div class="da-pagehead-c">${logo}<p class="da-pagetitle">${esc(DA_TITLE)}</p></div>${themeBtn}</header>
        <main class="da-pagebody"><div class="da-panel da-page-panel" role="region">${this.contentHtml()}</div></main>
        <footer class="da-pagefoot">Producto desarrollado por <a href="https://www.wearevectis.com" target="_blank" rel="noopener">Vectis</a></footer>`;
     this.root.appendChild(wrap);
