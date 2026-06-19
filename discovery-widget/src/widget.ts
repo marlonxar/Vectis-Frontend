@@ -171,7 +171,13 @@ const CSS = `
 /* HERO with interactive 3D nebula (split: text left, nebula centre-right) */
 .da-hero{ position:relative; z-index:1; width:100%; display:grid; grid-template-columns:1.05fr .95fr; align-items:center; gap:clamp(20px,4vw,56px); padding:8px 4px; animation:da-fade .55s ease both; }
 .da-hero-text{ text-align:left; }
-.da-hero-title{ font-size:clamp(30px,4.4vw,48px); font-weight:800; letter-spacing:-.02em; line-height:1.04; margin:0 0 16px; }
+.da-hero-title{ font-size:clamp(36px,5.4vw,62px); font-weight:800; letter-spacing:-.025em; line-height:1.0; margin:0 0 18px;
+  background:linear-gradient(100deg,#ffffff,#E7AB2E 50%,#9db8ff); background-size:220% 100%;
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
+  filter:drop-shadow(0 2px 26px rgba(120,140,255,.28)); animation:da-sheen 9s ease-in-out infinite; }
+.da-theme-light .da-hero-title{ background:linear-gradient(100deg,#15171d,#B8881C 48%,#3a5bd0); background-size:220% 100%;
+  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 2px 16px rgba(58,91,208,.18)); }
+@keyframes da-sheen{ 0%,100%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } }
 .da-hero-sub{ color:var(--da-ink-2); font-size:clamp(15px,1.5vw,18px); line-height:1.6; margin:0 0 28px; max-width:50ch; }
 .da-hero .da-actions{ display:flex; justify-content:flex-start; }
 .da-hero .da-btn-primary{ margin-left:0; padding:15px 30px; font-size:16px; }
@@ -196,17 +202,25 @@ const CSS = `
 .da-page{ position:relative; height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden; transition:color .35s ease; }
 .da-page.da-theme-dark{ --da-ink:#f3f3f5; --da-ink-2:#a7adba; --da-surface:#16171c; --da-line:#2a2c34; color:#fff; }
 .da-page.da-theme-light{ --da-ink:#14161c; --da-ink-2:#5b6170; --da-surface:#ffffff; --da-line:#e7e7ea; color:#14161c; }
-.da-grad{ position:absolute; inset:0; z-index:0; filter:blur(7px); transform:scale(1.06); transition:opacity .35s ease; }
+.da-grad{ position:absolute; inset:0; z-index:0; filter:blur(8px); transform:scale(1.06); transition:opacity .35s ease; }
 .da-theme-dark .da-grad{ background:
-  radial-gradient(44% 44% at 84% 16%, rgba(231,171,46,.5), transparent 70%),
-  radial-gradient(56% 56% at 70% 98%, rgba(255,255,255,.13), transparent 72%),
-  radial-gradient(52% 52% at 14% 22%, rgba(38,58,120,.32), transparent 70%),
-  linear-gradient(150deg,#08080b,#0e0f14 55%,#08080b); }
+  radial-gradient(42% 42% at 80% 28%, rgba(231,171,46,.42), transparent 70%),
+  radial-gradient(46% 46% at 20% 72%, rgba(120,90,235,.30), transparent 70%),
+  radial-gradient(52% 52% at 62% 52%, rgba(60,95,210,.26), transparent 72%),
+  radial-gradient(50% 50% at 72% 96%, rgba(255,255,255,.07), transparent 72%),
+  linear-gradient(150deg,#070710,#0c0c17 55%,#070710); }
 .da-theme-light .da-grad{ background:
-  radial-gradient(44% 44% at 84% 16%, rgba(231,171,46,.3), transparent 70%),
-  radial-gradient(52% 52% at 14% 22%, rgba(40,96,210,.16), transparent 70%),
-  radial-gradient(60% 60% at 70% 98%, rgba(255,255,255,.7), transparent 72%),
-  linear-gradient(150deg,#f3f1ea,#ffffff 55%,#eceef4); }
+  radial-gradient(42% 42% at 80% 28%, rgba(231,171,46,.26), transparent 70%),
+  radial-gradient(46% 46% at 20% 72%, rgba(120,90,235,.16), transparent 70%),
+  radial-gradient(52% 52% at 62% 52%, rgba(60,95,210,.14), transparent 72%),
+  linear-gradient(150deg,#f3f1ea,#ffffff 55%,#eceef6); }
+/* futuristic grid, masked toward the centre so it fades out at the edges */
+.da-grid{ position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size:46px 46px;
+  -webkit-mask-image:radial-gradient(circle at 60% 46%, #000 0%, rgba(0,0,0,.4) 45%, transparent 72%);
+  mask-image:radial-gradient(circle at 60% 46%, #000 0%, rgba(0,0,0,.4) 45%, transparent 72%); }
+.da-theme-light .da-grid{ background-image:linear-gradient(rgba(20,30,80,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(20,30,80,.05) 1px, transparent 1px); }
 .da-page .da-bg::after{ background:linear-gradient(180deg,rgba(8,8,10,.5),rgba(8,8,10,.78)); }
 .da-pagehead{ position:relative; z-index:2; flex:0 0 auto; padding:18px 26px 14px; display:flex; align-items:center; justify-content:center; animation:da-fade .5s ease both; }
 .da-pagehead-c{ display:flex; flex-direction:column; align-items:center; gap:8px; }
@@ -233,7 +247,7 @@ const CSS = `
 @media (max-width:560px){ .da-page-panel{ border-radius:16px; } .da-pagehead img{ height:34px; } }
 
 @media (prefers-reduced-motion: reduce){ .da-overlay,.da-panel,.da-btn{ transition:none; }
-  .da-qblock,.da-page-panel,.da-pagehead,.da-hero,.da-audiobtn.playing{ animation:none; } }
+  .da-qblock,.da-page-panel,.da-pagehead,.da-hero,.da-hero-title,.da-audiobtn.playing{ animation:none; } }
 `;
 
 /* ------------------------------------------------------------- storage -- */
@@ -384,7 +398,7 @@ class Widget {
     const wrap = document.createElement('div'); wrap.className = `da-root da-page da-theme-${this.theme}`;
     wrap.style.setProperty('--da-accent', this.accent);
     const hasBg = !!this.flow?.background_url && this.screen !== 'unavailable' && this.screen !== 'error';
-    const bg = hasBg ? this.bgHtml() : `<div class="da-grad" aria-hidden="true"></div>`;
+    const bg = hasBg ? this.bgHtml() : `<div class="da-grad" aria-hidden="true"></div><div class="da-grid" aria-hidden="true"></div>`;
     const logo = this.flow?.logo_url ? `<img class="da-logo" src="${esc(this.flow.logo_url)}" alt="" />` : '';
     const themeBtn = `<button class="da-theme-btn" data-act="theme" aria-label="${esc(this.t.themeToggle)}">${this.theme === 'dark' ? I.sun : I.moon}</button>`;
     const isHero = this.screen === 'intro';
@@ -681,10 +695,14 @@ class Widget {
       const ay = spin + offY, ax = offX, cy = Math.cos(ay), sy = Math.sin(ay), cx2 = Math.cos(ax), sx2 = Math.sin(ax);
       const cX = W / 2, cY = H / 2, R = Math.min(W, H) * 0.44, focal = 2.6;
       ctx.clearRect(0, 0, W, H);
-      const cg = ctx.createRadialGradient(cX, cY, 0, cX, cY, R * 1.35);   // soft nebula core glow
-      cg.addColorStop(0, 'rgba(140,150,255,0.20)'); cg.addColorStop(0.45, 'rgba(150,80,220,0.12)'); cg.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = cg; ctx.fillRect(0, 0, W, H);
+      // dark "deep space" disc that fades to transparent → no hard square edges, looks right on light OR dark pages
+      const bd = ctx.createRadialGradient(cX, cY, 0, cX, cY, R * 1.6);
+      bd.addColorStop(0, 'rgba(6,7,18,0.94)'); bd.addColorStop(0.55, 'rgba(7,8,20,0.6)'); bd.addColorStop(1, 'rgba(7,8,20,0)');
+      ctx.fillStyle = bd; ctx.fillRect(0, 0, W, H);
       ctx.globalCompositeOperation = 'lighter';
+      const cg = ctx.createRadialGradient(cX, cY, 0, cX, cY, R * 1.3);   // layered nebula glow (blue → violet → gold)
+      cg.addColorStop(0, 'rgba(120,150,255,0.30)'); cg.addColorStop(0.4, 'rgba(165,95,235,0.17)'); cg.addColorStop(0.75, 'rgba(231,171,46,0.07)'); cg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = cg; ctx.fillRect(0, 0, W, H);
       for (const p of pts) {
         let x = p.x * cy - p.z * sy; const z1 = p.x * sy + p.z * cy; let y = p.y;
         const y2 = y * cx2 - z1 * sx2; const z = y * sx2 + z1 * cx2; y = y2;
