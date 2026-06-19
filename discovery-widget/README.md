@@ -32,21 +32,35 @@ export const SUPABASE_ANON_KEY = 'TU_ANON_KEY_PUBLICA';
 
 ---
 
-## 2. Insertar el widget en una página
+## 2. Acceder al widget (página completa por ruta)
 
-El cliente solo necesita el `key` del flujo (la URL/anon key ya van dentro del widget):
+Dentro del sitio Vectis, el asistente es una **página completa** accesible SOLO por estas rutas
+(`{id}` = `public_key` del flujo). El JS del widget se carga lazy: solo en estas rutas.
+
+```
+https://wearevectis.com/discovery-assistant/da_vectis
+https://wearevectis.com/asistente-de-descubrimiento/da_vectis
+```
+
+El layout: header con el **logo** (de la base de datos), fondo gradiente azul/dorado/blanco
+difuminado (o la imagen/video del flujo si existe), preguntas que aparecen con transición y se
+apilan, y footer “Producto desarrollado por Vectis”.
+
+### Embeber en otra web (modo flotante o inline)
+
+El widget también funciona como script embebible; el cliente solo pasa el `key`:
 
 ```html
 <script src="https://wearevectis.com/assets/discovery/widget.js"></script>
 <script>
-  DiscoveryAssistant.init({ key: "da_vectis" });
+  DiscoveryAssistant.init({ key: "da_vectis" });           // botón flotante
+  // DiscoveryAssistant.init({ key: "da_vectis", target: "#box" });          // inline
+  // DiscoveryAssistant.init({ key: "da_vectis", target: "#box", page: true }); // página completa
 </script>
 ```
 
-Solo se carga cuando la página incluye ese `<script>`; no forma parte del bundle de Vectis.
-
-**Opciones de `init`:** `key` (req.) · `target` (selector → montaje inline) ·
-`accentColor` · `position` (`bottom-right`/`bottom-left`) · y opcionalmente `supabaseUrl`/`supabaseAnonKey` si quieres sobreescribir la config.
+**Opciones de `init`:** `key` (req.) · `target` (selector) · `page` (full-page dentro del target) ·
+`accentColor` · `position` (`bottom-right`/`bottom-left`) · opcional `supabaseUrl`/`supabaseAnonKey`.
 
 ---
 

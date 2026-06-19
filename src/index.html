@@ -145,13 +145,5 @@
 </head>
 <body>
   <app-root></app-root>
-
-  <!-- Discovery Assistant widget (floating launcher). Same-origin path works locally and in prod. -->
-  <script defer src="/assets/discovery/widget.js"></script>
-  <script>
-    window.addEventListener('load', function () {
-      if (window.DiscoveryAssistant) window.DiscoveryAssistant.init({ key: 'da_vectis' });
-    });
-  </script>
 </body>
 </html>

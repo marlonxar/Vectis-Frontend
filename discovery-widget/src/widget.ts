@@ -29,6 +29,7 @@ interface Question {
 interface Config {
   key: string; supabaseUrl?: string; supabaseAnonKey?: string;
   target?: string; accentColor?: string; position?: 'bottom-right' | 'bottom-left';
+  page?: boolean;            // full-page mode (mounts inside `target`, no popup/launcher)
 }
 interface Progress { flowKey: string; currentStep: number; answers: Record<string, string | string[]>; updatedAt: string; }
 
@@ -169,6 +170,31 @@ const CSS = `
 @keyframes da-rot{ to{ transform:rotate(360deg); } }
 
 @media (max-width:560px){ .da-overlay{ padding:0; } .da-panel{ max-width:100%; max-height:100%; height:100%; border-radius:0; } }
+
+/* ---- full-page mode ---- */
+.da-page{ position:relative; min-height:100dvh; min-height:100vh; display:flex; flex-direction:column; color:#fff; overflow:hidden; }
+.da-grad{ position:absolute; inset:0; z-index:0;
+  background:
+    radial-gradient(48% 48% at 18% 22%, rgba(40,96,210,.7), transparent 70%),
+    radial-gradient(44% 44% at 84% 18%, rgba(231,171,46,.6), transparent 70%),
+    radial-gradient(60% 60% at 72% 96%, rgba(255,255,255,.4), transparent 72%),
+    linear-gradient(140deg,#0a1024,#121a3a 55%,#0a1024);
+  filter:blur(8px); transform:scale(1.06); }
+.da-page .da-bg::after{ background:linear-gradient(180deg,rgba(8,9,13,.55),rgba(8,9,13,.78)); }
+.da-pagehead{ position:relative; z-index:1; padding:24px 26px; display:flex; align-items:center; }
+.da-pagehead img{ height:38px; width:auto; border-radius:8px; }
+.da-pagebody{ position:relative; z-index:1; flex:1; width:100%; max-width:640px; margin:0 auto; padding:8px 22px 36px;
+  display:flex; flex-direction:column; justify-content:center; }
+.da-page-panel{ background:color-mix(in srgb, var(--da-surface) 88%, transparent); border:1px solid var(--da-line);
+  border-radius:20px; overflow:visible; max-height:none; box-shadow:0 24px 70px -28px rgba(0,0,0,.6);
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+.da-page-panel .da-legend{ padding:18px 22px 0; } .da-page-panel .da-body{ overflow:visible; padding:18px 22px 8px; }
+.da-page-panel .da-center{ padding:40px 26px; }
+.da-pagefoot{ position:relative; z-index:1; padding:18px 24px 26px; text-align:center; font-size:13px; color:rgba(255,255,255,.82); }
+.da-pagefoot a{ color:var(--da-accent); text-decoration:none; font-weight:700; }
+.da-pagefoot a:hover{ text-decoration:underline; }
+@media (max-width:560px){ .da-pagebody{ justify-content:flex-start; padding-top:6px; } .da-page-panel{ border-radius:16px; } }
+
 @media (prefers-reduced-motion: reduce){ .da-overlay,.da-panel,.da-btn{ transition:none; } .da-qblock.enter{ animation:none; } }
 `;
 
@@ -226,10 +252,12 @@ class Widget {
   private screen: 'intro' | 'resume' | 'flow' | 'success' | 'unavailable' | 'error' = 'intro';
   private viewed = false; private audioEl: HTMLAudioElement | null = null;
   private accent = '#E7AB2E'; private overlayEl: HTMLElement | null = null; private launcher: HTMLButtonElement | null = null;
+  private pageMode = false;
 
   constructor(private cfg: Config) {
     this.api = new Api(cfg.supabaseUrl || SUPABASE_URL, cfg.supabaseAnonKey || SUPABASE_ANON_KEY);
     if (cfg.accentColor) this.accent = cfg.accentColor;
+    this.pageMode = !!cfg.page;
   }
 
   async mount(): Promise<void> {
@@ -242,7 +270,7 @@ class Widget {
       const l = document.createElement('link'); l.rel = 'stylesheet'; l.setAttribute('data-da-font', '');
       l.href = 'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap'; document.head.appendChild(l);
     }
-    if (inline) await this.open(); else this.renderLauncher();
+    if (inline || this.pageMode) await this.open(); else this.renderLauncher();
   }
 
   private renderLauncher(): void {
@@ -284,6 +312,7 @@ class Widget {
 
   /* ---- shell ---- */
   private renderPanel(): void {
+    if (this.pageMode) { this.renderPage(); return; }
     const inline = !!this.cfg.target; let mount: HTMLElement;
     if (inline) {
       this.root.querySelectorAll('.da-inline').forEach((n) => n.remove());
@@ -317,21 +346,49 @@ class Widget {
     return `<div class="da-head">${logo}<p class="da-title">${esc(DA_TITLE)}</p>${close}</div>`;
   }
 
-  private shellHtml(): string {
-    if (this.screen === 'unavailable') return this.headHtml() + `<div class="da-center"><h2>${esc(DA_TITLE)}</h2><p>${esc(this.t.unavailable)}</p>${this.cfg.target ? '' : `<div class="da-actions"><button class="da-btn da-btn-ghost" data-act="close">${esc(this.t.close)}</button></div>`}</div>`;
-    if (this.screen === 'error') return this.headHtml() + `<div class="da-center"><h2>:(</h2><p>${esc(this.t.errorLoad)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="retry">${esc(this.t.retry)}</button></div></div>`;
-    if (this.screen === 'success') return this.bgHtml() + this.headHtml() + `<div class="da-center"><span class="da-badge">${I.ok}</span><h2>${esc(this.t.successTitle)}</h2><p>${esc(this.t.successBody)}</p>${this.cfg.target ? '' : `<div class="da-actions"><button class="da-btn da-btn-ghost" data-act="close">${esc(this.t.close)}</button></div>`}</div>`;
-    if (this.screen === 'resume') return this.bgHtml() + this.headHtml() + `<div class="da-center"><h2>${esc(this.t.resumeTitle)}</h2><p>${esc(this.t.resumeBody)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="resume">${esc(this.t.continue)}</button><button class="da-btn da-btn-ghost" data-act="restart">${esc(this.t.startAgain)}</button></div></div>`;
-    if (this.screen === 'intro') {
-      const logo = this.flow?.logo_url ? `<img class="da-logo-lg" src="${esc(this.flow.logo_url)}" alt="" />` : '';
-      return this.bgHtml() + `<div class="da-center">${logo}<h2>${esc(DA_TITLE)}</h2><p>${esc(this.t.welcome)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="begin">${esc(this.t.begin)}</button></div></div>`;
+  // Per-screen inner content (no bg, no header bar). Reused by popup/inline and page modes.
+  private contentHtml(): string {
+    const closeActions = this.cfg.target ? '' : `<div class="da-actions"><button class="da-btn da-btn-ghost" data-act="close">${esc(this.t.close)}</button></div>`;
+    switch (this.screen) {
+      case 'unavailable': return `<div class="da-center"><h2>${esc(DA_TITLE)}</h2><p>${esc(this.t.unavailable)}</p>${closeActions}</div>`;
+      case 'error': return `<div class="da-center"><h2>:(</h2><p>${esc(this.t.errorLoad)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="retry">${esc(this.t.retry)}</button></div></div>`;
+      case 'success': return `<div class="da-center"><span class="da-badge">${I.ok}</span><h2>${esc(this.t.successTitle)}</h2><p>${esc(this.t.successBody)}</p>${closeActions}</div>`;
+      case 'resume': return `<div class="da-center"><h2>${esc(this.t.resumeTitle)}</h2><p>${esc(this.t.resumeBody)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="resume">${esc(this.t.continue)}</button><button class="da-btn da-btn-ghost" data-act="restart">${esc(this.t.startAgain)}</button></div></div>`;
+      case 'intro': {
+        const logo = (!this.pageMode && this.flow?.logo_url) ? `<img class="da-logo-lg" src="${esc(this.flow.logo_url)}" alt="" />` : '';
+        return `<div class="da-center">${logo}<h2>${esc(DA_TITLE)}</h2><p>${esc(this.t.welcome)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="begin">${esc(this.t.begin)}</button></div></div>`;
+      }
+      default: { // flow
+        const last = this.revealed >= this.questions.length;
+        return `<p class="da-legend">${esc(this.t.during)}</p>
+          <div class="da-body"><div class="da-stack" data-stack></div></div>
+          <div class="da-foot"><button class="da-btn da-btn-primary" data-act="${last ? 'submit' : 'next'}">${last ? esc(this.t.finish) : esc(this.t.next)}</button></div>`;
+      }
     }
-    // flow: header + persistent legend + empty stack + footer (questions appended by appendQuestion)
-    const last = this.revealed >= this.questions.length;
-    return this.bgHtml() + this.headHtml() +
-      `<p class="da-legend">${esc(this.t.during)}</p>
-       <div class="da-body"><div class="da-stack" data-stack></div></div>
-       <div class="da-foot"><button class="da-btn da-btn-primary" data-act="${last ? 'submit' : 'next'}">${last ? esc(this.t.finish) : esc(this.t.next)}</button></div>`;
+  }
+
+  private shellHtml(): string {
+    const head = this.screen === 'intro' ? '' : this.headHtml();
+    return this.bgHtml() + head + this.contentHtml();
+  }
+
+  // Full-page mode: gradient (or DB background) + logo-only header + content card + Vectis footer.
+  private renderPage(): void {
+    this.root.querySelectorAll('.da-page').forEach((n) => n.remove());
+    const wrap = document.createElement('div'); wrap.className = 'da-root da-page';
+    wrap.style.setProperty('--da-accent', this.accent);
+    const hasBg = !!this.flow?.background_url && this.screen !== 'unavailable' && this.screen !== 'error';
+    const bg = hasBg ? this.bgHtml() : `<div class="da-grad" aria-hidden="true"></div>`;
+    const logo = this.flow?.logo_url ? `<img class="da-logo" src="${esc(this.flow.logo_url)}" alt="" />` : '';
+    wrap.innerHTML =
+      `${bg}
+       <header class="da-pagehead">${logo}</header>
+       <main class="da-pagebody"><div class="da-panel da-page-panel" role="region">${this.contentHtml()}</div></main>
+       <footer class="da-pagefoot">Producto desarrollado por <a href="https://www.wearevectis.com" target="_blank" rel="noopener">Vectis</a></footer>`;
+    this.root.appendChild(wrap);
+    this.wireShell(wrap);
+    if (this.screen === 'flow') for (let i = 1; i <= this.revealed; i++) this.appendQuestion(i, i === this.revealed);
+    else { const f = wrap.querySelector<HTMLElement>('button.da-btn-primary,.da-opt,input,textarea,select'); f && setTimeout(() => f.focus(), 60); }
   }
 
   private appendQuestion(index: number, animate: boolean): void {

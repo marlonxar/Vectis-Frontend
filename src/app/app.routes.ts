@@ -11,6 +11,10 @@ export const routes: Routes = [
   { path: 'privacy', component: PrivacyComponent },
   { path: 'terminos', component: TermsComponent },
   { path: 'terms', component: TermsComponent },
+  // Discovery Assistant — full-page, lazy-loaded (widget JS only loads on these paths)
+  { path: 'discovery-assistant/:id', loadComponent: () => import('./features/discovery/discovery.component').then((m) => m.DiscoveryComponent) },
+  { path: 'discovery-assistent/:id', loadComponent: () => import('./features/discovery/discovery.component').then((m) => m.DiscoveryComponent) },
+  { path: 'asistente-de-descubrimiento/:id', loadComponent: () => import('./features/discovery/discovery.component').then((m) => m.DiscoveryComponent) },
   { path: '404', component: NotFoundComponent },
   { path: '**', component: NotFoundComponent },
 ];
