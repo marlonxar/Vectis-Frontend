@@ -171,18 +171,14 @@ const CSS = `
 /* HERO with interactive 3D nebula (split: text left, nebula centre-right) */
 .da-hero{ position:relative; z-index:1; width:100%; display:grid; grid-template-columns:1.05fr .95fr; align-items:center; gap:clamp(20px,4vw,56px); padding:8px 4px; animation:da-fade .55s ease both; }
 .da-hero-text{ text-align:left; }
-.da-hero-title{ font-size:clamp(36px,5.4vw,62px); font-weight:800; letter-spacing:-.025em; line-height:1.0; margin:0 0 18px;
-  background:linear-gradient(100deg,#ffffff,#E7AB2E 50%,#9db8ff); background-size:220% 100%;
-  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent;
-  filter:drop-shadow(0 2px 26px rgba(120,140,255,.28)); animation:da-sheen 9s ease-in-out infinite; }
-.da-theme-light .da-hero-title{ background:linear-gradient(100deg,#15171d,#B8881C 48%,#3a5bd0); background-size:220% 100%;
-  -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; filter:drop-shadow(0 2px 16px rgba(58,91,208,.18)); }
-@keyframes da-sheen{ 0%,100%{ background-position:0% 50%; } 50%{ background-position:100% 50%; } }
+.da-hero-title{ font-size:clamp(36px,5.4vw,62px); font-weight:800; letter-spacing:-.025em; line-height:1.02; margin:0 0 18px; color:var(--da-ink); }
 .da-hero-sub{ color:var(--da-ink-2); font-size:clamp(15px,1.5vw,18px); line-height:1.6; margin:0 0 28px; max-width:50ch; }
 .da-hero .da-actions{ display:flex; justify-content:flex-start; }
 .da-hero .da-btn-primary{ margin-left:0; padding:15px 30px; font-size:16px; }
 .da-hero-visual{ position:relative; display:flex; align-items:center; justify-content:center; }
-.da-neb{ width:100%; max-width:480px; aspect-ratio:1/1; height:auto; display:block; }
+.da-neb{ width:100%; max-width:520px; aspect-ratio:1/1; height:auto; display:block;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 56%, transparent 82%);
+  mask-image:radial-gradient(circle at 50% 50%, #000 56%, transparent 82%); }
 @media (max-width:760px){
   .da-hero{ grid-template-columns:1fr; gap:6px; text-align:center; }
   .da-hero-text{ text-align:center; order:2; }
@@ -202,25 +198,16 @@ const CSS = `
 .da-page{ position:relative; height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden; transition:color .35s ease; }
 .da-page.da-theme-dark{ --da-ink:#f3f3f5; --da-ink-2:#a7adba; --da-surface:#16171c; --da-line:#2a2c34; color:#fff; }
 .da-page.da-theme-light{ --da-ink:#14161c; --da-ink-2:#5b6170; --da-surface:#ffffff; --da-line:#e7e7ea; color:#14161c; }
-.da-grad{ position:absolute; inset:0; z-index:0; filter:blur(8px); transform:scale(1.06); transition:opacity .35s ease; }
+/* minimalist background — clean deep black (or light) with one soft glow behind the nebula */
+.da-grad{ position:absolute; inset:0; z-index:0; transition:background .35s ease; }
 .da-theme-dark .da-grad{ background:
-  radial-gradient(42% 42% at 80% 28%, rgba(231,171,46,.42), transparent 70%),
-  radial-gradient(46% 46% at 20% 72%, rgba(120,90,235,.30), transparent 70%),
-  radial-gradient(52% 52% at 62% 52%, rgba(60,95,210,.26), transparent 72%),
-  radial-gradient(50% 50% at 72% 96%, rgba(255,255,255,.07), transparent 72%),
-  linear-gradient(150deg,#070710,#0c0c17 55%,#070710); }
+  radial-gradient(40% 55% at 72% 48%, rgba(120,60,220,.16), transparent 72%),
+  radial-gradient(30% 40% at 80% 60%, rgba(40,190,225,.12), transparent 72%),
+  #060509; }
 .da-theme-light .da-grad{ background:
-  radial-gradient(42% 42% at 80% 28%, rgba(231,171,46,.26), transparent 70%),
-  radial-gradient(46% 46% at 20% 72%, rgba(120,90,235,.16), transparent 70%),
-  radial-gradient(52% 52% at 62% 52%, rgba(60,95,210,.14), transparent 72%),
-  linear-gradient(150deg,#f3f1ea,#ffffff 55%,#eceef6); }
-/* futuristic grid, masked toward the centre so it fades out at the edges */
-.da-grid{ position:absolute; inset:0; z-index:0; pointer-events:none;
-  background-image:linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
-  background-size:46px 46px;
-  -webkit-mask-image:radial-gradient(circle at 60% 46%, #000 0%, rgba(0,0,0,.4) 45%, transparent 72%);
-  mask-image:radial-gradient(circle at 60% 46%, #000 0%, rgba(0,0,0,.4) 45%, transparent 72%); }
-.da-theme-light .da-grid{ background-image:linear-gradient(rgba(20,30,80,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(20,30,80,.05) 1px, transparent 1px); }
+  radial-gradient(40% 55% at 72% 48%, rgba(120,80,230,.10), transparent 72%),
+  radial-gradient(30% 40% at 80% 60%, rgba(40,170,220,.08), transparent 72%),
+  #f6f7fb; }
 .da-page .da-bg::after{ background:linear-gradient(180deg,rgba(8,8,10,.5),rgba(8,8,10,.78)); }
 .da-pagehead{ position:relative; z-index:2; flex:0 0 auto; padding:18px 26px 14px; display:flex; align-items:center; justify-content:center; animation:da-fade .5s ease both; }
 .da-pagehead-c{ display:flex; flex-direction:column; align-items:center; gap:8px; }
@@ -398,7 +385,7 @@ class Widget {
     const wrap = document.createElement('div'); wrap.className = `da-root da-page da-theme-${this.theme}`;
     wrap.style.setProperty('--da-accent', this.accent);
     const hasBg = !!this.flow?.background_url && this.screen !== 'unavailable' && this.screen !== 'error';
-    const bg = hasBg ? this.bgHtml() : `<div class="da-grad" aria-hidden="true"></div><div class="da-grid" aria-hidden="true"></div>`;
+    const bg = hasBg ? this.bgHtml() : `<div class="da-grad" aria-hidden="true"></div>`;
     const logo = this.flow?.logo_url ? `<img class="da-logo" src="${esc(this.flow.logo_url)}" alt="" />` : '';
     const themeBtn = `<button class="da-theme-btn" data-act="theme" aria-label="${esc(this.t.themeToggle)}">${this.theme === 'dark' ? I.sun : I.moon}</button>`;
     const isHero = this.screen === 'intro';
@@ -660,61 +647,55 @@ class Widget {
     }
   }
 
-  /* ---- interactive 3D nebula (canvas 2D, dependency-free) ---- */
+  /* ---- interactive energy nebula: flowing plasma particles (canvas 2D, no deps) ---- */
   private startNebula(cv: HTMLCanvasElement): void {
     const ctx = cv.getContext('2d'); if (!ctx) return;
     this.stopNebula(); this.nebStop = false;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     let W = 1, H = 1;
-    const resize = () => { const r = cv.getBoundingClientRect(); W = Math.max(1, r.width); H = Math.max(1, r.height); cv.width = Math.floor(W * dpr); cv.height = Math.floor(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    const resize = () => { const r = cv.getBoundingClientRect(); W = Math.max(1, r.width); H = Math.max(1, r.height); cv.width = Math.floor(W * dpr); cv.height = Math.floor(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); };
     resize();
-    const sprite = (r: number, g: number, b: number) => { const d = 44, c = document.createElement('canvas'); c.width = d; c.height = d; const x = c.getContext('2d')!; const gr = x.createRadialGradient(d / 2, d / 2, 0, d / 2, d / 2, d / 2); gr.addColorStop(0, `rgba(${r},${g},${b},1)`); gr.addColorStop(.35, `rgba(${r},${g},${b},.5)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`); x.fillStyle = gr; x.fillRect(0, 0, d, d); return c; };
-    const cWhite = sprite(255, 255, 255), cBlue = sprite(110, 160, 255), cCyan = sprite(90, 220, 255), cViolet = sprite(168, 120, 255), cMag = sprite(232, 120, 210), cGold = sprite(231, 171, 46);
-    const palette = [cBlue, cBlue, cCyan, cViolet, cViolet, cMag, cWhite, cGold];   // weighted toward cool nebula hues
-    const N = W < 480 ? 560 : 1000;
-    const pts: { x: number; y: number; z: number; s: number; sp: HTMLCanvasElement; ph: number; tw: number }[] = [];
-    for (let i = 0; i < N; i++) {
-      const core = Math.random() < 0.36;
-      const rr = core ? 0.12 + Math.random() * 0.6 : 0.78 + Math.random() * 0.34;   // dense glowing core + sparse halo
-      const t = (i + 0.5) / N; const phi = Math.acos(1 - 2 * t); const th = Math.PI * (1 + Math.sqrt(5)) * i;
-      pts.push({ x: Math.sin(phi) * Math.cos(th) * rr, y: Math.cos(phi) * rr, z: Math.sin(phi) * Math.sin(th) * rr,
-        s: (core ? 0.5 : 0.7) + Math.random() * (core ? 1.4 : 2.1), sp: palette[(Math.random() * palette.length) | 0],
-        ph: Math.random() * 6.28, tw: 0.5 + Math.random() * 1.6 });
-    }
-    let spin = 0, offX = 0, offY = 0, tX = 0, tY = 0;
-    const onMove = (e: MouseEvent) => { const r = cv.getBoundingClientRect(); tY = ((e.clientX - r.left) / r.width - 0.5) * 1.3; tX = ((e.clientY - r.top) / r.height - 0.5) * 1.0; };
-    const onTouch = (e: TouchEvent) => { const tt = e.touches[0]; if (!tt) return; const r = cv.getBoundingClientRect(); tY = ((tt.clientX - r.left) / r.width - 0.5) * 1.3; tX = ((tt.clientY - r.top) / r.height - 0.5) * 1.0; };
-    const onLeave = () => { tX = 0; tY = 0; };
+    const sprite = (r: number, g: number, b: number) => { const d = 28, c = document.createElement('canvas'); c.width = d; c.height = d; const x = c.getContext('2d')!; const gr = x.createRadialGradient(d / 2, d / 2, 0, d / 2, d / 2, d / 2); gr.addColorStop(0, `rgba(${r},${g},${b},0.95)`); gr.addColorStop(0.4, `rgba(${r},${g},${b},0.32)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`); x.fillStyle = gr; x.fillRect(0, 0, d, d); return c; };
+    const cPurple = sprite(168, 85, 247), cViolet = sprite(139, 92, 246), cCyan = sprite(34, 211, 238), cBlue = sprite(96, 165, 250), cMag = sprite(217, 110, 230), cWhite = sprite(214, 225, 255);
+    const palette = [cPurple, cPurple, cViolet, cCyan, cCyan, cBlue, cMag, cWhite];   // electric purple + cyan plasma
+    const radius = () => Math.min(W, H) * 0.5;
+    type P = { x: number; y: number; sp: HTMLCanvasElement; sz: number; life: number; max: number };
+    const spawn = (p: P) => { const a = Math.random() * 6.283, rr = Math.random() * radius() * 0.5; p.x = W / 2 + Math.cos(a) * rr; p.y = H / 2 + Math.sin(a) * rr; p.sp = palette[(Math.random() * palette.length) | 0]; p.sz = 2 + Math.random() * 7; p.max = 120 + Math.random() * 240; p.life = Math.random() * p.max; };
+    const N = W < 480 ? 520 : 900;
+    const pts: P[] = [];
+    for (let i = 0; i < N; i++) { const p: P = { x: 0, y: 0, sp: cPurple, sz: 3, life: 0, max: 200 }; spawn(p); pts.push(p); }
+    let mx = -9999, my = -9999, active = false;
+    const onMove = (e: MouseEvent) => { const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; active = true; };
+    const onTouch = (e: TouchEvent) => { const tt = e.touches[0]; if (!tt) return; const r = cv.getBoundingClientRect(); mx = tt.clientX - r.left; my = tt.clientY - r.top; active = true; };
+    const onLeave = () => { active = false; };
     cv.addEventListener('mousemove', onMove); cv.addEventListener('mouseleave', onLeave); cv.addEventListener('touchmove', onTouch, { passive: true });
     window.addEventListener('resize', resize);
     this.nebCleanup = () => { cv.removeEventListener('mousemove', onMove); cv.removeEventListener('mouseleave', onLeave); cv.removeEventListener('touchmove', onTouch); window.removeEventListener('resize', resize); };
-    const loop = () => {
-      if (this.nebStop) return;
-      const now = performance.now() / 1000;
-      spin += 0.0015; offX += (tX - offX) * 0.05; offY += (tY - offY) * 0.05;
-      const ay = spin + offY, ax = offX, cy = Math.cos(ay), sy = Math.sin(ay), cx2 = Math.cos(ax), sx2 = Math.sin(ax);
-      const cX = W / 2, cY = H / 2, R = Math.min(W, H) * 0.44, focal = 2.6;
-      ctx.clearRect(0, 0, W, H);
-      // dark "deep space" disc that fades to transparent → no hard square edges, looks right on light OR dark pages
-      const bd = ctx.createRadialGradient(cX, cY, 0, cX, cY, R * 1.6);
-      bd.addColorStop(0, 'rgba(6,7,18,0.94)'); bd.addColorStop(0.55, 'rgba(7,8,20,0.6)'); bd.addColorStop(1, 'rgba(7,8,20,0)');
-      ctx.fillStyle = bd; ctx.fillRect(0, 0, W, H);
+    let t = 0;
+    const step = () => {
+      const ccx = W / 2, ccy = H / 2, rad = radius();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = 'rgba(4,3,10,0.16)'; ctx.fillRect(0, 0, W, H);   // trail fade → flowing plasma + deep-black base
       ctx.globalCompositeOperation = 'lighter';
-      const cg = ctx.createRadialGradient(cX, cY, 0, cX, cY, R * 1.3);   // layered nebula glow (blue → violet → gold)
-      cg.addColorStop(0, 'rgba(120,150,255,0.30)'); cg.addColorStop(0.4, 'rgba(165,95,235,0.17)'); cg.addColorStop(0.75, 'rgba(231,171,46,0.07)'); cg.addColorStop(1, 'rgba(0,0,0,0)');
+      const cg = ctx.createRadialGradient(ccx, ccy, 0, ccx, ccy, rad * 0.95);   // volumetric bloom
+      cg.addColorStop(0, 'rgba(150,80,240,0.13)'); cg.addColorStop(0.45, 'rgba(40,190,225,0.07)'); cg.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = cg; ctx.fillRect(0, 0, W, H);
       for (const p of pts) {
-        let x = p.x * cy - p.z * sy; const z1 = p.x * sy + p.z * cy; let y = p.y;
-        const y2 = y * cx2 - z1 * sx2; const z = y * sx2 + z1 * cx2; y = y2;
-        const persp = focal / (focal - z); const px = cX + x * R * persp; const py = cY + y * R * persp;
-        const depth = (z + 1) / 2; const size = p.s * persp * (0.7 + depth * 1.7);
-        const tw = 0.65 + 0.35 * Math.sin(now * p.tw + p.ph);
-        ctx.globalAlpha = Math.max(0, Math.min(1, (0.2 + depth * 0.8) * tw));
-        ctx.drawImage(p.sp, px - size, py - size, size * 2, size * 2);
+        const s = 0.006;
+        const ang = (Math.sin(p.x * s + t) + Math.cos(p.y * s * 1.2 - t * 0.8) + Math.sin((p.x + p.y) * s * 0.6 + t * 0.5)) * Math.PI;   // curl-ish flow field
+        let vx = Math.cos(ang), vy = Math.sin(ang);
+        vx += (ccx - p.x) * 0.0006; vy += (ccy - p.y) * 0.0006;   // gentle pull keeps the cloud bounded
+        if (active) { const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy; if (d2 < 17000) { const f = (1 - Math.sqrt(d2) / 130) * 0.9; vx += (-dy * 0.02 + dx * 0.01) * f; vy += (dx * 0.02 + dy * 0.01) * f; } }   // mouse vortex
+        p.x += vx * 1.1; p.y += vy * 1.1; p.life++;
+        if (p.life > p.max || Math.hypot(p.x - ccx, p.y - ccy) > rad) spawn(p);
+        ctx.globalAlpha = Math.max(0, Math.min(1, 0.5 * Math.sin((p.life / p.max) * Math.PI)));
+        ctx.drawImage(p.sp, p.x - p.sz, p.y - p.sz, p.sz * 2, p.sz * 2);
       }
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-      this.nebRaf = requestAnimationFrame(loop);
     };
+    let reduce = false; try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { /* noop */ }
+    if (reduce) { for (let k = 0; k < 90; k++) { t += 0.006; step(); } return; }   // static composed frame
+    const loop = () => { if (this.nebStop) return; t += 0.006; step(); this.nebRaf = requestAnimationFrame(loop); };
     loop();
   }
   private stopNebula(): void { this.nebStop = true; cancelAnimationFrame(this.nebRaf); if (this.nebCleanup) { this.nebCleanup(); this.nebCleanup = null; } }
