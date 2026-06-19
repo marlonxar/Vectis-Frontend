@@ -168,18 +168,29 @@ const CSS = `
   background:color-mix(in srgb,var(--da-accent) 18%,transparent); color:var(--da-accent); }
 .da-badge svg{ width:28px; height:28px; }
 
-/* HERO with interactive 3D nebula */
-.da-hero{ position:relative; z-index:1; text-align:center; padding:24px 26px 40px; animation:da-fade .5s ease both; }
-.da-neb{ width:100%; height:240px; display:block; }
-.da-hero-title{ font-size:27px; font-weight:800; letter-spacing:-.015em; margin:6px 0 12px; }
-.da-hero-sub{ color:var(--da-ink-2); margin:0 auto 24px; max-width:46ch; font-size:15px; }
-.da-hero .da-actions{ display:flex; justify-content:center; }
+/* HERO with interactive 3D nebula (split: text left, nebula centre-right) */
+.da-hero{ position:relative; z-index:1; width:100%; display:grid; grid-template-columns:1.05fr .95fr; align-items:center; gap:clamp(20px,4vw,56px); padding:8px 4px; animation:da-fade .55s ease both; }
+.da-hero-text{ text-align:left; }
+.da-hero-title{ font-size:clamp(30px,4.4vw,48px); font-weight:800; letter-spacing:-.02em; line-height:1.04; margin:0 0 16px; }
+.da-hero-sub{ color:var(--da-ink-2); font-size:clamp(15px,1.5vw,18px); line-height:1.6; margin:0 0 28px; max-width:50ch; }
+.da-hero .da-actions{ display:flex; justify-content:flex-start; }
+.da-hero .da-btn-primary{ margin-left:0; padding:15px 30px; font-size:16px; }
+.da-hero-visual{ position:relative; display:flex; align-items:center; justify-content:center; }
+.da-neb{ width:100%; max-width:480px; aspect-ratio:1/1; height:auto; display:block; }
+@media (max-width:760px){
+  .da-hero{ grid-template-columns:1fr; gap:6px; text-align:center; }
+  .da-hero-text{ text-align:center; order:2; }
+  .da-hero-visual{ order:1; }
+  .da-hero-sub{ margin-left:auto; margin-right:auto; }
+  .da-hero .da-actions{ justify-content:center; }
+  .da-neb{ max-width:300px; }
+}
 
 .da-spin{ width:16px; height:16px; border:2px solid rgba(0,0,0,.25); border-top-color:#1a1205; border-radius:50%; display:inline-block; animation:da-rot .7s linear infinite; vertical-align:-2px; margin-right:6px; }
 @keyframes da-rot{ to{ transform:rotate(360deg); } }
 @keyframes da-fade{ from{ opacity:0; } to{ opacity:1; } }
 
-@media (max-width:560px){ .da-overlay{ padding:0; } .da-panel{ max-width:100%; max-height:100%; height:100%; border-radius:0; } .da-neb{ height:200px; } }
+@media (max-width:560px){ .da-overlay{ padding:0; } .da-panel{ max-width:100%; max-height:100%; height:100%; border-radius:0; } }
 
 /* ---- full-page mode (day / night) ---- */
 .da-page{ position:relative; height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden; transition:color .35s ease; }
@@ -205,6 +216,7 @@ const CSS = `
   background:transparent; color:inherit; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:border-color .2s ease, transform .2s ease; }
 .da-theme-btn:hover{ border-color:var(--da-accent); } .da-theme-btn:active{ transform:translateY(-50%) scale(.92); } .da-theme-btn svg{ width:18px; height:18px; }
 .da-pagebody{ position:relative; z-index:1; flex:1 1 auto; min-height:0; overflow-y:auto; width:100%; max-width:640px; margin:0 auto; padding:8px 22px 28px; display:flex; flex-direction:column; justify-content:flex-start; }
+.da-pagebody-hero{ max-width:1080px; justify-content:center; padding:8px 30px 28px; }
 .da-page-panel{ background:color-mix(in srgb, var(--da-surface) 90%, transparent); border:1px solid var(--da-line); border-radius:20px; overflow:visible; max-height:none;
   box-shadow:0 24px 70px -28px rgba(0,0,0,.55); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); animation:da-cardin .55s cubic-bezier(.2,.7,.2,1) both;
   transition:background-color .35s ease, border-color .35s ease; }
@@ -375,10 +387,14 @@ class Widget {
     const bg = hasBg ? this.bgHtml() : `<div class="da-grad" aria-hidden="true"></div>`;
     const logo = this.flow?.logo_url ? `<img class="da-logo" src="${esc(this.flow.logo_url)}" alt="" />` : '';
     const themeBtn = `<button class="da-theme-btn" data-act="theme" aria-label="${esc(this.t.themeToggle)}">${this.theme === 'dark' ? I.sun : I.moon}</button>`;
+    const isHero = this.screen === 'intro';
+    const body = isHero
+      ? `<main class="da-pagebody da-pagebody-hero">${this.contentHtml()}</main>`
+      : `<main class="da-pagebody"><div class="da-panel da-page-panel" role="region">${this.contentHtml()}</div></main>`;
     wrap.innerHTML =
       `${bg}
        <header class="da-pagehead"><div class="da-pagehead-c">${logo}<p class="da-pagetitle">${esc(DA_TITLE)}</p></div>${themeBtn}</header>
-       <main class="da-pagebody"><div class="da-panel da-page-panel" role="region">${this.contentHtml()}</div></main>
+       ${body}
        <footer class="da-pagefoot">Producto desarrollado por <a href="https://www.wearevectis.com" target="_blank" rel="noopener">Vectis</a></footer>`;
     this.root.appendChild(wrap);
     this.afterRender(wrap);
@@ -410,10 +426,12 @@ class Widget {
       case 'resume': return `<div class="da-center"><h2>${esc(this.t.resumeTitle)}</h2><p>${esc(this.t.resumeBody)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="resume">${esc(this.t.continue)}</button><button class="da-btn da-btn-ghost" data-act="restart">${esc(this.t.startAgain)}</button></div></div>`;
       case 'intro':
         return `<div class="da-hero">
-            <canvas class="da-neb" data-neb aria-hidden="true"></canvas>
-            <h2 class="da-hero-title">${esc(this.t.welcomeTitle)}</h2>
-            <p class="da-hero-sub">${esc(this.t.welcome)}</p>
-            <div class="da-actions"><button class="da-btn da-btn-primary" data-act="begin">${esc(this.t.begin)}</button></div>
+            <div class="da-hero-text">
+              <h1 class="da-hero-title">${esc(this.t.welcomeTitle)}</h1>
+              <p class="da-hero-sub">${esc(this.t.welcome)}</p>
+              <div class="da-actions"><button class="da-btn da-btn-primary" data-act="begin">${esc(this.t.begin)}</button></div>
+            </div>
+            <div class="da-hero-visual"><canvas class="da-neb" data-neb aria-hidden="true"></canvas></div>
           </div>`;
       default: { // flow
         const last = this.step >= this.questions.length;
@@ -636,33 +654,45 @@ class Widget {
     let W = 1, H = 1;
     const resize = () => { const r = cv.getBoundingClientRect(); W = Math.max(1, r.width); H = Math.max(1, r.height); cv.width = Math.floor(W * dpr); cv.height = Math.floor(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
     resize();
-    const sprite = (r: number, g: number, b: number) => { const d = 40, c = document.createElement('canvas'); c.width = d; c.height = d; const x = c.getContext('2d')!; const gr = x.createRadialGradient(d / 2, d / 2, 0, d / 2, d / 2, d / 2); gr.addColorStop(0, `rgba(${r},${g},${b},1)`); gr.addColorStop(.4, `rgba(${r},${g},${b},.45)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`); x.fillStyle = gr; x.fillRect(0, 0, d, d); return c; };
-    const palette = [sprite(255, 255, 255), sprite(120, 170, 255), sprite(90, 220, 255), sprite(231, 171, 46), sprite(170, 130, 255)];
-    const N = W < 480 ? 440 : 780;
-    const pts: { x: number; y: number; z: number; s: number; sp: HTMLCanvasElement }[] = [];
+    const sprite = (r: number, g: number, b: number) => { const d = 44, c = document.createElement('canvas'); c.width = d; c.height = d; const x = c.getContext('2d')!; const gr = x.createRadialGradient(d / 2, d / 2, 0, d / 2, d / 2, d / 2); gr.addColorStop(0, `rgba(${r},${g},${b},1)`); gr.addColorStop(.35, `rgba(${r},${g},${b},.5)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`); x.fillStyle = gr; x.fillRect(0, 0, d, d); return c; };
+    const cWhite = sprite(255, 255, 255), cBlue = sprite(110, 160, 255), cCyan = sprite(90, 220, 255), cViolet = sprite(168, 120, 255), cMag = sprite(232, 120, 210), cGold = sprite(231, 171, 46);
+    const palette = [cBlue, cBlue, cCyan, cViolet, cViolet, cMag, cWhite, cGold];   // weighted toward cool nebula hues
+    const N = W < 480 ? 560 : 1000;
+    const pts: { x: number; y: number; z: number; s: number; sp: HTMLCanvasElement; ph: number; tw: number }[] = [];
     for (let i = 0; i < N; i++) {
-      const t = (i + 0.5) / N; const phi = Math.acos(1 - 2 * t); const th = Math.PI * (1 + Math.sqrt(5)) * i; const rr = 0.8 + Math.random() * 0.28;
-      pts.push({ x: Math.sin(phi) * Math.cos(th) * rr, y: Math.cos(phi) * rr, z: Math.sin(phi) * Math.sin(th) * rr, s: 0.6 + Math.random() * 1.7, sp: palette[(Math.random() * palette.length) | 0] });
+      const core = Math.random() < 0.36;
+      const rr = core ? 0.12 + Math.random() * 0.6 : 0.78 + Math.random() * 0.34;   // dense glowing core + sparse halo
+      const t = (i + 0.5) / N; const phi = Math.acos(1 - 2 * t); const th = Math.PI * (1 + Math.sqrt(5)) * i;
+      pts.push({ x: Math.sin(phi) * Math.cos(th) * rr, y: Math.cos(phi) * rr, z: Math.sin(phi) * Math.sin(th) * rr,
+        s: (core ? 0.5 : 0.7) + Math.random() * (core ? 1.4 : 2.1), sp: palette[(Math.random() * palette.length) | 0],
+        ph: Math.random() * 6.28, tw: 0.5 + Math.random() * 1.6 });
     }
     let spin = 0, offX = 0, offY = 0, tX = 0, tY = 0;
-    const onMove = (e: MouseEvent) => { const r = cv.getBoundingClientRect(); tY = ((e.clientX - r.left) / r.width - 0.5) * 1.2; tX = ((e.clientY - r.top) / r.height - 0.5) * 0.9; };
-    const onTouch = (e: TouchEvent) => { const tt = e.touches[0]; if (!tt) return; const r = cv.getBoundingClientRect(); tY = ((tt.clientX - r.left) / r.width - 0.5) * 1.2; tX = ((tt.clientY - r.top) / r.height - 0.5) * 0.9; };
+    const onMove = (e: MouseEvent) => { const r = cv.getBoundingClientRect(); tY = ((e.clientX - r.left) / r.width - 0.5) * 1.3; tX = ((e.clientY - r.top) / r.height - 0.5) * 1.0; };
+    const onTouch = (e: TouchEvent) => { const tt = e.touches[0]; if (!tt) return; const r = cv.getBoundingClientRect(); tY = ((tt.clientX - r.left) / r.width - 0.5) * 1.3; tX = ((tt.clientY - r.top) / r.height - 0.5) * 1.0; };
     const onLeave = () => { tX = 0; tY = 0; };
     cv.addEventListener('mousemove', onMove); cv.addEventListener('mouseleave', onLeave); cv.addEventListener('touchmove', onTouch, { passive: true });
     window.addEventListener('resize', resize);
     this.nebCleanup = () => { cv.removeEventListener('mousemove', onMove); cv.removeEventListener('mouseleave', onLeave); cv.removeEventListener('touchmove', onTouch); window.removeEventListener('resize', resize); };
     const loop = () => {
       if (this.nebStop) return;
-      spin += 0.0016; offX += (tX - offX) * 0.06; offY += (tY - offY) * 0.06;
+      const now = performance.now() / 1000;
+      spin += 0.0015; offX += (tX - offX) * 0.05; offY += (tY - offY) * 0.05;
       const ay = spin + offY, ax = offX, cy = Math.cos(ay), sy = Math.sin(ay), cx2 = Math.cos(ax), sx2 = Math.sin(ax);
-      const cX = W / 2, cY = H / 2, R = Math.min(W, H) * 0.46, focal = 2.4;
-      ctx.clearRect(0, 0, W, H); ctx.globalCompositeOperation = 'lighter';
+      const cX = W / 2, cY = H / 2, R = Math.min(W, H) * 0.44, focal = 2.6;
+      ctx.clearRect(0, 0, W, H);
+      const cg = ctx.createRadialGradient(cX, cY, 0, cX, cY, R * 1.35);   // soft nebula core glow
+      cg.addColorStop(0, 'rgba(140,150,255,0.20)'); cg.addColorStop(0.45, 'rgba(150,80,220,0.12)'); cg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = cg; ctx.fillRect(0, 0, W, H);
+      ctx.globalCompositeOperation = 'lighter';
       for (const p of pts) {
         let x = p.x * cy - p.z * sy; const z1 = p.x * sy + p.z * cy; let y = p.y;
         const y2 = y * cx2 - z1 * sx2; const z = y * sx2 + z1 * cx2; y = y2;
         const persp = focal / (focal - z); const px = cX + x * R * persp; const py = cY + y * R * persp;
-        const depth = (z + 1) / 2; const size = p.s * persp * (0.7 + depth * 1.7); const alpha = 0.2 + depth * 0.8;
-        ctx.globalAlpha = Math.max(0, Math.min(1, alpha)); ctx.drawImage(p.sp, px - size, py - size, size * 2, size * 2);
+        const depth = (z + 1) / 2; const size = p.s * persp * (0.7 + depth * 1.7);
+        const tw = 0.65 + 0.35 * Math.sin(now * p.tw + p.ph);
+        ctx.globalAlpha = Math.max(0, Math.min(1, (0.2 + depth * 0.8) * tw));
+        ctx.drawImage(p.sp, px - size, py - size, size * 2, size * 2);
       }
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
       this.nebRaf = requestAnimationFrame(loop);
