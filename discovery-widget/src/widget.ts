@@ -36,30 +36,30 @@ interface Progress { flowKey: string; currentStep: number; answers: Record<strin
 /* ----------------------------------------------------------------- i18n -- */
 const STRINGS = {
   es: {
-    title: DA_TITLE,
-    welcome: 'Bienvenido al sistema de asistencia guiada. Por favor responde a cada una de las preguntas con claridad.',
+    title: DA_TITLE, welcomeTitle: 'Bienvenido', themeToggle: 'Cambiar tema',
+    welcome: 'A continuación se mostrará un asistente interactivo para capturar información relevante de su proyecto.',
     during: 'Por favor responde a la pregunta con claridad.',
     begin: 'Comenzar', next: 'Siguiente', finish: 'Enviar', sending: 'Enviando…',
     required: 'Este campo es obligatorio.', invalidEmail: 'Ingresa un correo válido.',
     selectOne: 'Selecciona una opción.', optional: 'opcional',
     resumeTitle: '¿Continuar donde quedaste?', resumeBody: 'Guardamos tus respuestas anteriores.',
     continue: 'Continuar', startAgain: 'Empezar de nuevo',
-    unavailable: 'Este asistente no está disponible por ahora.',
+    unavailable: 'Este asistente no está disponible para su organización. Por favor contacte a un administrador para habilitarlo.',
     errorLoad: 'No pudimos cargar el asistente. Intenta de nuevo.',
     errorSend: 'No se pudo enviar. Revisa tu conexión e intenta de nuevo.',
     successTitle: '¡Gracias!', successBody: 'Recibimos tu información. Te contactaremos pronto.',
     close: 'Cerrar', listen: 'Escuchar', retry: 'Reintentar', selectPlaceholder: 'Selecciona…',
   },
   en: {
-    title: DA_TITLE,
-    welcome: 'Welcome to the guided assistance system. Please answer each question clearly.',
+    title: DA_TITLE, welcomeTitle: 'Welcome', themeToggle: 'Toggle theme',
+    welcome: 'An interactive assistant will guide you to capture key information about your project.',
     during: 'Please answer the question clearly.',
     begin: 'Start', next: 'Next', finish: 'Submit', sending: 'Sending…',
     required: 'This field is required.', invalidEmail: 'Enter a valid email.',
     selectOne: 'Select an option.', optional: 'optional',
     resumeTitle: 'Continue where you left off?', resumeBody: 'We saved your previous answers.',
     continue: 'Continue', startAgain: 'Start again',
-    unavailable: 'This assistant is currently unavailable.',
+    unavailable: 'This assistant is not available for your organization. Please contact an administrator to enable it.',
     errorLoad: 'We could not load the assistant. Please try again.',
     errorSend: 'Could not send. Check your connection and try again.',
     successTitle: 'Thank you!', successBody: 'We received your info. We will contact you soon.',
@@ -115,7 +115,7 @@ const CSS = `
 .da-stack{ display:flex; flex-direction:column; gap:22px; }
 .da-qblock{ position:relative; padding-left:2px; }
 .da-qblock.enter{ animation:da-floatin .65s cubic-bezier(.2,.7,.2,1) both; }
-@keyframes da-floatin{ from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:none; } }
+@keyframes da-floatin{ from{ opacity:0; transform:translateY(22px) scale(.985); } to{ opacity:1; transform:none; } }
 .da-qnum{ font-size:12px; letter-spacing:.1em; font-weight:700; color:var(--da-accent); margin:0 0 6px; }
 .da-q{ font-size:20px; font-weight:700; margin:0 0 6px; letter-spacing:-.01em; }
 .da-help{ font-size:14px; color:var(--da-ink-2); margin:0 0 14px; }
@@ -171,31 +171,61 @@ const CSS = `
 
 @media (max-width:560px){ .da-overlay{ padding:0; } .da-panel{ max-width:100%; max-height:100%; height:100%; border-radius:0; } }
 
-/* ---- full-page mode ---- */
-.da-page{ position:relative; min-height:100dvh; min-height:100vh; display:flex; flex-direction:column; color:#fff; overflow:hidden; }
-.da-grad{ position:absolute; inset:0; z-index:0;
-  background:
-    radial-gradient(48% 48% at 18% 22%, rgba(40,96,210,.7), transparent 70%),
-    radial-gradient(44% 44% at 84% 18%, rgba(231,171,46,.6), transparent 70%),
-    radial-gradient(60% 60% at 72% 96%, rgba(255,255,255,.4), transparent 72%),
-    linear-gradient(140deg,#0a1024,#121a3a 55%,#0a1024);
-  filter:blur(8px); transform:scale(1.06); }
-.da-page .da-bg::after{ background:linear-gradient(180deg,rgba(8,9,13,.55),rgba(8,9,13,.78)); }
-.da-pagehead{ position:relative; z-index:1; padding:24px 26px; display:flex; align-items:center; }
-.da-pagehead img{ height:38px; width:auto; border-radius:8px; }
+/* ---- full-page mode (day / night) ---- */
+.da-page{ position:relative; min-height:100dvh; min-height:100vh; display:flex; flex-direction:column; overflow:hidden; transition:color .35s ease; }
+.da-page.da-theme-dark{ --da-ink:#f3f3f5; --da-ink-2:#a7adba; --da-surface:#16171c; --da-line:#2a2c34; color:#fff; }
+.da-page.da-theme-light{ --da-ink:#14161c; --da-ink-2:#5b6170; --da-surface:#ffffff; --da-line:#e7e7ea; color:#14161c; }
+
+.da-grad{ position:absolute; inset:0; z-index:0; filter:blur(7px); transform:scale(1.06); transition:opacity .35s ease; }
+.da-theme-dark .da-grad{ background:
+    radial-gradient(44% 44% at 84% 16%, rgba(231,171,46,.5), transparent 70%),
+    radial-gradient(56% 56% at 70% 98%, rgba(255,255,255,.13), transparent 72%),
+    radial-gradient(52% 52% at 14% 22%, rgba(38,58,120,.32), transparent 70%),
+    linear-gradient(150deg,#08080b,#0e0f14 55%,#08080b); }
+.da-theme-light .da-grad{ background:
+    radial-gradient(44% 44% at 84% 16%, rgba(231,171,46,.3), transparent 70%),
+    radial-gradient(52% 52% at 14% 22%, rgba(40,96,210,.16), transparent 70%),
+    radial-gradient(60% 60% at 70% 98%, rgba(255,255,255,.7), transparent 72%),
+    linear-gradient(150deg,#f3f1ea,#ffffff 55%,#eceef4); }
+.da-page .da-bg::after{ background:linear-gradient(180deg,rgba(8,8,10,.5),rgba(8,8,10,.78)); }
+
+.da-pagehead{ position:relative; z-index:1; padding:22px 26px; display:flex; align-items:center; justify-content:center; animation:da-fade .5s ease both; }
+.da-pagehead img{ height:40px; width:auto; border-radius:8px; }
+.da-theme-btn{ position:absolute; right:18px; top:50%; transform:translateY(-50%); width:40px; height:40px; border-radius:10px;
+  border:1px solid var(--da-line); background:transparent; color:inherit; cursor:pointer; display:inline-flex; align-items:center; justify-content:center;
+  transition:border-color .2s ease, transform .2s ease; }
+.da-theme-btn:hover{ border-color:var(--da-accent); }
+.da-theme-btn:active{ transform:translateY(-50%) scale(.92); }
+.da-theme-btn svg{ width:18px; height:18px; }
+
 .da-pagebody{ position:relative; z-index:1; flex:1; width:100%; max-width:640px; margin:0 auto; padding:8px 22px 36px;
-  display:flex; flex-direction:column; justify-content:center; }
-.da-page-panel{ background:color-mix(in srgb, var(--da-surface) 88%, transparent); border:1px solid var(--da-line);
-  border-radius:20px; overflow:visible; max-height:none; box-shadow:0 24px 70px -28px rgba(0,0,0,.6);
-  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
-.da-page-panel .da-legend{ padding:18px 22px 0; } .da-page-panel .da-body{ overflow:visible; padding:18px 22px 8px; }
-.da-page-panel .da-center{ padding:40px 26px; }
-.da-pagefoot{ position:relative; z-index:1; padding:18px 24px 26px; text-align:center; font-size:13px; color:rgba(255,255,255,.82); }
+  display:flex; flex-direction:column; justify-content:flex-start; }
+.da-page-panel{ background:color-mix(in srgb, var(--da-surface) 90%, transparent); border:1px solid var(--da-line);
+  border-radius:20px; overflow:visible; max-height:none; box-shadow:0 24px 70px -28px rgba(0,0,0,.55);
+  -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+  animation:da-cardin .55s cubic-bezier(.2,.7,.2,1) both; transition:background-color .35s ease, border-color .35s ease; }
+.da-page-panel .da-legend{ padding:18px 22px 0; text-align:left; }
+.da-page-panel .da-body{ overflow:visible; padding:18px 22px 8px; }
+
+/* left-aligned content */
+.da-page .da-center{ text-align:left; padding:36px 24px; }
+.da-page .da-center .da-actions{ justify-content:flex-start; }
+.da-page .da-center .da-badge{ margin:0 0 6px; }
+.da-page .da-center p{ margin-left:0; margin-right:0; max-width:48ch; }
+/* conversation-thread accent per question */
+.da-page .da-qblock{ padding-left:16px; border-left:2px solid color-mix(in srgb, var(--da-accent) 38%, var(--da-line)); }
+
+.da-pagefoot{ position:relative; z-index:1; padding:18px 24px 26px; text-align:center; font-size:13px; transition:color .35s ease; }
+.da-theme-dark .da-pagefoot{ color:rgba(255,255,255,.8); }
+.da-theme-light .da-pagefoot{ color:rgba(20,22,28,.66); }
 .da-pagefoot a{ color:var(--da-accent); text-decoration:none; font-weight:700; }
 .da-pagefoot a:hover{ text-decoration:underline; }
-@media (max-width:560px){ .da-pagebody{ justify-content:flex-start; padding-top:6px; } .da-page-panel{ border-radius:16px; } }
 
-@media (prefers-reduced-motion: reduce){ .da-overlay,.da-panel,.da-btn{ transition:none; } .da-qblock.enter{ animation:none; } }
+@keyframes da-cardin{ from{ opacity:0; transform:translateY(16px) scale(.99); } to{ opacity:1; transform:none; } }
+@keyframes da-fade{ from{ opacity:0; } to{ opacity:1; } }
+@media (max-width:560px){ .da-page-panel{ border-radius:16px; } .da-pagehead img{ height:34px; } }
+
+@media (prefers-reduced-motion: reduce){ .da-overlay,.da-panel,.da-btn{ transition:none; } .da-qblock.enter,.da-page-panel,.da-pagehead{ animation:none; } }
 `;
 
 /* ------------------------------------------------------------- storage -- */
@@ -207,6 +237,11 @@ const PKEY = (k: string) => `da_progress_${k}`;
 function loadProgress(k: string): Progress | null { const s = store(); if (!s) return null; try { const r = s.getItem(PKEY(k)); return r ? JSON.parse(r) as Progress : null; } catch { return null; } }
 function saveProgress(k: string, p: Progress): void { const s = store(); if (!s) return; try { s.setItem(PKEY(k), JSON.stringify(p)); } catch { /* quota */ } }
 function clearProgress(k: string): void { const s = store(); if (!s) return; try { s.removeItem(PKEY(k)); } catch { /* noop */ } }
+function loadTheme(): 'dark' | 'light' {
+  try { const v = store()?.getItem('da_theme'); if (v === 'light' || v === 'dark') return v; } catch { /* noop */ }
+  try { return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; } catch { return 'dark'; }
+}
+function saveTheme(t: string): void { try { store()?.setItem('da_theme', t); } catch { /* noop */ } }
 
 /* ----------------------------------------------------------------- api -- */
 class Api {
@@ -237,6 +272,8 @@ const I = {
   play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
   pause: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>',
   ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>',
+  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z"/></svg>',
 };
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isVideo = (u: string) => /\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(u);
@@ -253,11 +290,13 @@ class Widget {
   private viewed = false; private audioEl: HTMLAudioElement | null = null;
   private accent = '#E7AB2E'; private overlayEl: HTMLElement | null = null; private launcher: HTMLButtonElement | null = null;
   private pageMode = false;
+  private theme: 'dark' | 'light' = 'dark';
 
   constructor(private cfg: Config) {
     this.api = new Api(cfg.supabaseUrl || SUPABASE_URL, cfg.supabaseAnonKey || SUPABASE_ANON_KEY);
     if (cfg.accentColor) this.accent = cfg.accentColor;
     this.pageMode = !!cfg.page;
+    this.theme = loadTheme();
   }
 
   async mount(): Promise<void> {
@@ -356,7 +395,7 @@ class Widget {
       case 'resume': return `<div class="da-center"><h2>${esc(this.t.resumeTitle)}</h2><p>${esc(this.t.resumeBody)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="resume">${esc(this.t.continue)}</button><button class="da-btn da-btn-ghost" data-act="restart">${esc(this.t.startAgain)}</button></div></div>`;
       case 'intro': {
         const logo = (!this.pageMode && this.flow?.logo_url) ? `<img class="da-logo-lg" src="${esc(this.flow.logo_url)}" alt="" />` : '';
-        return `<div class="da-center">${logo}<h2>${esc(DA_TITLE)}</h2><p>${esc(this.t.welcome)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="begin">${esc(this.t.begin)}</button></div></div>`;
+        return `<div class="da-center">${logo}<h2>${esc(this.t.welcomeTitle)}</h2><p>${esc(this.t.welcome)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="begin">${esc(this.t.begin)}</button></div></div>`;
       }
       default: { // flow
         const last = this.revealed >= this.questions.length;
@@ -375,14 +414,15 @@ class Widget {
   // Full-page mode: gradient (or DB background) + logo-only header + content card + Vectis footer.
   private renderPage(): void {
     this.root.querySelectorAll('.da-page').forEach((n) => n.remove());
-    const wrap = document.createElement('div'); wrap.className = 'da-root da-page';
+    const wrap = document.createElement('div'); wrap.className = `da-root da-page da-theme-${this.theme}`;
     wrap.style.setProperty('--da-accent', this.accent);
     const hasBg = !!this.flow?.background_url && this.screen !== 'unavailable' && this.screen !== 'error';
     const bg = hasBg ? this.bgHtml() : `<div class="da-grad" aria-hidden="true"></div>`;
     const logo = this.flow?.logo_url ? `<img class="da-logo" src="${esc(this.flow.logo_url)}" alt="" />` : '';
+    const themeBtn = `<button class="da-theme-btn" data-act="theme" aria-label="${esc(this.t.themeToggle)}">${this.theme === 'dark' ? I.sun : I.moon}</button>`;
     wrap.innerHTML =
       `${bg}
-       <header class="da-pagehead">${logo}</header>
+       <header class="da-pagehead">${logo}${themeBtn}</header>
        <main class="da-pagebody"><div class="da-panel da-page-panel" role="region">${this.contentHtml()}</div></main>
        <footer class="da-pagefoot">Producto desarrollado por <a href="https://www.wearevectis.com" target="_blank" rel="noopener">Vectis</a></footer>`;
     this.root.appendChild(wrap);
@@ -423,7 +463,7 @@ class Widget {
 
   /* ---- wiring ---- */
   private wireShell(panel: HTMLElement): void {
-    panel.querySelectorAll<HTMLElement>('.da-foot [data-act], .da-center [data-act], .da-head [data-act]').forEach((el) => {
+    panel.querySelectorAll<HTMLElement>('.da-foot [data-act], .da-center [data-act], .da-head [data-act], .da-pagehead [data-act]').forEach((el) => {
       el.addEventListener('click', () => this.act(el.getAttribute('data-act')!, el));
     });
   }
@@ -466,6 +506,16 @@ class Widget {
       case 'next': this.onNext(); break;
       case 'submit': await this.onSubmit(); break;
       case 'audio': el && this.toggleAudio(el); break;
+      case 'theme': this.toggleTheme(); break;
+    }
+  }
+
+  private toggleTheme(): void {
+    this.theme = this.theme === 'dark' ? 'light' : 'dark'; saveTheme(this.theme);
+    const page = this.root.querySelector('.da-page');
+    if (page) {
+      page.classList.remove('da-theme-dark', 'da-theme-light'); page.classList.add(`da-theme-${this.theme}`);
+      const b = page.querySelector('[data-act="theme"]'); if (b) b.innerHTML = this.theme === 'dark' ? I.sun : I.moon;
     }
   }
 
