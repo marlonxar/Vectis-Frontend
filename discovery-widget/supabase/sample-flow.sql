@@ -1,24 +1,20 @@
 -- ============================================================================
--- Sample flow for testing the Discovery Assistant widget.
--- Run AFTER schema.sql. Creates an ACTIVE flow with public_key = da_demo_vectis.
+-- Flujo de ejemplo para el Discovery Assistant.
+-- Ejecutar DESPUÉS de schema.sql. Crea un flujo ACTIVE con public_key = da_vectis.
 -- ============================================================================
 
-insert into public.flows (public_key, name, language, status, accent_color,
-                          intro_title, intro_subtitle, notification_email)
+insert into public.flows (public_key, name, language, status, accent_color, notification_email)
 values (
-  'da_demo_vectis',
-  'Vectis — Discovery',
+  'da_vectis',
+  'Vectis',
   'es',
   'ACTIVE',
   '#E7AB2E',
-  'Entendamos tu proyecto en 5 minutos',
-  'Responde unas preguntas rápidas y te contactamos con una propuesta.',
   'contact@wearevectis.com'
 )
 on conflict (public_key) do nothing;
 
--- questions for the sample flow
-with f as (select id from public.flows where public_key = 'da_demo_vectis')
+with f as (select id from public.flows where public_key = 'da_vectis')
 insert into public.flow_questions (flow_id, type, key, label, placeholder, options, required, order_index)
 select f.id, q.type, q.key, q.label, q.placeholder, q.options, q.required, q.order_index
 from f, (values

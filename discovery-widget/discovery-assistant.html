@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Discovery Assistant — Demo</title>
+  <title>Discovery Assistant</title>
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; background: #0d0f14; color: #e8e8ea; }
     .wrap { max-width: 720px; margin: 0 auto; padding: 60px 24px; }
@@ -13,31 +13,18 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>Discovery Assistant — Demo</h1>
+    <h1>Discovery Assistant</h1>
     <p>El botón flotante aparece abajo a la derecha. También hay un montaje <em>inline</em> más abajo.</p>
-    <p>Reemplaza <code>supabaseUrl</code> y <code>supabaseAnonKey</code> por los de tu proyecto.</p>
+    <p>Las credenciales de Supabase ya van dentro del widget (<code>src/config.ts</code>); aquí solo se pasa el <code>key</code> del flujo.</p>
     <div id="da-inline" class="inline-host"></div>
   </div>
 
-  <!-- 1) carga el widget -->
+  <!-- 1) cargar el widget -->
   <script src="./dist/widget.js"></script>
-  <!-- 2) inicialízalo -->
+  <!-- 2) inicializar (solo el key del flujo) -->
   <script>
-    // Botón flotante
-    DiscoveryAssistant.init({
-      key: "da_demo_vectis",
-      supabaseUrl: "https://YOURPROJECT.supabase.co",
-      supabaseAnonKey: "YOUR_PUBLIC_ANON_KEY",
-      launcherText: "Cuéntanos tu proyecto"
-    });
-
-    // Montaje inline (opcional): se renderiza dentro de #da-inline
-    DiscoveryAssistant.init({
-      key: "da_demo_vectis",
-      supabaseUrl: "https://YOURPROJECT.supabase.co",
-      supabaseAnonKey: "YOUR_PUBLIC_ANON_KEY",
-      target: "#da-inline"
-    });
+    DiscoveryAssistant.init({ key: "da_vectis" });
+    DiscoveryAssistant.init({ key: "da_vectis", target: "#da-inline" });
   </script>
 </body>
 </html>
