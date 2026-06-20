@@ -40,6 +40,9 @@ const STRINGS = {
     errorSend: 'No se pudo enviar. Revisa tu conexión e intenta de nuevo.',
     successTitle: '¡Gracias!', successBody: 'Recibimos tu información. Te contactaremos pronto.',
     close: 'Cerrar', listen: 'Escuchar la pregunta', mute: 'Silenciar audio', unmute: 'Activar audio', retry: 'Reintentar', selectPlaceholder: 'Selecciona…',
+    audioPlay: 'Reproducir explicación', audioStop: 'Detener audio', downloadPdf: 'Descargar PDF',
+    backupNote: 'Al enviar, recibirás una copia en PDF de tus respuestas y un enlace para seguir tu proceso en el correo que indicaste.',
+    sentNote: 'Te enviamos una copia en PDF y un enlace de seguimiento al correo que nos diste.',
   },
   en: {
     welcomeTitle: 'Welcome to the Discovery Assistant',
@@ -55,6 +58,9 @@ const STRINGS = {
     errorSend: 'Could not send. Check your connection and try again.',
     successTitle: 'Thank you!', successBody: 'We received your info. We will contact you soon.',
     close: 'Close', listen: 'Play the question', mute: 'Mute audio', unmute: 'Unmute audio', retry: 'Retry', selectPlaceholder: 'Select…',
+    audioPlay: 'Play explanation', audioStop: 'Stop audio', downloadPdf: 'Download PDF',
+    backupNote: 'On submit, you will get a PDF copy of your answers and a link to follow your process at the email you provided.',
+    sentNote: 'We sent a PDF copy and a tracking link to the email you gave us.',
   },
 };
 
@@ -187,10 +193,17 @@ const CSS = `
 .da-stage-left{ text-align:left; min-width:0; }
 .da-stage-left.da-leftin{ animation:da-in-fwd .5s cubic-bezier(.2,.7,.2,1) both; }
 .da-hero-visual{ position:relative; display:flex; align-items:center; justify-content:center; }
-.da-neb{ width:100%; max-width:520px; aspect-ratio:1/1; height:auto; display:block; }
-.da-neb-audio{ position:absolute; top:8px; right:8px; z-index:3; width:42px; height:42px; border-radius:50%; border:1px solid var(--da-line);
-  background:rgba(255,255,255,.06); color:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); transition:border-color .2s ease, transform .15s ease; }
+.da-neb-wrap{ position:relative; width:100%; max-width:480px; margin:0 auto; transition:max-width .6s cubic-bezier(.4,0,.2,1); }
+.da-page[data-screen="intro"] .da-neb-wrap{ max-width:min(640px,46vw); }
+.da-page[data-screen="flow"] .da-neb-wrap{ max-width:460px; }
+.da-neb{ width:100%; aspect-ratio:1/1; height:auto; display:block; }
+.da-neb-audio{ position:absolute; top:9%; right:9%; z-index:3; width:44px; height:44px; border-radius:50%; border:1px solid var(--da-line);
+  background:rgba(255,255,255,.06); color:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); transition:border-color .2s ease, transform .15s ease, color .2s ease; }
 .da-neb-audio:hover{ border-color:var(--da-accent); } .da-neb-audio:active{ transform:scale(.92); } .da-neb-audio svg{ width:19px; height:19px; }
+.da-neb-audio.playing{ border-color:var(--da-accent); color:var(--da-accent); animation:da-pulse 1.2s ease-in-out infinite; }
+@keyframes da-pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.09); } }
+.da-note{ font-size:13px; line-height:1.5; color:var(--da-ink-2); margin:14px 0 0; max-width:46ch; }
+.da-center .da-note{ margin:0 auto 18px; text-align:center; }
 
 .da-page-centered{ width:100%; max-width:560px; margin:0 auto; }
 
@@ -204,8 +217,9 @@ const CSS = `
   .da-hero-text .da-actions{ justify-content:center; }
   .da-hero-sub{ margin-left:auto; margin-right:auto; }
   .da-progress, .da-stepno, .da-legend, .da-foot{ text-align:left; }
-  .da-foot{ justify-content:center; }
-  .da-neb{ max-width:300px; }
+  .da-foot{ justify-content:center; flex-wrap:wrap; }
+  .da-page[data-screen="intro"] .da-neb-wrap,
+  .da-page[data-screen="flow"] .da-neb-wrap{ max-width:320px; }
 }
 
 @media (prefers-reduced-motion: reduce){ .da-overlay,.da-panel,.da-btn{ transition:none; }
@@ -258,6 +272,57 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isVideo = (u: string) => /\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(u);
 function esc(s: string): string { return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!)); }
 
+/* Minimal text PDF writer (Helvetica/WinAnsi), multi-page, dependency-free. */
+function pdfEsc(s: string): string {
+  return s.replace(/[‒-―]/g, '-').replace(/[‘’]/g, "'").replace(/[“”]/g, '"').replace(/…/g, '...')
+    .replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
+}
+function pdfWrap(text: string, max: number): string[] {
+  const out: string[] = [];
+  for (const para of String(text).split('\n')) {
+    const words = para.split(/\s+/).filter(Boolean); let cur = '';
+    for (const w of words) { if ((cur + ' ' + w).trim().length > max) { if (cur) out.push(cur); cur = w; } else cur = (cur ? cur + ' ' : '') + w; }
+    out.push(cur);
+  }
+  return out.length ? out : [''];
+}
+function buildPdf(title: string, subtitle: string, rows: { q: string; a: string }[]): Uint8Array {
+  const PW = 595, PH = 842, M = 56, LH = 15;
+  const pages: string[][] = []; let ops: string[] = []; let y = PH - M;
+  const newPage = () => { pages.push(ops); ops = []; y = PH - M; };
+  const line = (s: string, x: number, font: string, size: number, gray?: number) => {
+    if (y - LH < M) newPage();
+    ops.push(`BT /${font} ${size} Tf ${gray != null ? `${gray} ${gray} ${gray}` : '0 0 0'} rg 1 0 0 1 ${x} ${y} Tm (${pdfEsc(s)}) Tj ET`); y -= LH;
+  };
+  line(title, M, 'F2', 18); y -= 9;
+  if (subtitle) { line(subtitle, M, 'F1', 10, 0.45); y -= 8; }
+  for (const r of rows) {
+    for (const l of pdfWrap(r.q, 84)) line(l, M, 'F2', 11, 0.05);
+    for (const l of pdfWrap(r.a, 92)) line(l, M + 14, 'F1', 11, 0.2);
+    y -= 8;
+  }
+  newPage();
+  const bytes: number[] = []; const off: number[] = [];
+  const push = (s: string) => { for (let i = 0; i < s.length; i++) { const c = s.charCodeAt(i); bytes.push(c < 256 ? c : 63); } };
+  const obj = (id: number, body: string) => { off[id] = bytes.length; push(`${id} 0 obj\n${body}\nendobj\n`); };
+  push('%PDF-1.4\n');
+  const n = pages.length, maxId = 4 + 2 * n;
+  obj(1, '<</Type /Catalog /Pages 2 0 R>>');
+  obj(2, `<</Type /Pages /Kids [${pages.map((_, i) => `${5 + 2 * i} 0 R`).join(' ')}] /Count ${n}>>`);
+  obj(3, '<</Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding>>');
+  obj(4, '<</Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding>>');
+  pages.forEach((arr, i) => {
+    const pid = 5 + 2 * i, cid = 6 + 2 * i; const content = arr.join('\n');
+    obj(pid, `<</Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources <</Font <</F1 3 0 R /F2 4 0 R>>>> /Contents ${cid} 0 R>>`);
+    obj(cid, `<</Length ${content.length}>>\nstream\n${content}\nendstream`);
+  });
+  const xref = bytes.length;
+  push(`xref\n0 ${maxId + 1}\n0000000000 65535 f \n`);
+  for (let id = 1; id <= maxId; id++) push(`${String(off[id] || 0).padStart(10, '0')} 00000 n \n`);
+  push(`trailer\n<</Size ${maxId + 1} /Root 1 0 R>>\nstartxref\n${xref}\n%%EOF`);
+  return new Uint8Array(bytes);
+}
+
 /* -------------------------------------------------------------- widget -- */
 class Widget {
   private root!: ShadowRoot; private host!: HTMLElement; private api: Api;
@@ -265,9 +330,9 @@ class Widget {
   private answers: Record<string, string | string[]> = {};
   private step = 1; private transitioning = false;
   private screen: 'intro' | 'resume' | 'flow' | 'success' | 'unavailable' | 'error' = 'intro';
-  private viewed = false; private audioEl: HTMLAudioElement | null = null; private audioBtn: HTMLElement | null = null; private muted = false;
+  private viewed = false; private audioEl: HTMLAudioElement | null = null; private audioBtn: HTMLElement | null = null;
   private accent = '#E7AB2E'; private overlayEl: HTMLElement | null = null; private launcher: HTMLButtonElement | null = null; private pageMode = false;
-  private nebRaf = 0; private nebStop = true; private nebCleanup: (() => void) | null = null;
+  private nebRaf = 0; private nebStop = true; private nebCleanup: (() => void) | null = null; private nebBoost = 0;
 
   constructor(private cfg: Config) {
     this.api = new Api(cfg.supabaseUrl || SUPABASE_URL, cfg.supabaseAnonKey || SUPABASE_ANON_KEY);
@@ -354,7 +419,7 @@ class Widget {
   /* ---- full-page shell ---- */
   private renderPage(): void {
     this.root.querySelectorAll('.da-page').forEach((n) => n.remove());
-    const wrap = document.createElement('div'); wrap.className = 'da-root da-page'; wrap.style.setProperty('--da-accent', this.accent);
+    const wrap = document.createElement('div'); wrap.className = 'da-root da-page'; wrap.setAttribute('data-screen', this.screen); wrap.style.setProperty('--da-accent', this.accent);
     const hasBg = !!this.flow?.background_url && this.screen !== 'unavailable' && this.screen !== 'error';
     const bg = hasBg ? this.bgHtml() : `<div class="da-grad" aria-hidden="true"></div>`;
     const logo = this.flow?.logo_url ? `<img class="da-logo" src="${esc(this.flow.logo_url)}" alt="" />` : '';
@@ -363,10 +428,10 @@ class Widget {
     if (this.splitScreen()) {
       body = `<main class="da-pagebody da-pagebody-hero"><div class="da-split">
           <div class="da-stage-left" data-left>${this.contentHtml()}</div>
-          <div class="da-hero-visual">
-            <button class="da-neb-audio" data-act="mute" aria-label="${esc(this.muted ? this.t.unmute : this.t.mute)}">${this.muted ? I.spkOff : I.spk}</button>
+          <div class="da-hero-visual"><div class="da-neb-wrap">
             <canvas class="da-neb" data-neb aria-hidden="true"></canvas>
-          </div></div></main>`;
+            <button class="da-neb-audio" data-act="audio" aria-label="${esc(this.t.audioPlay)}">${I.spk}</button>
+          </div></div></div></main>`;
     } else {
       body = `<main class="da-pagebody"><div class="da-page-centered">${this.contentHtml()}</div></main>`;
     }
@@ -398,7 +463,7 @@ class Widget {
     switch (this.screen) {
       case 'unavailable': return `<div class="da-center"><h2>${esc(DA_TITLE)}</h2><p>${esc(this.t.unavailable)}</p>${closeActions}</div>`;
       case 'error': return `<div class="da-center"><h2>:(</h2><p>${esc(this.t.errorLoad)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="retry">${esc(this.t.retry)}</button></div></div>`;
-      case 'success': return `<div class="da-center"><span class="da-badge">${I.ok}</span><h2>${esc(this.t.successTitle)}</h2><p>${esc(this.t.successBody)}</p>${closeActions}</div>`;
+      case 'success': return `<div class="da-center"><span class="da-badge">${I.ok}</span><h2>${esc(this.t.successTitle)}</h2><p>${esc(this.t.successBody)}</p><p class="da-note">${esc(this.t.sentNote)}</p><div class="da-actions"><button class="da-btn da-btn-ghost" data-act="pdf">${esc(this.t.downloadPdf)}</button>${this.cfg.target ? '' : `<button class="da-btn da-btn-primary" data-act="close">${esc(this.t.close)}</button>`}</div></div>`;
       case 'resume': return `<div class="da-center"><h2>${esc(this.t.resumeTitle)}</h2><p>${esc(this.t.resumeBody)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="resume">${esc(this.t.continue)}</button><button class="da-btn da-btn-ghost" data-act="restart">${esc(this.t.startAgain)}</button></div></div>`;
       case 'intro':
         return `<div class="da-hero-text"><h1 class="da-hero-title">${esc(this.t.welcomeTitle)}</h1><p class="da-hero-sub">${esc(this.t.welcome)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="begin">${esc(this.t.begin)}</button></div></div>`;
@@ -406,8 +471,10 @@ class Widget {
         const last = this.step >= this.questions.length;
         return `${this.progressHtml()}<p class="da-legend">${esc(this.t.during)}</p>
           <div class="da-qstage" data-stage></div>
+          <p class="da-note" data-note ${last ? '' : 'hidden'}>${esc(this.t.backupNote)}</p>
           <div class="da-foot">
             <button class="da-btn da-btn-ghost" data-act="back" ${this.step <= 1 ? 'hidden' : ''}>${esc(this.t.back)}</button>
+            <button class="da-btn da-btn-ghost" data-act="pdf" data-pdf ${last ? '' : 'hidden'}>${esc(this.t.downloadPdf)}</button>
             <button class="da-btn da-btn-primary" data-act="${last ? 'submit' : 'next'}">${last ? esc(this.t.finish) : esc(this.t.next)}</button>
           </div>`;
       }
@@ -423,8 +490,7 @@ class Widget {
     const q = this.questions[index - 1];
     const block = document.createElement('div'); block.className = 'da-qblock'; block.setAttribute('data-block', String(index));
     block.innerHTML =
-      `<button class="da-audiobtn" data-act="audio" aria-label="${esc(this.t.listen)}">${I.play}<span>${esc(this.t.listen)}</span></button>
-       <h3 class="da-q">${esc(q.label)}${q.required ? '' : ` <span style="font-weight:500;font-size:14px;color:var(--da-ink-2)">(${esc(this.t.optional)})</span>`}</h3>
+      `<h3 class="da-q">${esc(q.label)}${q.required ? '' : ` <span style="font-weight:500;font-size:14px;color:var(--da-ink-2)">(${esc(this.t.optional)})</span>`}</h3>
        ${q.help_text ? `<p class="da-help">${esc(q.help_text)}</p>` : ''}
        ${this.fieldHtml(q)}
        <p class="da-err" data-err role="alert"></p>`;
@@ -492,7 +558,6 @@ class Widget {
       el.addEventListener('click', toggle);
       el.addEventListener('keydown', (ev) => { const k = (ev as KeyboardEvent).key; if (k === 'Enter' || k === ' ') { ev.preventDefault(); toggle(); } });
     });
-    const audio = block.querySelector<HTMLElement>('[data-act="audio"]'); audio && audio.addEventListener('click', () => this.speak(q, audio));
   }
 
   private autoAdvance(): void { if (this.step < this.questions.length && !this.transitioning) setTimeout(() => this.goNext(), 320); }
@@ -507,8 +572,8 @@ class Widget {
       case 'back': this.goBack(); break;
       case 'next': this.goNext(); break;
       case 'submit': await this.onSubmit(); break;
-      case 'mute': this.toggleMute(el); break;
-      case 'audio': break;
+      case 'audio': if (el) this.playContextAudio(el); break;
+      case 'pdf': this.downloadPdf(); break;
     }
   }
 
@@ -517,6 +582,8 @@ class Widget {
     this.stopAudio(); this.screen = 'flow'; this.step = 1; this.persist();
     const left = this.splitScreen() ? this.root.querySelector<HTMLElement>('[data-left]') : null;
     if (left) {
+      const page = this.root.querySelector<HTMLElement>('.da-page'); page && page.setAttribute('data-screen', 'flow');   // shrinks the nebula via CSS transition
+      this.nebPulse();
       left.innerHTML = this.contentHtml(); this.wireLeft(left);
       left.classList.remove('da-leftin'); void left.offsetWidth; left.classList.add('da-leftin');
       this.mountStep('fwd', true);
@@ -533,7 +600,7 @@ class Widget {
   private transition(dir: 'fwd' | 'back', toStep: number): void {
     const stage = this.currentPanel()?.querySelector<HTMLElement>('[data-stage]');
     const cur = stage?.firstElementChild as HTMLElement | null;
-    this.transitioning = true;
+    this.transitioning = true; this.nebPulse();
     if (cur) cur.className = 'da-qblock ' + (dir === 'fwd' ? 'da-leave-fwd' : 'da-leave-back');
     this.step = toStep; this.persist();
     setTimeout(() => { this.mountStep(dir, true); this.updateControls(); this.transitioning = false; }, cur ? 220 : 0);
@@ -543,7 +610,10 @@ class Widget {
     const bar = panel.querySelector<HTMLElement>('.da-progress > i'); if (bar) bar.style.width = `${Math.round((this.step / Math.max(1, this.questions.length)) * 100)}%`;
     const sn = panel.querySelector<HTMLElement>('.da-stepno'); if (sn) sn.textContent = `${this.t.step} ${this.step} ${this.t.of} ${this.questions.length}`;
     const back = panel.querySelector<HTMLButtonElement>('.da-foot [data-act="back"]'); if (back) { if (this.step <= 1) back.setAttribute('hidden', ''); else back.removeAttribute('hidden'); }
-    const prim = panel.querySelector<HTMLButtonElement>('.da-foot .da-btn-primary'); if (prim) { const last = this.step >= this.questions.length; prim.setAttribute('data-act', last ? 'submit' : 'next'); prim.textContent = last ? this.t.finish : this.t.next; }
+    const last = this.step >= this.questions.length;
+    const prim = panel.querySelector<HTMLButtonElement>('.da-foot .da-btn-primary'); if (prim) { prim.setAttribute('data-act', last ? 'submit' : 'next'); prim.textContent = last ? this.t.finish : this.t.next; }
+    const pdf = panel.querySelector<HTMLElement>('[data-pdf]'); if (pdf) { if (last) pdf.removeAttribute('hidden'); else pdf.setAttribute('hidden', ''); }
+    const note = panel.querySelector<HTMLElement>('[data-note]'); if (note) { if (last) note.removeAttribute('hidden'); else note.setAttribute('hidden', ''); }
   }
 
   private validateCurrent(): boolean {
@@ -577,22 +647,23 @@ class Widget {
     }
   }
 
-  /* ---- audio: play recorded explanation or read the question aloud (TTS) ---- */
-  private toggleMute(btn?: HTMLElement): void {
-    this.muted = !this.muted; if (this.muted) this.stopAudio();
-    if (btn) { btn.innerHTML = this.muted ? I.spkOff : I.spk; btn.setAttribute('aria-label', this.muted ? this.t.unmute : this.t.mute); }
-  }
-  private speak(q: Question, btn: HTMLElement): void {
-    if (this.muted) return;
-    if (this.audioBtn === btn) { this.stopAudio(); return; }
+  /* ---- audio: the nebula button plays the explanation of the current context (or stops it) ---- */
+  private playContextAudio(btn: HTMLElement): void {
+    if (this.audioBtn === btn) { this.stopAudio(); return; }   // already playing → stop (mute)
     this.stopAudio();
-    this.audioBtn = btn; btn.classList.add('playing'); btn.innerHTML = `${I.pause}<span>${esc(this.t.listen)}</span>`;
-    if (q.audio_url) {
-      this.audioEl = new Audio(q.audio_url); this.audioEl.play().catch(() => this.stopAudio());
+    let text = '', url: string | null = null;
+    if (this.screen === 'flow') { const q = this.questions[this.step - 1]; if (q) { url = q.audio_url; text = q.label + (q.help_text ? '. ' + q.help_text : ''); } }
+    else { text = this.t.welcomeTitle + '. ' + this.t.welcome; }
+    this.speakText(text, url, btn);
+  }
+  private speakText(text: string, url: string | null, btn: HTMLElement): void {
+    this.audioBtn = btn; btn.classList.add('playing'); btn.setAttribute('aria-label', this.t.audioStop);
+    if (url) {
+      this.audioEl = new Audio(url); this.audioEl.play().catch(() => this.stopAudio());
       this.audioEl.onended = () => this.stopAudio();
-    } else if ('speechSynthesis' in window) {
+    } else if ('speechSynthesis' in window && text) {
       try {
-        const u = new SpeechSynthesisUtterance(q.label + (q.help_text ? '. ' + q.help_text : ''));
+        const u = new SpeechSynthesisUtterance(text);
         u.lang = this.flow?.language === 'en' ? 'en-US' : 'es-ES'; u.onend = () => this.stopAudio();
         window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
       } catch { this.stopAudio(); }
@@ -601,58 +672,76 @@ class Widget {
   private stopAudio(): void {
     if (this.audioEl) { try { this.audioEl.pause(); } catch { /* noop */ } this.audioEl = null; }
     try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch { /* noop */ }
-    if (this.audioBtn) { this.audioBtn.classList.remove('playing'); this.audioBtn.innerHTML = `${I.play}<span>${esc(this.t.listen)}</span>`; this.audioBtn = null; }
+    if (this.audioBtn) { this.audioBtn.classList.remove('playing'); this.audioBtn.setAttribute('aria-label', this.t.audioPlay); this.audioBtn = null; }
   }
 
-  /* ---- energy nebula: flowing plasma, transparent trails (no box / no clipping) ---- */
+  /* ---- PDF backup of answers (self-contained, no deps) ---- */
+  private downloadPdf(): void {
+    const rows = this.questions.map((q) => {
+      const v = this.answers[q.key]; const a = Array.isArray(v) ? v.join(', ') : (typeof v === 'string' ? v : '');
+      return { q: q.label, a: a || '—' };
+    });
+    const title = this.flow?.name || DA_TITLE;
+    const subtitle = `${DA_TITLE} · ${new Date().toLocaleString(this.flow?.language === 'en' ? 'en-US' : 'es-ES')}`;
+    const bytes = buildPdf(title, subtitle, rows);
+    const blob = new Blob([bytes as BlobPart], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = `${(this.flow?.public_key || 'respuestas')}-respuestas.pdf`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+  }
+
+  /* ---- energy nebula: rotating plasma, transparent trails (no box / no clipping) ----
+     Fixed internal resolution (L) drawn once; CSS scales the canvas → the hero→form
+     shrink is a smooth CSS transition with no redraw/flicker. */
   private startNebula(cv: HTMLCanvasElement): void {
     const ctx = cv.getContext('2d'); if (!ctx) return;
     this.stopNebula(); this.nebStop = false;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let W = 1, H = 1;
-    const resize = () => { const r = cv.getBoundingClientRect(); W = Math.max(1, r.width); H = Math.max(1, r.height); cv.width = Math.floor(W * dpr); cv.height = Math.floor(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); };
-    resize();
+    const L = 600, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = Math.floor(L * dpr); cv.height = Math.floor(L * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, L, L);
     const sprite = (r: number, g: number, b: number) => { const d = 28, c = document.createElement('canvas'); c.width = d; c.height = d; const x = c.getContext('2d')!; const gr = x.createRadialGradient(d / 2, d / 2, 0, d / 2, d / 2, d / 2); gr.addColorStop(0, `rgba(${r},${g},${b},0.95)`); gr.addColorStop(0.4, `rgba(${r},${g},${b},0.32)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`); x.fillStyle = gr; x.fillRect(0, 0, d, d); return c; };
     const cP = sprite(168, 85, 247), cV = sprite(139, 92, 246), cC = sprite(34, 211, 238), cB = sprite(96, 165, 250), cM = sprite(217, 110, 230), cW = sprite(214, 225, 255);
     const palette = [cP, cP, cV, cC, cC, cB, cM, cW];
-    const rad = () => Math.min(W, H) * 0.42;
+    const R = L * 0.42, ccx = L / 2, ccy = L / 2;
     type P = { x: number; y: number; sp: HTMLCanvasElement; sz: number; life: number; max: number };
-    const spawn = (p: P) => { const a = Math.random() * 6.283, rr = Math.random() * rad() * 0.5; p.x = W / 2 + Math.cos(a) * rr; p.y = H / 2 + Math.sin(a) * rr; p.sp = palette[(Math.random() * palette.length) | 0]; p.sz = 2 + Math.random() * 6.5; p.max = 120 + Math.random() * 240; p.life = Math.random() * p.max; };
-    const N = W < 480 ? 520 : 900;
+    const spawn = (p: P) => { const a = Math.random() * 6.283, rr = Math.random() * R * 0.55; p.x = ccx + Math.cos(a) * rr; p.y = ccy + Math.sin(a) * rr; p.sp = palette[(Math.random() * palette.length) | 0]; p.sz = 2 + Math.random() * 6.5; p.max = 120 + Math.random() * 240; p.life = Math.random() * p.max; };
+    const N = 900;
     const pts: P[] = []; for (let i = 0; i < N; i++) { const p: P = { x: 0, y: 0, sp: cP, sz: 3, life: 0, max: 200 }; spawn(p); pts.push(p); }
     let mx = -9999, my = -9999, active = false;
-    const onMove = (e: MouseEvent) => { const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; active = true; };
-    const onTouch = (e: TouchEvent) => { const tt = e.touches[0]; if (!tt) return; const r = cv.getBoundingClientRect(); mx = tt.clientX - r.left; my = tt.clientY - r.top; active = true; };
+    const map = (cx: number, cy: number) => { const r = cv.getBoundingClientRect(); const s = L / Math.max(1, r.width); mx = (cx - r.left) * s; my = (cy - r.top) * s; active = true; };
+    const onMove = (e: MouseEvent) => map(e.clientX, e.clientY);
+    const onTouch = (e: TouchEvent) => { const tt = e.touches[0]; if (tt) map(tt.clientX, tt.clientY); };
     const onLeave = () => { active = false; };
     cv.addEventListener('mousemove', onMove); cv.addEventListener('mouseleave', onLeave); cv.addEventListener('touchmove', onTouch, { passive: true });
-    window.addEventListener('resize', resize);
-    this.nebCleanup = () => { cv.removeEventListener('mousemove', onMove); cv.removeEventListener('mouseleave', onLeave); cv.removeEventListener('touchmove', onTouch); window.removeEventListener('resize', resize); };
+    this.nebCleanup = () => { cv.removeEventListener('mousemove', onMove); cv.removeEventListener('mouseleave', onLeave); cv.removeEventListener('touchmove', onTouch); };
     let t = 0;
     const step = () => {
-      const ccx = W / 2, ccy = H / 2, R = rad();
-      ctx.globalCompositeOperation = 'destination-out'; ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.fillRect(0, 0, W, H);   // transparent trail fade
+      const boost = performance.now() < this.nebBoost ? 1 : 0;
+      ctx.globalCompositeOperation = 'destination-out'; ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(0,0,0,0.13)'; ctx.fillRect(0, 0, L, L);   // transparent trail fade
       ctx.globalCompositeOperation = 'lighter';
       const cg = ctx.createRadialGradient(ccx, ccy, 0, ccx, ccy, R * 1.25);   // volumetric bloom
-      cg.addColorStop(0, 'rgba(150,80,240,0.10)'); cg.addColorStop(0.5, 'rgba(40,190,225,0.05)'); cg.addColorStop(1, 'rgba(0,0,0,0)');
-      ctx.fillStyle = cg; ctx.fillRect(0, 0, W, H);
+      cg.addColorStop(0, `rgba(150,80,240,${0.10 + boost * 0.06})`); cg.addColorStop(0.5, `rgba(40,190,225,${0.05 + boost * 0.04})`); cg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = cg; ctx.fillRect(0, 0, L, L);
+      const spin = 0.016 + boost * 0.01;   // circular rotation rate
       for (const p of pts) {
         const s = 0.006;
         const ang = (Math.sin(p.x * s + t) + Math.cos(p.y * s * 1.2 - t * 0.8) + Math.sin((p.x + p.y) * s * 0.6 + t * 0.5)) * Math.PI;
-        let vx = Math.cos(ang), vy = Math.sin(ang);
-        vx += (ccx - p.x) * 0.0009; vy += (ccy - p.y) * 0.0009;   // pull → bounded cloud (never reaches edges)
-        if (active) { const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy; if (d2 < 17000) { const f = (1 - Math.sqrt(d2) / 130) * 0.9; vx += (-dy * 0.02 + dx * 0.01) * f; vy += (dx * 0.02 + dy * 0.01) * f; } }
-        p.x += vx * 1.1; p.y += vy * 1.1; p.life++;
+        const dxc = p.x - ccx, dyc = p.y - ccy;
+        let vx = Math.cos(ang) * 0.8 - dyc * spin + (ccx - p.x) * 0.0006;   // organic drift + rotation + gentle pull
+        let vy = Math.sin(ang) * 0.8 + dxc * spin + (ccy - p.y) * 0.0006;
+        if (active) { const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy; if (d2 < 17000) { const f = (1 - Math.sqrt(d2) / 130) * 0.9; vx += (-dy * 0.02 + dx * 0.012) * f; vy += (dx * 0.02 + dy * 0.012) * f; } }
+        const sp = 1.25 + boost * 0.7; p.x += vx * sp; p.y += vy * sp; p.life++;
         if (p.life > p.max || Math.hypot(p.x - ccx, p.y - ccy) > R) spawn(p);
-        ctx.globalAlpha = Math.max(0, Math.min(1, 0.5 * Math.sin((p.life / p.max) * Math.PI)));
+        ctx.globalAlpha = Math.max(0, Math.min(1, (0.5 + boost * 0.2) * Math.sin((p.life / p.max) * Math.PI)));
         ctx.drawImage(p.sp, p.x - p.sz, p.y - p.sz, p.sz * 2, p.sz * 2);
       }
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     };
     let reduce = false; try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { /* noop */ }
-    if (reduce) { for (let k = 0; k < 90; k++) { t += 0.006; step(); } return; }
-    const loop = () => { if (this.nebStop) return; t += 0.006; step(); this.nebRaf = requestAnimationFrame(loop); };
+    if (reduce) { for (let k = 0; k < 90; k++) { t += 0.011; step(); } return; }
+    const loop = () => { if (this.nebStop) return; t += 0.011; step(); this.nebRaf = requestAnimationFrame(loop); };
     loop();
   }
+  private nebPulse(): void { this.nebBoost = performance.now() + 800; }
   private stopNebula(): void { this.nebStop = true; cancelAnimationFrame(this.nebRaf); if (this.nebCleanup) { this.nebCleanup(); this.nebCleanup = null; } }
 
   /* ---- helpers ---- */
