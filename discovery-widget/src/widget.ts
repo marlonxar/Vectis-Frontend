@@ -1,9 +1,8 @@
 /**
- * Discovery Assistant Widget
- * Embeddable, framework-agnostic, Shadow-DOM isolated guided discovery flow.
+ * Discovery Assistant Widget — embeddable, Shadow-DOM isolated guided discovery flow.
  *   <script src="https://wearevectis.com/assets/discovery/widget.js"></script>
  *   <script>DiscoveryAssistant.init({ key: "da_vectis" });</script>
- * Supabase URL + anon key are baked in (src/config.ts); the host only passes `key`.
+ * Supabase URL + anon key are baked in (src/config.ts); the host only passes `key`. Dark theme only.
  */
 import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config';
 
@@ -22,10 +21,7 @@ interface Question {
   help_text: string | null; placeholder: string | null; audio_url: string | null;
   options: string[]; required: boolean; order_index: number;
 }
-interface Config {
-  key: string; supabaseUrl?: string; supabaseAnonKey?: string;
-  target?: string; accentColor?: string; position?: 'bottom-right' | 'bottom-left'; page?: boolean;
-}
+interface Config { key: string; supabaseUrl?: string; supabaseAnonKey?: string; target?: string; accentColor?: string; position?: 'bottom-right' | 'bottom-left'; page?: boolean; }
 interface Progress { flowKey: string; currentStep: number; answers: Record<string, string | string[]>; updatedAt: string; }
 
 /* ----------------------------------------------------------------- i18n -- */
@@ -36,14 +32,14 @@ const STRINGS = {
     during: 'Por favor responde a la pregunta con claridad.',
     begin: 'Comenzar', next: 'Siguiente', back: 'Atrás', step: 'Paso', of: 'de', finish: 'Enviar', sending: 'Enviando…',
     required: 'Este campo es obligatorio.', invalidEmail: 'Ingresa un correo válido.',
-    selectOne: 'Selecciona una opción.', optional: 'opcional', themeToggle: 'Cambiar tema',
+    selectOne: 'Selecciona una opción.', optional: 'opcional',
     resumeTitle: '¿Continuar donde quedaste?', resumeBody: 'Guardamos tus respuestas anteriores.',
     continue: 'Continuar', startAgain: 'Empezar de nuevo',
     unavailable: 'Este asistente no está disponible para su organización. Por favor contacte a un administrador para habilitarlo.',
     errorLoad: 'No pudimos cargar el asistente. Intenta de nuevo.',
     errorSend: 'No se pudo enviar. Revisa tu conexión e intenta de nuevo.',
     successTitle: '¡Gracias!', successBody: 'Recibimos tu información. Te contactaremos pronto.',
-    close: 'Cerrar', listen: 'Escuchar la pregunta', retry: 'Reintentar', selectPlaceholder: 'Selecciona…',
+    close: 'Cerrar', listen: 'Escuchar la pregunta', mute: 'Silenciar audio', unmute: 'Activar audio', retry: 'Reintentar', selectPlaceholder: 'Selecciona…',
   },
   en: {
     welcomeTitle: 'Welcome to the Discovery Assistant',
@@ -51,14 +47,14 @@ const STRINGS = {
     during: 'Please answer the question clearly.',
     begin: 'Start', next: 'Next', back: 'Back', step: 'Step', of: 'of', finish: 'Submit', sending: 'Sending…',
     required: 'This field is required.', invalidEmail: 'Enter a valid email.',
-    selectOne: 'Select an option.', optional: 'optional', themeToggle: 'Toggle theme',
+    selectOne: 'Select an option.', optional: 'optional',
     resumeTitle: 'Continue where you left off?', resumeBody: 'We saved your previous answers.',
     continue: 'Continue', startAgain: 'Start again',
     unavailable: 'This assistant is not available for your organization. Please contact an administrator to enable it.',
     errorLoad: 'We could not load the assistant. Please try again.',
     errorSend: 'Could not send. Check your connection and try again.',
     successTitle: 'Thank you!', successBody: 'We received your info. We will contact you soon.',
-    close: 'Close', listen: 'Play the question', retry: 'Retry', selectPlaceholder: 'Select…',
+    close: 'Close', listen: 'Play the question', mute: 'Mute audio', unmute: 'Unmute audio', retry: 'Retry', selectPlaceholder: 'Select…',
   },
 };
 
@@ -95,18 +91,15 @@ const CSS = `
 .da-close{ margin-left:auto; width:40px; height:40px; border-radius:10px; border:none; background:transparent; color:var(--da-ink-2); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
 .da-close:hover{ color:var(--da-ink); } .da-close svg{ width:20px; height:20px; }
 
-.da-legend{ position:relative; z-index:1; padding:14px 22px 0; font-size:14px; color:var(--da-ink-2); }
-.da-progress{ position:relative; z-index:1; height:4px; background:var(--da-line); border-radius:4px; margin:16px 22px 0; overflow:hidden; }
+.da-legend{ position:relative; z-index:1; padding:14px 0 0; font-size:14px; color:var(--da-ink-2); }
+.da-progress{ position:relative; z-index:1; height:4px; background:var(--da-line); border-radius:4px; margin:0 0 4px; overflow:hidden; max-width:420px; }
 .da-progress > i{ display:block; height:100%; background:var(--da-accent); width:0; transition:width .4s cubic-bezier(.2,.7,.2,1); }
-.da-stepno{ position:relative; z-index:1; padding:8px 22px 0; margin:0; font-size:12px; letter-spacing:.06em; text-transform:uppercase; font-weight:700; color:var(--da-ink-2); }
+.da-stepno{ position:relative; z-index:1; margin:0 0 10px; font-size:12px; letter-spacing:.06em; text-transform:uppercase; font-weight:700; color:var(--da-ink-2); }
 
-.da-body{ position:relative; z-index:1; padding:14px 22px 8px; overflow-y:auto; flex:1; }
-.da-qstage{ position:relative; }
-
-/* one question at a time */
-.da-qblock{ display:flex; gap:14px; align-items:flex-start; }
-.da-qblock.da-enter-fwd{ animation:da-in-fwd .4s cubic-bezier(.2,.7,.2,1) both; }
-.da-qblock.da-enter-back{ animation:da-in-back .4s cubic-bezier(.2,.7,.2,1) both; }
+.da-qstage{ position:relative; min-height:200px; }
+.da-qblock{ display:block; }
+.da-qblock.da-enter-fwd{ animation:da-in-fwd .42s cubic-bezier(.2,.7,.2,1) both; }
+.da-qblock.da-enter-back{ animation:da-in-back .42s cubic-bezier(.2,.7,.2,1) both; }
 .da-qblock.da-leave-fwd{ animation:da-out-fwd .22s ease-in both; }
 .da-qblock.da-leave-back{ animation:da-out-back .22s ease-in both; }
 @keyframes da-in-fwd{ from{ opacity:0; transform:translateX(34px); } to{ opacity:1; transform:none; } }
@@ -114,16 +107,13 @@ const CSS = `
 @keyframes da-in-back{ from{ opacity:0; transform:translateX(-34px); } to{ opacity:1; transform:none; } }
 @keyframes da-out-back{ from{ opacity:1; transform:none; } to{ opacity:0; transform:translateX(34px); } }
 
-.da-audiobtn{ flex:0 0 auto; width:46px; height:46px; border-radius:50%; border:none; cursor:pointer; margin-top:2px;
-  background:var(--da-accent); color:#1a1205; display:inline-flex; align-items:center; justify-content:center;
-  box-shadow:0 8px 20px -8px color-mix(in srgb, var(--da-accent) 75%, transparent); transition:transform .15s ease, filter .15s ease; }
-.da-audiobtn:hover{ transform:scale(1.07); } .da-audiobtn:active{ transform:scale(.94); } .da-audiobtn svg{ width:20px; height:20px; }
-.da-audiobtn.playing{ animation:da-pulse 1.1s ease-in-out infinite; }
-@keyframes da-pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.1); } }
-.da-qbody{ flex:1 1 auto; min-width:0; }
+.da-audiobtn{ display:inline-flex; align-items:center; gap:8px; margin:0 0 16px; padding:10px 16px; border-radius:999px; border:1.5px solid var(--da-line);
+  background:transparent; color:var(--da-ink); cursor:pointer; font:inherit; font-size:13px; font-weight:600; transition:border-color .15s ease; }
+.da-audiobtn:hover{ border-color:var(--da-accent); } .da-audiobtn svg{ width:18px; height:18px; color:var(--da-accent); }
+.da-audiobtn.playing{ border-color:var(--da-accent); }
 
-.da-q{ font-size:21px; font-weight:700; margin:0 0 6px; letter-spacing:-.01em; }
-.da-help{ font-size:14px; color:var(--da-ink-2); margin:0 0 14px; }
+.da-q{ font-size:clamp(20px,2.4vw,26px); font-weight:700; margin:0 0 8px; letter-spacing:-.01em; }
+.da-help{ font-size:14px; color:var(--da-ink-2); margin:0 0 16px; }
 
 .da-field{ display:block; }
 .da-input, .da-textarea, .da-select{ width:100%; font:inherit; font-size:16px; color:var(--da-ink);
@@ -137,8 +127,7 @@ const CSS = `
 .da-options{ display:grid; gap:10px; }
 .da-opt{ display:flex; align-items:center; gap:12px; padding:13px 14px; cursor:pointer; border:1.5px solid var(--da-line); border-radius:12px; min-height:48px;
   transition:border-color .15s ease, background .15s ease, transform .12s ease; }
-.da-opt:hover{ border-color:color-mix(in srgb,var(--da-accent) 60%,var(--da-line)); }
-.da-opt:active{ transform:scale(.99); }
+.da-opt:hover{ border-color:color-mix(in srgb,var(--da-accent) 60%,var(--da-line)); } .da-opt:active{ transform:scale(.99); }
 .da-opt.sel{ border-color:var(--da-accent); background:color-mix(in srgb,var(--da-accent) 12%,transparent); }
 .da-opt .box{ width:20px; height:20px; flex:none; border:2px solid var(--da-line); display:inline-flex; align-items:center; justify-content:center; color:#1a1205; }
 .da-opt.radio .box{ border-radius:50%; } .da-opt.check .box{ border-radius:6px; }
@@ -149,7 +138,7 @@ const CSS = `
 .da-err{ color:#c0392b; font-size:13px; margin:8px 0 0; min-height:18px; }
 .da-onbg .da-err{ color:#ff9b8a; }
 
-.da-foot{ position:relative; z-index:1; display:flex; gap:10px; align-items:center; padding:16px 22px 22px; }
+.da-foot{ position:relative; z-index:1; display:flex; gap:10px; align-items:center; padding:18px 0 0; }
 .da-btn{ font:inherit; font-size:15px; font-weight:700; border-radius:12px; padding:13px 22px; min-height:48px; cursor:pointer; border:1.5px solid transparent;
   transition:transform .15s ease, filter .15s ease, opacity .15s ease; }
 .da-btn:active{ transform:translateY(1px); }
@@ -160,7 +149,6 @@ const CSS = `
 .da-btn[hidden]{ display:none; }
 
 .da-center{ position:relative; z-index:1; text-align:center; padding:44px 26px; }
-.da-center .da-logo-lg{ height:48px; width:auto; margin:0 auto 16px; display:block; border-radius:10px; }
 .da-center h2{ font-size:26px; margin:0 0 10px; letter-spacing:-.01em; font-weight:800; }
 .da-center p{ color:var(--da-ink-2); margin:0 auto 22px; max-width:42ch; }
 .da-center .da-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
@@ -168,25 +156,11 @@ const CSS = `
   background:color-mix(in srgb,var(--da-accent) 18%,transparent); color:var(--da-accent); }
 .da-badge svg{ width:28px; height:28px; }
 
-/* HERO with interactive 3D nebula (split: text left, nebula centre-right) */
-.da-hero{ position:relative; z-index:1; width:100%; display:grid; grid-template-columns:1.05fr .95fr; align-items:center; gap:clamp(20px,4vw,56px); padding:8px 4px; animation:da-fade .55s ease both; }
 .da-hero-text{ text-align:left; }
 .da-hero-title{ font-size:clamp(36px,5.4vw,62px); font-weight:800; letter-spacing:-.025em; line-height:1.02; margin:0 0 18px; color:var(--da-ink); }
 .da-hero-sub{ color:var(--da-ink-2); font-size:clamp(15px,1.5vw,18px); line-height:1.6; margin:0 0 28px; max-width:50ch; }
-.da-hero .da-actions{ display:flex; justify-content:flex-start; }
-.da-hero .da-btn-primary{ margin-left:0; padding:15px 30px; font-size:16px; }
-.da-hero-visual{ position:relative; display:flex; align-items:center; justify-content:center; }
-.da-neb{ width:100%; max-width:520px; aspect-ratio:1/1; height:auto; display:block;
-  -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 56%, transparent 82%);
-  mask-image:radial-gradient(circle at 50% 50%, #000 56%, transparent 82%); }
-@media (max-width:760px){
-  .da-hero{ grid-template-columns:1fr; gap:6px; text-align:center; }
-  .da-hero-text{ text-align:center; order:2; }
-  .da-hero-visual{ order:1; }
-  .da-hero-sub{ margin-left:auto; margin-right:auto; }
-  .da-hero .da-actions{ justify-content:center; }
-  .da-neb{ max-width:300px; }
-}
+.da-hero-text .da-actions{ display:flex; justify-content:flex-start; }
+.da-hero-text .da-btn-primary{ margin-left:0; padding:15px 30px; font-size:16px; }
 
 .da-spin{ width:16px; height:16px; border:2px solid rgba(0,0,0,.25); border-top-color:#1a1205; border-radius:50%; display:inline-block; animation:da-rot .7s linear infinite; vertical-align:-2px; margin-right:6px; }
 @keyframes da-rot{ to{ transform:rotate(360deg); } }
@@ -194,47 +168,48 @@ const CSS = `
 
 @media (max-width:560px){ .da-overlay{ padding:0; } .da-panel{ max-width:100%; max-height:100%; height:100%; border-radius:0; } }
 
-/* ---- full-page mode (day / night) ---- */
-.da-page{ position:relative; height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden; transition:color .35s ease; }
-.da-page.da-theme-dark{ --da-ink:#f3f3f5; --da-ink-2:#a7adba; --da-surface:#16171c; --da-line:#2a2c34; color:#fff; }
-.da-page.da-theme-light{ --da-ink:#14161c; --da-ink-2:#5b6170; --da-surface:#ffffff; --da-line:#e7e7ea; color:#14161c; }
-/* minimalist background — clean deep black (or light) with one soft glow behind the nebula */
-.da-grad{ position:absolute; inset:0; z-index:0; transition:background .35s ease; }
-.da-theme-dark .da-grad{ background:
-  radial-gradient(40% 55% at 72% 48%, rgba(120,60,220,.16), transparent 72%),
-  radial-gradient(30% 40% at 80% 60%, rgba(40,190,225,.12), transparent 72%),
+/* ---- full-page mode (dark only) ---- */
+.da-page{ position:relative; height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden;
+  --da-ink:#f3f3f5; --da-ink-2:#a7adba; --da-surface:#16171c; --da-line:#2a2c34; color:#fff; }
+.da-grad{ position:absolute; inset:0; z-index:0; background:
+  radial-gradient(42% 56% at 72% 48%, rgba(120,60,220,.16), transparent 72%),
+  radial-gradient(30% 42% at 80% 60%, rgba(40,190,225,.12), transparent 72%),
   #060509; }
-.da-theme-light .da-grad{ background:
-  radial-gradient(40% 55% at 72% 48%, rgba(120,80,230,.10), transparent 72%),
-  radial-gradient(30% 40% at 80% 60%, rgba(40,170,220,.08), transparent 72%),
-  #f6f7fb; }
-.da-page .da-bg::after{ background:linear-gradient(180deg,rgba(8,8,10,.5),rgba(8,8,10,.78)); }
 .da-pagehead{ position:relative; z-index:2; flex:0 0 auto; padding:18px 26px 14px; display:flex; align-items:center; justify-content:center; animation:da-fade .5s ease both; }
 .da-pagehead-c{ display:flex; flex-direction:column; align-items:center; gap:8px; }
 .da-pagehead img{ height:40px; width:auto; border-radius:8px; }
 .da-pagetitle{ margin:0; font-size:15px; font-weight:800; letter-spacing:.01em; }
-.da-theme-btn{ position:absolute; right:18px; top:50%; transform:translateY(-50%); width:40px; height:40px; border-radius:10px; border:1px solid var(--da-line);
-  background:transparent; color:inherit; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:border-color .2s ease, transform .2s ease; }
-.da-theme-btn:hover{ border-color:var(--da-accent); } .da-theme-btn:active{ transform:translateY(-50%) scale(.92); } .da-theme-btn svg{ width:18px; height:18px; }
 .da-pagebody{ position:relative; z-index:1; flex:1 1 auto; min-height:0; overflow-y:auto; width:100%; max-width:640px; margin:0 auto; padding:8px 22px 28px; display:flex; flex-direction:column; justify-content:flex-start; }
-.da-pagebody-hero{ max-width:1080px; justify-content:center; padding:8px 30px 28px; }
-.da-page-panel{ background:color-mix(in srgb, var(--da-surface) 90%, transparent); border:1px solid var(--da-line); border-radius:20px; overflow:visible; max-height:none;
-  box-shadow:0 24px 70px -28px rgba(0,0,0,.55); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); animation:da-cardin .55s cubic-bezier(.2,.7,.2,1) both;
-  transition:background-color .35s ease, border-color .35s ease; }
-.da-page-panel .da-legend, .da-page-panel .da-stepno{ text-align:left; }
-.da-page-panel .da-body{ overflow:visible; padding:14px 22px 8px; }
-.da-page .da-center{ text-align:left; padding:36px 24px; }
-.da-page .da-center .da-actions{ justify-content:flex-start; }
-.da-page .da-center .da-badge{ margin:0 0 6px; }
-.da-page .da-center p{ margin-left:0; margin-right:0; max-width:48ch; }
-.da-pagefoot{ position:relative; z-index:2; flex:0 0 auto; padding:14px 24px 20px; text-align:center; font-size:13px; transition:color .35s ease; }
-.da-theme-dark .da-pagefoot{ color:rgba(255,255,255,.8); } .da-theme-light .da-pagefoot{ color:rgba(20,22,28,.66); }
+.da-pagebody-hero{ max-width:1100px; justify-content:center; padding:8px 34px 28px; }
+
+/* split: content left, nebula right (used for hero + the form) */
+.da-split{ display:grid; grid-template-columns:1.05fr .95fr; align-items:center; gap:clamp(20px,4vw,56px); width:100%; }
+.da-stage-left{ text-align:left; min-width:0; }
+.da-stage-left.da-leftin{ animation:da-in-fwd .5s cubic-bezier(.2,.7,.2,1) both; }
+.da-hero-visual{ position:relative; display:flex; align-items:center; justify-content:center; }
+.da-neb{ width:100%; max-width:520px; aspect-ratio:1/1; height:auto; display:block; }
+.da-neb-audio{ position:absolute; top:8px; right:8px; z-index:3; width:42px; height:42px; border-radius:50%; border:1px solid var(--da-line);
+  background:rgba(255,255,255,.06); color:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); transition:border-color .2s ease, transform .15s ease; }
+.da-neb-audio:hover{ border-color:var(--da-accent); } .da-neb-audio:active{ transform:scale(.92); } .da-neb-audio svg{ width:19px; height:19px; }
+
+.da-page-centered{ width:100%; max-width:560px; margin:0 auto; }
+
+.da-pagefoot{ position:relative; z-index:2; flex:0 0 auto; padding:14px 24px 20px; text-align:center; font-size:13px; color:rgba(255,255,255,.8); }
 .da-pagefoot a{ color:var(--da-accent); text-decoration:none; font-weight:700; } .da-pagefoot a:hover{ text-decoration:underline; }
-@keyframes da-cardin{ from{ opacity:0; transform:translateY(16px) scale(.99); } to{ opacity:1; transform:none; } }
-@media (max-width:560px){ .da-page-panel{ border-radius:16px; } .da-pagehead img{ height:34px; } }
+
+@media (max-width:820px){
+  .da-split{ grid-template-columns:1fr; gap:8px; text-align:center; }
+  .da-stage-left{ text-align:center; order:2; }
+  .da-hero-visual{ order:1; }
+  .da-hero-text .da-actions{ justify-content:center; }
+  .da-hero-sub{ margin-left:auto; margin-right:auto; }
+  .da-progress, .da-stepno, .da-legend, .da-foot{ text-align:left; }
+  .da-foot{ justify-content:center; }
+  .da-neb{ max-width:300px; }
+}
 
 @media (prefers-reduced-motion: reduce){ .da-overlay,.da-panel,.da-btn{ transition:none; }
-  .da-qblock,.da-page-panel,.da-pagehead,.da-hero,.da-hero-title,.da-audiobtn.playing{ animation:none; } }
+  .da-qblock,.da-pagehead,.da-stage-left,.da-audiobtn.playing{ animation:none; } }
 `;
 
 /* ------------------------------------------------------------- storage -- */
@@ -246,11 +221,6 @@ const PKEY = (k: string) => `da_progress_${k}`;
 function loadProgress(k: string): Progress | null { const s = store(); if (!s) return null; try { const r = s.getItem(PKEY(k)); return r ? JSON.parse(r) as Progress : null; } catch { return null; } }
 function saveProgress(k: string, p: Progress): void { const s = store(); if (!s) return; try { s.setItem(PKEY(k), JSON.stringify(p)); } catch { /* quota */ } }
 function clearProgress(k: string): void { const s = store(); if (!s) return; try { s.removeItem(PKEY(k)); } catch { /* noop */ } }
-function loadTheme(): 'dark' | 'light' {
-  try { const v = store()?.getItem('da_theme'); if (v === 'light' || v === 'dark') return v; } catch { /* noop */ }
-  try { return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; } catch { return 'dark'; }
-}
-function saveTheme(t: string): void { try { store()?.setItem('da_theme', t); } catch { /* noop */ } }
 
 /* ----------------------------------------------------------------- api -- */
 class Api {
@@ -281,8 +251,8 @@ const I = {
   play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
   pause: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>',
   ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>',
-  sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
-  moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3a6.5 6.5 0 0 0 9.8 9.8z"/></svg>',
+  spk: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  spkOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>',
 };
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isVideo = (u: string) => /\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(u);
@@ -295,15 +265,14 @@ class Widget {
   private answers: Record<string, string | string[]> = {};
   private step = 1; private transitioning = false;
   private screen: 'intro' | 'resume' | 'flow' | 'success' | 'unavailable' | 'error' = 'intro';
-  private viewed = false; private audioEl: HTMLAudioElement | null = null; private audioBtn: HTMLElement | null = null;
-  private accent = '#E7AB2E'; private overlayEl: HTMLElement | null = null; private launcher: HTMLButtonElement | null = null;
-  private pageMode = false; private theme: 'dark' | 'light' = 'dark';
+  private viewed = false; private audioEl: HTMLAudioElement | null = null; private audioBtn: HTMLElement | null = null; private muted = false;
+  private accent = '#E7AB2E'; private overlayEl: HTMLElement | null = null; private launcher: HTMLButtonElement | null = null; private pageMode = false;
   private nebRaf = 0; private nebStop = true; private nebCleanup: (() => void) | null = null;
 
   constructor(private cfg: Config) {
     this.api = new Api(cfg.supabaseUrl || SUPABASE_URL, cfg.supabaseAnonKey || SUPABASE_ANON_KEY);
     if (cfg.accentColor) this.accent = cfg.accentColor;
-    this.pageMode = !!cfg.page; this.theme = loadTheme();
+    this.pageMode = !!cfg.page;
   }
 
   async mount(): Promise<void> {
@@ -356,7 +325,9 @@ class Widget {
   }
   private onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') this.close(); };
 
-  /* ---- shell ---- */
+  private splitScreen(): boolean { return this.pageMode && (this.screen === 'intro' || this.screen === 'flow'); }
+
+  /* ---- popup / inline shell ---- */
   private renderPanel(): void {
     if (this.pageMode) { this.renderPage(); return; }
     const inline = !!this.cfg.target; let mount: HTMLElement;
@@ -375,36 +346,39 @@ class Widget {
     const panel = document.createElement('div'); panel.className = 'da-panel'; panel.setAttribute('role', 'dialog'); panel.setAttribute('aria-modal', 'true');
     if (this.flow?.background_url && this.screen !== 'unavailable' && this.screen !== 'error') panel.classList.add('da-onbg');
     panel.style.setProperty('--da-accent', this.accent);
-    panel.innerHTML = this.shellHtml();
+    panel.innerHTML = this.bgHtml() + (this.screen === 'intro' ? '' : this.headHtml()) + `<div class="da-body">${this.contentHtml()}</div>`;
     const ex = mount.querySelector('.da-panel'); ex ? ex.replaceWith(panel) : mount.appendChild(panel);
     this.afterRender(panel);
   }
 
+  /* ---- full-page shell ---- */
   private renderPage(): void {
     this.root.querySelectorAll('.da-page').forEach((n) => n.remove());
-    const wrap = document.createElement('div'); wrap.className = `da-root da-page da-theme-${this.theme}`;
-    wrap.style.setProperty('--da-accent', this.accent);
+    const wrap = document.createElement('div'); wrap.className = 'da-root da-page'; wrap.style.setProperty('--da-accent', this.accent);
     const hasBg = !!this.flow?.background_url && this.screen !== 'unavailable' && this.screen !== 'error';
     const bg = hasBg ? this.bgHtml() : `<div class="da-grad" aria-hidden="true"></div>`;
     const logo = this.flow?.logo_url ? `<img class="da-logo" src="${esc(this.flow.logo_url)}" alt="" />` : '';
-    const themeBtn = `<button class="da-theme-btn" data-act="theme" aria-label="${esc(this.t.themeToggle)}">${this.theme === 'dark' ? I.sun : I.moon}</button>`;
-    const isHero = this.screen === 'intro';
-    const body = isHero
-      ? `<main class="da-pagebody da-pagebody-hero">${this.contentHtml()}</main>`
-      : `<main class="da-pagebody"><div class="da-panel da-page-panel" role="region">${this.contentHtml()}</div></main>`;
-    wrap.innerHTML =
-      `${bg}
-       <header class="da-pagehead"><div class="da-pagehead-c">${logo}<p class="da-pagetitle">${esc(DA_TITLE)}</p></div>${themeBtn}</header>
-       ${body}
-       <footer class="da-pagefoot">Producto desarrollado por <a href="https://www.wearevectis.com" target="_blank" rel="noopener">Vectis</a></footer>`;
+    const title = this.screen === 'intro' ? '' : `<p class="da-pagetitle">${esc(DA_TITLE)}</p>`;   // hero: logo only
+    let body: string;
+    if (this.splitScreen()) {
+      body = `<main class="da-pagebody da-pagebody-hero"><div class="da-split">
+          <div class="da-stage-left" data-left>${this.contentHtml()}</div>
+          <div class="da-hero-visual">
+            <button class="da-neb-audio" data-act="mute" aria-label="${esc(this.muted ? this.t.unmute : this.t.mute)}">${this.muted ? I.spkOff : I.spk}</button>
+            <canvas class="da-neb" data-neb aria-hidden="true"></canvas>
+          </div></div></main>`;
+    } else {
+      body = `<main class="da-pagebody"><div class="da-page-centered">${this.contentHtml()}</div></main>`;
+    }
+    wrap.innerHTML = `${bg}<header class="da-pagehead"><div class="da-pagehead-c">${logo}${title}</div></header>${body}<footer class="da-pagefoot">Producto desarrollado por <a href="https://www.wearevectis.com" target="_blank" rel="noopener">Vectis</a></footer>`;
     this.root.appendChild(wrap);
     this.afterRender(wrap);
   }
 
   private afterRender(root: HTMLElement): void {
     this.wireShell(root);
+    const neb = root.querySelector<HTMLCanvasElement>('[data-neb]'); if (neb) this.startNebula(neb);
     if (this.screen === 'flow') this.mountStep('fwd', false);
-    else if (this.screen === 'intro') { const c = root.querySelector<HTMLCanvasElement>('[data-neb]'); c && this.startNebula(c); const f = root.querySelector<HTMLElement>('button.da-btn-primary'); f && setTimeout(() => f.focus(), 60); }
     else { const f = root.querySelector<HTMLElement>('button.da-btn-primary,.da-opt,input,textarea,select'); f && setTimeout(() => f.focus(), 60); }
   }
 
@@ -418,6 +392,7 @@ class Widget {
     return `<div class="da-head">${logo}<p class="da-title">${esc(DA_TITLE)}</p>${close}</div>`;
   }
 
+  // Content for the active screen (used as left column in split, or inside the card/overlay).
   private contentHtml(): string {
     const closeActions = this.cfg.target ? '' : `<div class="da-actions"><button class="da-btn da-btn-ghost" data-act="close">${esc(this.t.close)}</button></div>`;
     switch (this.screen) {
@@ -426,19 +401,11 @@ class Widget {
       case 'success': return `<div class="da-center"><span class="da-badge">${I.ok}</span><h2>${esc(this.t.successTitle)}</h2><p>${esc(this.t.successBody)}</p>${closeActions}</div>`;
       case 'resume': return `<div class="da-center"><h2>${esc(this.t.resumeTitle)}</h2><p>${esc(this.t.resumeBody)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="resume">${esc(this.t.continue)}</button><button class="da-btn da-btn-ghost" data-act="restart">${esc(this.t.startAgain)}</button></div></div>`;
       case 'intro':
-        return `<div class="da-hero">
-            <div class="da-hero-text">
-              <h1 class="da-hero-title">${esc(this.t.welcomeTitle)}</h1>
-              <p class="da-hero-sub">${esc(this.t.welcome)}</p>
-              <div class="da-actions"><button class="da-btn da-btn-primary" data-act="begin">${esc(this.t.begin)}</button></div>
-            </div>
-            <div class="da-hero-visual"><canvas class="da-neb" data-neb aria-hidden="true"></canvas></div>
-          </div>`;
+        return `<div class="da-hero-text"><h1 class="da-hero-title">${esc(this.t.welcomeTitle)}</h1><p class="da-hero-sub">${esc(this.t.welcome)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="begin">${esc(this.t.begin)}</button></div></div>`;
       default: { // flow
         const last = this.step >= this.questions.length;
-        return `${this.progressHtml()}
-          <p class="da-legend">${esc(this.t.during)}</p>
-          <div class="da-body"><div class="da-qstage" data-stage></div></div>
+        return `${this.progressHtml()}<p class="da-legend">${esc(this.t.during)}</p>
+          <div class="da-qstage" data-stage></div>
           <div class="da-foot">
             <button class="da-btn da-btn-ghost" data-act="back" ${this.step <= 1 ? 'hidden' : ''}>${esc(this.t.back)}</button>
             <button class="da-btn da-btn-primary" data-act="${last ? 'submit' : 'next'}">${last ? esc(this.t.finish) : esc(this.t.next)}</button>
@@ -446,17 +413,9 @@ class Widget {
       }
     }
   }
-
   private progressHtml(): string {
-    const n = Math.max(1, this.questions.length);
-    const pct = Math.round((this.step / n) * 100);
-    return `<p class="da-stepno">${esc(this.t.step)} ${this.step} ${esc(this.t.of)} ${this.questions.length}</p>
-            <div class="da-progress"><i style="width:${pct}%"></i></div>`;
-  }
-
-  private shellHtml(): string {
-    const head = this.screen === 'intro' ? '' : this.headHtml();
-    return this.bgHtml() + head + this.contentHtml();
+    const n = Math.max(1, this.questions.length); const pct = Math.round((this.step / n) * 100);
+    return `<p class="da-stepno">${esc(this.t.step)} ${this.step} ${esc(this.t.of)} ${this.questions.length}</p><div class="da-progress"><i style="width:${pct}%"></i></div>`;
   }
 
   /* ---- one question at a time ---- */
@@ -464,17 +423,14 @@ class Widget {
     const q = this.questions[index - 1];
     const block = document.createElement('div'); block.className = 'da-qblock'; block.setAttribute('data-block', String(index));
     block.innerHTML =
-      `<button class="da-audiobtn" data-act="audio" aria-label="${esc(this.t.listen)}">${I.play}</button>
-       <div class="da-qbody">
-         <h3 class="da-q">${esc(q.label)}${q.required ? '' : ` <span style="font-weight:500;font-size:14px;color:var(--da-ink-2)">(${esc(this.t.optional)})</span>`}</h3>
-         ${q.help_text ? `<p class="da-help">${esc(q.help_text)}</p>` : ''}
-         ${this.fieldHtml(q)}
-         <p class="da-err" data-err role="alert"></p>
-       </div>`;
+      `<button class="da-audiobtn" data-act="audio" aria-label="${esc(this.t.listen)}">${I.play}<span>${esc(this.t.listen)}</span></button>
+       <h3 class="da-q">${esc(q.label)}${q.required ? '' : ` <span style="font-weight:500;font-size:14px;color:var(--da-ink-2)">(${esc(this.t.optional)})</span>`}</h3>
+       ${q.help_text ? `<p class="da-help">${esc(q.help_text)}</p>` : ''}
+       ${this.fieldHtml(q)}
+       <p class="da-err" data-err role="alert"></p>`;
     this.wireBlock(block, q);
     return block;
   }
-
   private mountStep(dir: 'fwd' | 'back', animate: boolean): void {
     const stage = this.currentPanel()?.querySelector<HTMLElement>('[data-stage]'); if (!stage) return;
     stage.innerHTML = '';
@@ -498,10 +454,14 @@ class Widget {
   }
 
   /* ---- wiring ---- */
-  private wireShell(panel: HTMLElement): void {
-    panel.querySelectorAll<HTMLElement>('.da-foot [data-act], .da-center [data-act], .da-hero [data-act], .da-head [data-act], .da-pagehead [data-act]').forEach((el) => {
+  private wireShell(root: HTMLElement): void {
+    root.querySelectorAll<HTMLElement>('[data-act]').forEach((el) => {
+      if (el.closest('[data-stage]')) return;   // question-level controls are wired in wireBlock
       el.addEventListener('click', () => this.act(el.getAttribute('data-act')!, el));
     });
+  }
+  private wireLeft(left: HTMLElement): void {
+    left.querySelectorAll<HTMLElement>('[data-act]').forEach((el) => { if (!el.closest('[data-stage]')) el.addEventListener('click', () => this.act(el.getAttribute('data-act')!, el)); });
   }
   private wireBlock(block: HTMLElement, q: Question): void {
     const input = block.querySelector<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>('[data-input]');
@@ -509,9 +469,7 @@ class Widget {
       const upd = () => { this.answers[q.key] = input.value; this.persist(); };
       input.addEventListener('input', upd); input.addEventListener('change', upd);
       if (q.type === 'SELECT') input.addEventListener('change', () => { if (input.value) this.autoAdvance(); });
-      if (q.type === 'TEXT' || q.type === 'EMAIL' || q.type === 'PHONE') {
-        input.addEventListener('keydown', (e) => { if ((e as KeyboardEvent).key === 'Enter') { e.preventDefault(); this.goNext(); } });
-      }
+      if (q.type === 'TEXT' || q.type === 'EMAIL' || q.type === 'PHONE') input.addEventListener('keydown', (e) => { if ((e as KeyboardEvent).key === 'Enter') { e.preventDefault(); this.goNext(); } });
     }
     block.querySelectorAll<HTMLElement>('[data-opt]').forEach((el) => {
       const pick = () => {
@@ -543,15 +501,26 @@ class Widget {
     switch (a) {
       case 'close': this.close(); break;
       case 'retry': this.flow = null; this.screen = 'intro'; await this.open(); break;
-      case 'begin': this.stopNebula(); this.screen = 'flow'; this.step = 1; this.persist(); this.renderPanel(); break;
+      case 'begin': this.startFlow(); break;
       case 'resume': this.screen = 'flow'; this.renderPanel(); break;
-      case 'restart': this.answers = {}; this.step = 1; clearProgress(this.cfg.key); this.screen = 'flow'; this.renderPanel(); break;
+      case 'restart': this.answers = {}; this.step = 1; clearProgress(this.cfg.key); this.startFlow(); break;
       case 'back': this.goBack(); break;
       case 'next': this.goNext(); break;
       case 'submit': await this.onSubmit(); break;
+      case 'mute': this.toggleMute(el); break;
       case 'audio': break;
-      case 'theme': this.toggleTheme(); break;
     }
+  }
+
+  // Enter the form. In split mode, swap only the left column (keeps the nebula running) + animate.
+  private startFlow(): void {
+    this.stopAudio(); this.screen = 'flow'; this.step = 1; this.persist();
+    const left = this.splitScreen() ? this.root.querySelector<HTMLElement>('[data-left]') : null;
+    if (left) {
+      left.innerHTML = this.contentHtml(); this.wireLeft(left);
+      left.classList.remove('da-leftin'); void left.offsetWidth; left.classList.add('da-leftin');
+      this.mountStep('fwd', true);
+    } else this.renderPanel();
   }
 
   private goNext(): void {
@@ -560,10 +529,7 @@ class Widget {
     if (this.step >= this.questions.length) { void this.onSubmit(); return; }
     this.stopAudio(); this.transition('fwd', this.step + 1);
   }
-  private goBack(): void {
-    if (this.transitioning || this.step <= 1) return;
-    this.stopAudio(); this.transition('back', this.step - 1);
-  }
+  private goBack(): void { if (this.transitioning || this.step <= 1) return; this.stopAudio(); this.transition('back', this.step - 1); }
   private transition(dir: 'fwd' | 'back', toStep: number): void {
     const stage = this.currentPanel()?.querySelector<HTMLElement>('[data-stage]');
     const cur = stage?.firstElementChild as HTMLElement | null;
@@ -572,15 +538,12 @@ class Widget {
     this.step = toStep; this.persist();
     setTimeout(() => { this.mountStep(dir, true); this.updateControls(); this.transitioning = false; }, cur ? 220 : 0);
   }
-
   private updateControls(): void {
     const panel = this.currentPanel(); if (!panel) return;
     const bar = panel.querySelector<HTMLElement>('.da-progress > i'); if (bar) bar.style.width = `${Math.round((this.step / Math.max(1, this.questions.length)) * 100)}%`;
     const sn = panel.querySelector<HTMLElement>('.da-stepno'); if (sn) sn.textContent = `${this.t.step} ${this.step} ${this.t.of} ${this.questions.length}`;
-    const back = panel.querySelector<HTMLButtonElement>('.da-foot [data-act="back"], .da-foot [data-act="back"][hidden]') || panel.querySelector<HTMLButtonElement>('.da-foot .da-btn-ghost');
-    if (back) { if (this.step <= 1) back.setAttribute('hidden', ''); else back.removeAttribute('hidden'); }
-    const prim = panel.querySelector<HTMLButtonElement>('.da-foot .da-btn-primary');
-    if (prim) { const last = this.step >= this.questions.length; prim.setAttribute('data-act', last ? 'submit' : 'next'); prim.textContent = last ? this.t.finish : this.t.next; }
+    const back = panel.querySelector<HTMLButtonElement>('.da-foot [data-act="back"]'); if (back) { if (this.step <= 1) back.setAttribute('hidden', ''); else back.removeAttribute('hidden'); }
+    const prim = panel.querySelector<HTMLButtonElement>('.da-foot .da-btn-primary'); if (prim) { const last = this.step >= this.questions.length; prim.setAttribute('data-act', last ? 'submit' : 'next'); prim.textContent = last ? this.t.finish : this.t.next; }
   }
 
   private validateCurrent(): boolean {
@@ -601,14 +564,13 @@ class Widget {
     }
     return 0;
   }
-
   private async onSubmit(): Promise<void> {
     if (this.transitioning || !this.flow) return;
     const bad = this.firstInvalid();
     if (bad) { this.step = bad; this.mountStep('fwd', true); this.updateControls(); this.validateCurrent(); return; }
     const b = this.currentPanel()?.querySelector<HTMLButtonElement>('.da-foot .da-btn-primary');
     if (b) { b.disabled = true; b.innerHTML = `<span class="da-spin"></span>${esc(this.t.sending)}`; }
-    try { await this.api.submit(this.flow.id, this.answers); clearProgress(this.cfg.key); this.stopAudio(); this.screen = 'success'; this.renderPanel(); }
+    try { await this.api.submit(this.flow.id, this.answers); clearProgress(this.cfg.key); this.stopAudio(); this.stopNebula(); this.screen = 'success'; this.renderPanel(); }
     catch {
       if (b) { b.disabled = false; b.textContent = this.t.finish; }
       const e = this.currentPanel()?.querySelector<HTMLElement>(`[data-block="${this.step}"] [data-err]`); if (e) e.textContent = this.t.errorSend;
@@ -616,18 +578,22 @@ class Widget {
   }
 
   /* ---- audio: play recorded explanation or read the question aloud (TTS) ---- */
+  private toggleMute(btn?: HTMLElement): void {
+    this.muted = !this.muted; if (this.muted) this.stopAudio();
+    if (btn) { btn.innerHTML = this.muted ? I.spkOff : I.spk; btn.setAttribute('aria-label', this.muted ? this.t.unmute : this.t.mute); }
+  }
   private speak(q: Question, btn: HTMLElement): void {
+    if (this.muted) return;
     if (this.audioBtn === btn) { this.stopAudio(); return; }
     this.stopAudio();
-    this.audioBtn = btn; btn.classList.add('playing'); btn.innerHTML = I.pause;
+    this.audioBtn = btn; btn.classList.add('playing'); btn.innerHTML = `${I.pause}<span>${esc(this.t.listen)}</span>`;
     if (q.audio_url) {
       this.audioEl = new Audio(q.audio_url); this.audioEl.play().catch(() => this.stopAudio());
       this.audioEl.onended = () => this.stopAudio();
     } else if ('speechSynthesis' in window) {
       try {
         const u = new SpeechSynthesisUtterance(q.label + (q.help_text ? '. ' + q.help_text : ''));
-        u.lang = this.flow?.language === 'en' ? 'en-US' : 'es-ES'; u.rate = 1;
-        u.onend = () => this.stopAudio();
+        u.lang = this.flow?.language === 'en' ? 'en-US' : 'es-ES'; u.onend = () => this.stopAudio();
         window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
       } catch { this.stopAudio(); }
     } else { this.stopAudio(); }
@@ -635,19 +601,10 @@ class Widget {
   private stopAudio(): void {
     if (this.audioEl) { try { this.audioEl.pause(); } catch { /* noop */ } this.audioEl = null; }
     try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch { /* noop */ }
-    if (this.audioBtn) { this.audioBtn.classList.remove('playing'); this.audioBtn.innerHTML = I.play; this.audioBtn = null; }
+    if (this.audioBtn) { this.audioBtn.classList.remove('playing'); this.audioBtn.innerHTML = `${I.play}<span>${esc(this.t.listen)}</span>`; this.audioBtn = null; }
   }
 
-  private toggleTheme(): void {
-    this.theme = this.theme === 'dark' ? 'light' : 'dark'; saveTheme(this.theme);
-    const page = this.root.querySelector('.da-page');
-    if (page) {
-      page.classList.remove('da-theme-dark', 'da-theme-light'); page.classList.add(`da-theme-${this.theme}`);
-      const b = page.querySelector('[data-act="theme"]'); if (b) b.innerHTML = this.theme === 'dark' ? I.sun : I.moon;
-    }
-  }
-
-  /* ---- interactive energy nebula: flowing plasma particles (canvas 2D, no deps) ---- */
+  /* ---- energy nebula: flowing plasma, transparent trails (no box / no clipping) ---- */
   private startNebula(cv: HTMLCanvasElement): void {
     const ctx = cv.getContext('2d'); if (!ctx) return;
     this.stopNebula(); this.nebStop = false;
@@ -656,14 +613,13 @@ class Widget {
     const resize = () => { const r = cv.getBoundingClientRect(); W = Math.max(1, r.width); H = Math.max(1, r.height); cv.width = Math.floor(W * dpr); cv.height = Math.floor(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); };
     resize();
     const sprite = (r: number, g: number, b: number) => { const d = 28, c = document.createElement('canvas'); c.width = d; c.height = d; const x = c.getContext('2d')!; const gr = x.createRadialGradient(d / 2, d / 2, 0, d / 2, d / 2, d / 2); gr.addColorStop(0, `rgba(${r},${g},${b},0.95)`); gr.addColorStop(0.4, `rgba(${r},${g},${b},0.32)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`); x.fillStyle = gr; x.fillRect(0, 0, d, d); return c; };
-    const cPurple = sprite(168, 85, 247), cViolet = sprite(139, 92, 246), cCyan = sprite(34, 211, 238), cBlue = sprite(96, 165, 250), cMag = sprite(217, 110, 230), cWhite = sprite(214, 225, 255);
-    const palette = [cPurple, cPurple, cViolet, cCyan, cCyan, cBlue, cMag, cWhite];   // electric purple + cyan plasma
-    const radius = () => Math.min(W, H) * 0.5;
+    const cP = sprite(168, 85, 247), cV = sprite(139, 92, 246), cC = sprite(34, 211, 238), cB = sprite(96, 165, 250), cM = sprite(217, 110, 230), cW = sprite(214, 225, 255);
+    const palette = [cP, cP, cV, cC, cC, cB, cM, cW];
+    const rad = () => Math.min(W, H) * 0.42;
     type P = { x: number; y: number; sp: HTMLCanvasElement; sz: number; life: number; max: number };
-    const spawn = (p: P) => { const a = Math.random() * 6.283, rr = Math.random() * radius() * 0.5; p.x = W / 2 + Math.cos(a) * rr; p.y = H / 2 + Math.sin(a) * rr; p.sp = palette[(Math.random() * palette.length) | 0]; p.sz = 2 + Math.random() * 7; p.max = 120 + Math.random() * 240; p.life = Math.random() * p.max; };
+    const spawn = (p: P) => { const a = Math.random() * 6.283, rr = Math.random() * rad() * 0.5; p.x = W / 2 + Math.cos(a) * rr; p.y = H / 2 + Math.sin(a) * rr; p.sp = palette[(Math.random() * palette.length) | 0]; p.sz = 2 + Math.random() * 6.5; p.max = 120 + Math.random() * 240; p.life = Math.random() * p.max; };
     const N = W < 480 ? 520 : 900;
-    const pts: P[] = [];
-    for (let i = 0; i < N; i++) { const p: P = { x: 0, y: 0, sp: cPurple, sz: 3, life: 0, max: 200 }; spawn(p); pts.push(p); }
+    const pts: P[] = []; for (let i = 0; i < N; i++) { const p: P = { x: 0, y: 0, sp: cP, sz: 3, life: 0, max: 200 }; spawn(p); pts.push(p); }
     let mx = -9999, my = -9999, active = false;
     const onMove = (e: MouseEvent) => { const r = cv.getBoundingClientRect(); mx = e.clientX - r.left; my = e.clientY - r.top; active = true; };
     const onTouch = (e: TouchEvent) => { const tt = e.touches[0]; if (!tt) return; const r = cv.getBoundingClientRect(); mx = tt.clientX - r.left; my = tt.clientY - r.top; active = true; };
@@ -673,35 +629,34 @@ class Widget {
     this.nebCleanup = () => { cv.removeEventListener('mousemove', onMove); cv.removeEventListener('mouseleave', onLeave); cv.removeEventListener('touchmove', onTouch); window.removeEventListener('resize', resize); };
     let t = 0;
     const step = () => {
-      const ccx = W / 2, ccy = H / 2, rad = radius();
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = 'rgba(4,3,10,0.16)'; ctx.fillRect(0, 0, W, H);   // trail fade → flowing plasma + deep-black base
+      const ccx = W / 2, ccy = H / 2, R = rad();
+      ctx.globalCompositeOperation = 'destination-out'; ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.fillRect(0, 0, W, H);   // transparent trail fade
       ctx.globalCompositeOperation = 'lighter';
-      const cg = ctx.createRadialGradient(ccx, ccy, 0, ccx, ccy, rad * 0.95);   // volumetric bloom
-      cg.addColorStop(0, 'rgba(150,80,240,0.13)'); cg.addColorStop(0.45, 'rgba(40,190,225,0.07)'); cg.addColorStop(1, 'rgba(0,0,0,0)');
+      const cg = ctx.createRadialGradient(ccx, ccy, 0, ccx, ccy, R * 1.25);   // volumetric bloom
+      cg.addColorStop(0, 'rgba(150,80,240,0.10)'); cg.addColorStop(0.5, 'rgba(40,190,225,0.05)'); cg.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = cg; ctx.fillRect(0, 0, W, H);
       for (const p of pts) {
         const s = 0.006;
-        const ang = (Math.sin(p.x * s + t) + Math.cos(p.y * s * 1.2 - t * 0.8) + Math.sin((p.x + p.y) * s * 0.6 + t * 0.5)) * Math.PI;   // curl-ish flow field
+        const ang = (Math.sin(p.x * s + t) + Math.cos(p.y * s * 1.2 - t * 0.8) + Math.sin((p.x + p.y) * s * 0.6 + t * 0.5)) * Math.PI;
         let vx = Math.cos(ang), vy = Math.sin(ang);
-        vx += (ccx - p.x) * 0.0006; vy += (ccy - p.y) * 0.0006;   // gentle pull keeps the cloud bounded
-        if (active) { const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy; if (d2 < 17000) { const f = (1 - Math.sqrt(d2) / 130) * 0.9; vx += (-dy * 0.02 + dx * 0.01) * f; vy += (dx * 0.02 + dy * 0.01) * f; } }   // mouse vortex
+        vx += (ccx - p.x) * 0.0009; vy += (ccy - p.y) * 0.0009;   // pull → bounded cloud (never reaches edges)
+        if (active) { const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy; if (d2 < 17000) { const f = (1 - Math.sqrt(d2) / 130) * 0.9; vx += (-dy * 0.02 + dx * 0.01) * f; vy += (dx * 0.02 + dy * 0.01) * f; } }
         p.x += vx * 1.1; p.y += vy * 1.1; p.life++;
-        if (p.life > p.max || Math.hypot(p.x - ccx, p.y - ccy) > rad) spawn(p);
+        if (p.life > p.max || Math.hypot(p.x - ccx, p.y - ccy) > R) spawn(p);
         ctx.globalAlpha = Math.max(0, Math.min(1, 0.5 * Math.sin((p.life / p.max) * Math.PI)));
         ctx.drawImage(p.sp, p.x - p.sz, p.y - p.sz, p.sz * 2, p.sz * 2);
       }
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     };
     let reduce = false; try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { /* noop */ }
-    if (reduce) { for (let k = 0; k < 90; k++) { t += 0.006; step(); } return; }   // static composed frame
+    if (reduce) { for (let k = 0; k < 90; k++) { t += 0.006; step(); } return; }
     const loop = () => { if (this.nebStop) return; t += 0.006; step(); this.nebRaf = requestAnimationFrame(loop); };
     loop();
   }
   private stopNebula(): void { this.nebStop = true; cancelAnimationFrame(this.nebRaf); if (this.nebCleanup) { this.nebCleanup(); this.nebCleanup = null; } }
 
   /* ---- helpers ---- */
-  private currentPanel(): HTMLElement | null { return this.root.querySelector('.da-panel'); }
+  private currentPanel(): HTMLElement | null { return this.root.querySelector('.da-stage-left, .da-panel, .da-page-centered'); }
   private persist(): void { saveProgress(this.cfg.key, { flowKey: this.cfg.key, currentStep: this.step, answers: this.answers, updatedAt: new Date().toISOString() }); }
 }
 
