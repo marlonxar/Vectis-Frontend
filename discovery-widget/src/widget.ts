@@ -194,7 +194,7 @@ const CSS = `
 .da-grad{ position:absolute; inset:0; z-index:0; background:#060509; transition:background .5s ease; }
 /* keep the page glow behind the nebula only, never behind the header/footer */
 .da-page[data-screen="intro"] .da-grad, .da-page[data-screen="flow"] .da-grad{ background:radial-gradient(44% 58% at 74% 50%, rgba(120,60,220,.15), transparent 70%), #060509; }
-.da-pagehead{ position:relative; z-index:2; flex:0 0 auto; padding:18px 26px 22px; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#060509 38%,rgba(6,5,9,0)); animation:da-fade .5s ease both; }
+.da-pagehead{ position:relative; z-index:2; flex:0 0 auto; padding:18px 26px 14px; display:flex; align-items:center; justify-content:center; background:transparent; animation:da-fade .5s ease both; }
 .da-pagehead-c{ display:flex; flex-direction:column; align-items:center; gap:8px; }
 .da-pagehead img{ height:40px; width:auto; border-radius:8px; }
 .da-pagetitle{ margin:0; font-size:15px; font-weight:800; letter-spacing:.01em; }
@@ -230,7 +230,7 @@ const CSS = `
 
 .da-page-centered{ width:100%; max-width:560px; margin:0 auto; }
 
-.da-pagefoot{ position:relative; z-index:2; flex:0 0 auto; padding:24px 24px 18px; text-align:center; font-size:13px; color:rgba(255,255,255,.8); background:linear-gradient(0deg,#060509 38%,rgba(6,5,9,0)); pointer-events:none; }
+.da-pagefoot{ position:relative; z-index:2; flex:0 0 auto; padding:14px 24px 18px; text-align:center; font-size:13px; color:rgba(255,255,255,.8); background:transparent; pointer-events:none; }
 .da-pagefoot a{ pointer-events:auto; }
 .da-pagefoot a{ color:var(--da-accent); text-decoration:none; font-weight:700; } .da-pagefoot a:hover{ text-decoration:underline; }
 
