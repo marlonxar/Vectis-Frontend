@@ -158,6 +158,7 @@ const CSS = `
 .da-center h2{ font-size:26px; margin:0 0 10px; letter-spacing:-.01em; font-weight:800; }
 .da-center p{ color:var(--da-ink-2); margin:0 auto 22px; max-width:42ch; }
 .da-center .da-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.da-center .da-actions .da-btn-primary, .da-actions .da-btn-primary{ margin-left:0; }   /* keep centered (override the hero's margin-left:auto) */
 .da-badge{ width:56px; height:56px; border-radius:50%; margin:0 auto; display:inline-flex; align-items:center; justify-content:center;
   background:color-mix(in srgb,var(--da-accent) 18%,transparent); color:var(--da-accent); }
 .da-badge svg{ width:28px; height:28px; }
@@ -186,15 +187,25 @@ const CSS = `
 .da-pagehead img{ height:40px; width:auto; border-radius:8px; }
 .da-pagetitle{ margin:0; font-size:15px; font-weight:800; letter-spacing:.01em; }
 .da-pagebody{ position:relative; z-index:1; flex:1 1 auto; min-height:0; overflow-y:auto; width:100%; max-width:640px; margin:0 auto; padding:8px 22px 28px; display:flex; flex-direction:column; justify-content:flex-start; }
-.da-pagebody-hero{ max-width:1100px; justify-content:center; padding:8px 34px 28px; }
+.da-pagebody-hero{ max-width:1280px; justify-content:center; padding:8px 34px 28px; }
+
+/* emerge layout (resume / success): content on top, a big nebula rising from the bottom-centre */
+.da-pagebody-emerge{ position:relative; max-width:none; justify-content:flex-start; align-items:center; padding:clamp(34px,9vh,110px) 22px 0; overflow:hidden; }
+.da-emerge-content{ position:relative; z-index:2; width:100%; max-width:560px; margin:0 auto; }
+.da-emerge-visual{ position:absolute; left:50%; bottom:0; z-index:0; width:min(860px,108vw); transform:translate(-50%,46%);
+  transition:left .85s cubic-bezier(.4,0,.2,1), transform .85s cubic-bezier(.4,0,.2,1), opacity .6s ease; pointer-events:none; }
+.da-emerge-visual .da-neb-wrap{ max-width:none; width:100%; }
+.da-emerge-visual.da-slide-right{ left:96%; transform:translate(-50%,46%) scale(.82); }
+.da-page[data-screen="resume"] .da-pagefoot, .da-page[data-screen="success"] .da-pagefoot{ text-align:right; }
 
 /* split: content left, nebula right (used for hero + the form) */
 .da-split{ display:grid; grid-template-columns:1.05fr .95fr; align-items:center; gap:clamp(20px,4vw,56px); width:100%; }
 .da-stage-left{ text-align:left; min-width:0; }
 .da-stage-left.da-leftin{ animation:da-in-fwd .5s cubic-bezier(.2,.7,.2,1) both; }
 .da-hero-visual{ position:relative; display:flex; align-items:center; justify-content:center; }
-.da-neb-wrap{ position:relative; width:100%; max-width:480px; margin:0 auto; transition:max-width .6s cubic-bezier(.4,0,.2,1); }
-.da-page[data-screen="intro"] .da-neb-wrap{ max-width:min(640px,46vw); }
+.da-neb-wrap{ position:relative; width:100%; max-width:480px; margin:0 auto; transition:max-width .6s cubic-bezier(.4,0,.2,1), transform .4s cubic-bezier(.2,.7,.2,1); will-change:transform; }
+.da-page[data-screen="intro"] .da-split{ grid-template-columns:0.9fr 1.1fr; }
+.da-page[data-screen="intro"] .da-neb-wrap{ max-width:min(780px,54vw); }
 .da-page[data-screen="flow"] .da-neb-wrap{ max-width:460px; }
 .da-neb{ width:100%; aspect-ratio:1/1; height:auto; display:block; }
 .da-neb-audio{ position:absolute; top:9%; right:9%; z-index:3; width:44px; height:44px; border-radius:50%; border:1px solid var(--da-line);
@@ -211,7 +222,7 @@ const CSS = `
 .da-pagefoot a{ color:var(--da-accent); text-decoration:none; font-weight:700; } .da-pagefoot a:hover{ text-decoration:underline; }
 
 @media (max-width:820px){
-  .da-split{ grid-template-columns:1fr; gap:8px; text-align:center; }
+  .da-split, .da-page[data-screen="intro"] .da-split{ grid-template-columns:1fr; gap:8px; text-align:center; }
   .da-stage-left{ text-align:center; order:2; }
   .da-hero-visual{ order:1; }
   .da-hero-text .da-actions{ justify-content:center; }
@@ -432,6 +443,11 @@ class Widget {
             <canvas class="da-neb" data-neb aria-hidden="true"></canvas>
             <button class="da-neb-audio" data-act="audio" aria-label="${esc(this.t.audioPlay)}">${I.spk}</button>
           </div></div></div></main>`;
+    } else if (this.screen === 'resume' || this.screen === 'success') {
+      body = `<main class="da-pagebody da-pagebody-emerge">
+          <div class="da-emerge-content">${this.contentHtml()}</div>
+          <div class="da-emerge-visual"><div class="da-neb-wrap"><canvas class="da-neb" data-neb aria-hidden="true"></canvas></div></div>
+        </main>`;
     } else {
       body = `<main class="da-pagebody"><div class="da-page-centered">${this.contentHtml()}</div></main>`;
     }
@@ -443,8 +459,26 @@ class Widget {
   private afterRender(root: HTMLElement): void {
     this.wireShell(root);
     const neb = root.querySelector<HTMLCanvasElement>('[data-neb]'); if (neb) this.startNebula(neb);
+    this.wireParallax(root);
     if (this.screen === 'flow') this.mountStep('fwd', false);
     else { const f = root.querySelector<HTMLElement>('button.da-btn-primary,.da-opt,input,textarea,select'); f && setTimeout(() => f.focus(), 60); }
+  }
+
+  // The nebula gently follows the cursor across the whole page (parallax drift).
+  private wireParallax(root: HTMLElement): void {
+    const page = root.querySelector<HTMLElement>('.da-page') || (root.classList.contains('da-page') ? root : null);
+    const wrap = root.querySelector<HTMLElement>('.da-neb-wrap'); if (!page || !wrap) return;
+    let raf = 0;
+    const onMove = (e: MouseEvent) => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0; const r = page.getBoundingClientRect();
+        const nx = (e.clientX - r.left) / Math.max(1, r.width) - 0.5;
+        const ny = (e.clientY - r.top) / Math.max(1, r.height) - 0.5;
+        wrap.style.transform = `translate(${(nx * 34).toFixed(1)}px, ${(ny * 28).toFixed(1)}px)`;
+      });
+    };
+    page.addEventListener('mousemove', onMove);
   }
 
   private bgHtml(): string {
@@ -567,8 +601,8 @@ class Widget {
       case 'close': this.close(); break;
       case 'retry': this.flow = null; this.screen = 'intro'; await this.open(); break;
       case 'begin': this.startFlow(); break;
-      case 'resume': this.screen = 'flow'; this.renderPanel(); break;
-      case 'restart': this.answers = {}; this.step = 1; clearProgress(this.cfg.key); this.startFlow(); break;
+      case 'resume': this.slideToFlow(false); break;
+      case 'restart': this.slideToFlow(true); break;
       case 'back': this.goBack(); break;
       case 'next': this.goNext(); break;
       case 'submit': await this.onSubmit(); break;
@@ -588,6 +622,19 @@ class Widget {
       left.classList.remove('da-leftin'); void left.offsetWidth; left.classList.add('da-leftin');
       this.mountStep('fwd', true);
     } else this.renderPanel();
+  }
+
+  // From the resume screen: slide the big centred nebula to the right, then reveal the form.
+  private slideToFlow(reset: boolean): void {
+    this.stopAudio();
+    if (reset) { this.answers = {}; this.step = 1; clearProgress(this.cfg.key); }
+    const vis = this.root.querySelector<HTMLElement>('.da-emerge-visual');
+    const content = this.root.querySelector<HTMLElement>('.da-emerge-content');
+    if (vis) {
+      this.nebPulse(); vis.classList.add('da-slide-right');
+      if (content) { content.style.transition = 'opacity .45s ease, transform .45s ease'; content.style.opacity = '0'; content.style.transform = 'translateY(-12px)'; }
+      setTimeout(() => { this.screen = 'flow'; this.renderPanel(); }, 720);
+    } else { this.screen = 'flow'; this.renderPanel(); }
   }
 
   private goNext(): void {
