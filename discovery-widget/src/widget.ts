@@ -98,8 +98,10 @@ const CSS = `
 .da-close:hover{ color:var(--da-ink); } .da-close svg{ width:20px; height:20px; }
 
 .da-legend{ position:relative; z-index:1; padding:14px 0 0; font-size:14px; color:var(--da-ink-2); }
-.da-progress{ position:relative; z-index:1; height:4px; background:var(--da-line); border-radius:4px; margin:0 0 4px; overflow:hidden; max-width:420px; }
-.da-progress > i{ display:block; height:100%; background:var(--da-accent); width:0; transition:width .4s cubic-bezier(.2,.7,.2,1); }
+.da-progress{ position:relative; z-index:1; height:7px; background:rgba(255,255,255,.07); border-radius:7px; margin:0 0 4px; overflow:hidden; max-width:440px; box-shadow:inset 0 0 0 1px rgba(255,255,255,.05); }
+.da-progress > i{ position:relative; display:block; height:100%; width:0; border-radius:7px; background:linear-gradient(90deg,#E7AB2E,#d96ee6 55%,#6aa8ff); box-shadow:0 0 14px rgba(231,171,46,.45); transition:width .55s cubic-bezier(.2,.7,.2,1); }
+.da-progress > i::after{ content:''; position:absolute; inset:0; border-radius:7px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent); background-size:200% 100%; animation:da-shimmer 2.2s linear infinite; }
+@keyframes da-shimmer{ to{ background-position:-200% 0; } }
 .da-stepno{ position:relative; z-index:1; margin:0 0 10px; font-size:12px; letter-spacing:.06em; text-transform:uppercase; font-weight:700; color:var(--da-ink-2); }
 
 .da-qstage{ position:relative; min-height:200px; }
@@ -176,15 +178,6 @@ const CSS = `
 @keyframes da-pop{ 0%{ transform:scale(.4); opacity:0; } 60%{ transform:scale(1.12); } 100%{ transform:scale(1); opacity:1; } }
 .da-badge.da-pop svg path{ stroke-dasharray:30; stroke-dashoffset:30; animation:da-draw .5s .22s ease forwards; }
 @keyframes da-draw{ to{ stroke-dashoffset:0; } }
-/* progress as an energy ring around the nebula */
-.da-ring{ position:absolute; inset:-7%; width:114%; height:114%; z-index:2; pointer-events:none; overflow:visible; transition:opacity .6s ease; }
-.da-page[data-screen="intro"] .da-ring{ opacity:0; }
-.da-page[data-screen="flow"] .da-ring{ opacity:1; }
-.da-ring-bg{ fill:none; stroke:rgba(255,255,255,.10); stroke-width:.4; }
-.da-ring-arc{ fill:none; stroke:var(--da-accent); stroke-width:.9; stroke-linecap:round; stroke-dasharray:289.03; stroke-dashoffset:289.03; transition:stroke-dashoffset .6s cubic-bezier(.2,.7,.2,1); filter:drop-shadow(0 0 3px color-mix(in srgb,var(--da-accent) 70%,transparent)); }
-.da-ring-dot{ fill:rgba(255,255,255,.20); transition:fill .45s ease, r .45s ease; }
-.da-ring-dot.done{ fill:var(--da-accent); }
-.da-ring-dot.cur{ fill:#fff; r:2.4; }
 .da-hero-sub{ color:var(--da-ink-2); font-size:clamp(15px,1.5vw,18px); line-height:1.6; margin:0 0 28px; max-width:50ch; }
 .da-hero-text .da-actions{ display:flex; justify-content:flex-start; }
 .da-hero-text .da-btn-primary{ margin-left:0; padding:15px 30px; font-size:16px; }
@@ -198,11 +191,10 @@ const CSS = `
 /* ---- full-page mode (dark only) ---- */
 .da-page{ position:relative; height:100vh; height:100dvh; display:flex; flex-direction:column; overflow:hidden;
   --da-ink:#f3f3f5; --da-ink-2:#a7adba; --da-surface:#16171c; --da-line:#2a2c34; color:#fff; }
-.da-grad{ position:absolute; inset:0; z-index:0; background:
-  radial-gradient(42% 56% at 72% 48%, rgba(120,60,220,.16), transparent 72%),
-  radial-gradient(30% 42% at 80% 60%, rgba(40,190,225,.12), transparent 72%),
-  #060509; }
-.da-pagehead{ position:relative; z-index:2; flex:0 0 auto; padding:18px 26px 14px; display:flex; align-items:center; justify-content:center; background:transparent; animation:da-fade .5s ease both; }
+.da-grad{ position:absolute; inset:0; z-index:0; background:#060509; transition:background .5s ease; }
+/* keep the page glow behind the nebula only, never behind the header/footer */
+.da-page[data-screen="intro"] .da-grad, .da-page[data-screen="flow"] .da-grad{ background:radial-gradient(44% 58% at 74% 50%, rgba(120,60,220,.15), transparent 70%), #060509; }
+.da-pagehead{ position:relative; z-index:2; flex:0 0 auto; padding:18px 26px 22px; display:flex; align-items:center; justify-content:center; background:linear-gradient(180deg,#060509 38%,rgba(6,5,9,0)); animation:da-fade .5s ease both; }
 .da-pagehead-c{ display:flex; flex-direction:column; align-items:center; gap:8px; }
 .da-pagehead img{ height:40px; width:auto; border-radius:8px; }
 .da-pagetitle{ margin:0; font-size:15px; font-weight:800; letter-spacing:.01em; }
@@ -238,7 +230,7 @@ const CSS = `
 
 .da-page-centered{ width:100%; max-width:560px; margin:0 auto; }
 
-.da-pagefoot{ position:relative; z-index:2; flex:0 0 auto; padding:14px 24px 20px; text-align:center; font-size:13px; color:rgba(255,255,255,.8); background:transparent; pointer-events:none; }
+.da-pagefoot{ position:relative; z-index:2; flex:0 0 auto; padding:24px 24px 18px; text-align:center; font-size:13px; color:rgba(255,255,255,.8); background:linear-gradient(0deg,#060509 38%,rgba(6,5,9,0)); pointer-events:none; }
 .da-pagefoot a{ pointer-events:auto; }
 .da-pagefoot a{ color:var(--da-accent); text-decoration:none; font-weight:700; } .da-pagefoot a:hover{ text-decoration:underline; }
 
@@ -465,7 +457,6 @@ class Widget {
           <div class="da-stage-left" data-left>${this.contentHtml()}</div>
           <div class="da-hero-visual"><div class="da-neb-wrap">
             <canvas class="da-neb" data-neb aria-hidden="true"></canvas>
-            ${this.ringHtml()}
             <button class="da-neb-audio" data-act="audio" aria-label="${esc(this.t.audioPlay)}">${I.spk}</button>
           </div></div></div></main>`;
     } else if (this.screen === 'resume' || this.screen === 'success') {
@@ -540,18 +531,8 @@ class Widget {
     }
   }
   private progressHtml(): string {
-    return `<p class="da-stepno">${esc(this.t.step)} ${this.step} ${esc(this.t.of)} ${this.questions.length}</p>`;   // bar replaced by the energy ring around the nebula
-  }
-  private ringHtml(): string {
-    const n = Math.max(1, this.questions.length);
-    const dots = Array.from({ length: n }, (_, i) => { const a = (-90 + i * 360 / n) * Math.PI / 180; const x = 50 + 46 * Math.cos(a), y = 50 + 46 * Math.sin(a); return `<circle class="da-ring-dot" data-dot="${i}" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="1.6"/>`; }).join('');
-    return `<svg class="da-ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="da-ring-bg" cx="50" cy="50" r="46"/><circle class="da-ring-arc" data-arc cx="50" cy="50" r="46" transform="rotate(-90 50 50)"/>${dots}</svg>`;
-  }
-  private updateRing(): void {
-    const ring = this.root.querySelector('.da-ring'); if (!ring) return;
-    const n = Math.max(1, this.questions.length); const C = 2 * Math.PI * 46;
-    const arc = ring.querySelector<SVGCircleElement>('[data-arc]'); if (arc) arc.style.strokeDashoffset = String(C * (1 - this.step / n));
-    ring.querySelectorAll<SVGCircleElement>('[data-dot]').forEach((d, i) => { d.classList.toggle('done', i < this.step); d.classList.toggle('cur', i === this.step - 1); });
+    const n = Math.max(1, this.questions.length); const pct = Math.round((this.step / n) * 100);
+    return `<p class="da-stepno">${esc(this.t.step)} ${this.step} ${esc(this.t.of)} ${this.questions.length}</p><div class="da-progress"><i style="width:${pct}%"></i></div>`;
   }
 
   /* ---- one question at a time ---- */
@@ -573,7 +554,7 @@ class Widget {
     const block = this.buildQuestionBlock(this.step);
     if (animate) block.classList.add(dir === 'back' ? 'da-enter-back' : 'da-enter-fwd');
     stage.appendChild(block);
-    this.updateRing(); this.nebSetSection();
+    this.nebSetSection();
     const qtext = block.querySelector<HTMLElement>('[data-qtext]'); const qh = block.querySelector<HTMLElement>('.da-q');
     if (qtext && q) this.typewrite(qtext, qh, q.label, () => this.nebPulse());
     const fld = block.querySelector<HTMLElement>('input,textarea,select,.da-opt'); fld && setTimeout(() => fld.focus(), animate ? 120 : 60);
@@ -724,7 +705,6 @@ class Widget {
     const prim = panel.querySelector<HTMLButtonElement>('.da-foot .da-btn-primary'); if (prim) { prim.setAttribute('data-act', last ? 'submit' : 'next'); prim.textContent = last ? this.t.finish : this.t.next; }
     const pdf = panel.querySelector<HTMLElement>('[data-pdf]'); if (pdf) { if (last) pdf.removeAttribute('hidden'); else pdf.setAttribute('hidden', ''); }
     const note = panel.querySelector<HTMLElement>('[data-note]'); if (note) { if (last) note.removeAttribute('hidden'); else note.setAttribute('hidden', ''); }
-    this.updateRing();
   }
 
   private validateCurrent(): boolean {
