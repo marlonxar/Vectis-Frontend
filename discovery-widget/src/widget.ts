@@ -164,7 +164,27 @@ const CSS = `
 .da-badge svg{ width:28px; height:28px; }
 
 .da-hero-text{ text-align:left; }
+.da-page[data-screen="intro"] .da-hero-text{ animation:da-rise .7s .25s cubic-bezier(.2,.7,.2,1) both; }
+.da-hero-text.da-fadeout{ animation:da-out-fwd .32s ease forwards; }
+@keyframes da-rise{ from{ opacity:0; transform:translateY(18px); } to{ opacity:1; transform:none; } }
 .da-hero-title{ font-size:clamp(36px,5.4vw,62px); font-weight:800; letter-spacing:-.025em; line-height:1.02; margin:0 0 18px; color:var(--da-ink); }
+/* typewriter caret */
+.da-q.da-typing::after{ content:'▌'; color:var(--da-accent); margin-left:2px; animation:da-caret .8s steps(1) infinite; }
+@keyframes da-caret{ 50%{ opacity:0; } }
+/* animated success check */
+.da-badge.da-pop{ animation:da-pop .5s cubic-bezier(.2,.9,.3,1.4) both; }
+@keyframes da-pop{ 0%{ transform:scale(.4); opacity:0; } 60%{ transform:scale(1.12); } 100%{ transform:scale(1); opacity:1; } }
+.da-badge.da-pop svg path{ stroke-dasharray:30; stroke-dashoffset:30; animation:da-draw .5s .22s ease forwards; }
+@keyframes da-draw{ to{ stroke-dashoffset:0; } }
+/* progress as an energy ring around the nebula */
+.da-ring{ position:absolute; inset:-7%; width:114%; height:114%; z-index:2; pointer-events:none; overflow:visible; transition:opacity .6s ease; }
+.da-page[data-screen="intro"] .da-ring{ opacity:0; }
+.da-page[data-screen="flow"] .da-ring{ opacity:1; }
+.da-ring-bg{ fill:none; stroke:rgba(255,255,255,.10); stroke-width:.4; }
+.da-ring-arc{ fill:none; stroke:var(--da-accent); stroke-width:.9; stroke-linecap:round; stroke-dasharray:289.03; stroke-dashoffset:289.03; transition:stroke-dashoffset .6s cubic-bezier(.2,.7,.2,1); filter:drop-shadow(0 0 3px color-mix(in srgb,var(--da-accent) 70%,transparent)); }
+.da-ring-dot{ fill:rgba(255,255,255,.20); transition:fill .45s ease, r .45s ease; }
+.da-ring-dot.done{ fill:var(--da-accent); }
+.da-ring-dot.cur{ fill:#fff; r:2.4; }
 .da-hero-sub{ color:var(--da-ink-2); font-size:clamp(15px,1.5vw,18px); line-height:1.6; margin:0 0 28px; max-width:50ch; }
 .da-hero-text .da-actions{ display:flex; justify-content:flex-start; }
 .da-hero-text .da-btn-primary{ margin-left:0; padding:15px 30px; font-size:16px; }
@@ -182,7 +202,7 @@ const CSS = `
   radial-gradient(42% 56% at 72% 48%, rgba(120,60,220,.16), transparent 72%),
   radial-gradient(30% 42% at 80% 60%, rgba(40,190,225,.12), transparent 72%),
   #060509; }
-.da-pagehead{ position:relative; z-index:2; flex:0 0 auto; padding:18px 26px 14px; display:flex; align-items:center; justify-content:center; animation:da-fade .5s ease both; }
+.da-pagehead{ position:relative; z-index:2; flex:0 0 auto; padding:18px 26px 14px; display:flex; align-items:center; justify-content:center; background:transparent; animation:da-fade .5s ease both; }
 .da-pagehead-c{ display:flex; flex-direction:column; align-items:center; gap:8px; }
 .da-pagehead img{ height:40px; width:auto; border-radius:8px; }
 .da-pagetitle{ margin:0; font-size:15px; font-weight:800; letter-spacing:.01em; }
@@ -190,12 +210,12 @@ const CSS = `
 .da-pagebody-hero{ max-width:1280px; justify-content:center; padding:8px 34px 28px; }
 
 /* emerge layout (resume / success): content on top, a big nebula rising from the bottom-centre */
-.da-pagebody-emerge{ position:relative; max-width:none; justify-content:flex-start; align-items:center; padding:clamp(34px,9vh,110px) 22px 0; overflow:hidden; }
+.da-pagebody-emerge{ position:relative; max-width:none; justify-content:flex-start; align-items:center; padding:clamp(18px,4vh,56px) 22px 0; overflow:hidden; }
 .da-emerge-content{ position:relative; z-index:2; width:100%; max-width:560px; margin:0 auto; }
-.da-emerge-visual{ position:absolute; left:50%; bottom:0; z-index:0; width:min(860px,108vw); transform:translate(-50%,46%);
+.da-emerge-visual{ position:absolute; left:50%; bottom:0; z-index:0; width:min(860px,108vw); transform:translate(-50%,52%);
   transition:left .85s cubic-bezier(.4,0,.2,1), transform .85s cubic-bezier(.4,0,.2,1), opacity .6s ease; pointer-events:none; }
 .da-emerge-visual .da-neb-wrap{ max-width:none; width:100%; }
-.da-emerge-visual.da-slide-right{ left:96%; transform:translate(-50%,46%) scale(.82); }
+.da-emerge-visual.da-slide-right{ left:96%; transform:translate(-50%,52%) scale(.82); }
 .da-page[data-screen="resume"] .da-pagefoot, .da-page[data-screen="success"] .da-pagefoot{ text-align:right; }
 
 /* split: content left, nebula right (used for hero + the form) */
@@ -207,7 +227,7 @@ const CSS = `
 .da-page[data-screen="intro"] .da-split{ grid-template-columns:0.9fr 1.1fr; }
 .da-page[data-screen="intro"] .da-neb-wrap{ max-width:min(780px,54vw); }
 .da-page[data-screen="flow"] .da-neb-wrap{ max-width:460px; }
-.da-neb{ width:100%; aspect-ratio:1/1; height:auto; display:block; }
+.da-neb{ width:100%; aspect-ratio:1/1; height:auto; display:block; transition:filter .9s ease; }
 .da-neb-audio{ position:absolute; top:9%; right:9%; z-index:3; width:44px; height:44px; border-radius:50%; border:1px solid var(--da-line);
   background:rgba(255,255,255,.06); color:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); transition:border-color .2s ease, transform .15s ease, color .2s ease; }
 .da-neb-audio:hover{ border-color:var(--da-accent); } .da-neb-audio:active{ transform:scale(.92); } .da-neb-audio svg{ width:19px; height:19px; }
@@ -218,7 +238,8 @@ const CSS = `
 
 .da-page-centered{ width:100%; max-width:560px; margin:0 auto; }
 
-.da-pagefoot{ position:relative; z-index:2; flex:0 0 auto; padding:14px 24px 20px; text-align:center; font-size:13px; color:rgba(255,255,255,.8); }
+.da-pagefoot{ position:relative; z-index:2; flex:0 0 auto; padding:14px 24px 20px; text-align:center; font-size:13px; color:rgba(255,255,255,.8); background:transparent; pointer-events:none; }
+.da-pagefoot a{ pointer-events:auto; }
 .da-pagefoot a{ color:var(--da-accent); text-decoration:none; font-weight:700; } .da-pagefoot a:hover{ text-decoration:underline; }
 
 @media (max-width:820px){
@@ -234,7 +255,8 @@ const CSS = `
 }
 
 @media (prefers-reduced-motion: reduce){ .da-overlay,.da-panel,.da-btn{ transition:none; }
-  .da-qblock,.da-pagehead,.da-stage-left,.da-audiobtn.playing{ animation:none; } }
+  .da-qblock,.da-pagehead,.da-stage-left,.da-audiobtn.playing,.da-hero-text,.da-badge.da-pop,.da-badge.da-pop svg path{ animation:none; }
+  .da-q.da-typing::after{ content:none; } }
 `;
 
 /* ------------------------------------------------------------- storage -- */
@@ -344,6 +366,8 @@ class Widget {
   private viewed = false; private audioEl: HTMLAudioElement | null = null; private audioBtn: HTMLElement | null = null;
   private accent = '#E7AB2E'; private overlayEl: HTMLElement | null = null; private launcher: HTMLButtonElement | null = null; private pageMode = false;
   private nebRaf = 0; private nebStop = true; private nebCleanup: (() => void) | null = null; private nebBoost = 0;
+  private nebBurst = 0; private nebCanvas: HTMLCanvasElement | null = null; private twTimer = 0;
+  private nebTint: [number, number, number] = [150, 80, 240]; private nebTintCur: [number, number, number] = [150, 80, 240];
 
   constructor(private cfg: Config) {
     this.api = new Api(cfg.supabaseUrl || SUPABASE_URL, cfg.supabaseAnonKey || SUPABASE_ANON_KEY);
@@ -441,6 +465,7 @@ class Widget {
           <div class="da-stage-left" data-left>${this.contentHtml()}</div>
           <div class="da-hero-visual"><div class="da-neb-wrap">
             <canvas class="da-neb" data-neb aria-hidden="true"></canvas>
+            ${this.ringHtml()}
             <button class="da-neb-audio" data-act="audio" aria-label="${esc(this.t.audioPlay)}">${I.spk}</button>
           </div></div></div></main>`;
     } else if (this.screen === 'resume' || this.screen === 'success') {
@@ -497,7 +522,7 @@ class Widget {
     switch (this.screen) {
       case 'unavailable': return `<div class="da-center"><h2>${esc(DA_TITLE)}</h2><p>${esc(this.t.unavailable)}</p>${closeActions}</div>`;
       case 'error': return `<div class="da-center"><h2>:(</h2><p>${esc(this.t.errorLoad)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="retry">${esc(this.t.retry)}</button></div></div>`;
-      case 'success': return `<div class="da-center"><span class="da-badge">${I.ok}</span><h2>${esc(this.t.successTitle)}</h2><p>${esc(this.t.successBody)}</p><p class="da-note">${esc(this.t.sentNote)}</p><div class="da-actions"><button class="da-btn da-btn-ghost" data-act="pdf">${esc(this.t.downloadPdf)}</button>${this.cfg.target ? '' : `<button class="da-btn da-btn-primary" data-act="close">${esc(this.t.close)}</button>`}</div></div>`;
+      case 'success': return `<div class="da-center"><span class="da-badge da-pop">${I.ok}</span><h2>${esc(this.t.successTitle)}</h2><p>${esc(this.t.successBody)}</p><p class="da-note">${esc(this.t.sentNote)}</p><div class="da-actions"><button class="da-btn da-btn-ghost" data-act="pdf">${esc(this.t.downloadPdf)}</button>${this.cfg.target ? '' : `<button class="da-btn da-btn-primary" data-act="close">${esc(this.t.close)}</button>`}</div></div>`;
       case 'resume': return `<div class="da-center"><h2>${esc(this.t.resumeTitle)}</h2><p>${esc(this.t.resumeBody)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="resume">${esc(this.t.continue)}</button><button class="da-btn da-btn-ghost" data-act="restart">${esc(this.t.startAgain)}</button></div></div>`;
       case 'intro':
         return `<div class="da-hero-text"><h1 class="da-hero-title">${esc(this.t.welcomeTitle)}</h1><p class="da-hero-sub">${esc(this.t.welcome)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="begin">${esc(this.t.begin)}</button></div></div>`;
@@ -515,8 +540,18 @@ class Widget {
     }
   }
   private progressHtml(): string {
-    const n = Math.max(1, this.questions.length); const pct = Math.round((this.step / n) * 100);
-    return `<p class="da-stepno">${esc(this.t.step)} ${this.step} ${esc(this.t.of)} ${this.questions.length}</p><div class="da-progress"><i style="width:${pct}%"></i></div>`;
+    return `<p class="da-stepno">${esc(this.t.step)} ${this.step} ${esc(this.t.of)} ${this.questions.length}</p>`;   // bar replaced by the energy ring around the nebula
+  }
+  private ringHtml(): string {
+    const n = Math.max(1, this.questions.length);
+    const dots = Array.from({ length: n }, (_, i) => { const a = (-90 + i * 360 / n) * Math.PI / 180; const x = 50 + 46 * Math.cos(a), y = 50 + 46 * Math.sin(a); return `<circle class="da-ring-dot" data-dot="${i}" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="1.6"/>`; }).join('');
+    return `<svg class="da-ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="da-ring-bg" cx="50" cy="50" r="46"/><circle class="da-ring-arc" data-arc cx="50" cy="50" r="46" transform="rotate(-90 50 50)"/>${dots}</svg>`;
+  }
+  private updateRing(): void {
+    const ring = this.root.querySelector('.da-ring'); if (!ring) return;
+    const n = Math.max(1, this.questions.length); const C = 2 * Math.PI * 46;
+    const arc = ring.querySelector<SVGCircleElement>('[data-arc]'); if (arc) arc.style.strokeDashoffset = String(C * (1 - this.step / n));
+    ring.querySelectorAll<SVGCircleElement>('[data-dot]').forEach((d, i) => { d.classList.toggle('done', i < this.step); d.classList.toggle('cur', i === this.step - 1); });
   }
 
   /* ---- one question at a time ---- */
@@ -524,7 +559,7 @@ class Widget {
     const q = this.questions[index - 1];
     const block = document.createElement('div'); block.className = 'da-qblock'; block.setAttribute('data-block', String(index));
     block.innerHTML =
-      `<h3 class="da-q">${esc(q.label)}${q.required ? '' : ` <span style="font-weight:500;font-size:14px;color:var(--da-ink-2)">(${esc(this.t.optional)})</span>`}</h3>
+      `<h3 class="da-q" data-q><span data-qtext></span>${q.required ? '' : ` <span style="font-weight:500;font-size:14px;color:var(--da-ink-2)">(${esc(this.t.optional)})</span>`}</h3>
        ${q.help_text ? `<p class="da-help">${esc(q.help_text)}</p>` : ''}
        ${this.fieldHtml(q)}
        <p class="da-err" data-err role="alert"></p>`;
@@ -533,11 +568,34 @@ class Widget {
   }
   private mountStep(dir: 'fwd' | 'back', animate: boolean): void {
     const stage = this.currentPanel()?.querySelector<HTMLElement>('[data-stage]'); if (!stage) return;
-    stage.innerHTML = '';
+    clearTimeout(this.twTimer); stage.innerHTML = '';
+    const q = this.questions[this.step - 1];
     const block = this.buildQuestionBlock(this.step);
     if (animate) block.classList.add(dir === 'back' ? 'da-enter-back' : 'da-enter-fwd');
     stage.appendChild(block);
+    this.updateRing(); this.nebSetSection();
+    const qtext = block.querySelector<HTMLElement>('[data-qtext]'); const qh = block.querySelector<HTMLElement>('.da-q');
+    if (qtext && q) this.typewrite(qtext, qh, q.label, () => this.nebPulse());
     const fld = block.querySelector<HTMLElement>('input,textarea,select,.da-opt'); fld && setTimeout(() => fld.focus(), animate ? 120 : 60);
+  }
+  // Reveal each question character-by-character; flash the nebula when it finishes.
+  private typewrite(el: HTMLElement, qh: HTMLElement | null, text: string, done?: () => void): void {
+    let reduce = false; try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { /* noop */ }
+    if (reduce) { el.textContent = text; done && done(); return; }
+    el.textContent = ''; qh && qh.classList.add('da-typing'); let i = 0;
+    const tick = () => {
+      if (!el.isConnected) { qh && qh.classList.remove('da-typing'); return; }
+      el.textContent = text.slice(0, i); i++;
+      if (i <= text.length) this.twTimer = window.setTimeout(tick, 16);
+      else { qh && qh.classList.remove('da-typing'); done && done(); }
+    };
+    tick();
+  }
+  // Nebula tint shifts by section to convey progress (start → cyan, mid → violet, end → gold).
+  private nebSetSection(): void {
+    const n = Math.max(1, this.questions.length), p = this.step / n;
+    this.nebTint = p <= 0.34 ? [40, 190, 225] : p <= 0.67 ? [150, 80, 240] : [231, 171, 46];
+    if (this.nebCanvas) this.nebCanvas.style.filter = p <= 0.34 ? 'hue-rotate(-30deg) saturate(1.08)' : p <= 0.67 ? 'none' : 'hue-rotate(64deg) saturate(1.12)';
   }
 
   private fieldHtml(q: Question): string {
@@ -613,15 +671,20 @@ class Widget {
 
   // Enter the form. In split mode, swap only the left column (keeps the nebula running) + animate.
   private startFlow(): void {
-    this.stopAudio(); this.screen = 'flow'; this.step = 1; this.persist();
-    const left = this.splitScreen() ? this.root.querySelector<HTMLElement>('[data-left]') : null;
-    if (left) {
-      const page = this.root.querySelector<HTMLElement>('.da-page'); page && page.setAttribute('data-screen', 'flow');   // shrinks the nebula via CSS transition
-      this.nebPulse();
+    this.stopAudio();
+    const left = this.root.querySelector<HTMLElement>('[data-left]');
+    const page = this.root.querySelector<HTMLElement>('.da-page');
+    if (!left || !page) { this.screen = 'flow'; this.step = 1; this.persist(); this.renderPanel(); return; }
+    const hero = left.querySelector<HTMLElement>('.da-hero-text');
+    page.setAttribute('data-screen', 'flow');   // nebula shrinks (CSS) + ring fades in while the hero text leaves
+    this.nebPulse();
+    if (hero) hero.classList.add('da-fadeout');
+    window.setTimeout(() => {
+      this.screen = 'flow'; this.step = 1; this.persist();
       left.innerHTML = this.contentHtml(); this.wireLeft(left);
       left.classList.remove('da-leftin'); void left.offsetWidth; left.classList.add('da-leftin');
       this.mountStep('fwd', true);
-    } else this.renderPanel();
+    }, 320);
   }
 
   // From the resume screen: slide the big centred nebula to the right, then reveal the form.
@@ -661,6 +724,7 @@ class Widget {
     const prim = panel.querySelector<HTMLButtonElement>('.da-foot .da-btn-primary'); if (prim) { prim.setAttribute('data-act', last ? 'submit' : 'next'); prim.textContent = last ? this.t.finish : this.t.next; }
     const pdf = panel.querySelector<HTMLElement>('[data-pdf]'); if (pdf) { if (last) pdf.removeAttribute('hidden'); else pdf.setAttribute('hidden', ''); }
     const note = panel.querySelector<HTMLElement>('[data-note]'); if (note) { if (last) note.removeAttribute('hidden'); else note.setAttribute('hidden', ''); }
+    this.updateRing();
   }
 
   private validateCurrent(): boolean {
@@ -687,7 +751,11 @@ class Widget {
     if (bad) { this.step = bad; this.mountStep('fwd', true); this.updateControls(); this.validateCurrent(); return; }
     const b = this.currentPanel()?.querySelector<HTMLButtonElement>('.da-foot .da-btn-primary');
     if (b) { b.disabled = true; b.innerHTML = `<span class="da-spin"></span>${esc(this.t.sending)}`; }
-    try { await this.api.submit(this.flow.id, this.answers); clearProgress(this.cfg.key); this.stopAudio(); this.stopNebula(); this.screen = 'success'; this.renderPanel(); }
+    try {
+      await this.api.submit(this.flow.id, this.answers); clearProgress(this.cfg.key); this.stopAudio();
+      this.nebExplode();   // celebration: the nebula bursts, then reforms on the success screen
+      setTimeout(() => { this.screen = 'success'; this.renderPanel(); }, 850);
+    }
     catch {
       if (b) { b.disabled = false; b.textContent = this.t.finish; }
       const e = this.currentPanel()?.querySelector<HTMLElement>(`[data-block="${this.step}"] [data-err]`); if (e) e.textContent = this.t.errorSend;
@@ -742,7 +810,7 @@ class Widget {
      shrink is a smooth CSS transition with no redraw/flicker. */
   private startNebula(cv: HTMLCanvasElement): void {
     const ctx = cv.getContext('2d'); if (!ctx) return;
-    this.stopNebula(); this.nebStop = false;
+    this.stopNebula(); this.nebStop = false; this.nebCanvas = cv; this.nebSetSection();
     const L = 600, dpr = Math.min(window.devicePixelRatio || 1, 2);
     cv.width = Math.floor(L * dpr); cv.height = Math.floor(L * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, L, L);
     const sprite = (r: number, g: number, b: number) => { const d = 28, c = document.createElement('canvas'); c.width = d; c.height = d; const x = c.getContext('2d')!; const gr = x.createRadialGradient(d / 2, d / 2, 0, d / 2, d / 2, d / 2); gr.addColorStop(0, `rgba(${r},${g},${b},0.95)`); gr.addColorStop(0.4, `rgba(${r},${g},${b},0.32)`); gr.addColorStop(1, `rgba(${r},${g},${b},0)`); x.fillStyle = gr; x.fillRect(0, 0, d, d); return c; };
@@ -750,9 +818,9 @@ class Widget {
     const palette = [cP, cP, cV, cC, cC, cB, cM, cW];
     const R = L * 0.42, ccx = L / 2, ccy = L / 2;
     type P = { x: number; y: number; sp: HTMLCanvasElement; sz: number; life: number; max: number };
-    const spawn = (p: P) => { const a = Math.random() * 6.283, rr = Math.random() * R * 0.55; p.x = ccx + Math.cos(a) * rr; p.y = ccy + Math.sin(a) * rr; p.sp = palette[(Math.random() * palette.length) | 0]; p.sz = 2 + Math.random() * 6.5; p.max = 120 + Math.random() * 240; p.life = Math.random() * p.max; };
+    const spawn = (p: P, center?: boolean) => { const a = Math.random() * 6.283, rr = (center ? Math.random() * 14 : Math.random() * R * 0.55); p.x = ccx + Math.cos(a) * rr; p.y = ccy + Math.sin(a) * rr; p.sp = palette[(Math.random() * palette.length) | 0]; p.sz = 2 + Math.random() * 6.5; p.max = 120 + Math.random() * 240; p.life = Math.random() * p.max; };
     const N = 900;
-    const pts: P[] = []; for (let i = 0; i < N; i++) { const p: P = { x: 0, y: 0, sp: cP, sz: 3, life: 0, max: 200 }; spawn(p); pts.push(p); }
+    const pts: P[] = []; for (let i = 0; i < N; i++) { const p: P = { x: 0, y: 0, sp: cP, sz: 3, life: 0, max: 200 }; spawn(p, true); pts.push(p); }   // ignite from a point
     let mx = -9999, my = -9999, active = false;
     const map = (cx: number, cy: number) => { const r = cv.getBoundingClientRect(); const s = L / Math.max(1, r.width); mx = (cx - r.left) * s; my = (cy - r.top) * s; active = true; };
     const onMove = (e: MouseEvent) => map(e.clientX, e.clientY);
@@ -760,36 +828,43 @@ class Widget {
     const onLeave = () => { active = false; };
     cv.addEventListener('mousemove', onMove); cv.addEventListener('mouseleave', onLeave); cv.addEventListener('touchmove', onTouch, { passive: true });
     this.nebCleanup = () => { cv.removeEventListener('mousemove', onMove); cv.removeEventListener('mouseleave', onLeave); cv.removeEventListener('touchmove', onTouch); };
-    let t = 0;
+    const start = performance.now(); let t = 0;
     const step = () => {
-      const boost = performance.now() < this.nebBoost ? 1 : 0;
-      ctx.globalCompositeOperation = 'destination-out'; ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(0,0,0,0.13)'; ctx.fillRect(0, 0, L, L);   // transparent trail fade
+      const now = performance.now();
+      const ignite = Math.min(1, (now - start) / 850);                 // fade up from the ignition point
+      const boost = now < this.nebBoost ? 1 : 0;
+      const burst = now < this.nebBurst ? (1 - (this.nebBurst - now) / 900) : -1;   // 0→1 over the burst; -1 when idle
+      const tc = this.nebTintCur; for (let k = 0; k < 3; k++) tc[k] += (this.nebTint[k] - tc[k]) * 0.04;   // ease tint toward section colour
+      ctx.globalCompositeOperation = 'destination-out'; ctx.globalAlpha = 1; ctx.fillStyle = 'rgba(0,0,0,0.13)'; ctx.fillRect(0, 0, L, L);
       ctx.globalCompositeOperation = 'lighter';
-      const cg = ctx.createRadialGradient(ccx, ccy, 0, ccx, ccy, R * 1.25);   // volumetric bloom
-      cg.addColorStop(0, `rgba(150,80,240,${0.10 + boost * 0.06})`); cg.addColorStop(0.5, `rgba(40,190,225,${0.05 + boost * 0.04})`); cg.addColorStop(1, 'rgba(0,0,0,0)');
+      const cg = ctx.createRadialGradient(ccx, ccy, 0, ccx, ccy, R * 1.25);   // volumetric bloom, tinted by section
+      cg.addColorStop(0, `rgba(${tc[0] | 0},${tc[1] | 0},${tc[2] | 0},${(0.10 + boost * 0.06) * ignite})`); cg.addColorStop(0.5, `rgba(40,190,225,${(0.05 + boost * 0.04) * ignite})`); cg.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = cg; ctx.fillRect(0, 0, L, L);
-      const spin = 0.016 + boost * 0.01;   // circular rotation rate
+      if (now - start < 380) { const fl = 1 - (now - start) / 380; const fg = ctx.createRadialGradient(ccx, ccy, 0, ccx, ccy, R * 0.6); fg.addColorStop(0, `rgba(220,230,255,${0.5 * fl})`); fg.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = fg; ctx.fillRect(0, 0, L, L); }
+      const spin = 0.016 + boost * 0.01;
       for (const p of pts) {
         const s = 0.006;
         const ang = (Math.sin(p.x * s + t) + Math.cos(p.y * s * 1.2 - t * 0.8) + Math.sin((p.x + p.y) * s * 0.6 + t * 0.5)) * Math.PI;
         const dxc = p.x - ccx, dyc = p.y - ccy;
-        let vx = Math.cos(ang) * 0.8 - dyc * spin + (ccx - p.x) * 0.0006;   // organic drift + rotation + gentle pull
+        let vx = Math.cos(ang) * 0.8 - dyc * spin + (ccx - p.x) * 0.0006;
         let vy = Math.sin(ang) * 0.8 + dxc * spin + (ccy - p.y) * 0.0006;
-        if (active) { const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy; if (d2 < 17000) { const f = (1 - Math.sqrt(d2) / 130) * 0.9; vx += (-dy * 0.02 + dx * 0.012) * f; vy += (dx * 0.02 + dy * 0.012) * f; } }
+        if (burst >= 0) { const d = Math.hypot(dxc, dyc) || 1; const k = 7 * (1 - burst); vx += dxc / d * k; vy += dyc / d * k; }   // explode outward, easing off → regroups via pull
+        if (active && burst < 0) { const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy; if (d2 < 17000) { const f = (1 - Math.sqrt(d2) / 130) * 0.9; vx += (-dy * 0.02 + dx * 0.012) * f; vy += (dx * 0.02 + dy * 0.012) * f; } }
         const sp = 1.25 + boost * 0.7; p.x += vx * sp; p.y += vy * sp; p.life++;
-        if (p.life > p.max || Math.hypot(p.x - ccx, p.y - ccy) > R) spawn(p);
-        ctx.globalAlpha = Math.max(0, Math.min(1, (0.5 + boost * 0.2) * Math.sin((p.life / p.max) * Math.PI)));
+        if (burst < 0 && (p.life > p.max || Math.hypot(p.x - ccx, p.y - ccy) > R)) spawn(p);
+        ctx.globalAlpha = Math.max(0, Math.min(1, (0.5 + boost * 0.2) * Math.sin((p.life / p.max) * Math.PI) * ignite));
         ctx.drawImage(p.sp, p.x - p.sz, p.y - p.sz, p.sz * 2, p.sz * 2);
       }
       ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     };
     let reduce = false; try { reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { /* noop */ }
-    if (reduce) { for (let k = 0; k < 90; k++) { t += 0.011; step(); } return; }
+    if (reduce) { for (let k = 0; k < 120; k++) { t += 0.011; step(); } return; }
     const loop = () => { if (this.nebStop) return; t += 0.011; step(); this.nebRaf = requestAnimationFrame(loop); };
     loop();
   }
+  private nebExplode(): void { this.nebBurst = performance.now() + 900; this.nebBoost = performance.now() + 900; }
   private nebPulse(): void { this.nebBoost = performance.now() + 800; }
-  private stopNebula(): void { this.nebStop = true; cancelAnimationFrame(this.nebRaf); if (this.nebCleanup) { this.nebCleanup(); this.nebCleanup = null; } }
+  private stopNebula(): void { this.nebStop = true; cancelAnimationFrame(this.nebRaf); this.nebCanvas = null; if (this.nebCleanup) { this.nebCleanup(); this.nebCleanup = null; } }
 
   /* ---- helpers ---- */
   private currentPanel(): HTMLElement | null { return this.root.querySelector('.da-stage-left, .da-panel, .da-page-centered'); }
