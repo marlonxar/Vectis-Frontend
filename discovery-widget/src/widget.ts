@@ -828,9 +828,10 @@ class Widget {
         const dxc = p.x - ccx, dyc = p.y - ccy;
         let vx = Math.cos(ang) * 0.8 - dyc * spin + (ccx - p.x) * 0.0006;
         let vy = Math.sin(ang) * 0.8 + dxc * spin + (ccy - p.y) * 0.0006;
-        if (burst >= 0) { const d = Math.hypot(dxc, dyc) || 1; const k = 7 * (1 - burst); vx += dxc / d * k; vy += dyc / d * k; }   // explode outward, easing off → regroups via pull
+        if (burst >= 0) { const d = Math.hypot(dxc, dyc) || 1; const k = 6 * (1 - burst); vx += dxc / d * k; vy += dyc / d * k; }   // explode outward, easing off → regroups via pull
         if (active && burst < 0) { const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy; if (d2 < 17000) { const f = (1 - Math.sqrt(d2) / 130) * 0.9; vx += (-dy * 0.02 + dx * 0.012) * f; vy += (dx * 0.02 + dy * 0.012) * f; } }
         const sp = 1.25 + boost * 0.7; p.x += vx * sp; p.y += vy * sp; p.life++;
+        if (burst >= 0) { const d = Math.hypot(p.x - ccx, p.y - ccy); if (d > R) { const f = R / d; p.x = ccx + (p.x - ccx) * f; p.y = ccy + (p.y - ccy) * f; } }   // keep the explosion inside the frame
         if (burst < 0 && (p.life > p.max || Math.hypot(p.x - ccx, p.y - ccy) > R)) spawn(p);
         ctx.globalAlpha = Math.max(0, Math.min(1, (0.5 + boost * 0.2) * Math.sin((p.life / p.max) * Math.PI) * ignite));
         ctx.drawImage(p.sp, p.x - p.sz, p.y - p.sz, p.sz * 2, p.sz * 2);
