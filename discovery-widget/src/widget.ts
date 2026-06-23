@@ -588,7 +588,10 @@ class Widget {
       case 'TEXTAREA': return `<label class="da-field"><textarea class="da-textarea" data-input placeholder="${esc(q.placeholder || '')}">${esc(sv)}</textarea></label>`;
       case 'EMAIL': return `<label class="da-field"><input class="da-input" type="email" inputmode="email" autocomplete="email" data-input placeholder="${esc(q.placeholder || '')}" value="${esc(sv)}" /></label>`;
       case 'PHONE': return `<label class="da-field"><input class="da-input" type="tel" inputmode="tel" autocomplete="tel" data-input placeholder="${esc(q.placeholder || '')}" value="${esc(sv)}" /></label>`;
-      case 'SELECT': return `<label class="da-field"><select class="da-select" data-input><option value="">${esc(q.placeholder || this.t.selectPlaceholder)}</option>${q.options.map((o) => `<option value="${esc(o)}"${o === sv ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`;
+      case 'SELECT': {
+        const other = q.options.find((o) => this.isOther(o)); const oTxt = (this.answers[q.key + '__other'] as string) || '';
+        return `<label class="da-field"><select class="da-select" data-input><option value="">${esc(q.placeholder || this.t.selectPlaceholder)}</option>${q.options.map((o) => `<option value="${esc(o)}"${o === sv ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select></label>${other ? `<div class="da-other" data-other${sv === other ? '' : ' hidden'}><input type="text" class="da-input" data-other-input placeholder="${esc(this.t.otherPlaceholder)}" value="${esc(oTxt)}" /></div>` : ''}`;
+      }
       case 'RADIO': {
         const other = q.options.find((o) => this.isOther(o)); const oTxt = (this.answers[q.key + '__other'] as string) || '';
         return `<div class="da-options" role="radiogroup">${q.options.map((o) => `<div class="da-opt radio${o === sv ? ' sel' : ''}" data-opt="${esc(o)}" role="radio" tabindex="0" aria-checked="${o === sv}"><span class="box">${I.check}</span><span class="lbl">${esc(o)}</span></div>`).join('')}${other ? `<div class="da-other" data-other${sv === other ? '' : ' hidden'}><input type="text" class="da-input" data-other-input placeholder="${esc(this.t.otherPlaceholder)}" value="${esc(oTxt)}" /></div>` : ''}</div>`;
@@ -616,7 +619,12 @@ class Widget {
     if (input) {
       const upd = () => { this.answers[q.key] = input.value; this.persist(); };
       input.addEventListener('input', upd); input.addEventListener('change', upd);
-      if (q.type === 'SELECT') input.addEventListener('change', () => { if (input.value) this.autoAdvance(); });
+      if (q.type === 'SELECT') input.addEventListener('change', () => {
+        const isO = this.isOther(input.value);
+        const ow = block.querySelector<HTMLElement>('[data-other]'); const oi = block.querySelector<HTMLInputElement>('[data-other-input]');
+        if (ow) { if (isO) { ow.removeAttribute('hidden'); setTimeout(() => oi?.focus(), 20); } else ow.setAttribute('hidden', ''); }
+        if (input.value && !isO) this.autoAdvance();   // "Otro" needs a written answer, so don't auto-advance
+      });
       if (q.type === 'TEXT' || q.type === 'EMAIL' || q.type === 'PHONE') input.addEventListener('keydown', (e) => { if ((e as KeyboardEvent).key === 'Enter') { e.preventDefault(); this.goNext(); } });
     }
     const otherWrap = block.querySelector<HTMLElement>('[data-other]');
