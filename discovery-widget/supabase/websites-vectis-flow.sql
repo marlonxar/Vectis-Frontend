@@ -1,13 +1,14 @@
 -- ============================================================================
--- Flujo Discovery Assistant Vectis  (formato de tarjetas: RADIO / CHECKBOX)
+-- Flujo Discovery Assistant Vectis
 -- Ejecutar DESPUÉS de schema.sql.
 -- Crea / actualiza un flujo ACTIVE con public_key = websites_vectis.
 --
--- Las preguntas de opción usan tarjetas:
---   RADIO    = una sola opción.
---   CHECKBOX = varias opciones.
--- Cualquier opción "Otro" / "Otra" muestra automáticamente un campo de texto
--- para que el usuario escriba una respuesta libre (lo maneja el widget).
+-- Formato por pregunta:
+--   RADIO    = tarjetas (pocas opciones, una sola respuesta).
+--   SELECT   = desplegable (muchas opciones).
+--   CHECKBOX = tarjetas con varias respuestas.
+-- Cualquier opción "Otro" / "Otra" muestra un campo de texto para escribir
+-- una respuesta libre (funciona en RADIO, CHECKBOX y SELECT).
 --
 -- OJO: borra y reemplaza las preguntas actuales de 'websites_vectis'.
 -- ============================================================================
@@ -40,26 +41,26 @@ from f, (values
    'Ej: www.tuempresa.com',
    '[]'::jsonb, false, 2),
 
-  -- una sola opción → tarjetas RADIO, con "Otro" para escribir
-  ('RADIO', 'projectType',
+  -- muchas opciones → desplegable
+  ('SELECT', 'projectType',
    '¿Qué tipo de proyecto necesitas construir?',
-   null,
+   'Selecciona una opción',
    '["Página web informativa","Landing page de ventas","Tienda en línea (e-commerce)","Sistema web / plataforma","Automatización / IA","Integración / API","Otro"]'::jsonb,
    true, 3),
 
-  ('RADIO', 'websiteGoal',
+  ('SELECT', 'websiteGoal',
    '¿Cuál es el principal objetivo de tu página?',
-   null,
+   'Selecciona una opción',
    '["Conseguir clientes","Vender productos","Mostrar servicios","Generar confianza en la marca","Automatizar procesos","Otro"]'::jsonb,
    true, 4),
 
-  -- varias opciones → tarjetas CHECKBOX, con "Otra" para escribir
-  ('CHECKBOX', 'sections',
+  ('SELECT', 'sections',
    '¿Qué secciones necesitas en tu página?',
-   null,
+   'Selecciona una opción',
    '["Inicio","Nosotros / Empresa","Servicios","Productos","Portafolio / Proyectos","Blog","Testimonios","Preguntas frecuentes","Contacto","Tienda","Área privada","Otra"]'::jsonb,
    true, 5),
 
+  -- pocas opciones → tarjetas
   ('RADIO', 'productsServices',
    '¿Cuántos productos o servicios necesitas mostrar?',
    null,
@@ -81,12 +82,14 @@ from f, (values
    'Ej: formularios, reservas, pagos, usuarios, chat...',
    '[]'::jsonb, false, 9),
 
-  ('CHECKBOX', 'integrations',
+  -- muchas opciones → desplegable
+  ('SELECT', 'integrations',
    '¿Qué integraciones te gustaría agregar?',
-   null,
+   'Selecciona una opción',
    '["WhatsApp","Calendario de reservas","Pagos en línea","CRM","Email marketing","Google Analytics","Redes sociales","APIs externas","Ninguna","Otra"]'::jsonb,
    false, 10),
 
+  -- pocas opciones → tarjetas
   ('RADIO', 'designStyle',
    '¿Tienes alguna referencia visual o estilo que te guste?',
    null,
