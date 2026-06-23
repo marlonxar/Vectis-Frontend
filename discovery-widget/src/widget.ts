@@ -35,8 +35,10 @@ const STRINGS = {
     selectOne: 'Selecciona una opción.', optional: 'opcional',
     resumeTitle: '¿Continuar donde quedaste?', resumeBody: 'Guardamos tus respuestas anteriores.',
     continue: 'Continuar', startAgain: 'Empezar de nuevo',
-    unavailable: 'Este asistente no está disponible para su organización. Por favor contacte a un administrador para habilitarlo.',
-    errorLoad: 'No pudimos cargar el asistente. Intenta de nuevo.',
+    unavailableTitle: 'Asistente no disponible',
+    unavailable: 'Este asistente no está disponible para tu organización en este momento. Contacta a un administrador para habilitarlo.',
+    errorTitle: 'Algo salió mal',
+    errorLoad: 'No pudimos cargar el asistente. Inténtalo de nuevo.',
     errorSend: 'No se pudo enviar. Revisa tu conexión e intenta de nuevo.',
     successTitle: '¡Gracias!', successBody: 'Recibimos tu información. Te contactaremos pronto.',
     close: 'Cerrar', listen: 'Escuchar la pregunta', mute: 'Silenciar audio', unmute: 'Activar audio', retry: 'Reintentar', selectPlaceholder: 'Selecciona…',
@@ -53,7 +55,9 @@ const STRINGS = {
     selectOne: 'Select an option.', optional: 'optional',
     resumeTitle: 'Continue where you left off?', resumeBody: 'We saved your previous answers.',
     continue: 'Continue', startAgain: 'Start again',
-    unavailable: 'This assistant is not available for your organization. Please contact an administrator to enable it.',
+    unavailableTitle: 'Assistant unavailable',
+    unavailable: 'This assistant is not available for your organization right now. Please contact an administrator to enable it.',
+    errorTitle: 'Something went wrong',
     errorLoad: 'We could not load the assistant. Please try again.',
     errorSend: 'Could not send. Check your connection and try again.',
     successTitle: 'Thank you!', successBody: 'We received your info. We will contact you soon.',
@@ -167,6 +171,18 @@ const CSS = `
 .da-badge{ width:56px; height:56px; border-radius:50%; margin:0 auto; display:inline-flex; align-items:center; justify-content:center;
   background:color-mix(in srgb,var(--da-accent) 18%,transparent); color:var(--da-accent); }
 .da-badge svg{ width:28px; height:28px; }
+/* state screens (unavailable / error) */
+.da-state{ padding:8px 24px; max-width:520px; margin:0 auto; }
+.da-state .da-badge{ width:84px; height:84px; margin-bottom:22px; animation:da-float 4s ease-in-out infinite; }
+.da-state .da-badge svg{ width:38px; height:38px; }
+.da-state h2{ font-size:clamp(26px,3.4vw,34px); letter-spacing:-.02em; margin:0 0 12px; }
+.da-state p{ font-size:15px; line-height:1.6; }
+.da-badge-soft{ position:relative; background:radial-gradient(circle at 50% 38%, color-mix(in srgb,var(--da-accent) 30%,transparent), color-mix(in srgb,var(--da-accent) 8%,transparent)); color:var(--da-accent); box-shadow:0 0 0 1px color-mix(in srgb,var(--da-accent) 24%,transparent), 0 16px 50px -10px color-mix(in srgb,var(--da-accent) 65%,transparent); }
+.da-badge-soft::before{ content:''; position:absolute; inset:-10px; border-radius:50%; border:1px solid color-mix(in srgb,var(--da-accent) 20%,transparent); animation:da-ring-pulse 2.6s ease-out infinite; }
+.da-badge-warn{ --da-accent:#ff8a5c; }
+@keyframes da-float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-7px); } }
+@keyframes da-ring-pulse{ 0%{ transform:scale(.9); opacity:.7; } 100%{ transform:scale(1.5); opacity:0; } }
+.da-page[data-screen="unavailable"] .da-grad, .da-page[data-screen="error"] .da-grad{ background:radial-gradient(48% 46% at 50% 40%, rgba(120,60,220,.16), transparent 70%), #060509; }
 
 .da-hero-text{ text-align:left; }
 .da-page[data-screen="intro"] .da-hero-text{ animation:da-rise .7s .25s cubic-bezier(.2,.7,.2,1) both; }
@@ -250,7 +266,7 @@ const CSS = `
 }
 
 @media (prefers-reduced-motion: reduce){ .da-overlay,.da-panel,.da-btn{ transition:none; }
-  .da-qblock,.da-pagehead,.da-stage-left,.da-audiobtn.playing,.da-hero-text,.da-badge.da-pop,.da-badge.da-pop svg path{ animation:none; }
+  .da-qblock,.da-pagehead,.da-stage-left,.da-audiobtn.playing,.da-hero-text,.da-badge.da-pop,.da-badge.da-pop svg path,.da-state .da-badge,.da-badge-soft::before{ animation:none; }
   .da-q.da-typing::after{ content:none; } }
 `;
 
@@ -295,6 +311,8 @@ const I = {
   ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>',
   spk: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
   spkOff: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M22 9l-6 6M16 9l6 6"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/><circle cx="12" cy="15.5" r="1.4" fill="currentColor" stroke="none"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.2v.1"/></svg>',
 };
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const isVideo = (u: string) => /\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(u);
@@ -514,8 +532,8 @@ class Widget {
   private contentHtml(): string {
     const closeActions = this.cfg.target ? '' : `<div class="da-actions"><button class="da-btn da-btn-ghost" data-act="close">${esc(this.t.close)}</button></div>`;
     switch (this.screen) {
-      case 'unavailable': return `<div class="da-center"><h2>${esc(DA_TITLE)}</h2><p>${esc(this.t.unavailable)}</p>${closeActions}</div>`;
-      case 'error': return `<div class="da-center"><h2>:(</h2><p>${esc(this.t.errorLoad)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="retry">${esc(this.t.retry)}</button></div></div>`;
+      case 'unavailable': return `<div class="da-center da-state"><span class="da-badge da-badge-soft">${I.lock}</span><h2>${esc(this.t.unavailableTitle)}</h2><p>${esc(this.t.unavailable)}</p>${closeActions}</div>`;
+      case 'error': return `<div class="da-center da-state"><span class="da-badge da-badge-soft da-badge-warn">${I.warn}</span><h2>${esc(this.t.errorTitle)}</h2><p>${esc(this.t.errorLoad)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="retry">${esc(this.t.retry)}</button></div></div>`;
       case 'success': return `<div class="da-center"><span class="da-badge da-pop">${I.ok}</span><h2>${esc(this.t.successTitle)}</h2><p>${esc(this.t.successBody)}</p><p class="da-note">${esc(this.t.sentNote)}</p><div class="da-actions"><button class="da-btn da-btn-ghost" data-act="pdf">${esc(this.t.downloadPdf)}</button>${this.cfg.target ? '' : `<button class="da-btn da-btn-primary" data-act="close">${esc(this.t.close)}</button>`}</div></div>`;
       case 'resume': return `<div class="da-center"><h2>${esc(this.t.resumeTitle)}</h2><p>${esc(this.t.resumeBody)}</p><div class="da-actions"><button class="da-btn da-btn-primary" data-act="resume">${esc(this.t.continue)}</button><button class="da-btn da-btn-ghost" data-act="restart">${esc(this.t.startAgain)}</button></div></div>`;
       case 'intro':
