@@ -213,15 +213,16 @@ const CSS = `
 .da-grad{ position:absolute; inset:0; z-index:0; background:#060509; transition:background .5s ease; }
 /* keep the page glow behind the nebula only, never behind the header/footer */
 .da-page[data-screen="intro"] .da-grad, .da-page[data-screen="flow"] .da-grad{ background:radial-gradient(44% 58% at 74% 50%, rgba(120,60,220,.15), transparent 70%), #060509; }
-.da-pagehead{ position:relative; z-index:2; flex:0 0 auto; padding:18px 26px 14px; display:flex; align-items:center; justify-content:center; background:transparent; animation:da-fade .5s ease both; }
+.da-pagehead{ position:absolute; top:0; left:0; right:0; z-index:4; padding:18px 26px 14px; display:flex; align-items:center; justify-content:center; background:transparent; pointer-events:none; animation:da-fade .5s ease both; }
+.da-pagehead img, .da-pagehead a{ pointer-events:auto; }
 .da-pagehead-c{ display:flex; flex-direction:column; align-items:center; gap:8px; }
 .da-pagehead img{ height:40px; width:auto; border-radius:8px; }
 .da-pagetitle{ margin:0; font-size:15px; font-weight:800; letter-spacing:.01em; }
-.da-pagebody{ position:relative; z-index:1; flex:1 1 auto; min-height:0; overflow-y:auto; width:100%; max-width:640px; margin:0 auto; padding:8px 22px 28px; display:flex; flex-direction:column; justify-content:flex-start; }
-.da-pagebody-hero{ max-width:1280px; justify-content:center; padding:8px 34px 28px; }
+.da-pagebody{ position:relative; z-index:1; flex:1 1 auto; min-height:0; overflow-y:auto; width:100%; max-width:640px; margin:0 auto; padding:78px 22px 56px; display:flex; flex-direction:column; justify-content:flex-start; }
+.da-pagebody-hero{ max-width:1280px; justify-content:center; padding:78px 34px 56px; }
 
 /* emerge layout (resume / success): content on top, a big nebula rising from the bottom-centre */
-.da-pagebody-emerge{ position:relative; max-width:none; justify-content:flex-start; align-items:center; padding:clamp(18px,4vh,56px) 22px 0; overflow:hidden; }
+.da-pagebody-emerge{ position:relative; max-width:none; justify-content:flex-start; align-items:center; padding:clamp(76px,13vh,140px) 22px 0; overflow:hidden; }
 .da-emerge-content{ position:relative; z-index:2; width:100%; max-width:560px; margin:0 auto; }
 .da-emerge-visual{ position:absolute; left:50%; bottom:0; z-index:0; width:min(860px,108vw); transform:translate(-50%,52%);
   transition:left .85s cubic-bezier(.4,0,.2,1), transform .85s cubic-bezier(.4,0,.2,1), opacity .6s ease; pointer-events:none; }
@@ -242,6 +243,7 @@ const CSS = `
 .da-neb-audio{ position:absolute; top:9%; right:9%; z-index:3; width:44px; height:44px; border-radius:50%; border:1px solid var(--da-line);
   background:rgba(255,255,255,.06); color:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; backdrop-filter:blur(6px); transition:border-color .2s ease, transform .15s ease, color .2s ease; }
 .da-neb-audio:hover{ border-color:var(--da-accent); } .da-neb-audio:active{ transform:scale(.92); } .da-neb-audio svg{ width:19px; height:19px; }
+.da-neb-audio.on{ border-color:var(--da-accent); color:var(--da-accent); box-shadow:0 0 16px -4px color-mix(in srgb,var(--da-accent) 70%,transparent); }
 .da-neb-audio.playing{ border-color:var(--da-accent); color:var(--da-accent); animation:da-pulse 1.2s ease-in-out infinite; }
 @keyframes da-pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.09); } }
 .da-note{ font-size:13px; line-height:1.5; color:var(--da-ink-2); margin:14px 0 0; max-width:46ch; }
@@ -249,7 +251,7 @@ const CSS = `
 
 .da-page-centered{ width:100%; max-width:560px; margin:0 auto; }
 
-.da-pagefoot{ position:relative; z-index:2; flex:0 0 auto; padding:14px 24px 18px; text-align:center; font-size:13px; color:rgba(255,255,255,.8); background:transparent; pointer-events:none; }
+.da-pagefoot{ position:absolute; bottom:0; left:0; right:0; z-index:4; padding:14px 24px 18px; text-align:center; font-size:13px; color:rgba(255,255,255,.8); background:transparent; pointer-events:none; }
 .da-pagefoot a{ pointer-events:auto; }
 .da-pagefoot a{ color:var(--da-accent); text-decoration:none; font-weight:700; } .da-pagefoot a:hover{ text-decoration:underline; }
 
@@ -376,7 +378,7 @@ class Widget {
   private answers: Record<string, string | string[]> = {};
   private step = 1; private transitioning = false;
   private screen: 'intro' | 'resume' | 'flow' | 'success' | 'unavailable' | 'error' = 'intro';
-  private viewed = false; private audioEl: HTMLAudioElement | null = null; private audioBtn: HTMLElement | null = null;
+  private viewed = false; private audioEl: HTMLAudioElement | null = null; private audioBtn: HTMLElement | null = null; private audioOn = false;
   private accent = '#E7AB2E'; private overlayEl: HTMLElement | null = null; private launcher: HTMLButtonElement | null = null; private pageMode = false;
   private nebRaf = 0; private nebStop = true; private nebCleanup: (() => void) | null = null; private nebBoost = 0;
   private nebBurst = 0; private nebCanvas: HTMLCanvasElement | null = null; private twTimer = 0;
@@ -478,7 +480,7 @@ class Widget {
           <div class="da-stage-left" data-left>${this.contentHtml()}</div>
           <div class="da-hero-visual"><div class="da-neb-wrap">
             <canvas class="da-neb" data-neb aria-hidden="true"></canvas>
-            <button class="da-neb-audio" data-act="audio" aria-label="${esc(this.t.audioPlay)}">${I.spk}</button>
+            <button class="da-neb-audio${this.audioOn ? ' on' : ''}" data-act="audio" aria-label="${esc(this.audioOn ? this.t.audioStop : this.t.audioPlay)}">${this.audioOn ? I.spk : I.spkOff}</button>
           </div></div></div></main>`;
     } else if (this.screen === 'resume' || this.screen === 'success') {
       body = `<main class="da-pagebody da-pagebody-emerge">
@@ -577,7 +579,7 @@ class Widget {
     stage.appendChild(block);
     this.nebSetSection();
     const qtext = block.querySelector<HTMLElement>('[data-qtext]'); const qh = block.querySelector<HTMLElement>('.da-q');
-    if (qtext && q) this.typewrite(qtext, qh, q.label, () => this.nebPulse());
+    if (qtext && q) this.typewrite(qtext, qh, q.label, () => { this.nebPulse(); this.speakCurrent(); });   // read the question aloud (if audio is on) once it has typed in
     const fld = block.querySelector<HTMLElement>('input,textarea,select,.da-opt'); fld && setTimeout(() => fld.focus(), animate ? 120 : 60);
   }
   // Reveal each question character-by-character; flash the nebula when it finishes.
@@ -701,7 +703,7 @@ class Widget {
       case 'back': this.goBack(); break;
       case 'next': this.goNext(); break;
       case 'submit': await this.onSubmit(); break;
-      case 'audio': if (el) this.playContextAudio(el); break;
+      case 'audio': if (el) this.toggleAudio(el); break;
       case 'pdf': this.downloadPdf(); break;
     }
   }
@@ -802,17 +804,24 @@ class Widget {
     }
   }
 
-  /* ---- audio: the nebula button plays the explanation of the current context (or stops it) ---- */
-  private playContextAudio(btn: HTMLElement): void {
-    if (this.audioBtn === btn) { this.stopAudio(); return; }   // already playing → stop (mute)
-    this.stopAudio();
-    let text = '', url: string | null = null;
-    if (this.screen === 'flow') { const q = this.questions[this.step - 1]; if (q) { url = q.audio_url; text = q.label + (q.help_text ? '. ' + q.help_text : ''); } }
-    else { text = this.t.welcomeTitle + '. ' + this.t.welcome; }
-    this.speakText(text, url, btn);
+  /* ---- audio: the nebula button is a GLOBAL on/off toggle. When on, every new question is read aloud ---- */
+  private toggleAudio(btn: HTMLElement): void {
+    this.audioOn = !this.audioOn; this.setAudioBtn(btn);
+    if (this.audioOn) this.speakCurrent(); else this.stopAudio();
   }
-  private speakText(text: string, url: string | null, btn: HTMLElement): void {
-    this.audioBtn = btn; btn.classList.add('playing'); btn.setAttribute('aria-label', this.t.audioStop);
+  private setAudioBtn(btn: HTMLElement): void {
+    btn.innerHTML = this.audioOn ? I.spk : I.spkOff;
+    btn.classList.toggle('on', this.audioOn);
+    btn.setAttribute('aria-label', this.audioOn ? this.t.audioStop : this.t.audioPlay);
+  }
+  private speakCurrent(): void {
+    if (!this.audioOn || this.screen !== 'flow') return;
+    const q = this.questions[this.step - 1]; if (!q) return;
+    const btn = this.root.querySelector<HTMLElement>('.da-neb-audio');
+    this.speakText(q.label + (q.help_text ? '. ' + q.help_text : ''), q.audio_url, btn);
+  }
+  private speakText(text: string, url: string | null, btn: HTMLElement | null): void {
+    this.stopAudio(); this.audioBtn = btn; btn && btn.classList.add('playing');
     if (url) {
       this.audioEl = new Audio(url); this.audioEl.play().catch(() => this.stopAudio());
       this.audioEl.onended = () => this.stopAudio();
@@ -827,7 +836,7 @@ class Widget {
   private stopAudio(): void {
     if (this.audioEl) { try { this.audioEl.pause(); } catch { /* noop */ } this.audioEl = null; }
     try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch { /* noop */ }
-    if (this.audioBtn) { this.audioBtn.classList.remove('playing'); this.audioBtn.setAttribute('aria-label', this.t.audioPlay); this.audioBtn = null; }
+    if (this.audioBtn) { this.audioBtn.classList.remove('playing'); this.audioBtn = null; }
   }
 
   /* ---- PDF backup of answers (self-contained, no deps) ---- */
