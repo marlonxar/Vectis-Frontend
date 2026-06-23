@@ -40,7 +40,7 @@ const STRINGS = {
     errorSend: 'No se pudo enviar. Revisa tu conexión e intenta de nuevo.',
     successTitle: '¡Gracias!', successBody: 'Recibimos tu información. Te contactaremos pronto.',
     close: 'Cerrar', listen: 'Escuchar la pregunta', mute: 'Silenciar audio', unmute: 'Activar audio', retry: 'Reintentar', selectPlaceholder: 'Selecciona…',
-    audioPlay: 'Reproducir explicación', audioStop: 'Detener audio', downloadPdf: 'Descargar PDF',
+    audioPlay: 'Reproducir explicación', audioStop: 'Detener audio', downloadPdf: 'Descargar PDF', otherPlaceholder: 'Escribe tu opción…',
     backupNote: 'Al enviar, recibirás una copia en PDF de tus respuestas y un enlace para seguir tu proceso en el correo que indicaste.',
     sentNote: 'Te enviamos una copia en PDF y un enlace de seguimiento al correo que nos diste.',
   },
@@ -58,7 +58,7 @@ const STRINGS = {
     errorSend: 'Could not send. Check your connection and try again.',
     successTitle: 'Thank you!', successBody: 'We received your info. We will contact you soon.',
     close: 'Close', listen: 'Play the question', mute: 'Mute audio', unmute: 'Unmute audio', retry: 'Retry', selectPlaceholder: 'Select…',
-    audioPlay: 'Play explanation', audioStop: 'Stop audio', downloadPdf: 'Download PDF',
+    audioPlay: 'Play explanation', audioStop: 'Stop audio', downloadPdf: 'Download PDF', otherPlaceholder: 'Type your option…',
     backupNote: 'On submit, you will get a PDF copy of your answers and a link to follow your process at the email you provided.',
     sentNote: 'We sent a PDF copy and a tracking link to the email you gave us.',
   },
@@ -143,6 +143,9 @@ const CSS = `
 .da-opt .box svg{ width:13px; height:13px; opacity:0; } .da-opt.sel .box svg{ opacity:1; }
 .da-opt span.lbl{ font-size:15px; }
 
+.da-other{ animation:da-fade .25s ease both; }
+.da-other[hidden]{ display:none; }
+.da-other .da-input{ margin-top:8px; }
 .da-err{ color:#c0392b; font-size:13px; margin:8px 0 0; min-height:18px; }
 .da-onbg .da-err{ color:#ff9b8a; }
 
@@ -586,8 +589,14 @@ class Widget {
       case 'EMAIL': return `<label class="da-field"><input class="da-input" type="email" inputmode="email" autocomplete="email" data-input placeholder="${esc(q.placeholder || '')}" value="${esc(sv)}" /></label>`;
       case 'PHONE': return `<label class="da-field"><input class="da-input" type="tel" inputmode="tel" autocomplete="tel" data-input placeholder="${esc(q.placeholder || '')}" value="${esc(sv)}" /></label>`;
       case 'SELECT': return `<label class="da-field"><select class="da-select" data-input><option value="">${esc(q.placeholder || this.t.selectPlaceholder)}</option>${q.options.map((o) => `<option value="${esc(o)}"${o === sv ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`;
-      case 'RADIO': return `<div class="da-options" role="radiogroup">${q.options.map((o) => `<div class="da-opt radio${o === sv ? ' sel' : ''}" data-opt="${esc(o)}" role="radio" tabindex="0" aria-checked="${o === sv}"><span class="box">${I.check}</span><span class="lbl">${esc(o)}</span></div>`).join('')}</div>`;
-      case 'CHECKBOX': return `<div class="da-options">${q.options.map((o) => `<div class="da-opt check${av.includes(o) ? ' sel' : ''}" data-optm="${esc(o)}" role="checkbox" tabindex="0" aria-checked="${av.includes(o)}"><span class="box">${I.check}</span><span class="lbl">${esc(o)}</span></div>`).join('')}</div>`;
+      case 'RADIO': {
+        const other = q.options.find((o) => this.isOther(o)); const oTxt = (this.answers[q.key + '__other'] as string) || '';
+        return `<div class="da-options" role="radiogroup">${q.options.map((o) => `<div class="da-opt radio${o === sv ? ' sel' : ''}" data-opt="${esc(o)}" role="radio" tabindex="0" aria-checked="${o === sv}"><span class="box">${I.check}</span><span class="lbl">${esc(o)}</span></div>`).join('')}${other ? `<div class="da-other" data-other${sv === other ? '' : ' hidden'}><input type="text" class="da-input" data-other-input placeholder="${esc(this.t.otherPlaceholder)}" value="${esc(oTxt)}" /></div>` : ''}</div>`;
+      }
+      case 'CHECKBOX': {
+        const other = q.options.find((o) => this.isOther(o)); const oTxt = (this.answers[q.key + '__other'] as string) || '';
+        return `<div class="da-options">${q.options.map((o) => `<div class="da-opt check${av.includes(o) ? ' sel' : ''}" data-optm="${esc(o)}" role="checkbox" tabindex="0" aria-checked="${av.includes(o)}"><span class="box">${I.check}</span><span class="lbl">${esc(o)}</span></div>`).join('')}${other ? `<div class="da-other" data-other${av.includes(other) ? '' : ' hidden'}><input type="text" class="da-input" data-other-input placeholder="${esc(this.t.otherPlaceholder)}" value="${esc(oTxt)}" /></div>` : ''}</div>`;
+      }
       default: return `<label class="da-field"><input class="da-input" type="text" data-input placeholder="${esc(q.placeholder || '')}" value="${esc(sv)}" /></label>`;
     }
   }
@@ -610,13 +619,22 @@ class Widget {
       if (q.type === 'SELECT') input.addEventListener('change', () => { if (input.value) this.autoAdvance(); });
       if (q.type === 'TEXT' || q.type === 'EMAIL' || q.type === 'PHONE') input.addEventListener('keydown', (e) => { if ((e as KeyboardEvent).key === 'Enter') { e.preventDefault(); this.goNext(); } });
     }
+    const otherWrap = block.querySelector<HTMLElement>('[data-other]');
+    const otherInput = block.querySelector<HTMLInputElement>('[data-other-input]');
+    const showOther = (on: boolean) => { if (!otherWrap) return; if (on) { otherWrap.removeAttribute('hidden'); setTimeout(() => otherInput?.focus(), 20); } else otherWrap.setAttribute('hidden', ''); };
+    if (otherInput) {
+      const upd = () => { this.answers[q.key + '__other'] = otherInput.value; this.persist(); const e = block.querySelector<HTMLElement>('[data-err]'); if (e) e.textContent = ''; };
+      otherInput.addEventListener('input', upd);
+      otherInput.addEventListener('keydown', (e) => { if ((e as KeyboardEvent).key === 'Enter') { e.preventDefault(); this.goNext(); } });
+    }
     block.querySelectorAll<HTMLElement>('[data-opt]').forEach((el) => {
       const pick = () => {
-        this.answers[q.key] = el.getAttribute('data-opt')!; this.persist();
+        const val = el.getAttribute('data-opt')!; this.answers[q.key] = val; this.persist();
         block.querySelectorAll('.da-opt').forEach((o) => { o.classList.remove('sel'); o.setAttribute('aria-checked', 'false'); });
         el.classList.add('sel'); el.setAttribute('aria-checked', 'true');
         const e = block.querySelector<HTMLElement>('[data-err]'); if (e) e.textContent = '';
-        this.autoAdvance();
+        const o = this.isOther(val); showOther(o);
+        if (!o) this.autoAdvance();   // don't auto-advance when "Other" needs a written answer
       };
       el.addEventListener('click', pick);
       el.addEventListener('keydown', (ev) => { const k = (ev as KeyboardEvent).key; if (k === 'Enter' || k === ' ') { ev.preventDefault(); pick(); } });
@@ -626,11 +644,23 @@ class Widget {
         const o = el.getAttribute('data-optm')!; const cur = Array.isArray(this.answers[q.key]) ? [...(this.answers[q.key] as string[])] : [];
         const i = cur.indexOf(o); i >= 0 ? cur.splice(i, 1) : cur.push(o); this.answers[q.key] = cur; this.persist();
         const on = cur.includes(o); el.classList.toggle('sel', on); el.setAttribute('aria-checked', String(on));
+        if (this.isOther(o)) showOther(on);
         const e = block.querySelector<HTMLElement>('[data-err]'); if (e) e.textContent = '';
       };
       el.addEventListener('click', toggle);
       el.addEventListener('keydown', (ev) => { const k = (ev as KeyboardEvent).key; if (k === 'Enter' || k === ' ') { ev.preventDefault(); toggle(); } });
     });
+  }
+  private isOther(o: string): boolean { return /^(otros?|otras?|other)$/i.test(o.trim()); }
+  // Merge "Other" free-text into the saved answers (drops the __other helper keys).
+  private finalAnswers(): Record<string, unknown> {
+    const out: Record<string, unknown> = {};
+    for (const q of this.questions) {
+      const v = this.answers[q.key]; const other = q.options.find((o) => this.isOther(o)); const ot = ((this.answers[q.key + '__other'] as string) || '').trim();
+      if (Array.isArray(v)) out[q.key] = v.map((x) => (other && x === other && ot) ? ot : x);
+      else if (typeof v === 'string' && v !== '') out[q.key] = (other && v === other && ot) ? ot : v;
+    }
+    return out;
   }
 
   private autoAdvance(): void { if (this.step < this.questions.length && !this.transitioning) setTimeout(() => this.goNext(), 320); }
@@ -713,6 +743,8 @@ class Widget {
     const v = this.answers[q.key];
     const empty = v == null || (typeof v === 'string' && !v.trim()) || (Array.isArray(v) && v.length === 0);
     if (q.required && empty) { set(q.type === 'RADIO' || q.type === 'CHECKBOX' || q.type === 'SELECT' ? this.t.selectOne : this.t.required); return false; }
+    const other = q.options.find((o) => this.isOther(o));
+    if (other && q.required) { const chosen = q.type === 'CHECKBOX' ? (Array.isArray(v) && v.includes(other)) : v === other; if (chosen && !((this.answers[q.key + '__other'] as string) || '').trim()) { set(this.t.required); return false; } }
     if (q.type === 'EMAIL' && typeof v === 'string' && v.trim() && !EMAIL_RE.test(v.trim())) { set(this.t.invalidEmail); return false; }
     set(''); return true;
   }
@@ -721,6 +753,8 @@ class Widget {
       const q = this.questions[i]; const v = this.answers[q.key];
       const empty = v == null || (typeof v === 'string' && !v.trim()) || (Array.isArray(v) && v.length === 0);
       if (q.required && empty) return i + 1;
+      const other = q.options.find((o) => this.isOther(o));
+      if (other && q.required) { const chosen = q.type === 'CHECKBOX' ? (Array.isArray(v) && v.includes(other)) : v === other; if (chosen && !((this.answers[q.key + '__other'] as string) || '').trim()) return i + 1; }
       if (q.type === 'EMAIL' && typeof v === 'string' && v.trim() && !EMAIL_RE.test(v.trim())) return i + 1;
     }
     return 0;
@@ -732,7 +766,7 @@ class Widget {
     const b = this.currentPanel()?.querySelector<HTMLButtonElement>('.da-foot .da-btn-primary');
     if (b) { b.disabled = true; b.innerHTML = `<span class="da-spin"></span>${esc(this.t.sending)}`; }
     try {
-      await this.api.submit(this.flow.id, this.answers); clearProgress(this.cfg.key); this.stopAudio();
+      await this.api.submit(this.flow.id, this.finalAnswers()); clearProgress(this.cfg.key); this.stopAudio();
       this.nebExplode();   // celebration: the nebula bursts, then reforms on the success screen
       setTimeout(() => { this.screen = 'success'; this.renderPanel(); }, 850);
     }
@@ -772,8 +806,9 @@ class Widget {
 
   /* ---- PDF backup of answers (self-contained, no deps) ---- */
   private downloadPdf(): void {
+    const fa = this.finalAnswers();
     const rows = this.questions.map((q) => {
-      const v = this.answers[q.key]; const a = Array.isArray(v) ? v.join(', ') : (typeof v === 'string' ? v : '');
+      const v = fa[q.key]; const a = Array.isArray(v) ? v.join(', ') : (typeof v === 'string' ? v : '');
       return { q: q.label, a: a || '—' };
     });
     const title = this.flow?.name || DA_TITLE;
