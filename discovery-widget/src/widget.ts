@@ -255,16 +255,32 @@ const CSS = `
 .da-pagefoot a{ pointer-events:auto; }
 .da-pagefoot a{ color:var(--da-accent); text-decoration:none; font-weight:700; } .da-pagefoot a:hover{ text-decoration:underline; }
 
+/* visible keyboard focus (WCAG 2.4.7) */
+.da-btn:focus-visible, .da-opt:focus-visible, .da-neb-audio:focus-visible, .da-close:focus-visible,
+.da-input:focus-visible, .da-textarea:focus-visible, .da-select:focus-visible, .da-pagefoot a:focus-visible{
+  outline:2px solid var(--da-accent); outline-offset:2px; border-radius:8px; }
+
 @media (max-width:820px){
   .da-split, .da-page[data-screen="intro"] .da-split{ grid-template-columns:1fr; gap:8px; text-align:center; }
   .da-stage-left{ text-align:center; order:2; }
   .da-hero-visual{ order:1; }
   .da-hero-text .da-actions{ justify-content:center; }
   .da-hero-sub{ margin-left:auto; margin-right:auto; }
-  .da-progress, .da-stepno, .da-legend, .da-foot{ text-align:left; }
+  .da-progress{ margin-left:auto; margin-right:auto; }
+  .da-stepno, .da-legend{ text-align:center; }
   .da-foot{ justify-content:center; flex-wrap:wrap; }
   .da-page[data-screen="intro"] .da-neb-wrap,
-  .da-page[data-screen="flow"] .da-neb-wrap{ max-width:320px; }
+  .da-page[data-screen="flow"] .da-neb-wrap{ max-width:300px; }
+}
+@media (max-width:480px){
+  .da-pagebody{ padding:70px 16px 52px; }
+  .da-pagebody-hero{ padding:70px 18px 52px; }
+  .da-pagehead{ padding:14px 16px 10px; } .da-pagehead img{ height:34px; }
+  .da-hero-title{ font-size:clamp(30px,8vw,40px); }
+  .da-q{ font-size:20px; }
+  .da-page[data-screen="intro"] .da-neb-wrap,
+  .da-page[data-screen="flow"] .da-neb-wrap{ max-width:240px; }
+  .da-foot .da-btn{ flex:1 1 auto; }   /* full-width, easy-to-tap buttons */
 }
 
 @media (prefers-reduced-motion: reduce){ .da-overlay,.da-panel,.da-btn{ transition:none; }
@@ -543,7 +559,7 @@ class Widget {
       default: { // flow
         const last = this.step >= this.questions.length;
         return `${this.progressHtml()}<p class="da-legend">${esc(this.t.during)}</p>
-          <div class="da-qstage" data-stage></div>
+          <div class="da-qstage" data-stage aria-live="polite"></div>
           <p class="da-note" data-note ${last ? '' : 'hidden'}>${esc(this.t.backupNote)}</p>
           <div class="da-foot">
             <button class="da-btn da-btn-ghost" data-act="back" ${this.step <= 1 ? 'hidden' : ''}>${esc(this.t.back)}</button>
@@ -555,7 +571,7 @@ class Widget {
   }
   private progressHtml(): string {
     const n = Math.max(1, this.questions.length); const pct = Math.round((this.step / n) * 100);
-    return `<p class="da-stepno">${esc(this.t.step)} ${this.step} ${esc(this.t.of)} ${this.questions.length}</p><div class="da-progress"><i style="width:${pct}%"></i></div>`;
+    return `<p class="da-stepno">${esc(this.t.step)} ${this.step} ${esc(this.t.of)} ${this.questions.length}</p><div class="da-progress" role="progressbar" aria-label="${esc(this.t.step)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div>`;
   }
 
   /* ---- one question at a time ---- */
@@ -756,7 +772,9 @@ class Widget {
   }
   private updateControls(): void {
     const panel = this.currentPanel(); if (!panel) return;
-    const bar = panel.querySelector<HTMLElement>('.da-progress > i'); if (bar) bar.style.width = `${Math.round((this.step / Math.max(1, this.questions.length)) * 100)}%`;
+    const pct = Math.round((this.step / Math.max(1, this.questions.length)) * 100);
+    const bar = panel.querySelector<HTMLElement>('.da-progress > i'); if (bar) bar.style.width = `${pct}%`;
+    const pbar = panel.querySelector<HTMLElement>('.da-progress'); if (pbar) pbar.setAttribute('aria-valuenow', String(pct));
     const sn = panel.querySelector<HTMLElement>('.da-stepno'); if (sn) sn.textContent = `${this.t.step} ${this.step} ${this.t.of} ${this.questions.length}`;
     const back = panel.querySelector<HTMLButtonElement>('.da-foot [data-act="back"]'); if (back) { if (this.step <= 1) back.setAttribute('hidden', ''); else back.removeAttribute('hidden'); }
     const last = this.step >= this.questions.length;
