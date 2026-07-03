@@ -19,6 +19,24 @@
 .nav-link:hover, .nav-link.active { color: var(--c); }
 .nav-link.active::after { width: 100%; }
 
+/* Dropdown "Servicios & Productos" */
+.nav-item { position: relative; display: inline-flex; }
+.nav-item .nav-link { display: inline-flex; align-items: center; gap: 5px; }
+.nav-item .chev { transition: transform var(--dur) var(--ease); opacity: .8; }
+.nav-item:hover .chev { transform: rotate(180deg); }
+.dropdown {
+  position: absolute; top: calc(100% + 14px); left: 50%; transform: translateX(-50%) translateY(6px);
+  min-width: 264px; background: var(--paper); border: 1px solid var(--line-dark); border-radius: var(--radius-md);
+  box-shadow: 0 24px 60px rgba(10, 10, 10, .18); padding: 8px; opacity: 0; visibility: hidden;
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease); z-index: var(--z-nav);
+}
+.dropdown::before { content: ""; position: absolute; bottom: 100%; left: 0; right: 0; height: 16px; }
+.nav-item:hover .dropdown, .nav-item:focus-within .dropdown { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+.dd-item { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; border-radius: 10px; transition: background var(--dur) var(--ease); }
+.dd-item:hover { background: var(--paper-2); }
+.dd-title { font-size: 15px; font-weight: 700; color: var(--ink); }
+.dd-sub { font-size: 12.5px; color: var(--text-2); line-height: 1.4; }
+
 .nav-actions { display: flex; align-items: center; gap: var(--space-3); }
 .lang-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
 .lang-toggle button { background: none; border: none; color: var(--c-dim); cursor: pointer; padding: 4px 2px; transition: color var(--dur) var(--ease); }

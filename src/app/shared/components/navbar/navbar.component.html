@@ -7,10 +7,27 @@
     </a>
 
     <nav class="nav-links" [attr.aria-label]="'A11Y.MAIN_NAV' | translate">
-      <a *ngFor="let l of links" [href]="'#' + l.id" class="nav-link"
-         [class.active]="activeId() === l.id"
-         [attr.aria-current]="activeId() === l.id ? 'true' : null"
-         (click)="$event.preventDefault(); go(l.id)">{{ l.key | translate }}</a>
+      @for (l of links; track l.id) {
+        @if (l.id === 'servicios') {
+          <div class="nav-item has-dropdown">
+            <a [href]="'#' + l.id" class="nav-link" [class.active]="activeId() === l.id"
+               (click)="$event.preventDefault(); go(l.id)">
+              {{ l.key | translate }}
+              <svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </a>
+            <div class="dropdown" role="menu" [attr.aria-label]="l.key | translate">
+              <a class="dd-item" role="menuitem" href="/ai-chatbot" (click)="$event.preventDefault(); goRoute('/ai-chatbot')">
+                <span class="dd-title">{{ 'NAV.AICHATBOT' | translate }}</span>
+                <span class="dd-sub">{{ 'NAV.AICHATBOT_SUB' | translate }}</span>
+              </a>
+            </div>
+          </div>
+        } @else {
+          <a [href]="'#' + l.id" class="nav-link" [class.active]="activeId() === l.id"
+             [attr.aria-current]="activeId() === l.id ? 'true' : null"
+             (click)="$event.preventDefault(); go(l.id)">{{ l.key | translate }}</a>
+        }
+      }
     </nav>
 
     <div class="nav-actions">
@@ -33,5 +50,8 @@
      [attr.aria-label]="'A11Y.MAIN_NAV' | translate">
   <a *ngFor="let l of links; let i = index" [href]="'#' + l.id" (click)="$event.preventDefault(); go(l.id)">
     <em>0{{ i + 1 }}</em>{{ l.key | translate }}
+  </a>
+  <a href="/ai-chatbot" (click)="$event.preventDefault(); goRoute('/ai-chatbot')">
+    <em>0{{ links.length + 1 }}</em>{{ 'NAV.AICHATBOT' | translate }}
   </a>
 </div>

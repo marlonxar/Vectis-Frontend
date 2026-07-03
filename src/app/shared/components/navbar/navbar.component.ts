@@ -34,7 +34,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   readonly links: NavLink[] = [
     { id: 'inicio', key: 'NAV.HOME' },
-    { id: 'servicios', key: 'NAV.SERVICES' },
+    { id: 'servicios', key: 'NAV.SERVICES_PRODUCTS' },
     { id: 'works', key: 'NAV.PORTFOLIO' },
     { id: 'nosotros', key: 'NAV.ABOUT' },
     { id: 'contacto', key: 'NAV.CONTACT' },
@@ -55,7 +55,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void { this.lockScroll(false); }
 
-  private updateSolid(url: string): void { this.forceSolid.set(/privac|term/i.test(url)); }
+  private updateSolid(url: string): void { this.forceSolid.set(/privac|term|refound|refund|reembolso/i.test(url)); }
 
   private lockScroll(lock: boolean): void {
     if (!this.scroll.isBrowser) return;
@@ -72,6 +72,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /** Scroll-spy: mark the section currently under the probe line as active. */
   private updateActive(): void {
     if (!this.scroll.isBrowser) return;
+    // En el producto AI ChatBot, resaltar "Servicios & Productos".
+    if (/ai-chatbot/.test(this.router.url)) { this.activeId.set('servicios'); return; }
     const probe = window.innerHeight * 0.35;
     let current = this.links[0].id;
     for (const l of this.links) {
@@ -85,6 +87,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.menuOpen.set(false);
     this.lockScroll(false);
     this.scroll.scrollToId(id);
+  }
+
+  /** Navega a una ruta (ej. el producto AI ChatBot) y sube al inicio de la página. */
+  goRoute(path: string): void {
+    this.menuOpen.set(false);
+    this.lockScroll(false);
+    this.router.navigateByUrl(path).then(() => this.scroll.scrollToTop());
   }
 
   toggleMenu(): void {

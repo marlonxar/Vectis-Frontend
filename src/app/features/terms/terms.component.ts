@@ -18,7 +18,7 @@ export class TermsComponent implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly scroll = inject(ScrollService);
 
-  readonly sections = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9'];
+  readonly sections = ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8', 'S9', 'S10', 'S11', 'S12', 'S13', 'S14', 'S15', 'S16', 'S17'];
 
   ngOnInit(): void {
     this.translate.get(['TERMS.META_TITLE', 'TERMS.META_DESC']).subscribe((t: Record<string, string>) => {

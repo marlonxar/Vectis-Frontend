@@ -18,6 +18,7 @@ export class FooterComponent {
 
   privacyPath(): string { return this.translate.currentLang === 'en' ? '/privacy' : '/privacidad'; }
   termsPath(): string { return this.translate.currentLang === 'en' ? '/terms' : '/terminos'; }
+  refoundsPath(): string { return this.translate.currentLang === 'en' ? '/refunds' : '/reembolsos'; }
   readonly year = new Date().getFullYear();
   readonly email = signal('');
   hp = ''; // honeypot — must stay empty
