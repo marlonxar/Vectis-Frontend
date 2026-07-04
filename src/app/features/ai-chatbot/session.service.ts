@@ -45,8 +45,10 @@ export interface ChatbotConfig {
   language: string;
   privacyUrl: string;
   privacyText: string;
-  // Handoff a humano (Telegram)
+  // Handoff a humano (Telegram — bot propio del negocio)
   handoffEnabled: boolean;
+  telegramBotToken: string;
+  telegramBotUsername: string;
   telegramChatId: string;   // solo lectura (lo llena el worker al vincular)
 }
 
@@ -97,6 +99,8 @@ export function rowToConfig(r: Record<string, any>): ChatbotConfig {
     privacyUrl: r['privacy_url'] ?? '',
     privacyText: r['privacy_text'] ?? '',
     handoffEnabled: !!r['handoff_enabled'],
+    telegramBotToken: r['telegram_bot_token'] ?? '',
+    telegramBotUsername: r['telegram_bot_username'] ?? '',
     telegramChatId: r['telegram_chat_id'] ?? '',
   };
 }
@@ -136,7 +140,8 @@ export function configToDb(c: ChatbotConfig): Record<string, unknown> {
     language: c.language,
     privacy_url: c.privacyUrl,
     privacy_text: c.privacyText,
-    handoff_enabled: c.handoffEnabled,
+    // Nota: los campos de handoff (handoff_enabled, telegram_*) NO se guardan aquí;
+    // se gestionan en la página "Handoff a humano" para no pisarlos al guardar el configure.
   };
 }
 
@@ -286,7 +291,7 @@ export class ChatbotSessionService {
       inventoryUrl: '', kbText: '', kbFileName: '', kbFileUrl: '', inventoryText: '', inventoryFileName: '', inventoryFileUrl: '',
       faqs: [], widgetTitle: '', widgetPosition: 'right', brandColor: '', secondBrandColor: '', brandLogoUrl: '', welcome: '',
       quickReplies: [], origins: [], extraRules: '', language: 'auto', privacyUrl: '', privacyText: '',
-      handoffEnabled: false, telegramChatId: '',
+      handoffEnabled: false, telegramBotToken: '', telegramBotUsername: '', telegramChatId: '',
     };
   }
 

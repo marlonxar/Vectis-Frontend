@@ -27,6 +27,13 @@ import { ChatbotSessionService } from './session.service';
       </a>
 
       @if (s.companies().length > 0) {
+        <a class="nav" routerLink="/ai-chatbot/handoff" routerLinkActive="active">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg>
+          {{ 'AICHATBOT.HANDOFF.NAV' | translate }}
+        </a>
+      }
+
+      @if (s.companies().length > 0) {
         <a class="nav support" routerLink="/ai-chatbot/support" routerLinkActive="active">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><path d="m4.9 4.9 4.2 4.2M14.9 14.9l4.2 4.2M14.9 9.1l4.2-4.2M9.1 14.9l-4.2 4.2"/></svg>
           {{ 'AICHATBOT.SUPPORT.NAV' | translate }}
