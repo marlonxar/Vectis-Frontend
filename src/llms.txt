@@ -2,12 +2,16 @@
 
 > Software a medida, automatización con IA y agentes inteligentes que eliminan el trabajo repetitivo. Desde San José, Costa Rica, para clientes en todo el mundo. Filosofía: diagnóstico antes que prescripción.
 
+Vectis Automation Group es una empresa de tecnología con sede en San José, Costa Rica, que construye software a medida, automatizaciones e inteligencia artificial. Atiende clientes de forma remota en todo el mundo, en español e inglés. Contacto: contact@wearevectis.com · +506 7020 1149.
+
 ## Páginas
 
 - [Inicio (ES)](https://wearevectis.com/): Servicios, capacidades, portafolio y contacto de Vectis.
 - [Home (EN)](https://wearevectis.com/en): English version of the Vectis site.
-- [Política de privacidad](https://wearevectis.com/privacidad): Cómo recopilamos y usamos los datos.
-- [Términos y condiciones](https://wearevectis.com/terminos): Términos de uso del sitio y los servicios.
+- [AI ChatBot (producto)](https://wearevectis.com/ai-chatbot): Chatbot con IA self-serve para negocios; incluye guía de funcionamiento, características y precios.
+- [Política de privacidad](https://wearevectis.com/privacidad) · [Privacy (EN)](https://wearevectis.com/privacy): Cómo recopilamos y usamos los datos.
+- [Términos y condiciones](https://wearevectis.com/terminos) · [Terms (EN)](https://wearevectis.com/terms): Términos de uso del sitio y los servicios.
+- [Política de reembolsos](https://wearevectis.com/reembolsos) · [Refunds (EN)](https://wearevectis.com/refunds): Condiciones de reembolso de la suscripción.
 
 ## Servicios
 
@@ -18,9 +22,28 @@
 - [Integraciones & APIs](https://wearevectis.com/#servicios): Conectamos tus sistemas, plataformas y servicios de terceros.
 - [Data & Analytics](https://wearevectis.com/#servicios): Tus datos convertidos en dashboards y métricas accionables.
 
+## Producto: Vectis AI ChatBot
+
+Chatbot con IA self-serve para negocios. El dueño lo configura desde un panel sin código y lo instala en su web con una línea de código.
+
+- Funciona self-serve: crear cuenta, alimentar el negocio (horario, contacto, FAQs, documentos, inventario, sitio web), personalizar el diseño, probar en vivo y publicar.
+- Puede manejar: documentos y base de conocimiento (PDF, Google Doc), inventario en vivo (CSV, Google Sheets, Excel), estudio del sitio web, agenda con Cal.com, preguntas frecuentes, captura de leads, métricas e insights, y multi-idioma (español/inglés).
+- Responde solo con la información del negocio; no inventa datos.
+- Confidencialidad: datos aislados por negocio, conexiones cifradas (HTTPS), no se usa para entrenar IA de terceros; el dueño controla y puede borrar sus datos.
+- Planes: Básico, Pro y Business, con suscripción mensual, sin permanencia y cancelación cuando se quiera. Detalles y precios en https://wearevectis.com/ai-chatbot
+
+## Preguntas frecuentes
+
+- ¿Trabajan con clientes fuera de Costa Rica? Sí, en todo el mundo y de forma remota.
+- ¿En qué tecnologías se especializan? Angular, React, Next.js y Node; Python y LLMs (OpenAI, Claude) para IA; nube como AWS.
+- ¿Cuánto tarda un proyecto? Un MVP puede estar listo en 4–8 semanas; proyectos grandes por fases.
+- ¿Ofrecen soporte y mantenimiento? Sí, soporte continuo, monitoreo y mantenimiento evolutivo.
+- ¿El AI ChatBot necesita programación? No, se configura sin código y se instala con una línea.
+
 ## Contacto
 
 - [Sección de contacto](https://wearevectis.com/#contacto): Agenda una llamada o envíanos un mensaje.
 - Email: contact@wearevectis.com
 - WhatsApp / Tel: +506 7020 1149
 - Ubicación: San José, Costa Rica (clientes en todo el mundo)
+- Idiomas: español, inglés

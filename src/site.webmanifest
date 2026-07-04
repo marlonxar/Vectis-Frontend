@@ -2,9 +2,13 @@
   "name": "Vectis Automation Group",
   "short_name": "Vectis",
   "description": "Software a medida, automatización con IA y agentes inteligentes. San José, Costa Rica.",
+  "lang": "es",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "technology"],
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#0A0A0A",
   "theme_color": "#0A0A0A",
   "icons": [

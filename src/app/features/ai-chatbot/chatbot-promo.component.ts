@@ -71,6 +71,39 @@ import { TranslateModule } from '@ngx-translate/core';
           <p>{{ 'AICHATBOT.PROMO.CAP4_D' | translate }}</p>
         </div>
       </div>
+
+      <!-- Self-serve en 3 pasos -->
+      <div class="container steps-wrap">
+        <div class="steps-head">
+          <span class="eyebrow on-dark">{{ 'AICHATBOT.PROMO.STEPS_EYEBROW' | translate }}</span>
+          <h3 class="steps-title">{{ 'AICHATBOT.PROMO.STEPS_TITLE' | translate }}</h3>
+          <p class="lead on-dark">{{ 'AICHATBOT.PROMO.STEPS_SUB' | translate }}</p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <span class="step-n">1</span>
+            <h4>{{ 'AICHATBOT.PROMO.STEP1_T' | translate }}</h4>
+            <p>{{ 'AICHATBOT.PROMO.STEP1_D' | translate }}</p>
+          </div>
+          <div class="step">
+            <span class="step-n">2</span>
+            <h4>{{ 'AICHATBOT.PROMO.STEP2_T' | translate }}</h4>
+            <p>{{ 'AICHATBOT.PROMO.STEP2_D' | translate }}</p>
+          </div>
+          <div class="step">
+            <span class="step-n">3</span>
+            <h4>{{ 'AICHATBOT.PROMO.STEP3_T' | translate }}</h4>
+            <p>{{ 'AICHATBOT.PROMO.STEP3_D' | translate }}</p>
+            <code class="snippet">&lt;script src="…/widget.js" data-client-id="…" defer&gt;&lt;/script&gt;</code>
+          </div>
+        </div>
+        <div class="steps-cta">
+          <a class="cta" routerLink="/ai-chatbot">{{ 'AICHATBOT.PROMO.CTA' | translate }}
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <span class="steps-note on-dark">{{ 'AICHATBOT.PROMO.STEPS_NOTE' | translate }}</span>
+        </div>
+      </div>
     </section>
   `,
   styles: [`
@@ -84,15 +117,22 @@ import { TranslateModule } from '@ngx-translate/core';
     .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold-bright); box-shadow: 0 0 10px var(--gold-bright); flex-shrink: 0; }
     .note { margin-top: 18px; font-size: 13.5px; color: var(--text-inv-2); opacity: .85; }
 
-    .caps { position: relative; z-index: 1; margin-top: clamp(48px, 6vw, 76px); display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-    .cap { background: rgba(255,255,255,.03); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: 24px 22px; transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease); }
-    .cap:hover { transform: translateY(-3px); border-color: rgba(231,171,46,.4); }
-    .cap-ic { display: inline-grid; place-items: center; width: 46px; height: 46px; border-radius: 13px; color: var(--gold-bright);
-      background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.25); margin-bottom: 14px; }
-    .cap h3 { font-size: 16px; margin-bottom: 7px; color: var(--text-inv); }
-    .cap p { font-size: 13.8px; line-height: 1.55; color: var(--text-inv-2); }
-    @media (max-width: 920px) { .caps { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 540px) { .caps { grid-template-columns: 1fr; } }
+    /* Capacidades — fila editorial con divisores (sin cajas) */
+    .caps { position: relative; z-index: 1; margin-top: clamp(48px, 6vw, 80px); display: grid; grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--line-light); }
+    .cap { padding: 30px 28px 0; border-left: 1px solid var(--line-light); }
+    .cap:first-child { border-left: none; padding-left: 0; }
+    .cap-ic { display: inline-grid; place-items: center; width: 42px; height: 42px; color: var(--gold-bright); margin-bottom: 15px; }
+    .cap-ic svg { width: 30px; height: 30px; }
+    .cap h3 { font-size: 17.5px; margin-bottom: 8px; color: var(--text-inv); }
+    .cap p { font-size: 14px; line-height: 1.6; color: var(--text-inv-2); }
+    @media (max-width: 920px) { .caps { grid-template-columns: 1fr 1fr; }
+      .cap { border-left: 1px solid var(--line-light); border-top: 1px solid var(--line-light); padding: 26px 24px 0; }
+      .cap:nth-child(odd) { border-left: none; padding-left: 0; }
+      .cap:nth-child(-n+2) { border-top: none; } }
+    @media (max-width: 540px) { .caps { grid-template-columns: 1fr; }
+      .cap { border-left: none; border-top: 1px solid var(--line-light); padding: 24px 0 0; }
+      .cap:first-child { border-top: none; } }
     .cta { display: inline-flex; align-items: center; gap: 10px; min-height: 54px; padding: 0 30px; border-radius: var(--radius-pill);
       font-weight: 700; color: var(--ink); background: linear-gradient(135deg, var(--gold-soft), var(--gold-bright));
       box-shadow: 0 12px 34px rgba(231,171,46,.3); transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease); }
@@ -111,6 +151,21 @@ import { TranslateModule } from '@ngx-translate/core';
     .inp { padding: 12px 16px; border-top: 1px solid var(--line-light); color: rgba(255,255,255,.4); font-size: 13px; }
 
     @media (max-width: 920px) { .inner { grid-template-columns: 1fr; gap: 38px; } .mock { order: -1; } }
+
+    .steps-wrap { position: relative; z-index: 1; margin-top: clamp(52px, 7vw, 90px); }
+    .steps-head { text-align: center; max-width: 640px; margin: 0 auto 34px; }
+    .steps-title { font-size: clamp(22px, 3vw, 30px); margin: 8px 0 10px; color: var(--text-inv); }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .step { position: relative; background: rgba(255,255,255,.03); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: 26px 22px; }
+    .step-n { display: inline-grid; place-items: center; width: 38px; height: 38px; border-radius: 50%; font-weight: 800; color: var(--ink);
+      background: linear-gradient(135deg, var(--gold-soft), var(--gold-bright)); box-shadow: 0 8px 22px rgba(231,171,46,.3); margin-bottom: 14px; }
+    .step h4 { font-size: 16.5px; color: var(--text-inv); margin-bottom: 7px; }
+    .step p { font-size: 14px; line-height: 1.55; color: var(--text-inv-2); }
+    .snippet { display: block; margin-top: 12px; font-size: 10.5px; color: var(--gold-bright); background: rgba(0,0,0,.35);
+      border: 1px solid var(--line-light); border-radius: 8px; padding: 8px 10px; overflow-x: auto; white-space: nowrap; }
+    .steps-cta { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 30px; }
+    .steps-note { font-size: 13.5px; color: var(--text-inv-2); }
+    @media (max-width: 820px) { .steps { grid-template-columns: 1fr; } }
   `],
 })
 export class ChatbotPromoComponent {}

@@ -9,7 +9,7 @@
     <nav class="nav-links" [attr.aria-label]="'A11Y.MAIN_NAV' | translate">
       @for (l of links; track l.id) {
         @if (l.id === 'servicios') {
-          <div class="nav-item has-dropdown">
+          <div class="nav-item has-dropdown" (mouseleave)="closeDropdown()">
             <a [href]="'#' + l.id" class="nav-link" [class.active]="activeId() === l.id"
                (click)="$event.preventDefault(); go(l.id)">
               {{ l.key | translate }}

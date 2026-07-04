@@ -158,38 +158,112 @@ interface Plan {
     <!-- Banda de capacidades -->
     <section class="band" [attr.aria-label]="'AICHATBOT.HERO.BAND_TITLE' | translate">
       <div class="container">
-        <div class="band-head">
+        <div class="band-head center">
           <span class="eyebrow on-dark">{{ 'AICHATBOT.HERO.BAND_EYEBROW' | translate }}</span>
           <h2 class="band-title">{{ 'AICHATBOT.HERO.BAND_TITLE' | translate }}</h2>
           <p class="lead on-dark">{{ 'AICHATBOT.HERO.BAND_SUB' | translate }}</p>
         </div>
-        <div class="cards">
-          <div class="card">
-            <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 3 5-6"/></svg></span>
-            <h3>{{ 'AICHATBOT.HERO.C1_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C1_D' | translate }}</p>
+        <div class="cap-list">
+          <div class="cap">
+            <span class="cap-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 3 5-6"/></svg></span>
+            <div><h3>{{ 'AICHATBOT.HERO.C1_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C1_D' | translate }}</p></div>
           </div>
-          <div class="card">
-            <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></span>
-            <h3>{{ 'AICHATBOT.HERO.C2_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C2_D' | translate }}</p>
+          <div class="cap">
+            <span class="cap-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/></svg></span>
+            <div><h3>{{ 'AICHATBOT.HERO.C2_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C2_D' | translate }}</p></div>
           </div>
-          <div class="card">
-            <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
-            <h3>{{ 'AICHATBOT.HERO.C3_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C3_D' | translate }}</p>
+          <div class="cap">
+            <span class="cap-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+            <div><h3>{{ 'AICHATBOT.HERO.C3_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C3_D' | translate }}</p></div>
           </div>
-          <div class="card">
-            <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
-            <h3>{{ 'AICHATBOT.HERO.C4_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C4_D' | translate }}</p>
+          <div class="cap">
+            <span class="cap-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+            <div><h3>{{ 'AICHATBOT.HERO.C4_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C4_D' | translate }}</p></div>
           </div>
-          <div class="card">
-            <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
-            <h3>{{ 'AICHATBOT.HERO.C5_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C5_D' | translate }}</p>
+          <div class="cap">
+            <span class="cap-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+            <div><h3>{{ 'AICHATBOT.HERO.C5_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C5_D' | translate }}</p></div>
           </div>
-          <div class="card">
-            <span class="ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></span>
-            <h3>{{ 'AICHATBOT.HERO.C6_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C6_D' | translate }}</p>
+          <div class="cap">
+            <span class="cap-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></span>
+            <div><h3>{{ 'AICHATBOT.HERO.C6_T' | translate }}</h3><p>{{ 'AICHATBOT.HERO.C6_D' | translate }}</p></div>
           </div>
         </div>
+      </div>
+    </section>
 
+    <!-- Cómo funciona (self-serve) -->
+    <section class="how" [attr.aria-label]="'AICHATBOT.GUIDE.HOW_TITLE' | translate">
+      <div class="container">
+        <div class="how-grid">
+          <!-- Columna izquierda: explicación self-serve + cómo piensa -->
+          <div class="how-intro">
+            <span class="eyebrow on-dark">{{ 'AICHATBOT.GUIDE.HOW_EYEBROW' | translate }}</span>
+            <h2 class="band-title">{{ 'AICHATBOT.GUIDE.HOW_TITLE' | translate }}</h2>
+            <p class="lead on-dark">{{ 'AICHATBOT.GUIDE.HOW_SUB' | translate }}</p>
+            <div class="how-chips">
+              <span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ 'AICHATBOT.GUIDE.HOW_CHIP1' | translate }}</span>
+              <span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ 'AICHATBOT.GUIDE.HOW_CHIP2' | translate }}</span>
+              <span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>{{ 'AICHATBOT.GUIDE.HOW_CHIP3' | translate }}</span>
+            </div>
+
+            <div class="think">
+              <p class="think-title">{{ 'AICHATBOT.GUIDE.THINK_TITLE' | translate }}</p>
+              <div class="think-row">
+                <span class="tico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v14"/><path d="m6 11 6 6 6-6"/><path d="M5 21h14"/></svg></span>
+                <div><h4>{{ 'AICHATBOT.GUIDE.TH1_T' | translate }}</h4><p>{{ 'AICHATBOT.GUIDE.TH1_D' | translate }}</p></div>
+              </div>
+              <div class="think-row">
+                <span class="tico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+                <div><h4>{{ 'AICHATBOT.GUIDE.TH2_T' | translate }}</h4><p>{{ 'AICHATBOT.GUIDE.TH2_D' | translate }}</p></div>
+              </div>
+              <div class="think-row">
+                <span class="tico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></span>
+                <div><h4>{{ 'AICHATBOT.GUIDE.TH3_T' | translate }}</h4><p>{{ 'AICHATBOT.GUIDE.TH3_D' | translate }}</p></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna derecha: timeline de pasos self-serve -->
+          <ol class="flow">
+            <li class="fstep">
+              <span class="fnode"><span class="fnum">1</span></span>
+              <div class="fbody">
+                <div class="fhead"><span class="fico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.S1_T' | translate }}</h3></div>
+                <p>{{ 'AICHATBOT.GUIDE.S1_D' | translate }}</p>
+              </div>
+            </li>
+            <li class="fstep">
+              <span class="fnode"><span class="fnum">2</span></span>
+              <div class="fbody">
+                <div class="fhead"><span class="fico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.S2_T' | translate }}</h3></div>
+                <p>{{ 'AICHATBOT.GUIDE.S2_D' | translate }}</p>
+              </div>
+            </li>
+            <li class="fstep">
+              <span class="fnode"><span class="fnum">3</span></span>
+              <div class="fbody">
+                <div class="fhead"><span class="fico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.S3_T' | translate }}</h3></div>
+                <p>{{ 'AICHATBOT.GUIDE.S3_D' | translate }}</p>
+              </div>
+            </li>
+            <li class="fstep">
+              <span class="fnode"><span class="fnum">4</span></span>
+              <div class="fbody">
+                <div class="fhead"><span class="fico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.S4_T' | translate }}</h3></div>
+                <p>{{ 'AICHATBOT.GUIDE.S4_D' | translate }}</p>
+              </div>
+            </li>
+            <li class="fstep">
+              <span class="fnode"><span class="fnum">5</span></span>
+              <div class="fbody">
+                <div class="fhead"><span class="fico"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.S5_T' | translate }}</h3></div>
+                <p>{{ 'AICHATBOT.GUIDE.S5_D' | translate }}</p>
+                <code class="snippet2">&lt;script src="…/widget.js" data-client-id="…"&gt;&lt;/script&gt;</code>
+              </div>
+            </li>
+          </ol>
+        </div>
       </div>
     </section>
 
@@ -227,6 +301,64 @@ interface Plan {
           <span aria-hidden="true"> · </span>
           <a routerLink="/privacy">{{ 'AICHATBOT.PRICING.PRIVACY_LINK' | translate }}</a>
         </p>
+      </div>
+    </section>
+
+    <!-- Qué puede manejar (features) -->
+    <section class="feats2" [attr.aria-label]="'AICHATBOT.GUIDE.FEAT_TITLE' | translate">
+      <div class="container">
+        <div class="band-head">
+          <span class="eyebrow on-dark">{{ 'AICHATBOT.GUIDE.FEAT_EYEBROW' | translate }}</span>
+          <h2 class="band-title">{{ 'AICHATBOT.GUIDE.FEAT_TITLE' | translate }}</h2>
+          <p class="lead on-dark">{{ 'AICHATBOT.GUIDE.FEAT_SUB' | translate }}</p>
+        </div>
+        <div class="fgrid">
+          <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F1_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F1_D' | translate }}</p></div>
+          <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F2_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F2_D' | translate }}</p></div>
+          <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F3_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F3_D' | translate }}</p></div>
+          <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F4_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F4_D' | translate }}</p></div>
+          <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F5_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F5_D' | translate }}</p></div>
+          <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".8" fill="currentColor" stroke="none"/><circle cx="17.5" cy="10.5" r=".8" fill="currentColor" stroke="none"/><circle cx="8.5" cy="7.5" r=".8" fill="currentColor" stroke="none"/><circle cx="6.5" cy="12.5" r=".8" fill="currentColor" stroke="none"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.6-.7 1.6-1.6 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1a1.6 1.6 0 0 1 1.6-1.6h1.9c3 0 5.6-2.5 5.6-5.6C21.9 6 17.5 2 12 2z"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F6_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F6_D' | translate }}</p></div>
+          <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F7_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F7_D' | translate }}</p></div>
+          <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/><line x1="3" y1="20" x2="21" y2="20"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F8_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F8_D' | translate }}</p></div>
+          <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F9_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F9_D' | translate }}</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Confidencialidad y seguridad -->
+    <section class="trust" [attr.aria-label]="'AICHATBOT.GUIDE.TRUST_TITLE' | translate">
+      <div class="container">
+        <div class="band-head">
+          <span class="eyebrow on-dark">{{ 'AICHATBOT.GUIDE.TRUST_EYEBROW' | translate }}</span>
+          <h2 class="band-title">{{ 'AICHATBOT.GUIDE.TRUST_TITLE' | translate }}</h2>
+          <p class="lead on-dark">{{ 'AICHATBOT.GUIDE.TRUST_SUB' | translate }}</p>
+        </div>
+        <div class="tpanel">
+          <div class="titem"><span class="tico3"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.T1_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.T1_D' | translate }}</p></div>
+          <div class="titem"><span class="tico3"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.T2_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.T2_D' | translate }}</p></div>
+          <div class="titem"><span class="tico3"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.4 10.4 0 0 1 12 5c7 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.5 13.5 0 0 0 2 12s3 7 10 7a9.7 9.7 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.T3_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.T3_D' | translate }}</p></div>
+          <div class="titem"><span class="tico3"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.T4_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.T4_D' | translate }}</p></div>
+        </div>
+        <p class="tnote">{{ 'AICHATBOT.GUIDE.TRUST_NOTE' | translate }} <a routerLink="/privacy">{{ 'AICHATBOT.PRICING.PRIVACY_LINK' | translate }}</a></p>
+      </div>
+    </section>
+
+    <!-- Preguntas frecuentes -->
+    <section class="faqs" [attr.aria-label]="'AICHATBOT.GUIDE.FAQ_TITLE' | translate">
+      <div class="container">
+        <div class="band-head">
+          <span class="eyebrow on-dark">{{ 'AICHATBOT.GUIDE.FAQ_EYEBROW' | translate }}</span>
+          <h2 class="band-title">{{ 'AICHATBOT.GUIDE.FAQ_TITLE' | translate }}</h2>
+        </div>
+        <div class="faq-list">
+          @for (i of [1,2,3,4,5,6,7,8]; track i) {
+            <details class="faq-item">
+              <summary>{{ ('AICHATBOT.GUIDE.Q' + i) | translate }}</summary>
+              <p>{{ ('AICHATBOT.GUIDE.A' + i) | translate }}</p>
+            </details>
+          }
+        </div>
       </div>
     </section>
     } @else {
@@ -294,15 +426,102 @@ interface Plan {
     /* Banda de capacidades */
     .band { background: var(--ink); color: var(--text-inv); padding: clamp(56px, 8vw, 100px) 0; border-top: 1px solid var(--line-light); }
     .band-head { max-width: 640px; }
+    .band-head.center { max-width: 680px; margin: 0 auto; text-align: center; }
     .band-title { font-size: clamp(28px, 3.6vw, 44px); margin-top: 12px; }
     .band-head .lead { margin-top: 16px; }
-    .cards { margin-top: clamp(36px, 5vw, 56px); display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    .card { background: rgba(255,255,255,.03); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: 26px 24px; transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease); }
-    .card:hover { transform: translateY(-3px); border-color: rgba(231,171,46,.4); }
-    .ic { display: inline-grid; place-items: center; width: 48px; height: 48px; border-radius: 13px; color: var(--gold-bright);
-      background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.25); margin-bottom: 16px; }
-    .card h3 { font-size: 17px; margin-bottom: 8px; }
-    .card p { font-size: 14px; line-height: 1.6; color: var(--text-inv-2); }
+    .band-head.center .lead { margin-left: auto; margin-right: auto; }
+    /* Lista editorial de capacidades (sin cajas) */
+    .cap-list { margin-top: clamp(38px, 5vw, 60px); display: grid; grid-template-columns: 1fr 1fr; column-gap: clamp(40px, 6vw, 88px); }
+    .cap { display: grid; grid-template-columns: 40px 1fr; gap: 18px; align-items: start; padding: 26px 0; border-top: 1px solid var(--line-light); }
+    .cap-ic { color: var(--gold-bright); display: grid; place-items: center; width: 40px; height: 40px; }
+    .cap h3 { font-size: 18px; margin-bottom: 6px; }
+    .cap p { font-size: 14.5px; line-height: 1.6; color: var(--text-inv-2); }
+    @media (max-width: 760px) { .cap-list { grid-template-columns: 1fr; column-gap: 0; } .cap { padding: 22px 0; } }
+
+    /* Cómo funciona */
+    .how { position: relative; background: var(--ink); color: var(--text-inv); padding: clamp(56px, 8vw, 100px) 0; border-top: 1px solid var(--line-light); }
+    .how::before { content: ""; position: absolute; top: -80px; left: -140px; width: 520px; height: 520px; pointer-events: none;
+      background: radial-gradient(closest-side, rgba(231,171,46,.14), transparent 70%); filter: blur(4px); }
+    .how-grid { position: relative; display: grid; grid-template-columns: .92fr 1.08fr; gap: clamp(36px, 5vw, 72px); align-items: start; }
+    .how-intro { position: sticky; top: calc(var(--nav-h) + 28px); }
+    .how-intro .band-title { margin-top: 12px; }
+    .how-intro .lead { margin-top: 16px; max-width: 42ch; }
+    .how-chips { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; }
+    .how-chips span { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600; color: var(--gold-bright);
+      padding: 7px 13px 7px 11px; border-radius: var(--radius-pill); background: rgba(231,171,46,.1); border: 1px solid rgba(231,171,46,.25); }
+    .how-chips svg { color: var(--gold-bright); }
+
+    /* Cómo piensa el bot */
+    .think { margin-top: 30px; padding: 22px; border-radius: var(--radius-lg); background: rgba(255,255,255,.03); border: 1px solid var(--line-light); }
+    .think-title { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-inv-2); margin-bottom: 14px; }
+    .think-row { display: grid; grid-template-columns: 40px 1fr; gap: 13px; align-items: start; }
+    .think-row + .think-row { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line-light); }
+    .think-row .tico { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 11px; color: var(--gold-bright);
+      background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.25); }
+    .think-row h4 { font-size: 14.5px; margin-bottom: 3px; }
+    .think-row p { font-size: 13px; line-height: 1.5; color: var(--text-inv-2); }
+
+    /* Timeline de pasos */
+    .flow { position: relative; list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+    .fstep { position: relative; display: grid; grid-template-columns: 56px 1fr; gap: 20px; padding-bottom: 22px; }
+    .fstep:last-child { padding-bottom: 0; }
+    .fnode { position: relative; width: 56px; height: 56px; }
+    .fnum { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%; font-weight: 800; font-size: 20px; color: var(--ink);
+      background: linear-gradient(135deg, var(--gold-soft), var(--gold-bright)); box-shadow: 0 10px 26px rgba(231,171,46,.32); z-index: 1; }
+    .fstep:not(:last-child) .fnode::after { content: ""; position: absolute; top: 56px; left: 27px; bottom: -22px; width: 2px;
+      background: linear-gradient(rgba(231,171,46,.6), rgba(231,171,46,.08)); }
+    .fbody { background: rgba(255,255,255,.03); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: 18px 22px;
+      transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+    .fbody:hover { transform: translateY(-2px); border-color: rgba(231,171,46,.4); }
+    .fhead { display: flex; align-items: center; gap: 11px; margin-bottom: 7px; }
+    .fhead .fico { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; color: var(--gold-bright);
+      background: rgba(231,171,46,.1); border: 1px solid rgba(231,171,46,.22); }
+    .fhead h3 { font-size: 16.5px; }
+    .fbody p { font-size: 14px; line-height: 1.6; color: var(--text-inv-2); }
+    .snippet2 { display: block; margin-top: 12px; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 12px; color: var(--gold-soft);
+      background: rgba(0,0,0,.35); border: 1px solid var(--line-light); border-radius: 10px; padding: 9px 12px; overflow-x: auto; white-space: nowrap; }
+    @media (max-width: 900px) { .how-grid { grid-template-columns: 1fr; } .how-intro { position: static; } }
+
+    /* Qué puede manejar — lista de iconos sin cajas */
+    .feats2 { background: var(--ink); color: var(--text-inv); padding: clamp(52px, 7vw, 90px) 0; border-top: 1px solid var(--line-light); }
+    .fgrid { margin-top: clamp(34px, 5vw, 54px); display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 3.5vw, 44px) clamp(32px, 4vw, 56px); }
+    .fcard { display: grid; grid-template-columns: 42px 1fr; column-gap: 15px; align-items: start; }
+    .fico2 { display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; color: var(--gold-bright);
+      background: rgba(231,171,46,.1); border: 1px solid rgba(231,171,46,.22); }
+    .fcard h3 { font-size: 16px; margin-bottom: 5px; padding-top: 8px; }
+    .fcard p { font-size: 13.5px; line-height: 1.55; color: var(--text-inv-2); grid-column: 1 / -1; }
+    @media (max-width: 900px) { .fgrid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 520px) { .fgrid { grid-template-columns: 1fr; } }
+
+    /* Confidencialidad y seguridad — panel único con divisores */
+    .trust { background: var(--ink); color: var(--text-inv); padding: clamp(52px, 7vw, 90px) 0; border-top: 1px solid var(--line-light); }
+    .tpanel { margin-top: clamp(32px, 5vw, 52px); display: grid; grid-template-columns: 1fr 1fr;
+      background: linear-gradient(180deg, rgba(231,171,46,.05), rgba(255,255,255,.02));
+      border: 1px solid var(--line-light); border-radius: var(--radius-lg); overflow: hidden; }
+    .titem { display: grid; grid-template-columns: 46px 1fr; grid-template-rows: auto auto; column-gap: 16px; row-gap: 4px; padding: 28px 30px; }
+    .titem:nth-child(odd) { border-right: 1px solid var(--line-light); }
+    .titem:nth-child(-n+2) { border-bottom: 1px solid var(--line-light); }
+    .tico3 { grid-row: 1 / 3; display: inline-grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; color: var(--gold-bright);
+      background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.25); }
+    .titem h3 { font-size: 16.5px; align-self: end; }
+    .titem p { font-size: 13.5px; line-height: 1.55; color: var(--text-inv-2); }
+    .tnote { margin-top: 20px; font-size: 13px; color: var(--text-inv-2); }
+    .tnote a { color: var(--gold-bright); font-weight: 600; }
+    .tnote a:hover { text-decoration: underline; }
+    @media (max-width: 720px) { .tpanel { grid-template-columns: 1fr; }
+      .titem:nth-child(odd) { border-right: none; }
+      .titem:not(:last-child) { border-bottom: 1px solid var(--line-light); } }
+
+    /* FAQ */
+    .faqs { background: var(--ink); color: var(--text-inv); padding: clamp(52px, 7vw, 90px) 0; border-top: 1px solid var(--line-light); }
+    .faq-list { margin-top: clamp(28px, 4vw, 44px); max-width: 820px; display: grid; gap: 12px; }
+    .faq-item { background: rgba(255,255,255,.03); border: 1px solid var(--line-light); border-radius: var(--radius-md); padding: 4px 18px; }
+    .faq-item summary { list-style: none; cursor: pointer; font-weight: 600; font-size: 15px; padding: 14px 24px 14px 0; position: relative; color: var(--text-inv); }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::after { content: "+"; position: absolute; right: 0; top: 12px; font-size: 20px; color: var(--gold-bright); transition: transform var(--dur) var(--ease); }
+    .faq-item[open] summary::after { content: "\\2013"; }
+    .faq-item p { font-size: 14px; line-height: 1.6; color: var(--text-inv-2); margin: 0 0 14px; }
+
     /* Precios */
     .pricing { background: var(--ink); color: var(--text-inv); padding: 0 0 clamp(64px, 9vw, 110px); }
     .pricing-head { text-align: center; max-width: 640px; margin: 0 auto clamp(36px, 5vw, 52px); }

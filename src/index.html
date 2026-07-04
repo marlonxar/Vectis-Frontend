@@ -36,6 +36,7 @@
   <meta name="twitter:image" content="https://wearevectis.com/assets/images/og-cover.jpg" />
 
   <meta name="theme-color" content="#0A0A0A" />
+  <meta name="color-scheme" content="dark light" />
   <link rel="icon" href="/favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/images/favicon-48.png" />
   <link rel="icon" type="image/png" sizes="96x96" href="/assets/images/favicon-96.png" />
@@ -135,6 +136,46 @@
   }
   </script>
   <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Vectis AI ChatBot",
+    "applicationCategory": "BusinessApplication",
+    "applicationSubCategory": "Chatbot / Customer Support",
+    "operatingSystem": "Web",
+    "url": "https://wearevectis.com/ai-chatbot",
+    "description": "Chatbot con IA self-serve para negocios: se configura sin código desde un panel y se instala en tu web con una línea de código. Maneja documentos, inventario, sitio web, agenda con Cal.com, preguntas frecuentes, captura de leads y métricas, con soporte multi-idioma.",
+    "inLanguage": ["es", "en"],
+    "featureList": [
+      "Configuración sin código (self-serve)",
+      "Base de conocimiento con documentos (PDF, Google Doc)",
+      "Inventario en vivo (CSV, Google Sheets, Excel)",
+      "Estudia tu sitio web",
+      "Agenda con Cal.com",
+      "Preguntas frecuentes",
+      "Captura de leads",
+      "Métricas e insights",
+      "Multi-idioma (español / inglés)",
+      "Datos aislados por negocio y conexiones cifradas"
+    ],
+    "offers": {
+      "@type": "AggregateOffer",
+      "priceCurrency": "USD",
+      "lowPrice": "19",
+      "highPrice": "99",
+      "offerCount": "3",
+      "availability": "https://schema.org/InStock",
+      "url": "https://wearevectis.com/ai-chatbot",
+      "offers": [
+        { "@type": "Offer", "name": "Basic", "price": "19", "priceCurrency": "USD", "url": "https://wearevectis.com/ai-chatbot" },
+        { "@type": "Offer", "name": "Pro", "price": "49", "priceCurrency": "USD", "url": "https://wearevectis.com/ai-chatbot" },
+        { "@type": "Offer", "name": "Business", "price": "99", "priceCurrency": "USD", "url": "https://wearevectis.com/ai-chatbot" }
+      ]
+    },
+    "provider": { "@id": "https://wearevectis.com/#org" }
+  }
+  </script>
+  <script type="application/ld+json">
   {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Qué servicios ofrece Vectis?", "acceptedAnswer": {"@type": "Answer", "text": "Desarrollamos software a la medida, sitios y aplicaciones web, apps móviles, automatizaciones e inteligencia artificial, además de integraciones, APIs y soluciones de datos y analítica."}}, {"@type": "Question", "name": "¿En qué tecnologías se especializan?", "acceptedAnswer": {"@type": "Answer", "text": "Trabajamos con Angular, React, Next.js y Node en el frontend y backend; Python y LLMs (OpenAI, Claude) para IA; y nube como AWS. Elegimos el stack según el objetivo de cada proyecto."}}, {"@type": "Question", "name": "¿Trabajan con clientes fuera de Costa Rica?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. Estamos basados en San José, Costa Rica, pero trabajamos con clientes en todo el mundo, de forma remota y en distintas zonas horarias."}}, {"@type": "Question", "name": "¿Cuánto tarda un proyecto?", "acceptedAnswer": {"@type": "Answer", "text": "Depende del alcance. Un MVP puede estar listo en 4–8 semanas; proyectos más grandes se entregan por fases. Te damos una estimación clara de tiempo y costo desde el inicio."}}, {"@type": "Question", "name": "¿Cómo es su proceso de trabajo?", "acceptedAnswer": {"@type": "Answer", "text": "Seguimos un ciclo de Descubrir → Diseñar → Construir → Escalar, con entregas iterativas, comunicación constante y demos frecuentes para que veas avances reales."}}, {"@type": "Question", "name": "¿Cuánto cuesta y cómo cobran?", "acceptedAnswer": {"@type": "Answer", "text": "Ofrecemos proyectos por alcance cerrado o equipos dedicados por mes (staff augmentation). Tras una llamada inicial te enviamos una propuesta con precio y cronograma."}}, {"@type": "Question", "name": "¿Ofrecen soporte y mantenimiento?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. Damos soporte continuo, monitoreo y mantenimiento evolutivo para que tu producto siga funcionando y mejorando después del lanzamiento."}}, {"@type": "Question", "name": "¿Pueden integrarse con nuestras herramientas actuales?", "acceptedAnswer": {"@type": "Answer", "text": "Claro. Construimos integraciones y pipelines con tus sistemas, CRMs, ERPs y servicios de terceros mediante APIs y webhooks."}}, {"@type": "Question", "name": "¿Trabajan con startups y también con empresas grandes?", "acceptedAnswer": {"@type": "Answer", "text": "Ambas. Acompañamos a startups desde el MVP y a empresas consolidadas en productos a escala, adaptando el equipo y el proceso a cada caso."}}, {"@type": "Question", "name": "¿Cómo empezamos a trabajar juntos?", "acceptedAnswer": {"@type": "Answer", "text": "Muy fácil: agenda una llamada o escríbenos desde la sección de Contacto. Conversamos sobre tu idea y te proponemos los siguientes pasos."}}]}
   </script>
 
@@ -144,7 +185,18 @@
   <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
 <body>
-  <app-root></app-root>
+  <app-root>
+    <!-- Preloader de marca: visible desde el primer pixel y hasta que Angular renderiza (lo reemplaza). -->
+    <div id="vpre" style="position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:radial-gradient(120% 90% at 50% 35%,#14110c 0%,#0A0A0A 60%)">
+      <div style="position:relative;width:92px;height:92px">
+        <span style="position:absolute;inset:0;border-radius:50%;border:2px solid rgba(231,171,46,.14);border-top-color:#E7AB2E;border-right-color:#F0C56A;animation:vpre-spin 1s linear infinite"></span>
+        <span style="position:absolute;inset:12px;border-radius:50%;border:2px solid transparent;border-bottom-color:rgba(231,171,46,.55);border-left-color:rgba(231,171,46,.2);animation:vpre-spin 1.5s linear infinite reverse"></span>
+        <img src="/assets/images/logo.svg" alt="" width="44" height="44" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px" />
+      </div>
+      <span style="font-family:'Outfit',system-ui,sans-serif;font-weight:800;font-size:22px;color:#fff">Vectis<i style="color:#E7AB2E;font-style:normal">.</i></span>
+    </div>
+    <style>@keyframes vpre-spin{to{transform:rotate(360deg)}}</style>
+  </app-root>
 
   <!-- Chatbot de ventas de Vectis (widget propio). Va a la derecha; el botón "subir" se movió a la izquierda para no chocar. -->
   <script src="https://wearevectis.com/assets/chatbot/widget.js"

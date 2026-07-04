@@ -101,6 +101,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.lockScroll(this.menuOpen());
   }
 
+  /** Cierra el submenú al salir el mouse: quita el foco para que :focus-within no lo mantenga abierto. */
+  closeDropdown(): void {
+    const el = document.activeElement as HTMLElement | null;
+    if (el && typeof el.blur === 'function') el.blur();
+  }
+
   setLang(lang: 'es' | 'en'): void {
     if (lang !== this.currentLang) this.langChange.emit(lang);
   }

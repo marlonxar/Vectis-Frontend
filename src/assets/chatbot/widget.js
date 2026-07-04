@@ -21,7 +21,7 @@
   if (!CLIENT_ID) { console.warn('[Vectis ChatBot] Falta data-client-id'); return; }
   if (window.__vxcLoaded) return; window.__vxcLoaded = true;
 
-  var cfg = null, history = [], open = false, sending = false, sentEnd = false;
+  var cfg = null, history = [], open = false, sending = false, sentEnd = false, csatTimer = null;
   var SKEY = 'vxc_hist_' + CLIENT_ID;
   function loadHistory() { try { return JSON.parse(sessionStorage.getItem(SKEY) || '[]') || []; } catch (e) { return []; } }
   function saveHistory() { try { sessionStorage.setItem(SKEY, JSON.stringify(history.slice(-20))); } catch (e) { /* noop */ } }
@@ -234,7 +234,27 @@
   // Encuesta de satisfacción (CSAT) — solo si el plan la habilita (cfg.csat). Una vez por sesión.
   var CKEY = 'vxc_csat_' + CLIENT_ID;
   function csatDone() { try { return sessionStorage.getItem(CKEY) === '1'; } catch (e) { return false; } }
-  function maybeCsat() {
+  function userMsgCount() { var n = 0; for (var i = 0; i < history.length; i++) { if (history[i].role === 'user') n++; } return n; }
+  /** Detecta si el cliente cerró la conversación (gracias / adiós / eso es todo…). */
+  function isClosing(t) {
+    var s = String(t || '').trim().toLowerCase();
+    if (s.length > 40 || s.indexOf('?') >= 0) return false;
+    return /(^|\b)(gracias|muchas gracias|mil gracias|listo|vale gracias|ok gracias|perfecto gracias|eso es todo|eso ser[ií]a todo|ad[ií]os|hasta luego|chao|nos vemos|ya (est[aá]|qued[oó])|thanks|thank you|thx|bye|goodbye|that'?s all|appreciate it)(\b|$)/.test(s);
+  }
+  /**
+   * Programa la encuesta para el FINAL de la conversación (con ≥2 mensajes del cliente):
+   * o por INACTIVIDAD (25 s sin actividad) o rápido si el cliente se despidió/agradeció.
+   */
+  function scheduleCsat(delay) {
+    if (!cfg || !cfg.csat || csatDone()) return;
+    if (csatTimer) { clearTimeout(csatTimer); csatTimer = null; }
+    if (userMsgCount() < 3) return;                 // espera a que haya una conversación real (varios intercambios)
+    csatTimer = setTimeout(function () {
+      csatTimer = null;
+      if (!csatDone() && !sending) showCsat();
+    }, delay || 45000);
+  }
+  function showCsat() {
     if (!cfg || !cfg.csat || csatDone()) return;
     if ($body.querySelector('.vxc-csat')) return;
     if (!history.some(function (h) { return h.role === 'user'; })) return;
@@ -272,7 +292,10 @@
   function ask(text) {
     if (sending) return; sending = true;
     sentEnd = false;                 // hay nueva actividad: permitir analizar el cierre posterior
-    var qr = $body.querySelector('.vxc-qr'); if (qr) qr.remove();   // los quick replies se ocultan al iniciar la conversación
+    var closing = isClosing(text);   // ¿el cliente se está despidiendo/agradeciendo?
+    if (csatTimer) { clearTimeout(csatTimer); csatTimer = null; }   // hay actividad: reinicia el reloj de la encuesta
+    var qr = $body.querySelector('.vxc-csat'); if (qr) qr.remove(); // si había encuesta pendiente, quítala al seguir chateando
+    qr = $body.querySelector('.vxc-qr'); if (qr) qr.remove();       // los quick replies se ocultan al iniciar la conversación
     addUser(text);
     history.push({ role: 'user', text: text }); saveHistory();
     var typing = el('div', 'vxc-typing', '<span></span><span></span><span></span>'); $body.appendChild(typing); scroll();
@@ -287,7 +310,8 @@
         history.push({ role: 'bot', text: reply });
         if (history.length > 20) history = history.slice(-20);
         saveHistory();
-        maybeCsat();
+        // Si el cliente cerró (gracias/adiós), pide opinión tras una breve pausa; si no, espera a que haya inactividad.
+        scheduleCsat(closing ? 4000 : 45000);
       })
       .catch(function () { typing.remove(); addBot('Hubo un problema de conexión. Intenta de nuevo.'); })
       .finally(function () { sending = false; });

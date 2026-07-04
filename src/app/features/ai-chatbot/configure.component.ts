@@ -506,7 +506,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   <div class="wchat">
                     <div class="wbar" [style.background]="previewBar()">
                       @if (previewLogo()) {
-                        <img class="wava" [src]="previewLogo()" alt="" />
+                        <img class="wava" [src]="previewLogo()" alt="" loading="lazy" decoding="async" />
                       } @else {
                         <span class="wava">{{ previewInitial() }}</span>
                       }

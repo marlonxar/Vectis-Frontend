@@ -2,12 +2,24 @@
 User-agent: *
 Allow: /
 
-# Search + AI answer engines are explicitly welcome (GEO / AIO)
+# Search engines
 User-agent: Googlebot
+Allow: /
+User-agent: Googlebot-Image
 Allow: /
 User-agent: Bingbot
 Allow: /
+User-agent: Applebot
+Allow: /
+User-agent: DuckDuckBot
+Allow: /
+User-agent: YandexBot
+Allow: /
+
+# AI answer & training engines are explicitly welcome (GEO / AIO)
 User-agent: Google-Extended
+Allow: /
+User-agent: Google-CloudVertexBot
 Allow: /
 User-agent: GPTBot
 Allow: /
@@ -19,13 +31,29 @@ User-agent: ClaudeBot
 Allow: /
 User-agent: Claude-Web
 Allow: /
+User-agent: Claude-User
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
 User-agent: anthropic-ai
 Allow: /
 User-agent: PerplexityBot
 Allow: /
-User-agent: Applebot
+User-agent: Perplexity-User
 Allow: /
 User-agent: Applebot-Extended
+Allow: /
+User-agent: Amazonbot
+Allow: /
+User-agent: Meta-ExternalAgent
+Allow: /
+User-agent: FacebookBot
+Allow: /
+User-agent: cohere-ai
+Allow: /
+User-agent: DuckAssistBot
+Allow: /
+User-agent: YouBot
 Allow: /
 User-agent: CCBot
 Allow: /

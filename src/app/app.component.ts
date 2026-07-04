@@ -1,6 +1,6 @@
 import { Component, OnInit, HostListener, inject, signal } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
-import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd, NavigationStart, NavigationCancel, NavigationError } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
@@ -8,6 +8,7 @@ import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
 import { BackToTopComponent } from './shared/components/back-to-top/back-to-top.component';
 import { IntroComponent } from './features/intro/intro.component';
+import { LoadingComponent } from './shared/components/loading/loading.component';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,8 @@ import { IntroComponent } from './features/intro/intro.component';
     NavbarComponent,
     FooterComponent,
     BackToTopComponent,
-    IntroComponent
+    IntroComponent,
+    LoadingComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -34,6 +36,8 @@ export class AppComponent implements OnInit {
   readonly currentLang = signal<'es' | 'en'>('es');
   readonly progress = signal(0);
   readonly showIntro = signal(false);
+  readonly loading = signal(false);
+  private navTimer: ReturnType<typeof setTimeout> | null = null;
 
   @HostListener('window:scroll')
   onScroll(): void {
@@ -50,7 +54,18 @@ export class AppComponent implements OnInit {
 
     this.useLang(this.detectLang());
     this.updateCanonical(this.router.url);
-    this.router.events.subscribe((e) => { if (e instanceof NavigationEnd) this.updateCanonical(e.urlAfterRedirects); });
+    this.router.events.subscribe((e) => {
+      if (e instanceof NavigationStart) {
+        // Debounce: solo mostramos el loader si la navegación tarda (>140ms),
+        // para no parpadear en cambios de ruta instantáneos.
+        if (this.navTimer) clearTimeout(this.navTimer);
+        this.navTimer = setTimeout(() => this.loading.set(true), 140);
+      } else if (e instanceof NavigationEnd || e instanceof NavigationCancel || e instanceof NavigationError) {
+        if (this.navTimer) { clearTimeout(this.navTimer); this.navTimer = null; }
+        this.loading.set(false);
+        if (e instanceof NavigationEnd) this.updateCanonical(e.urlAfterRedirects);
+      }
+    });
   }
 
   private updateCanonical(url: string): void {
