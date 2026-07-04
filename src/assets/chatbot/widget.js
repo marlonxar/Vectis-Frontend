@@ -451,7 +451,11 @@
         : ((r && r.reply) || (r && r.error === 'origin_not_allowed'
             ? 'Este chat no está autorizado en este dominio.'
             : 'Lo siento, no pude responder. Intenta de nuevo.'));
+      // El bot pide abrir el calendario de Cal.com: quitamos el marcador y lo abrimos.
+      var openBook = /\[\[\s*AGENDAR\s*\]\]/i.test(reply);
+      if (openBook) { reply = reply.replace(/\[\[\s*AGENDAR\s*\]\]/ig, '').trim() || '¡Claro! Te abro el calendario para que elijas el día y la hora 📅'; }
       addBot(reply);
+      if (openBook && cfg._cal) setTimeout(openCal, 500);
       history.push({ role: 'bot', text: reply });
       if (history.length > 20) history = history.slice(-20);
       saveHistory();
