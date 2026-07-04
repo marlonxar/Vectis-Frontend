@@ -379,6 +379,52 @@ interface Plan {
       </div>
     </section>
 
+    <!-- Soporte técnico -->
+    <section class="support" [attr.aria-label]="'AICHATBOT.SUPPORT.TITLE' | translate">
+      <div class="container">
+        <div class="sup-grid">
+          <div class="sup-copy">
+            <span class="eyebrow on-dark">{{ 'AICHATBOT.SUPPORT.EYEBROW' | translate }}</span>
+            <h2 class="band-title">{{ 'AICHATBOT.SUPPORT.TITLE' | translate }}</h2>
+            <p class="lead on-dark">{{ 'AICHATBOT.SUPPORT.SUB' | translate }}</p>
+            <!-- Mock de ticket -->
+            <div class="ticket" aria-hidden="true">
+              <div class="tk-top">
+                <span class="tk-id">{{ 'AICHATBOT.SUPPORT.TK_ID' | translate }}</span>
+                <span class="tk-badge">{{ 'AICHATBOT.SUPPORT.TK_STATUS' | translate }}</span>
+              </div>
+              <p class="tk-subject">{{ 'AICHATBOT.SUPPORT.TK_SUBJECT' | translate }}</p>
+              <div class="tk-reply"><span class="tk-dot"></span>{{ 'AICHATBOT.SUPPORT.TK_REPLY' | translate }}</div>
+            </div>
+            <p class="sup-note">{{ 'AICHATBOT.SUPPORT.NOTE' | translate }}</p>
+          </div>
+
+          <ul class="sup-list">
+            <li>
+              <span class="sup-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H5.17L4 17.17z"/><path d="M8 9h8M8 12h5"/></svg></span>
+              <div><h3>{{ 'AICHATBOT.SUPPORT.I1_T' | translate }}</h3><p>{{ 'AICHATBOT.SUPPORT.I1_D' | translate }}</p></div>
+            </li>
+            <li>
+              <span class="sup-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/></svg></span>
+              <div><h3>{{ 'AICHATBOT.SUPPORT.I2_T' | translate }}</h3><p>{{ 'AICHATBOT.SUPPORT.I2_D' | translate }}</p></div>
+            </li>
+            <li>
+              <span class="sup-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
+              <div><h3>{{ 'AICHATBOT.SUPPORT.I3_T' | translate }}</h3><p>{{ 'AICHATBOT.SUPPORT.I3_D' | translate }}</p></div>
+            </li>
+            <li>
+              <span class="sup-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></span>
+              <div><h3>{{ 'AICHATBOT.SUPPORT.I4_T' | translate }}</h3><p>{{ 'AICHATBOT.SUPPORT.I4_D' | translate }}</p></div>
+            </li>
+            <li>
+              <span class="sup-ic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="m2 17 10 5 10-5M2 12l10 5 10-5"/></svg></span>
+              <div><h3>{{ 'AICHATBOT.SUPPORT.I5_T' | translate }}</h3><p>{{ 'AICHATBOT.SUPPORT.I5_D' | translate }}</p></div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
     <!-- Preguntas frecuentes -->
     <section class="faqs" [attr.aria-label]="'AICHATBOT.GUIDE.FAQ_TITLE' | translate">
       <div class="container">
@@ -550,6 +596,29 @@ interface Plan {
     .tour-cap { max-width: 60ch; margin: 0 auto 26px; }
     .tour-cap h3 { font-size: clamp(20px, 2.4vw, 26px); margin-bottom: 9px; }
     .tour-cap p { font-size: 14.5px; line-height: 1.6; color: var(--text-inv-2); }
+
+    /* Soporte técnico */
+    .support { background: var(--ink); color: var(--text-inv); padding: clamp(56px, 8vw, 100px) 0; border-top: 1px solid var(--line-light); }
+    .sup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(36px, 5vw, 72px); align-items: center; }
+    .sup-copy .band-title { margin-top: 12px; }
+    .sup-copy .lead { margin-top: 16px; max-width: 44ch; }
+    .ticket { margin-top: 26px; max-width: 340px; background: rgba(255,255,255,.04); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: 16px 18px; }
+    .tk-top { display: flex; align-items: center; justify-content: space-between; }
+    .tk-id { font-size: 12px; font-weight: 700; color: var(--text-inv-2); font-family: ui-monospace, Menlo, monospace; }
+    .tk-badge { font-size: 11px; font-weight: 700; color: #34e0a1; padding: 3px 9px; border-radius: 999px; background: rgba(52,224,161,.12); border: 1px solid rgba(52,224,161,.3); }
+    .tk-subject { font-size: 14.5px; font-weight: 600; margin: 10px 0 12px; }
+    .tk-reply { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-inv-2); }
+    .tk-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold-bright); box-shadow: 0 0 8px var(--gold-bright); }
+    .sup-note { margin-top: 20px; font-size: 13px; color: var(--text-inv-2); }
+    .sup-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+    .sup-list li { display: grid; grid-template-columns: 46px 1fr; gap: 16px; align-items: start; padding: 18px 0; }
+    .sup-list li + li { border-top: 1px solid var(--line-light); }
+    .sup-list li:first-child { padding-top: 0; }
+    .sup-ic { display: inline-grid; place-items: center; width: 46px; height: 46px; border-radius: 12px; color: var(--gold-bright);
+      background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.25); }
+    .sup-list h3 { font-size: 16.5px; margin-bottom: 5px; }
+    .sup-list p { font-size: 14px; line-height: 1.55; color: var(--text-inv-2); }
+    @media (max-width: 860px) { .sup-grid { grid-template-columns: 1fr; gap: 40px; } .sup-copy .lead { max-width: none; } }
 
     /* Confidencialidad y seguridad — panel único con divisores */
     .trust { background: var(--ink); color: var(--text-inv); padding: clamp(52px, 7vw, 90px) 0; border-top: 1px solid var(--line-light); }
