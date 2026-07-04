@@ -15,6 +15,7 @@ interface Faq { q: string; a: string; }
 
 /** URL del Worker de Vectis (mismo que usa el widget). */
 const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
+const TELEGRAM_BOT = 'VectisHandoffBot';   // username del bot central de Vectis en Telegram (sin @)
 
 /**
  * /ai-chatbot/configure — Onboarding/edición del chatbot.
@@ -467,6 +468,29 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                     <label for="ob-ptext">{{ 'AICHATBOT.ONBOARD.PRIVACY_TEXT' | translate }}</label>
                     <input id="ob-ptext" name="ptext" [(ngModel)]="privacyText" [attr.placeholder]="'AICHATBOT.ONBOARD.PRIVACY_TEXT_PH' | translate" />
                   </div>
+                  <div class="field">
+                    <label>{{ 'AICHATBOT.ONBOARD.HANDOFF' | translate }}
+                      <ng-container [ngTemplateOutlet]="tip" [ngTemplateOutletContext]="{ k: 'AICHATBOT.ONBOARD.TIP_HANDOFF' }"></ng-container>
+                    </label>
+                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px">
+                      <input type="checkbox" name="handoff" [(ngModel)]="handoffEnabled" style="width:18px;height:18px;flex-shrink:0" />
+                      {{ 'AICHATBOT.ONBOARD.HANDOFF_ENABLE' | translate }}
+                    </label>
+                    @if (handoffEnabled) {
+                      <div style="margin-top:12px">
+                        @if (telegramChatId) {
+                          <p class="hintline" style="color:#16a34a">✓ {{ 'AICHATBOT.ONBOARD.TG_CONNECTED' | translate }}</p>
+                        } @else {
+                          <p class="hintline">{{ 'AICHATBOT.ONBOARD.TG_HINT' | translate }}</p>
+                        }
+                        <button type="button" class="ghost-btn" [disabled]="tgBusy() || !dbId" (click)="connectTelegram()">
+                          {{ (telegramChatId ? 'AICHATBOT.ONBOARD.TG_RECONNECT' : 'AICHATBOT.ONBOARD.TG_CONNECT') | translate }}
+                        </button>
+                        @if (!dbId) { <p class="hintline warn">{{ 'AICHATBOT.ONBOARD.TG_SAVE_FIRST' | translate }}</p> }
+                        @if (tgLink()) { <p class="hintline">{{ 'AICHATBOT.ONBOARD.TG_OPEN' | translate }} <a [href]="tgLink()" target="_blank" rel="noopener">Telegram ↗</a></p> }
+                      </div>
+                    }
+                  </div>
                   </div>
                   }
                 </div>
@@ -831,6 +855,12 @@ export class ChatbotConfigureComponent implements OnInit {
   invBusy = signal(false); invErr = signal('');
   studyBusy = signal(false); studyMsg = signal<'' | 'ok' | 'err'>('');
   faqs = signal<Faq[]>([{ q: '', a: '' }, { q: '', a: '' }, { q: '', a: '' }]);
+  // Handoff a humano (Telegram)
+  handoffEnabled = false;
+  telegramChatId = '';
+  readonly tgLink = signal('');
+  readonly tgBusy = signal(false);
+
   // Apariencia
   widgetTitle = '';
   widgetPosition: 'right' | 'left' = 'right';
@@ -1111,6 +1141,20 @@ export class ChatbotConfigureComponent implements OnInit {
 
   setOrigin(i: number, v: string): void { const a = [...this.origins()]; a[i] = v; this.origins.set(a); }
 
+  /** Genera un código de un solo uso y abre Telegram para vincular el chat del dueño. */
+  async connectTelegram(): Promise<void> {
+    if (!this.dbId) { this.saveErr.set('Guarda tu chatbot antes de conectar Telegram.'); return; }
+    this.tgBusy.set(true);
+    try {
+      const code = 'v' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+      const { error } = await this.sb.from('chatbots').update({ telegram_link_code: code }).eq('id', this.dbId);
+      if (error) { this.saveErr.set(error.message); return; }
+      const link = 'https://t.me/' + TELEGRAM_BOT + '?start=' + code;
+      this.tgLink.set(link);
+      try { window.open(link, '_blank', 'noopener'); } catch { /* popup bloqueado: se muestra el enlace */ }
+    } finally { this.tgBusy.set(false); }
+  }
+
   private gatherConfig(): ChatbotConfig {
     return {
       company: this.company.trim(), desc: this.desc.trim(), persona: this.persona.trim(),
@@ -1134,6 +1178,7 @@ export class ChatbotConfigureComponent implements OnInit {
       // Privacidad: default de Vectis si quedan vacíos
       privacyUrl: this.privacyUrl.trim() || CONFIG_DEFAULTS.privacyUrl,
       privacyText: this.privacyText.trim() || CONFIG_DEFAULTS.privacyText,
+      handoffEnabled: this.handoffEnabled, telegramChatId: this.telegramChatId,
     };
   }
 
@@ -1153,6 +1198,7 @@ export class ChatbotConfigureComponent implements OnInit {
     this.quickReplies.set(c.quickReplies.length ? [...c.quickReplies] : ['']);
     this.origins.set(c.origins.length ? [...c.origins] : (this.s.plan() === 'business' ? ['', ''] : ['']));
     this.extraRules = c.extraRules; this.language = c.language || 'auto'; this.privacyUrl = c.privacyUrl; this.privacyText = c.privacyText;
+    this.handoffEnabled = !!c.handoffEnabled; this.telegramChatId = c.telegramChatId || '';
   }
 
   /** Volver al formulario para configurar otro chatbot (genera un nuevo client_id). */
@@ -1169,6 +1215,7 @@ export class ChatbotConfigureComponent implements OnInit {
     this.quickReplies.set(['']);
     this.origins.set(this.s.plan() === 'business' ? ['', ''] : ['']);
     this.extraRules = ''; this.language = 'auto'; this.privacyUrl = ''; this.privacyText = '';
+    this.handoffEnabled = false; this.telegramChatId = '';
     this.openSection.set(0);
     this.tried.set([]);
     this.saved.set(false);

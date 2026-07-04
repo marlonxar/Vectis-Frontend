@@ -857,7 +857,16 @@
       "CONTACT_EMAIL": "Correo",
       "CONTACT_ADDRESS": "Dirección",
       "CONTACT_NAME": "Persona de contacto (opcional)",
-      "ALLDAY": "24 h"
+      "ALLDAY": "24 h",
+      "HANDOFF": "Atención humana (handoff)",
+      "TIP_HANDOFF": "Permite que un cliente hable con una persona real. Los mensajes te llegan a Telegram y respondes desde ahí; el cliente sigue en el chat.",
+      "HANDOFF_ENABLE": "Activar \"Hablar con una persona\"",
+      "TG_HINT": "Conecta tu Telegram para recibir los chats en vivo y responder.",
+      "TG_CONNECT": "Conectar Telegram",
+      "TG_RECONNECT": "Reconectar Telegram",
+      "TG_CONNECTED": "Telegram conectado. Aquí recibirás los chats en vivo.",
+      "TG_SAVE_FIRST": "Guarda tu chatbot primero para poder conectar Telegram.",
+      "TG_OPEN": "Si no se abrió, entra por este enlace:"
     },
     "DASH": {
       "NAV_DASHBOARD": "Dashboard",

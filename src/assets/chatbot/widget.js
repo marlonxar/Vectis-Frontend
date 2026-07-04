@@ -155,13 +155,23 @@
       '.vxc-cal-back:hover{background:#e7e7ec}' +
       '.vxc-cal-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px}' +
       '#vxc-cal-embed{min-height:100%}' +
+      // Handoff a humano
+      '.vxc-ho-btn{margin-left:auto;background:rgba(255,255,255,.18);border:none;color:#fff;cursor:pointer;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex-shrink:0}' +
+      '.vxc-ho-btn:hover{background:rgba(255,255,255,.3)}.vxc-ho-btn svg{width:17px;height:17px}' +
+      '.vxc-sys{align-self:center;text-align:center;font-size:12px;color:#6b7280;background:#eef0f3;border-radius:10px;padding:7px 12px;max-width:92%;line-height:1.4}' +
+      '.vxc-agtag{display:block;font-size:9.5px;font-weight:700;color:#B4801A;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}' +
+      '.vxc-hobar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:#fff7ed;border-top:1px solid #fde3c0;font-size:12px;color:#9a3412}' +
+      '.vxc-hobar>span{display:inline-flex;align-items:center;gap:6px;font-weight:600}' +
+      '.vxc-hobar .vxc-dot{background:#f97316;box-shadow:0 0 6px #f97316}' +
+      '.vxc-hoback{border:none;background:#E7AB2E;color:#fff;font:inherit;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:8px;cursor:pointer;white-space:nowrap}' +
+      '.vxc-hoback:hover{filter:brightness(1.06)}' +
       '@keyframes vxc-pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}' +
       '@keyframes vxc-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}' +
       '@keyframes vxc-bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}';
     var st = el('style'); st.textContent = css; document.head.appendChild(st);
   }
 
-  var $body, $panel, $launch, $cal = null, calReady = false;
+  var $body, $panel, $launch, $cal = null, calReady = false, handoff = false, hoTimer = null;
 
   function render() {
     // launcher
@@ -176,12 +186,15 @@
     var head = el('div', 'vxc-head');
     var initial = ((cfg.title || 'A').trim().charAt(0) || 'A').toUpperCase();
     var ava = cfg.logo ? '<img class="vxc-ava" src="' + esc(cfg.logo) + '" alt="">' : '<span class="vxc-ava">' + esc(initial) + '</span>';
+    var hoBtn = cfg.handoff ? '<button class="vxc-ho-btn" aria-label="Hablar con una persona" title="Hablar con una persona">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg></button>' : '';
     var calBtn = cfg._cal ? '<button class="vxc-cal-btn" aria-label="Agendar" title="Agendar una cita">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Agendar</button>' : '';
     head.innerHTML = ava + '<div class="vxc-meta"><div class="vxc-title">' + esc(cfg.title) + '</div><div class="vxc-sub"><span class="vxc-dot"></span>En línea</div></div>' +
-      calBtn +
+      hoBtn + calBtn +
       '<button class="vxc-min" aria-label="Minimizar" title="Minimizar"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>' +
       '<button class="vxc-x" aria-label="Cerrar y borrar conversación" title="Cerrar y empezar de nuevo">&times;</button>';
+    if (cfg.handoff) head.querySelector('.vxc-ho-btn').onclick = startHandoff;
     if (cfg._cal) head.querySelector('.vxc-cal-btn').onclick = openCal;
     head.querySelector('.vxc-min').onclick = toggle;     // minimizar: oculta el panel, conserva el chat
     head.querySelector('.vxc-x').onclick = closeChat;    // cerrar: borra la conversación y empieza una nueva
@@ -247,6 +260,7 @@
 
   // Cerrar: analiza la sesión vieja (insight), la borra e inicia una conversación nueva.
   function closeChat() {
+    if (handoff) { handoff = false; if (hoTimer) { clearInterval(hoTimer); hoTimer = null; } api({ action: 'handoff_end', client_id: CLIENT_ID, session_id: sessionId() }).catch(function () {}); removeHandoffBar(); }
     endSession();                                  // captura el insight de la sesión actual antes de descartarla
     try { sessionStorage.removeItem(SKEY); sessionStorage.removeItem(SIDKEY); } catch (e) { /* noop */ }
     history = []; sentEnd = false;                  // nueva sesión (sessionId() generará un id nuevo)
@@ -278,6 +292,48 @@
       window.Cal('ui', { hideEventTypeDetails: false, layout: 'month_view' });
     } catch (e) { /* si falla, dejamos el fallback del enlace en el texto del bot */ }
   }
+
+  // ── Handoff a humano (dos vías vía Telegram) ──
+  function startHandoff() {
+    if (!cfg.handoff || handoff) return;
+    handoff = true;
+    if (csatTimer) { clearTimeout(csatTimer); csatTimer = null; }
+    var qr = $body.querySelector('.vxc-qr'); if (qr) qr.remove();
+    addSystem('🙋 Te estoy conectando con una persona del equipo. Puedes seguir escribiendo aquí; en breve te responden.');
+    showHandoffBar();
+    api({ action: 'handoff_start', client_id: CLIENT_ID, session_id: sessionId() }).catch(function () { /* noop */ });
+    if (hoTimer) clearInterval(hoTimer);
+    hoTimer = setInterval(pollHandoff, 4000);
+  }
+  function endHandoff(notify) {
+    if (!handoff) return;
+    handoff = false;
+    if (hoTimer) { clearInterval(hoTimer); hoTimer = null; }
+    if (notify !== false) api({ action: 'handoff_end', client_id: CLIENT_ID, session_id: sessionId() }).catch(function () { /* noop */ });
+    removeHandoffBar();
+    addSystem('Volviste con el asistente ✨ ¿En qué más te ayudo?');
+  }
+  function pollHandoff() {
+    if (!handoff) return;
+    api({ action: 'handoff_poll', client_id: CLIENT_ID, session_id: sessionId() }).then(function (r) {
+      if (r && r.messages && r.messages.length) {
+        r.messages.forEach(function (t) { addAgent(t); history.push({ role: 'bot', text: t }); });
+        if (history.length > 20) history = history.slice(-20);
+        saveHistory();
+      }
+    }).catch(function () { /* noop */ });
+  }
+  function showHandoffBar() {
+    if (!$panel || $panel.querySelector('.vxc-hobar')) return;
+    var bar = el('div', 'vxc-hobar');
+    bar.innerHTML = '<span><span class="vxc-dot"></span>Hablando con una persona</span><button class="vxc-hoback" type="button">Volver al asistente</button>';
+    bar.querySelector('.vxc-hoback').onclick = function () { endHandoff(true); };
+    var foot = $panel.querySelector('.vxc-foot');
+    if (foot) $panel.insertBefore(bar, foot); else $panel.appendChild(bar);
+  }
+  function removeHandoffBar() { var b = $panel && $panel.querySelector('.vxc-hobar'); if (b) b.remove(); }
+  function addSystem(text) { var b = el('div', 'vxc-sys', esc(text)); $body.appendChild(b); scroll(); }
+  function addAgent(text) { var b = el('div', 'vxc-b vxc-bot'); b.innerHTML = '<span class="vxc-agtag">Agente</span>' + mdToHtml(text); $body.appendChild(b); scroll(); }
 
   function addBot(text) { var b = el('div', 'vxc-b vxc-bot', mdToHtml(text)); $body.appendChild(b); scroll(); }
   function addUser(text) { var b = el('div', 'vxc-b vxc-user', esc(text)); $body.appendChild(b); scroll(); }
@@ -360,6 +416,14 @@
     qr = $body.querySelector('.vxc-qr'); if (qr) qr.remove();       // los quick replies se ocultan al iniciar la conversación
     addUser(text);
     history.push({ role: 'user', text: text }); saveHistory();
+
+    // Modo humano: el mensaje va al dueño (Telegram), no a la IA. La respuesta llega por polling.
+    if (handoff) {
+      api({ action: 'handoff_msg', client_id: CLIENT_ID, session_id: sessionId(), message: text }).catch(function () { /* noop */ });
+      sending = false;
+      return;
+    }
+
     var typing = el('div', 'vxc-typing', '<span></span><span></span><span></span>'); $body.appendChild(typing); scroll();
 
     // Auto-reintento silencioso: si la IA cae por un rate-limit momentáneo (retry:true)
