@@ -210,7 +210,9 @@
       }
       note = el('div', 'vxc-note', noteHtml);
     }
-    var powered = el('div', 'vxc-powered', 'Powered by <a href="https://www.wearevectis.com" target="_blank" rel="noopener">Vectis</a>');
+    // "Powered by Vectis" — se oculta en plan Business (white-label).
+    var powered = cfg.poweredBy === false ? null
+      : el('div', 'vxc-powered', 'Powered by <a href="https://www.wearevectis.com" target="_blank" rel="noopener">Vectis</a>');
 
     $panel.appendChild(head); $panel.appendChild($body); $panel.appendChild(foot);
     if (note) $panel.appendChild(note);
