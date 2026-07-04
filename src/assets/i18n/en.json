@@ -1167,6 +1167,15 @@
       "A7": "Yes. Each business has isolated data, communication is encrypted, and your information is not used to train third-party AI. You decide what the bot sees and can delete everything whenever you want.",
       "Q8": "Any lock-in or contracts?",
       "A8": "No. Change plan or cancel whenever you want."
+    },
+    "DEMO": {
+      "EYEBROW": "In action",
+      "TITLE": "See it working",
+      "SUB": "This is what your customers see, and how you manage it. All with the real Vectis design.",
+      "CHAT_T": "Live chat with your customers",
+      "CHAT_D": "The same bubble they will see on your site: instant replies, quick buttons and a satisfaction survey at the end.",
+      "TOUR_T": "From panel to dashboard",
+      "TOUR_D": "Set up your bot with no code and watch your metrics —conversations, messages, leads and satisfaction— in real time."
     }
   },
   "REFUNDS": {

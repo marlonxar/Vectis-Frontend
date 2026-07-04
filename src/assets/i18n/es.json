@@ -1167,6 +1167,15 @@
       "A7": "Sí. Cada negocio tiene sus datos aislados, la comunicación viaja cifrada y tu información no se usa para entrenar IA de terceros. Tú decides qué ve el bot y puedes borrar todo cuando quieras.",
       "Q8": "¿Hay permanencia o contratos?",
       "A8": "No. Cambias de plan o cancelas cuando quieras."
+    },
+    "DEMO": {
+      "EYEBROW": "En acción",
+      "TITLE": "Míralo funcionando",
+      "SUB": "Así se ve para tus clientes y así lo gestionas tú. Todo con el diseño real de Vectis.",
+      "CHAT_T": "Chat en vivo con tus clientes",
+      "CHAT_D": "La misma burbuja que verán en tu web: respuestas al instante, botones rápidos y encuesta de satisfacción al final.",
+      "TOUR_T": "Del panel al dashboard",
+      "TOUR_D": "Configuras tu bot sin código y ves tus métricas —conversaciones, mensajes, leads y satisfacción— en tiempo real."
     }
   },
   "REFUNDS": {

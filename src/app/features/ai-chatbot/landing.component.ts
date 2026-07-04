@@ -7,6 +7,8 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChatbotSessionService, PlanId } from './session.service';
 import { ChatbotAuthService } from './auth.service';
 import { ScrollService } from '../../core/services/scroll.service';
+import { ChatDemoComponent } from './demo/chat-demo.component';
+import { TourDemoComponent } from './demo/tour-demo.component';
 
 type Mode = 'login' | 'signup' | 'forgot';
 
@@ -26,7 +28,7 @@ interface Plan {
 @Component({
   selector: 'app-chatbot-landing',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, ChatDemoComponent, TourDemoComponent],
   template: `
     @if (loggedIn()) {
       <section class="loadscreen">
@@ -267,6 +269,33 @@ interface Plan {
       </div>
     </section>
 
+    <!-- En acción: demos animados -->
+    <section class="demos" [attr.aria-label]="'AICHATBOT.DEMO.TITLE' | translate">
+      <div class="container">
+        <div class="band-head center">
+          <span class="eyebrow on-dark">{{ 'AICHATBOT.DEMO.EYEBROW' | translate }}</span>
+          <h2 class="band-title">{{ 'AICHATBOT.DEMO.TITLE' | translate }}</h2>
+          <p class="lead on-dark">{{ 'AICHATBOT.DEMO.SUB' | translate }}</p>
+        </div>
+        <div class="demo-grid">
+          <figure class="demo-item">
+            <app-cbdemo-chat></app-cbdemo-chat>
+            <figcaption>
+              <h3>{{ 'AICHATBOT.DEMO.CHAT_T' | translate }}</h3>
+              <p>{{ 'AICHATBOT.DEMO.CHAT_D' | translate }}</p>
+            </figcaption>
+          </figure>
+          <figure class="demo-item">
+            <app-cbdemo-tour></app-cbdemo-tour>
+            <figcaption>
+              <h3>{{ 'AICHATBOT.DEMO.TOUR_T' | translate }}</h3>
+              <p>{{ 'AICHATBOT.DEMO.TOUR_D' | translate }}</p>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
     <!-- Precios -->
     <section class="pricing" id="precios" [attr.aria-label]="'AICHATBOT.PRICING.TITLE' | translate">
       <div class="container">
@@ -492,6 +521,15 @@ interface Plan {
     .fcard p { font-size: 13.5px; line-height: 1.55; color: var(--text-inv-2); grid-column: 1 / -1; }
     @media (max-width: 900px) { .fgrid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 520px) { .fgrid { grid-template-columns: 1fr; } }
+
+    /* En acción — demos animados */
+    .demos { background: var(--ink); color: var(--text-inv); padding: clamp(56px, 8vw, 100px) 0; border-top: 1px solid var(--line-light); }
+    .demo-grid { margin-top: clamp(38px, 5vw, 60px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 4vw, 48px); align-items: start; }
+    .demo-item { margin: 0; }
+    .demo-item figcaption { margin-top: 22px; text-align: center; max-width: 42ch; margin-left: auto; margin-right: auto; }
+    .demo-item figcaption h3 { font-size: 18px; margin-bottom: 7px; }
+    .demo-item figcaption p { font-size: 14px; line-height: 1.6; color: var(--text-inv-2); }
+    @media (max-width: 860px) { .demo-grid { grid-template-columns: 1fr; gap: 48px; } }
 
     /* Confidencialidad y seguridad — panel único con divisores */
     .trust { background: var(--ink); color: var(--text-inv); padding: clamp(52px, 7vw, 90px) 0; border-top: 1px solid var(--line-light); }
