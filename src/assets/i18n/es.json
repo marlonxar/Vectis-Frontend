@@ -1172,10 +1172,13 @@
       "EYEBROW": "En acción",
       "TITLE": "Míralo funcionando",
       "SUB": "Así se ve para tus clientes y así lo gestionas tú. Todo con el diseño real de Vectis.",
-      "CHAT_T": "Chat en vivo con tus clientes",
-      "CHAT_D": "La misma burbuja que verán en tu web: respuestas al instante, botones rápidos y encuesta de satisfacción al final.",
-      "TOUR_T": "Del panel al dashboard",
-      "TOUR_D": "Configuras tu bot sin código y ves tus métricas —conversaciones, mensajes, leads y satisfacción— en tiempo real."
+      "CHAT_T": "Vende y agenda por chat",
+      "CHAT_D": "La misma burbuja que verán en tu web: responde dudas, recomienda, negocia y hasta toma los datos del cliente para agendar una reunión.",
+      "CHAT_B1": "Responde e informa al instante",
+      "CHAT_B2": "Captura nombre y contacto para agendar",
+      "CHAT_B3": "Encuesta de satisfacción al cerrar",
+      "TOUR_T": "Tu panel, de configurar a medir",
+      "TOUR_D": "Configuras tu bot sin código y ves tus métricas del Plan Pro en tiempo real: conversaciones, mensajes, leads, satisfacción y las conversaciones activas ahora mismo."
     }
   },
   "REFUNDS": {

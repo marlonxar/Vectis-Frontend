@@ -1172,10 +1172,13 @@
       "EYEBROW": "In action",
       "TITLE": "See it working",
       "SUB": "This is what your customers see, and how you manage it. All with the real Vectis design.",
-      "CHAT_T": "Live chat with your customers",
-      "CHAT_D": "The same bubble they will see on your site: instant replies, quick buttons and a satisfaction survey at the end.",
-      "TOUR_T": "From panel to dashboard",
-      "TOUR_D": "Set up your bot with no code and watch your metrics —conversations, messages, leads and satisfaction— in real time."
+      "CHAT_T": "Sell and book by chat",
+      "CHAT_D": "The same bubble they will see on your site: it answers questions, recommends, negotiates and even collects the customer’s details to book a meeting.",
+      "CHAT_B1": "Instant, informed replies",
+      "CHAT_B2": "Captures name & contact to book",
+      "CHAT_B3": "Satisfaction survey at the end",
+      "TOUR_T": "Your panel, from setup to metrics",
+      "TOUR_D": "Set up your bot with no code and watch your Pro plan metrics in real time: conversations, messages, leads, satisfaction and the conversations happening right now."
     }
   },
   "REFUNDS": {

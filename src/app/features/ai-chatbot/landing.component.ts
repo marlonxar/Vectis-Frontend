@@ -277,22 +277,28 @@ interface Plan {
           <h2 class="band-title">{{ 'AICHATBOT.DEMO.TITLE' | translate }}</h2>
           <p class="lead on-dark">{{ 'AICHATBOT.DEMO.SUB' | translate }}</p>
         </div>
-        <div class="demo-grid">
-          <figure class="demo-item">
-            <app-cbdemo-chat></app-cbdemo-chat>
-            <figcaption>
-              <h3>{{ 'AICHATBOT.DEMO.CHAT_T' | translate }}</h3>
-              <p>{{ 'AICHATBOT.DEMO.CHAT_D' | translate }}</p>
-            </figcaption>
-          </figure>
-          <figure class="demo-item">
-            <app-cbdemo-tour></app-cbdemo-tour>
-            <figcaption>
-              <h3>{{ 'AICHATBOT.DEMO.TOUR_T' | translate }}</h3>
-              <p>{{ 'AICHATBOT.DEMO.TOUR_D' | translate }}</p>
-            </figcaption>
-          </figure>
+        <!-- Chat en vivo: texto + demo al lado -->
+        <div class="demo-chat-row">
+          <div class="demo-copy">
+            <h3>{{ 'AICHATBOT.DEMO.CHAT_T' | translate }}</h3>
+            <p>{{ 'AICHATBOT.DEMO.CHAT_D' | translate }}</p>
+            <ul class="demo-bullets">
+              <li>{{ 'AICHATBOT.DEMO.CHAT_B1' | translate }}</li>
+              <li>{{ 'AICHATBOT.DEMO.CHAT_B2' | translate }}</li>
+              <li>{{ 'AICHATBOT.DEMO.CHAT_B3' | translate }}</li>
+            </ul>
+          </div>
+          <div class="demo-chat-wrap"><app-cbdemo-chat></app-cbdemo-chat></div>
         </div>
+
+        <!-- Panel completo (desktop): configuración → dashboard -->
+        <figure class="demo-tour">
+          <figcaption class="tour-cap">
+            <h3>{{ 'AICHATBOT.DEMO.TOUR_T' | translate }}</h3>
+            <p>{{ 'AICHATBOT.DEMO.TOUR_D' | translate }}</p>
+          </figcaption>
+          <app-cbdemo-tour></app-cbdemo-tour>
+        </figure>
       </div>
     </section>
 
@@ -524,11 +530,26 @@ interface Plan {
 
     /* En acción — demos animados */
     .demos { background: var(--ink); color: var(--text-inv); padding: clamp(56px, 8vw, 100px) 0; border-top: 1px solid var(--line-light); }
-    .demo-grid { margin-top: clamp(38px, 5vw, 60px); display: flex; flex-direction: column; gap: clamp(52px, 7vw, 84px); align-items: center; }
-    .demo-item { margin: 0; width: 100%; display: flex; flex-direction: column; align-items: center; }
-    .demo-item figcaption { margin-top: 24px; text-align: center; max-width: 52ch; }
-    .demo-item figcaption h3 { font-size: 19px; margin-bottom: 8px; }
-    .demo-item figcaption p { font-size: 14.5px; line-height: 1.6; color: var(--text-inv-2); }
+    /* Chat: texto + demo al lado */
+    .demo-chat-row { margin-top: clamp(38px, 5vw, 60px); display: grid; grid-template-columns: 1fr 330px; gap: clamp(32px, 5vw, 72px); align-items: center; }
+    .demo-copy { max-width: 480px; }
+    .demo-copy h3 { font-size: clamp(22px, 2.6vw, 30px); margin-bottom: 14px; }
+    .demo-copy > p { font-size: 15.5px; line-height: 1.65; color: var(--text-inv-2); margin-bottom: 22px; }
+    .demo-bullets { list-style: none; padding: 0; margin: 0; display: grid; gap: 13px; }
+    .demo-bullets li { position: relative; padding-left: 28px; font-size: 14.5px; line-height: 1.5; color: var(--text-inv-2); }
+    .demo-bullets li::before { content: ""; position: absolute; left: 0; top: 3px; width: 17px; height: 17px; border-radius: 50%;
+      background: rgba(231,171,46,.15); border: 1px solid rgba(231,171,46,.4); }
+    .demo-bullets li::after { content: ""; position: absolute; left: 5px; top: 8px; width: 6px; height: 3.5px; border-left: 1.6px solid var(--gold-bright); border-bottom: 1.6px solid var(--gold-bright); transform: rotate(-45deg); }
+    .demo-chat-wrap { display: flex; justify-content: center; }
+    @media (max-width: 820px) { .demo-chat-row { grid-template-columns: 1fr; gap: 40px; }
+      .demo-copy { max-width: none; text-align: center; margin: 0 auto; }
+      .demo-bullets { display: inline-grid; text-align: left; } }
+
+    /* Tour: panel desktop, a lo ancho, encabezado arriba */
+    .demo-tour { margin: clamp(56px, 7vw, 96px) 0 0; text-align: center; }
+    .tour-cap { max-width: 60ch; margin: 0 auto 26px; }
+    .tour-cap h3 { font-size: clamp(20px, 2.4vw, 26px); margin-bottom: 9px; }
+    .tour-cap p { font-size: 14.5px; line-height: 1.6; color: var(--text-inv-2); }
 
     /* Confidencialidad y seguridad — panel único con divisores */
     .trust { background: var(--ink); color: var(--text-inv); padding: clamp(52px, 7vw, 90px) 0; border-top: 1px solid var(--line-light); }
