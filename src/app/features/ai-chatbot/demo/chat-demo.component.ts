@@ -114,7 +114,7 @@ const COPY = {
     .dc-csat-b { border: none; background: #f2f2f5; border-radius: 8px; font-size: 14px; line-height: 1; padding: 5px 8px; transition: transform .15s, background .15s; }
     .dc-csat-b.on { background: #E7AB2E; transform: scale(1.14); }
     .dc-foot { display: flex; align-items: center; gap: 7px; padding: 10px 11px; border-top: 1px solid #eee; background: #fff; }
-    .dc-in { flex: 1; min-height: 38px; display: flex; align-items: center; border: 1px solid #e3e3e8; border-radius: 10px; padding: 0 12px; font-size: 13px; color: #1a1a1a; overflow: hidden; white-space: nowrap; }
+    .dc-in { flex: 1; min-height: 38px; display: flex; align-items: center; border: 1px solid #e3e3e8; border-radius: 10px; padding: 0 12px; font-size: 13px; color: #1a1a1a; background: #fff; overflow: hidden; white-space: nowrap; }
     .dc-in.empty { color: #9a9aa2; }
     .dc-caret { width: 1.5px; height: 15px; margin-left: 1px; background: #E7AB2E; opacity: 0; }
     .dc-caret.show { opacity: 1; animation: dc-blink 1s step-end infinite; }
