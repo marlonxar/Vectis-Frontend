@@ -64,6 +64,8 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                     <li>{{ 'AICHATBOT.HANDOFF.G2' | translate }}</li>
                     <li>{{ 'AICHATBOT.HANDOFF.G3' | translate }}</li>
                     <li>{{ 'AICHATBOT.HANDOFF.G4' | translate }}</li>
+                    <li>{{ 'AICHATBOT.HANDOFF.G5' | translate }}</li>
+                    <li>{{ 'AICHATBOT.HANDOFF.G6' | translate }}</li>
                   </ol>
 
                   <div class="field">
@@ -164,7 +166,7 @@ export class ChatbotHandoffComponent implements OnInit {
   readonly okMsg = signal('');
 
   readonly connected = computed(() => !!this.chatId());
-  readonly botLink = computed(() => this.username() ? 'https://t.me/' + this.username() : '');
+  readonly botLink = computed(() => this.username() ? 'https://t.me/' + this.username() + '?startgroup=true' : '');
 
   ngOnInit(): void {
     this.title.setTitle('Handoff a humano · Vectis AI ChatBot');
