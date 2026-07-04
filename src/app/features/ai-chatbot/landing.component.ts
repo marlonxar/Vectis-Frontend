@@ -357,6 +357,7 @@ interface Plan {
           <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F7_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F7_D' | translate }}</p></div>
           <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/><line x1="3" y1="20" x2="21" y2="20"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F8_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F8_D' | translate }}</p></div>
           <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F9_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F9_D' | translate }}</p></div>
+          <div class="fcard"><span class="fico2"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg></span><h3>{{ 'AICHATBOT.GUIDE.F10_T' | translate }}</h3><p>{{ 'AICHATBOT.GUIDE.F10_D' | translate }}</p></div>
         </div>
       </div>
     </section>
@@ -433,7 +434,7 @@ interface Plan {
           <h2 class="band-title">{{ 'AICHATBOT.GUIDE.FAQ_TITLE' | translate }}</h2>
         </div>
         <div class="faq-list">
-          @for (i of [1,2,3,4,5,6,7,8]; track i) {
+          @for (i of [1,2,3,4,5,6,7,8,9]; track i) {
             <details class="faq-item">
               <summary>{{ ('AICHATBOT.GUIDE.Q' + i) | translate }}</summary>
               <p>{{ ('AICHATBOT.GUIDE.A' + i) | translate }}</p>
@@ -722,17 +723,17 @@ export class ChatbotLandingComponent implements OnInit {
     {
       id: 'basic', popular: false, nameKey: 'AICHATBOT.PLANS.BASIC.NAME', price: '$19',
       taglineKey: 'AICHATBOT.PLANS.BASIC.TAG',
-      features: ['AICHATBOT.PLANS.BASIC.F1', 'AICHATBOT.PLANS.BASIC.F2', 'AICHATBOT.PLANS.BASIC.F3', 'AICHATBOT.PLANS.BASIC.F4', 'AICHATBOT.PLANS.BASIC.F5', 'AICHATBOT.PLANS.BASIC.F6'],
+      features: ['AICHATBOT.PLANS.BASIC.F1', 'AICHATBOT.PLANS.BASIC.F2', 'AICHATBOT.PLANS.BASIC.F3', 'AICHATBOT.PLANS.BASIC.F4', 'AICHATBOT.PLANS.BASIC.F5', 'AICHATBOT.PLANS.BASIC.F6', 'AICHATBOT.PLANS.HANDOFF'],
     },
     {
       id: 'pro', popular: true, nameKey: 'AICHATBOT.PLANS.PRO.NAME', price: '$49',
       taglineKey: 'AICHATBOT.PLANS.PRO.TAG',
-      features: ['AICHATBOT.PLANS.PRO.F1', 'AICHATBOT.PLANS.PRO.F2', 'AICHATBOT.PLANS.PRO.F3', 'AICHATBOT.PLANS.PRO.F4', 'AICHATBOT.PLANS.PRO.F5', 'AICHATBOT.PLANS.PRO.F6', 'AICHATBOT.PLANS.PRO.F7', 'AICHATBOT.PLANS.PRO.F8'],
+      features: ['AICHATBOT.PLANS.PRO.F1', 'AICHATBOT.PLANS.PRO.F2', 'AICHATBOT.PLANS.PRO.F3', 'AICHATBOT.PLANS.PRO.F4', 'AICHATBOT.PLANS.PRO.F5', 'AICHATBOT.PLANS.PRO.F6', 'AICHATBOT.PLANS.PRO.F7', 'AICHATBOT.PLANS.PRO.F8', 'AICHATBOT.PLANS.HANDOFF'],
     },
     {
       id: 'business', popular: false, nameKey: 'AICHATBOT.PLANS.BUSINESS.NAME', price: '$99',
       taglineKey: 'AICHATBOT.PLANS.BUSINESS.TAG',
-      features: ['AICHATBOT.PLANS.BUSINESS.F1', 'AICHATBOT.PLANS.BUSINESS.F2', 'AICHATBOT.PLANS.BUSINESS.F3', 'AICHATBOT.PLANS.BUSINESS.F4', 'AICHATBOT.PLANS.BUSINESS.F5', 'AICHATBOT.PLANS.BUSINESS.F6', 'AICHATBOT.PLANS.BUSINESS.F7'],
+      features: ['AICHATBOT.PLANS.BUSINESS.F1', 'AICHATBOT.PLANS.BUSINESS.F2', 'AICHATBOT.PLANS.BUSINESS.F3', 'AICHATBOT.PLANS.BUSINESS.F4', 'AICHATBOT.PLANS.BUSINESS.F5', 'AICHATBOT.PLANS.BUSINESS.F6', 'AICHATBOT.PLANS.BUSINESS.F7', 'AICHATBOT.PLANS.HANDOFF'],
     },
   ];
 

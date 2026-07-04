@@ -26,6 +26,7 @@ import { TranslateModule } from '@ngx-translate/core';
             <li><span class="dot" aria-hidden="true"></span>{{ 'AICHATBOT.PROMO.B3' | translate }}</li>
             <li><span class="dot" aria-hidden="true"></span>{{ 'AICHATBOT.PROMO.B4' | translate }}</li>
             <li><span class="dot" aria-hidden="true"></span>{{ 'AICHATBOT.PROMO.B5' | translate }}</li>
+            <li><span class="dot" aria-hidden="true"></span>{{ 'AICHATBOT.PROMO.B6' | translate }}</li>
           </ul>
           <a class="cta" routerLink="/ai-chatbot">
             {{ 'AICHATBOT.PROMO.CTA' | translate }}

@@ -580,7 +580,8 @@
       "STEP2_D": "Cárgale la info de tu negocio, horario, contacto, FAQs, inventario y documentos. Personaliza colores, logo y mensajes desde el panel.",
       "STEP3_T": "3. Pégalo en tu web",
       "STEP3_D": "Copia una línea de código y pégala en tu sitio. La burbuja de chat aparece al instante.",
-      "STEPS_NOTE": "Cámbialo cuando quieras — sin contratos."
+      "STEPS_NOTE": "Cámbialo cuando quieras — sin contratos.",
+      "B6": "Handoff a humano: pasa la conversación a una persona cuando haga falta (vía Telegram; más canales pronto)."
     },
     "HERO": {
       "EYEBROW": "Vectis AI ChatBot",
@@ -685,7 +686,8 @@
       "REFUNDS_NOTE": "¿Dudas sobre cobros? Consulta nuestra",
       "REFUNDS_LINK": "Política de reembolsos",
       "TERMS_LINK": "Términos",
-      "PRIVACY_LINK": "Privacidad"
+      "PRIVACY_LINK": "Privacidad",
+      "HANDOFF": "Handoff a humano (Telegram)"
     },
     "CONFIGURE": {
       "EYEBROW": "¡Listo!",
@@ -1146,7 +1148,11 @@
       "Q7": "¿Mis datos están seguros?",
       "A7": "Sí. Cada negocio tiene sus datos aislados, la comunicación viaja cifrada y tu información no se usa para entrenar IA de terceros. Tú decides qué ve el bot y puedes borrar todo cuando quieras.",
       "Q8": "¿Hay permanencia o contratos?",
-      "A8": "No. Cambias de plan o cancelas cuando quieras."
+      "A8": "No. Cambias de plan o cancelas cuando quieras.",
+      "F10_T": "Handoff a humano",
+      "F10_D": "Cuando el cliente lo necesita, un botón \"Hablar con un agente\" conecta la conversación con una persona real; el cliente sigue en el mismo chat. Hoy vía Telegram, con más canales próximamente.",
+      "Q9": "¿El bot puede pasar la conversación a una persona?",
+      "A9": "Sí. Con el handoff a humano, el cliente toca \"Hablar con un agente\" y sus mensajes te llegan a tu canal; respondes desde ahí y tu respuesta aparece en el mismo chat. De momento el canal es Telegram y próximamente se agregarán más opciones."
     },
     "DEMO": {
       "EYEBROW": "En acción",

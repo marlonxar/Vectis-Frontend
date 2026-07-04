@@ -123,6 +123,8 @@
       '.vxc-qr{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px}' +
       '.vxc-chip{font-size:12.5px;font-weight:600;padding:7px 12px;border-radius:999px;border:1px solid ' + brand + ';color:' + brand + ';background:#fff;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.05);transition:background .15s,color .15s}' +
       '.vxc-chip:hover{background:' + brand + ';color:#fff}' +
+      '.vxc-chip-agent{background:' + brand + ';color:#fff;display:inline-flex;align-items:center}' +
+      '.vxc-chip-agent:hover{filter:brightness(1.06)}' +
       '.vxc-foot{display:flex;align-items:center;gap:8px;padding:11px 12px;border-top:1px solid #eee;background:#fff}' +
       '.vxc-in{flex:1;border:1px solid #e3e3e8;border-radius:11px;padding:11px 13px;font-size:14px;outline:none;font-family:inherit;background:#fff;color:#111;color-scheme:light}' +
       '.vxc-in::placeholder{color:#9a9aa2}' +
@@ -171,7 +173,7 @@
     var st = el('style'); st.textContent = css; document.head.appendChild(st);
   }
 
-  var $body, $panel, $launch, $cal = null, calReady = false, handoff = false, hoTimer = null;
+  var $body, $panel, $launch, $cal = null, calReady = false, handoff = false, hoTimer = null, lastBookOpen = 0;
 
   function render() {
     // launcher
@@ -256,7 +258,7 @@
       saved.forEach(function (m) { if (m.role === 'user') addUser(m.text); else addBot(m.text); });
     } else {
       addBot(cfg.welcome);
-      if (cfg.quickReplies && cfg.quickReplies.length) addQuickReplies(cfg.quickReplies);
+      if ((cfg.quickReplies && cfg.quickReplies.length) || cfg.handoff) addQuickReplies(cfg.quickReplies);
     }
   }
 
@@ -271,7 +273,7 @@
     if ($body) {
       $body.innerHTML = '';
       addBot(cfg.welcome);
-      if (cfg.quickReplies && cfg.quickReplies.length) addQuickReplies(cfg.quickReplies);
+      if ((cfg.quickReplies && cfg.quickReplies.length) || cfg.handoff) addQuickReplies(cfg.quickReplies);
     }
     open = false; $panel.classList.remove('vxc-on');
     closeCal();
@@ -345,11 +347,18 @@
 
   function addQuickReplies(list) {
     var wrap = el('div', 'vxc-qr');
-    list.forEach(function (q) {
+    (list || []).forEach(function (q) {
       var c = el('button', 'vxc-chip', esc(q));
       c.onclick = function () { wrap.remove(); ask(q); };
       wrap.appendChild(c);
     });
+    // Si el handoff está activo, ofrece hablar con una persona.
+    if (cfg.handoff && !handoff) {
+      var a = el('button', 'vxc-chip vxc-chip-agent');
+      a.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg>Hablar con un agente';
+      a.onclick = function () { wrap.remove(); startHandoff(); };
+      wrap.appendChild(a);
+    }
     $body.appendChild(wrap); scroll();
   }
 
@@ -459,7 +468,9 @@
       var openBook = /\[\[\s*AGENDAR\s*\]\]/i.test(reply);
       if (openBook) { reply = reply.replace(/\[\[\s*AGENDAR\s*\]\]/ig, '').trim() || '¡Claro! Te abro el calendario para que elijas el día y la hora 📅'; }
       addBot(reply);
-      if (openBook && cfg._cal) setTimeout(openCal, 500);
+      // Abre solo si hay Cal, no está ya abierto y no se abrió en los últimos 25s (evita reaperturas en cada mensaje).
+      var calOpen = $cal && $cal.classList.contains('vxc-on');
+      if (openBook && cfg._cal && !calOpen && (Date.now() - lastBookOpen > 25000)) { lastBookOpen = Date.now(); setTimeout(openCal, 500); }
       history.push({ role: 'bot', text: reply });
       if (history.length > 20) history = history.slice(-20);
       saveHistory();

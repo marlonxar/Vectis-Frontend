@@ -580,7 +580,8 @@
       "STEP2_D": "Add your business info, hours, contact, FAQs, inventory and documents. Customize colors, logo and messages from the panel.",
       "STEP3_T": "3. Paste it on your site",
       "STEP3_D": "Copy one line of code and paste it on your website. The chat bubble appears instantly.",
-      "STEPS_NOTE": "Change it anytime — no contracts."
+      "STEPS_NOTE": "Change it anytime — no contracts.",
+      "B6": "Human handoff: pass the conversation to a person when needed (via Telegram; more channels soon)."
     },
     "HERO": {
       "EYEBROW": "Vectis AI ChatBot",
@@ -685,7 +686,8 @@
       "REFUNDS_NOTE": "Questions about billing? See our",
       "REFUNDS_LINK": "Refund Policy",
       "TERMS_LINK": "Terms",
-      "PRIVACY_LINK": "Privacy"
+      "PRIVACY_LINK": "Privacy",
+      "HANDOFF": "Human handoff (Telegram)"
     },
     "CONFIGURE": {
       "EYEBROW": "Done!",
@@ -1146,7 +1148,11 @@
       "Q7": "Is my data safe?",
       "A7": "Yes. Each business has isolated data, communication is encrypted, and your information is not used to train third-party AI. You decide what the bot sees and can delete everything whenever you want.",
       "Q8": "Any lock-in or contracts?",
-      "A8": "No. Change plan or cancel whenever you want."
+      "A8": "No. Change plan or cancel whenever you want.",
+      "F10_T": "Human handoff",
+      "F10_D": "When the customer needs it, a \"Talk to an agent\" button connects the conversation to a real person; the customer stays in the same chat. Today via Telegram, with more channels coming soon.",
+      "Q9": "Can the bot hand the conversation to a person?",
+      "A9": "Yes. With human handoff, the customer taps \"Talk to an agent\" and their messages reach your channel; you reply from there and your answer appears in the same chat. The channel is Telegram for now, with more options coming soon."
     },
     "DEMO": {
       "EYEBROW": "In action",
