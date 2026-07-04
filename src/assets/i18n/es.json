@@ -716,7 +716,8 @@
       "HAS_PLAN": "Esta cuenta tiene Plan",
       "MANAGE": "Administrar cuenta",
       "LOGOUT": "Cerrar sesión",
-      "INACTIVE": "Inactivo"
+      "INACTIVE": "Inactivo",
+      "NO_PLAN": "Sin plan activo"
     },
     "ONBOARD": {
       "EYEBROW": "Configura tu chatbot",
@@ -735,8 +736,8 @@
       "PERSONA": "Personalidad del agente",
       "TIP_PERSONA": "Cómo se comporta y habla el agente. Por defecto: «Eres Vecto, el asistente virtual de tu empresa».",
       "INFO": "Información del negocio",
-      "INFO_PH": "Envíos, pagos, devoluciones, contacto, dirección…",
-      "TIP_INFO": "Datos que el agente usará para responder (envíos, pagos, contacto, dirección).",
+      "INFO_PH": "Envíos, pagos, devoluciones, promociones, políticas…",
+      "TIP_INFO": "Datos que el agente usará para responder (envíos, pagos, promociones, políticas). El contacto se pone aparte.",
       "HOURS": "Horario de atención",
       "HOURS_PH": "Lun a Sáb, 9:00–20:00",
       "AGENDA": "Agenda / reservas (URL)",
@@ -845,7 +846,8 @@
       "CONTACT_PHONE": "Teléfono",
       "CONTACT_EMAIL": "Correo",
       "CONTACT_ADDRESS": "Dirección",
-      "CONTACT_NAME": "Persona de contacto (opcional)"
+      "CONTACT_NAME": "Persona de contacto (opcional)",
+      "ALLDAY": "24 h"
     },
     "DASH": {
       "NAV_DASHBOARD": "Dashboard",

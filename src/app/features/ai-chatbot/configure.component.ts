@@ -189,11 +189,18 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                             <span class="sw-label">{{ (d.closed ? 'AICHATBOT.ONBOARD.CLOSED' : 'AICHATBOT.ONBOARD.OPEN') | translate }}</span>
                           </label>
                           @if (!d.closed) {
-                            <span class="sched-times">
-                              <input type="time" [(ngModel)]="d.open" [ngModelOptions]="{ standalone: true }" [attr.aria-label]="'AICHATBOT.ONBOARD.OPENS' | translate" />
-                              <span class="dash">–</span>
-                              <input type="time" [(ngModel)]="d.close" [ngModelOptions]="{ standalone: true }" [attr.aria-label]="'AICHATBOT.ONBOARD.CLOSES' | translate" />
-                            </span>
+                            <label class="sw sw-24">
+                              <input type="checkbox" [ngModel]="is24h(d)" (ngModelChange)="toggle24(d, $event)" [ngModelOptions]="{ standalone: true }" />
+                              <span class="sw-track sm"><span class="sw-dot"></span></span>
+                              <span class="sw-label">{{ 'AICHATBOT.ONBOARD.ALLDAY' | translate }}</span>
+                            </label>
+                            @if (!is24h(d)) {
+                              <span class="sched-times">
+                                <input type="time" [(ngModel)]="d.open" [ngModelOptions]="{ standalone: true }" [attr.aria-label]="'AICHATBOT.ONBOARD.OPENS' | translate" />
+                                <span class="dash">–</span>
+                                <input type="time" [(ngModel)]="d.close" [ngModelOptions]="{ standalone: true }" [attr.aria-label]="'AICHATBOT.ONBOARD.CLOSES' | translate" />
+                              </span>
+                            }
                           } @else {
                             <span class="sched-cl">{{ 'AICHATBOT.ONBOARD.CLOSED' | translate }}</span>
                           }
@@ -903,6 +910,13 @@ export class ChatbotConfigureComponent implements OnInit {
   }
 
   toggleDay(d: DaySchedule, open: boolean): void { d.closed = !open; this.schedule.set([...this.schedule()]); }
+  /** ¿El día está marcado como abierto las 24 horas? */
+  is24h(d: DaySchedule): boolean { return d.open === '00:00' && d.close === '23:59'; }
+  toggle24(d: DaySchedule, on: boolean): void {
+    if (on) { d.open = '00:00'; d.close = '23:59'; }
+    else { d.open = '09:00'; d.close = '18:00'; }
+    this.schedule.set([...this.schedule()]);
+  }
 
   private readonly dayShort: Record<DaySchedule['day'], string> =
     { mon: 'Lun', tue: 'Mar', wed: 'Mié', thu: 'Jue', fri: 'Vie', sat: 'Sáb', sun: 'Dom' };

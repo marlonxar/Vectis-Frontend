@@ -78,7 +78,7 @@ import { ChatbotAuthService } from './auth.service';
             <div class="umenu" role="menu">
               <div class="uhead">
                 <strong>{{ s.userName() }}</strong>
-                <span class="uplan">{{ 'AICHATBOT.HEADER.HAS_PLAN' | translate }} {{ s.planName() }}</span>
+                <span class="uplan">@if (s.hasPlan()) { {{ 'AICHATBOT.HEADER.HAS_PLAN' | translate }} {{ s.planName() }} } @else { {{ 'AICHATBOT.HEADER.NO_PLAN' | translate }} }</span>
               </div>
               <a class="uitem" role="menuitem" routerLink="/ai-chatbot/account" (click)="userOpen.set(false)">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>

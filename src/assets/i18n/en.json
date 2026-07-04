@@ -716,7 +716,8 @@
       "HAS_PLAN": "Plan:",
       "MANAGE": "Manage account",
       "LOGOUT": "Sign out",
-      "INACTIVE": "Inactive"
+      "INACTIVE": "Inactive",
+      "NO_PLAN": "No active plan"
     },
     "ONBOARD": {
       "EYEBROW": "Set up your chatbot",
@@ -735,8 +736,8 @@
       "PERSONA": "Agent personality",
       "TIP_PERSONA": "How the agent behaves and talks. Default: \"You are Vecto, your company's virtual assistant\".",
       "INFO": "Business information",
-      "INFO_PH": "Shipping, payments, returns, contact, address…",
-      "TIP_INFO": "Info the agent uses to reply (shipping, payments, contact, address).",
+      "INFO_PH": "Shipping, payments, returns, promos, policies…",
+      "TIP_INFO": "Info the agent uses to answer (shipping, payments, promos, policies). Contact goes separately.",
       "HOURS": "Business hours",
       "HOURS_PH": "Mon–Sat, 9:00–20:00",
       "AGENDA": "Calendar / booking (URL)",
@@ -845,7 +846,8 @@
       "CONTACT_PHONE": "Phone",
       "CONTACT_EMAIL": "Email",
       "CONTACT_ADDRESS": "Address",
-      "CONTACT_NAME": "Contact person (optional)"
+      "CONTACT_NAME": "Contact person (optional)",
+      "ALLDAY": "24h"
     },
     "DASH": {
       "NAV_DASHBOARD": "Dashboard",
