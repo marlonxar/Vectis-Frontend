@@ -524,12 +524,11 @@ interface Plan {
 
     /* En acción — demos animados */
     .demos { background: var(--ink); color: var(--text-inv); padding: clamp(56px, 8vw, 100px) 0; border-top: 1px solid var(--line-light); }
-    .demo-grid { margin-top: clamp(38px, 5vw, 60px); display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 4vw, 48px); align-items: start; }
-    .demo-item { margin: 0; }
-    .demo-item figcaption { margin-top: 22px; text-align: center; max-width: 42ch; margin-left: auto; margin-right: auto; }
-    .demo-item figcaption h3 { font-size: 18px; margin-bottom: 7px; }
-    .demo-item figcaption p { font-size: 14px; line-height: 1.6; color: var(--text-inv-2); }
-    @media (max-width: 860px) { .demo-grid { grid-template-columns: 1fr; gap: 48px; } }
+    .demo-grid { margin-top: clamp(38px, 5vw, 60px); display: flex; flex-direction: column; gap: clamp(52px, 7vw, 84px); align-items: center; }
+    .demo-item { margin: 0; width: 100%; display: flex; flex-direction: column; align-items: center; }
+    .demo-item figcaption { margin-top: 24px; text-align: center; max-width: 52ch; }
+    .demo-item figcaption h3 { font-size: 19px; margin-bottom: 8px; }
+    .demo-item figcaption p { font-size: 14.5px; line-height: 1.6; color: var(--text-inv-2); }
 
     /* Confidencialidad y seguridad — panel único con divisores */
     .trust { background: var(--ink); color: var(--text-inv); padding: clamp(52px, 7vw, 90px) 0; border-top: 1px solid var(--line-light); }

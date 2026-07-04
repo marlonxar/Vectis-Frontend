@@ -8,30 +8,36 @@ interface Msg { id: number; kind: 'bot' | 'user' | 'typing' | 'qr' | 'csat' | 'c
 
 const COPY = {
   es: {
-    title: 'Aurora Café', online: 'En línea', ph: 'Escribe tu mensaje…',
-    greet: '¡Hola! Soy el asistente de <strong>Aurora Café</strong> ☕ ¿En qué te ayudo?',
-    qr: ['Horario', 'Menú', 'Reservar'],
-    u1: '¿Tienen leche de avena?',
-    b2: '¡Sí! Tenemos leche de <strong>avena</strong>, almendra y coco. Puedes pedir cualquier bebida con ellas, sin costo extra 🌱',
-    u2: '¿Cuánto cuesta un latte?',
-    b3: 'Un latte cuesta <strong>₡2.500</strong>. Con leche vegetal es el mismo precio. ¿Quieres que te reserve una mesa?',
-    u3: '¡Gracias, muy útil!',
+    title: 'TechToys', online: 'En línea', ph: 'Escribe tu mensaje…',
+    greet: '¡Hola! Bienvenido a <strong>TechToys</strong> 🚀 ¿Buscas un dron en particular?',
+    qr: ['Drones 4K', 'Ofertas', 'Envíos'],
+    turns: [
+      { u: 'Busco un dron para grabar video 4K', b: '¡Perfecto! Para 4K te recomiendo el <strong>SkyPro X4</strong>: cámara 4K estabilizada, 34 min de vuelo y 8 km de alcance. Precio: <strong>$899</strong>.' },
+      { u: '¿Trae garantía?', b: 'Sí ✅ Incluye <strong>2 años de garantía</strong> y 30 días para devolución. Viene con estuche rígido y 2 baterías extra.' },
+      { u: '¿Me pueden hacer un descuento?', b: 'Puedo darte un <strong>10% hoy</strong>: quedaría en <strong>$809</strong> con envío gratis. 🎁' },
+      { u: '¿En cuánto me llega?', b: 'El envío gratis tarda <strong>2–3 días hábiles</strong>. Si confirmas hoy, lo despacho de una vez.' },
+      { u: 'Perfecto, lo quiero', b: '¡Excelente elección! 🎉 Te paso el enlace de pago seguro y tu <strong>SkyPro X4</strong> sale hoy. ¿Quieres una llamada gratis para configurarlo?' },
+      { u: 'Sí, ¡gracias!', b: 'Listo, llamada agendada 📆 ¡Gracias por tu compra! Cualquier duda, aquí estoy.' },
+    ],
     csatQ: '¿Te resultó útil?', csatThanks: '¡Gracias por tu opinión!',
   },
   en: {
-    title: 'Aurora Café', online: 'Online', ph: 'Type your message…',
-    greet: "Hi! I'm the <strong>Aurora Café</strong> assistant ☕ How can I help?",
-    qr: ['Hours', 'Menu', 'Book'],
-    u1: 'Do you have oat milk?',
-    b2: 'Yes! We have <strong>oat</strong>, almond and coconut milk. You can add any of them to any drink, at no extra cost 🌱',
-    u2: 'How much is a latte?',
-    b3: 'A latte is <strong>$4.50</strong>. Plant milk is the same price. Want me to book you a table?',
-    u3: 'Thanks, very helpful!',
+    title: 'TechToys', online: 'Online', ph: 'Type your message…',
+    greet: 'Hi! Welcome to <strong>TechToys</strong> 🚀 Looking for a specific drone?',
+    qr: ['4K drones', 'Deals', 'Shipping'],
+    turns: [
+      { u: "I'm looking for a drone to shoot 4K video", b: 'Great! For 4K I recommend the <strong>SkyPro X4</strong>: stabilized 4K camera, 34 min flight time and 8 km range. Price: <strong>$899</strong>.' },
+      { u: 'Does it have a warranty?', b: 'Yes ✅ It includes a <strong>2-year warranty</strong> and 30-day returns. Comes with a hard case and 2 extra batteries.' },
+      { u: 'Can you give me a discount?', b: 'I can offer you <strong>10% off today</strong>: that brings it to <strong>$809</strong> with free shipping. 🎁' },
+      { u: 'How long is delivery?', b: 'Free shipping takes <strong>2–3 business days</strong>. If you confirm today, I ship it right away.' },
+      { u: 'Perfect, I want it', b: 'Excellent choice! 🎉 Here is your secure payment link and your <strong>SkyPro X4</strong> ships today. Want a free call to set it up?' },
+      { u: 'Yes, thanks!', b: 'Done, call booked 📆 Thanks for your purchase! I\'m here if you need anything.' },
+    ],
     csatQ: 'Was this helpful?', csatThanks: 'Thanks for your feedback!',
   },
 };
 
-/** Demo animado del chat en vivo (réplica del widget real: tema claro + gradiente dorado). Auto-reproduce en bucle. */
+/** Demo animado del chat en vivo (réplica del widget, color naranja liso). Auto-reproduce en bucle. */
 @Component({
   selector: 'app-cbdemo-chat',
   standalone: true,
@@ -39,7 +45,7 @@ const COPY = {
   template: `
     <div class="dc-win" role="img" [attr.aria-label]="t().title + ' — demo de chat'">
       <div class="dc-head">
-        <span class="dc-ava">A</span>
+        <span class="dc-ava">T</span>
         <div class="dc-meta">
           <div class="dc-title">{{ t().title }}</div>
           <div class="dc-sub"><span class="dc-dot"></span>{{ t().online }}</div>
@@ -61,7 +67,7 @@ const COPY = {
                 <button class="dc-csat-b" type="button">👎</button>
               </div>
             }
-            @case ('csatThanks') { <div class="dc-csat"><span class="dc-csat-q">{{ t().csatThanks }}</span></div> }
+            @case ('csatThanks') { <div class="dc-csat dc-csat-done"><span class="dc-csat-q">✓ {{ t().csatThanks }}</span></div> }
           }
         }
       </div>
@@ -73,44 +79,45 @@ const COPY = {
   `,
   styles: [`
     :host { display: block; }
-    .dc-win { width: 100%; max-width: 380px; margin: 0 auto; height: 560px; display: flex; flex-direction: column;
-      background: #fff; border-radius: 18px; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.08);
+    .dc-win { width: 100%; max-width: 400px; margin: 0 auto; height: 600px; display: flex; flex-direction: column;
+      background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 30px 70px rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.08);
       font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
-    .dc-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; color: #fff;
-      background: linear-gradient(135deg, #E7AB2E, #0A0A0A); }
-    .dc-ava { width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.92); color: #111; display: grid; place-items: center; font-weight: 800; font-size: 14px; flex-shrink: 0; }
+    .dc-head { display: flex; align-items: center; gap: 10px; padding: 15px 17px; color: #fff; background: #F97316; }
+    .dc-ava { width: 36px; height: 36px; border-radius: 50%; background: #fff; color: #F97316; display: grid; place-items: center; font-weight: 800; font-size: 15px; flex-shrink: 0; }
     .dc-meta { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
-    .dc-title { font-weight: 700; font-size: 15px; }
-    .dc-sub { font-size: 11px; opacity: .92; display: inline-flex; align-items: center; gap: 5px; }
+    .dc-title { font-weight: 700; font-size: 15.5px; }
+    .dc-sub { font-size: 11px; opacity: .95; display: inline-flex; align-items: center; gap: 5px; }
     .dc-dot { width: 7px; height: 7px; border-radius: 50%; background: #34e0a1; box-shadow: 0 0 6px #34e0a1; }
     .dc-ic { margin-left: auto; opacity: .9; display: inline-flex; }
     .dc-ic.dc-x { margin-left: 8px; font-size: 20px; line-height: 1; }
-    .dc-body { flex: 1; overflow: hidden; padding: 16px; background: #f6f6f8; display: flex; flex-direction: column; gap: 10px; }
-    .dc-b { max-width: 84%; padding: 10px 13px; border-radius: 14px; font-size: 14px; line-height: 1.45; animation: dc-rise .26s ease both; }
+    .dc-body { flex: 1; overflow-y: auto; padding: 16px; background: #f6f6f8; display: flex; flex-direction: column; gap: 10px; scrollbar-width: none; scroll-behavior: smooth; }
+    .dc-body::-webkit-scrollbar { display: none; }
+    .dc-b { max-width: 84%; padding: 10px 13px; border-radius: 15px; font-size: 14px; line-height: 1.45; animation: dc-rise .26s ease both; }
     .dc-bot { align-self: flex-start; background: #fff; color: #1a1a1a; border: 1px solid #ececf0; border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
-    .dc-bot strong { font-weight: 700; }
-    .dc-user { align-self: flex-end; color: #fff; background: linear-gradient(135deg, #E7AB2E, #0A0A0A); border-bottom-right-radius: 4px; }
+    .dc-bot strong { font-weight: 700; color: #0f0f10; }
+    .dc-user { align-self: flex-end; color: #fff; background: #F97316; border-bottom-right-radius: 4px; }
     .dc-typing { align-self: flex-start; display: inline-flex; gap: 4px; padding: 13px 14px; background: #fff; border: 1px solid #ececf0; border-radius: 14px; border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,.05); animation: dc-rise .2s ease both; }
     .dc-typing span { width: 7px; height: 7px; border-radius: 50%; background: #bbb; animation: dc-bounce 1s infinite; }
     .dc-typing span:nth-child(2) { animation-delay: .15s; }
     .dc-typing span:nth-child(3) { animation-delay: .3s; }
     .dc-qr { display: flex; flex-wrap: wrap; gap: 7px; animation: dc-rise .26s ease both; }
-    .dc-chip { font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 999px; border: 1px solid #E7AB2E; color: #B4801A; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
-    .dc-csat { align-self: center; display: flex; align-items: center; gap: 8px; margin: 4px 0; padding: 8px 12px; background: #fff; border: 1px solid #ececf0; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.05); font-size: 12.5px; color: #555; animation: dc-rise .26s ease both; }
+    .dc-chip { font-size: 12.5px; font-weight: 600; padding: 7px 12px; border-radius: 999px; border: 1px solid #F97316; color: #C2410C; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+    .dc-csat { align-self: center; display: flex; align-items: center; gap: 8px; margin: 4px 0; padding: 8px 12px; background: #fff; border: 1px solid #ececf0; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.05); font-size: 12.5px; color: #555; animation: dc-rise .3s ease both; }
+    .dc-csat-done { border-color: #fed7aa; background: #fff7ed; color: #9a3412; }
     .dc-csat-q { font-weight: 600; }
     .dc-csat-b { border: none; background: #f2f2f5; border-radius: 8px; font-size: 15px; line-height: 1; padding: 5px 9px; transition: transform .15s, background .15s; }
-    .dc-csat-b.on { background: #E7AB2E; transform: scale(1.12); }
+    .dc-csat-b.on { background: #F97316; transform: scale(1.14); }
     .dc-foot { display: flex; align-items: center; gap: 8px; padding: 11px 12px; border-top: 1px solid #eee; background: #fff; }
     .dc-in { flex: 1; min-height: 42px; display: flex; align-items: center; border: 1px solid #e3e3e8; border-radius: 11px; padding: 0 13px; font-size: 14px; color: #1a1a1a; overflow: hidden; white-space: nowrap; }
     .dc-in.empty { color: #9a9aa2; }
-    .dc-caret { width: 1.5px; height: 17px; margin-left: 1px; background: #E7AB2E; opacity: 0; }
+    .dc-caret { width: 1.5px; height: 17px; margin-left: 1px; background: #F97316; opacity: 0; }
     .dc-caret.show { opacity: 1; animation: dc-blink 1s step-end infinite; }
-    .dc-send { border-radius: 11px; width: 42px; height: 42px; flex-shrink: 0; display: grid; place-items: center; background: linear-gradient(135deg, #E7AB2E, #0A0A0A); }
+    .dc-send { border-radius: 11px; width: 42px; height: 42px; flex-shrink: 0; display: grid; place-items: center; background: #F97316; }
 
     @keyframes dc-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
     @keyframes dc-bounce { 0%,60%,100% { transform: translateY(0); opacity: .5; } 30% { transform: translateY(-5px); opacity: 1; } }
     @keyframes dc-blink { 0%,50% { opacity: 1; } 51%,100% { opacity: 0; } }
-    @media (prefers-reduced-motion: reduce) { .dc-b, .dc-qr, .dc-csat, .dc-typing { animation: none; } .dc-caret.show { animation: none; } }
+    @media (prefers-reduced-motion: reduce) { .dc-b, .dc-qr, .dc-csat, .dc-typing { animation: none; } .dc-caret.show { animation: none; } .dc-body { scroll-behavior: auto; } }
   `],
 })
 export class ChatDemoComponent implements OnInit, OnDestroy {
@@ -139,22 +146,20 @@ export class ChatDemoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void { this.alive = false; if (this.timer) clearTimeout(this.timer); }
 
-  private sleep(ms: number): Promise<void> {
-    return new Promise((res) => { this.timer = setTimeout(res, ms); });
-  }
+  private sleep(ms: number): Promise<void> { return new Promise((res) => { this.timer = setTimeout(res, ms); }); }
   private push(m: Omit<Msg, 'id'>): number { const id = ++this.uid; this.messages.update((a) => [...a, { ...m, id }]); this.scroll(); return id; }
   private removeLast(): void { this.messages.update((a) => a.slice(0, -1)); }
   private scroll(): void { queueMicrotask(() => { const el = this.bodyRef?.nativeElement; if (el) el.scrollTop = el.scrollHeight; }); }
 
   private async typeInto(text: string): Promise<void> {
     this.caret.set(true);
-    for (let i = 1; i <= text.length && this.alive; i++) { this.typed.set(text.slice(0, i)); await this.sleep(38); }
-    await this.sleep(360);
+    for (let i = 1; i <= text.length && this.alive; i++) { this.typed.set(text.slice(0, i)); await this.sleep(34); }
+    await this.sleep(340);
     this.caret.set(false); this.typed.set('');
     this.push({ kind: 'user', text });
   }
   private async botTurn(html: string): Promise<void> {
-    this.push({ kind: 'typing' }); await this.sleep(1100);
+    this.push({ kind: 'typing' }); await this.sleep(1150);
     if (!this.alive) return; this.removeLast(); this.push({ kind: 'bot', html });
   }
 
@@ -163,14 +168,14 @@ export class ChatDemoComponent implements OnInit, OnDestroy {
     this.push({ kind: 'bot', html: c.greet }); await this.sleep(700);
     this.push({ kind: 'qr', chips: c.qr }); await this.sleep(1700);
     this.removeLast();
-    await this.typeInto(c.u1); await this.sleep(300);
-    await this.botTurn(c.b2); await this.sleep(1200);
-    await this.typeInto(c.u2); await this.sleep(300);
-    await this.botTurn(c.b3); await this.sleep(1300);
-    await this.typeInto(c.u3); await this.sleep(600);
-    const id = this.push({ kind: 'csat' }); await this.sleep(1500);
-    this.messages.update((a) => a.map((m) => m.id === id ? { ...m, picked: 1 } : m)); await this.sleep(700);
-    this.messages.update((a) => a.map((m) => m.id === id ? { ...m, kind: 'csatThanks' } : m)); await this.sleep(2600);
+    for (let i = 0; i < c.turns.length && this.alive; i++) {
+      await this.typeInto(c.turns[i].u); await this.sleep(260);
+      await this.botTurn(c.turns[i].b); await this.sleep(i === c.turns.length - 1 ? 700 : 1150);
+    }
+    // Encuesta de satisfacción al cerrar la conversación
+    const id = this.push({ kind: 'csat' }); await this.sleep(1900);
+    this.messages.update((a) => a.map((m) => m.id === id ? { ...m, picked: 1 } : m)); await this.sleep(900);
+    this.messages.update((a) => a.map((m) => m.id === id ? { ...m, kind: 'csatThanks' } : m)); await this.sleep(3600);
   }
 
   private async loop(): Promise<void> {
@@ -183,14 +188,9 @@ export class ChatDemoComponent implements OnInit, OnDestroy {
 
   private staticState(): void {
     const c = this.t();
-    this.messages.set([
-      { id: 1, kind: 'bot', html: c.greet },
-      { id: 2, kind: 'user', text: c.u1 },
-      { id: 3, kind: 'bot', html: c.b2 },
-      { id: 4, kind: 'user', text: c.u2 },
-      { id: 5, kind: 'bot', html: c.b3 },
-      { id: 6, kind: 'user', text: c.u3 },
-      { id: 7, kind: 'csatThanks' },
-    ]);
+    const msgs: Msg[] = [{ id: ++this.uid, kind: 'bot', html: c.greet }];
+    for (const turn of c.turns) { msgs.push({ id: ++this.uid, kind: 'user', text: turn.u }); msgs.push({ id: ++this.uid, kind: 'bot', html: turn.b }); }
+    msgs.push({ id: ++this.uid, kind: 'csatThanks' });
+    this.messages.set(msgs);
   }
 }
