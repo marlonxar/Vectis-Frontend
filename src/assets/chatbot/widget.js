@@ -70,10 +70,24 @@
       .then(function (r) { return r.json(); });
   }
 
+  // Analiza el enlace de agenda: si es de Cal.com lo podemos embeber; si no, se abre en otra pestaña.
+  function calInfo(url) {
+    if (!url) return null;
+    try {
+      var u = new URL(String(url).trim());
+      var host = u.hostname.toLowerCase();
+      var isCal = host === 'cal.com' || host.slice(-8) === '.cal.com';
+      var path = u.pathname.replace(/^\/+/, '').replace(/\/+$/, '');
+      if (!path && isCal) return null;                       // sin ruta no hay evento que embeber
+      return { url: url, isCal: isCal, path: path, embedOrigin: isCal ? 'https://cal.com' : u.origin };
+    } catch (e) { return null; }
+  }
+
   // --- arranque: pedir config ---
   api({ action: 'config', client_id: CLIENT_ID }).then(function (c) {
     if (!c || !c.available) return;        // bot inactivo / cancelado / no disponible
     cfg = c;
+    cfg._cal = calInfo(c.agenda);          // link de Cal.com (para el botón "Agendar")
     injectStyles();
     render();
   }).catch(function () { /* silencioso */ });
@@ -131,13 +145,23 @@
       '.vxc-bot strong{font-weight:700}.vxc-bot em{font-style:italic}' +
       '.vxc-bot ul,.vxc-bot ol{margin:6px 0;padding-left:20px}.vxc-bot li{margin:2px 0}' +
       '.vxc-bot code{background:#f0f0f3;border-radius:4px;padding:1px 5px;font-size:12.5px;font-family:ui-monospace,Menlo,Consolas,monospace}' +
+      // Agendar (Cal.com embebido)
+      '.vxc-cal-btn{display:inline-flex;align-items:center;gap:6px;margin-left:auto;background:rgba(255,255,255,.18);border:none;color:#fff;font:inherit;font-size:12px;font-weight:600;padding:6px 11px;border-radius:999px;cursor:pointer;white-space:nowrap}' +
+      '.vxc-cal-btn:hover{background:rgba(255,255,255,.3)}.vxc-cal-btn svg{width:14px;height:14px}' +
+      '.vxc-cal{position:absolute;inset:0;z-index:5;background:#fff;display:flex;flex-direction:column;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s ease,transform .22s ease,visibility .22s}' +
+      '.vxc-cal.vxc-on{opacity:1;visibility:visible;transform:none}' +
+      '.vxc-cal-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #eee;font-weight:700;font-size:15px;color:#111}' +
+      '.vxc-cal-back{background:#f2f2f5;border:none;border-radius:9px;width:32px;height:32px;flex-shrink:0;display:grid;place-items:center;cursor:pointer;color:#333;font-size:18px;line-height:1}' +
+      '.vxc-cal-back:hover{background:#e7e7ec}' +
+      '.vxc-cal-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px}' +
+      '#vxc-cal-embed{min-height:100%}' +
       '@keyframes vxc-pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}' +
       '@keyframes vxc-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}' +
       '@keyframes vxc-bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}';
     var st = el('style'); st.textContent = css; document.head.appendChild(st);
   }
 
-  var $body, $panel, $launch;
+  var $body, $panel, $launch, $cal = null, calReady = false;
 
   function render() {
     // launcher
@@ -152,9 +176,13 @@
     var head = el('div', 'vxc-head');
     var initial = ((cfg.title || 'A').trim().charAt(0) || 'A').toUpperCase();
     var ava = cfg.logo ? '<img class="vxc-ava" src="' + esc(cfg.logo) + '" alt="">' : '<span class="vxc-ava">' + esc(initial) + '</span>';
+    var calBtn = cfg._cal ? '<button class="vxc-cal-btn" aria-label="Agendar" title="Agendar una cita">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Agendar</button>' : '';
     head.innerHTML = ava + '<div class="vxc-meta"><div class="vxc-title">' + esc(cfg.title) + '</div><div class="vxc-sub"><span class="vxc-dot"></span>En línea</div></div>' +
+      calBtn +
       '<button class="vxc-min" aria-label="Minimizar" title="Minimizar"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>' +
       '<button class="vxc-x" aria-label="Cerrar y borrar conversación" title="Cerrar y empezar de nuevo">&times;</button>';
+    if (cfg._cal) head.querySelector('.vxc-cal-btn').onclick = openCal;
     head.querySelector('.vxc-min').onclick = toggle;     // minimizar: oculta el panel, conserva el chat
     head.querySelector('.vxc-x').onclick = closeChat;    // cerrar: borra la conversación y empieza una nueva
 
@@ -187,6 +215,16 @@
     $panel.appendChild(head); $panel.appendChild($body); $panel.appendChild(foot);
     if (note) $panel.appendChild(note);
     $panel.appendChild(powered);
+
+    // Panel de agenda (Cal.com) — solo si hay enlace configurado.
+    if (cfg._cal) {
+      $cal = el('div', 'vxc-cal');
+      $cal.innerHTML = '<div class="vxc-cal-head"><button class="vxc-cal-back" aria-label="Volver al chat" title="Volver">&larr;</button><span>Agendar</span></div>' +
+        '<div class="vxc-cal-body"><div id="vxc-cal-embed"></div></div>';
+      $cal.querySelector('.vxc-cal-back').onclick = closeCal;
+      $panel.appendChild($cal);
+    }
+
     document.body.appendChild($panel);
 
     // posición del círculo y del panel (izquierda / derecha)
@@ -216,6 +254,27 @@
       if (cfg.quickReplies && cfg.quickReplies.length) addQuickReplies(cfg.quickReplies);
     }
     open = false; $panel.classList.remove('vxc-on');
+    closeCal();
+  }
+
+  // Abre "Agendar": si es Cal.com, muestra el calendario embebido dentro del chat;
+  // si es otro sistema de reservas, lo abre en otra pestaña.
+  function openCal() {
+    if (!cfg._cal) return;
+    if (!cfg._cal.isCal) { window.open(cfg._cal.url, '_blank', 'noopener'); return; }
+    if ($cal) $cal.classList.add('vxc-on');
+    if (!calReady) { calReady = true; renderCalEmbed(); }
+  }
+  function closeCal() { if ($cal) $cal.classList.remove('vxc-on'); }
+
+  function renderCalEmbed() {
+    // Loader oficial de Cal.com (encola llamadas hasta que carga el script).
+    (function (C, A, L) { var p = function (a, ar) { a.q.push(ar); }; var d = C.document; C.Cal = C.Cal || function () { var cal = C.Cal; var ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement('script')).src = A; cal.loaded = true; } if (ar[0] === L) { var api = function () { p(api, arguments); }; var namespace = ar[1]; api.q = api.q || []; typeof namespace === 'string' ? (cal.ns[namespace] = api) && p(api, ar) : p(cal, ar); return; } p(cal, ar); }; })(window, 'https://app.cal.com/embed/embed.js', 'init');
+    try {
+      window.Cal('init', { origin: cfg._cal.embedOrigin });
+      window.Cal('inline', { elementOrSelector: '#vxc-cal-embed', calLink: cfg._cal.path, config: { layout: 'month_view' } });
+      window.Cal('ui', { hideEventTypeDetails: false, layout: 'month_view' });
+    } catch (e) { /* si falla, dejamos el fallback del enlace en el texto del bot */ }
   }
 
   function addBot(text) { var b = el('div', 'vxc-b vxc-bot', mdToHtml(text)); $body.appendChild(b); scroll(); }

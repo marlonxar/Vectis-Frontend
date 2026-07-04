@@ -751,7 +751,7 @@
       "HOURS": "Business hours",
       "HOURS_PH": "Mon–Sat, 9:00–20:00",
       "AGENDA": "Calendar / booking (URL)",
-      "TIP_AGENDA": "If you use an online calendar, the chat can check availability and book appointments.",
+      "TIP_AGENDA": "Paste your Cal.com link and an \"Agendar\" button opens the calendar inside the chat. With other systems, the bot shares the link.",
       "DOC": "Documentation (URL)",
       "TIP_DOC": "Link to a document (Word, web) with more business info. The agent reads it.",
       "INVENTORY": "Inventory (CSV URL)",

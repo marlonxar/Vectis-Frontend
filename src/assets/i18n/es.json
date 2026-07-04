@@ -751,7 +751,7 @@
       "HOURS": "Horario de atención",
       "HOURS_PH": "Lun a Sáb, 9:00–20:00",
       "AGENDA": "Agenda / reservas (URL)",
-      "TIP_AGENDA": "Si usas una agenda online, el chat podrá consultar disponibilidad y agendar citas.",
+      "TIP_AGENDA": "Pega tu enlace de Cal.com y aparecerá un botón \"Agendar\" que abre el calendario dentro del chat. Con otros sistemas, el bot comparte el enlace.",
       "DOC": "Documentación (URL)",
       "TIP_DOC": "Enlace a un documento (Word, web) con más info de tu negocio. El agente lo consulta.",
       "INVENTORY": "Inventario (URL CSV)",
