@@ -1150,9 +1150,9 @@
       "Q8": "Any lock-in or contracts?",
       "A8": "No. Change plan or cancel whenever you want.",
       "F10_T": "Human handoff",
-      "F10_D": "When the customer needs it, a \"Talk to an agent\" button connects the conversation to a real person; the customer stays in the same chat. Today via Telegram, with more channels coming soon.",
+      "F10_D": "When the bot is not enough, the customer taps \"Talk to an agent\" and their messages reach your Telegram; you reply from there and it shows in the same chat, without the customer switching apps. They can return to the assistant anytime, and those messages don't use AI. Today via Telegram; more channels coming soon.",
       "Q9": "Can the bot hand the conversation to a person?",
-      "A9": "Yes. With human handoff, the customer taps \"Talk to an agent\" and their messages reach your channel; you reply from there and your answer appears in the same chat. The channel is Telegram for now, with more options coming soon."
+      "A9": "Yes. With human handoff, the customer taps \"Talk to an agent\" and from then on their messages no longer go to the AI but to your Telegram. You reply from your phone or computer and your answer appears instantly in the same customer chat; they never leave your site. When done, they can return to the assistant with a button. Benefits: it is live and two-way, it doesn't use AI credits while they talk to you, and it is set up by pasting your Telegram bot token. The channel is Telegram for now, with more coming soon (WhatsApp, Slack and others)."
     },
     "DEMO": {
       "EYEBROW": "In action",

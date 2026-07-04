@@ -56,6 +56,8 @@ const COPY = {
           <div class="dc-title">{{ t().title }}</div>
           <div class="dc-sub"><span class="dc-dot"></span>{{ t().online }}</div>
         </div>
+        <span class="dc-ic dc-first" aria-hidden="true" title="Hablar con un agente"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg></span>
+        <span class="dc-ic" aria-hidden="true" title="Agendar"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></span>
         <span class="dc-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></span>
         <span class="dc-ic dc-x" aria-hidden="true">&times;</span>
       </div>
@@ -65,7 +67,7 @@ const COPY = {
             @case ('bot') { <div class="dc-b dc-bot" [innerHTML]="m.html"></div> }
             @case ('user') { <div class="dc-b dc-user">{{ m.text }}</div> }
             @case ('typing') { <div class="dc-typing"><span></span><span></span><span></span></div> }
-            @case ('qr') { <div class="dc-qr">@for (c of m.chips; track c) { <button class="dc-chip" type="button">{{ c }}</button> }</div> }
+            @case ('qr') { <div class="dc-qr">@for (c of m.chips; track c) { <button class="dc-chip" type="button">{{ c }}</button> }<button class="dc-chip dc-chip-agent" type="button"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg>Hablar con un agente</button></div> }
             @case ('csat') {
               <div class="dc-csat">
                 <span class="dc-csat-q">{{ t().csatQ }}</span>
@@ -108,6 +110,7 @@ const COPY = {
     .dc-typing span:nth-child(3) { animation-delay: .3s; }
     .dc-qr { display: flex; flex-wrap: wrap; gap: 6px; animation: dc-rise .26s ease both; }
     .dc-chip { font-size: 12px; font-weight: 600; padding: 6px 11px; border-radius: 999px; border: 1px solid #E7AB2E; color: #B4801A; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+    .dc-chip-agent { background: #E7AB2E; color: #fff; border-color: #E7AB2E; display: inline-flex; align-items: center; gap: 5px; }
     .dc-csat { align-self: center; display: flex; align-items: center; gap: 8px; margin: 4px 0; padding: 7px 11px; background: #fff; border: 1px solid #ececf0; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.05); font-size: 12px; color: #555; animation: dc-rise .3s ease both; }
     .dc-csat-done { border-color: #f5e2b8; background: #fdf7e8; color: #8a6412; }
     .dc-csat-q { font-weight: 600; }

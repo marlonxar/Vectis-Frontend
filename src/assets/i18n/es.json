@@ -1150,9 +1150,9 @@
       "Q8": "¿Hay permanencia o contratos?",
       "A8": "No. Cambias de plan o cancelas cuando quieras.",
       "F10_T": "Handoff a humano",
-      "F10_D": "Cuando el cliente lo necesita, un botón \"Hablar con un agente\" conecta la conversación con una persona real; el cliente sigue en el mismo chat. Hoy vía Telegram, con más canales próximamente.",
+      "F10_D": "Cuando el bot no basta, el cliente toca \"Hablar con un agente\" y sus mensajes llegan a tu Telegram; tú respondes desde ahí y aparece en el mismo chat, sin que el cliente cambie de app. Puede volver al asistente cuando quiera, y esos mensajes no consumen IA. Hoy vía Telegram; más canales próximamente.",
       "Q9": "¿El bot puede pasar la conversación a una persona?",
-      "A9": "Sí. Con el handoff a humano, el cliente toca \"Hablar con un agente\" y sus mensajes te llegan a tu canal; respondes desde ahí y tu respuesta aparece en el mismo chat. De momento el canal es Telegram y próximamente se agregarán más opciones."
+      "A9": "Sí. Con el handoff a humano, el cliente toca \"Hablar con un agente\" y a partir de ahí sus mensajes ya no van a la IA sino a tu Telegram. Respondes desde tu teléfono o computadora y tu respuesta aparece al instante en el mismo chat del cliente; él nunca sale de tu web. Cuando termina, puede volver al asistente con un botón. Ventajas: es en vivo y de dos vías, no gasta créditos de IA mientras habla contigo, y se configura pegando el token de tu bot de Telegram. De momento el canal es Telegram y próximamente añadiremos más (WhatsApp, Slack y otros)."
     },
     "DEMO": {
       "EYEBROW": "En acción",

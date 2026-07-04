@@ -148,8 +148,8 @@
       '.vxc-bot ul,.vxc-bot ol{margin:6px 0;padding-left:20px}.vxc-bot li{margin:2px 0}' +
       '.vxc-bot code{background:#f0f0f3;border-radius:4px;padding:1px 5px;font-size:12.5px;font-family:ui-monospace,Menlo,Consolas,monospace}' +
       // Agendar (Cal.com embebido)
-      '.vxc-cal-btn{display:inline-flex;align-items:center;gap:6px;margin-left:auto;background:rgba(255,255,255,.18);border:none;color:#fff;font:inherit;font-size:12px;font-weight:600;padding:6px 11px;border-radius:999px;cursor:pointer;white-space:nowrap}' +
-      '.vxc-cal-btn:hover{background:rgba(255,255,255,.3)}.vxc-cal-btn svg{width:14px;height:14px}' +
+      '.vxc-cal-btn{margin-left:auto;background:rgba(255,255,255,.18);border:none;color:#fff;cursor:pointer;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;flex-shrink:0}' +
+      '.vxc-cal-btn:hover{background:rgba(255,255,255,.3)}.vxc-cal-btn svg{width:17px;height:17px}' +
       '.vxc-cal{position:absolute;inset:0;z-index:5;background:#fff;display:flex;flex-direction:column;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .2s ease,transform .22s ease,visibility .22s}' +
       '.vxc-cal.vxc-on{opacity:1;visibility:visible;transform:none}' +
       '.vxc-cal-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #eee;font-weight:700;font-size:15px;color:#111}' +
@@ -191,7 +191,7 @@
     var hoBtn = cfg.handoff ? '<button class="vxc-ho-btn" aria-label="Hablar con una persona" title="Hablar con una persona">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg></button>' : '';
     var calBtn = cfg._cal ? '<button class="vxc-cal-btn" aria-label="Agendar" title="Agendar una cita">' +
-      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Agendar</button>' : '';
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></button>' : '';
     head.innerHTML = ava + '<div class="vxc-meta"><div class="vxc-title">' + esc(cfg.title) + '</div><div class="vxc-sub"><span class="vxc-dot"></span>En línea</div></div>' +
       hoBtn + calBtn +
       '<button class="vxc-min" aria-label="Minimizar" title="Minimizar"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>' +

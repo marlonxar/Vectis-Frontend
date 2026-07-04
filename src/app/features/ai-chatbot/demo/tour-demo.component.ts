@@ -7,7 +7,8 @@ import { TranslateService } from '@ngx-translate/core';
 const COPY = {
   es: {
     brand: 'TechToys', plan: 'Plan Pro',
-    nDash: 'Dashboard', nCfg: 'Configurar', nAcc: 'Cuenta', nSup: 'Soporte',
+    nDash: 'Dashboard', nCfg: 'Configurar', nHand: 'Handoff', nAcc: 'Cuenta', nSup: 'Soporte',
+    secHo: 'Atención humana', hoCh: 'Telegram', hoStatus: 'Bot vinculado ✓', hoSoon: 'Más canales pronto',
     cfgTitle: 'Configura tu chatbot', cfgSub: 'Cuéntanos sobre tu negocio.',
     secId: 'Identidad', secAp: 'Apariencia', secKn: 'Conocimiento del negocio',
     fName: 'Nombre de la empresa', vName: 'TechToys',
@@ -28,7 +29,8 @@ const COPY = {
   },
   en: {
     brand: 'TechToys', plan: 'Pro plan',
-    nDash: 'Dashboard', nCfg: 'Configure', nAcc: 'Account', nSup: 'Support',
+    nDash: 'Dashboard', nCfg: 'Configure', nHand: 'Handoff', nAcc: 'Account', nSup: 'Support',
+    secHo: 'Human support', hoCh: 'Telegram', hoStatus: 'Bot linked ✓', hoSoon: 'More channels soon',
     cfgTitle: 'Configure your chatbot', cfgSub: 'Tell us about your business.',
     secId: 'Identity', secAp: 'Appearance', secKn: 'Business knowledge',
     fName: 'Company name', vName: 'TechToys',
@@ -63,6 +65,7 @@ const COPY = {
           <nav class="s-nav">
             <span class="s-item" [class.on]="screen() === 'dash'"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>{{ t().nDash }}</span>
             <span class="s-item" [class.on]="screen() === 'cfg'"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15H4.5a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 6 8"/></svg>{{ t().nCfg }}</span>
+            <span class="s-item"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg>{{ t().nHand }}</span>
             <span class="s-item"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>{{ t().nAcc }}</span>
             <span class="s-item"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>{{ t().nSup }}</span>
           </nav>
@@ -91,7 +94,14 @@ const COPY = {
                   <div class="fld"><label>{{ t().fInv }}</label><div class="inp ok">{{ t().vInv }}</div></div>
                 </div>
               </div>
-              <button class="tw-save f4" type="button" [class.done]="saved()">{{ saved() ? t().saved : t().save }}</button>
+              <div class="sec f4"><span class="sec-t">{{ t().secHo }}</span>
+                <div class="ho-row">
+                  <div class="ho-ch"><span class="ho-ic"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M21.9 4.3 18.7 19.4c-.24 1.06-.87 1.32-1.76.82l-4.87-3.59-2.35 2.26c-.26.26-.48.48-.98.48l.35-4.96 9.02-8.15c.39-.35-.09-.55-.6-.2L6.35 13.1l-4.8-1.5c-1.04-.33-1.06-1.04.22-1.54l18.77-7.23c.87-.32 1.63.2 1.36 1.47z"/></svg></span><div><b>{{ t().hoCh }}</b><span class="ho-ok">{{ t().hoStatus }}</span></div></div>
+                  <span class="tgl on"><i></i></span>
+                </div>
+                <span class="ho-soon">{{ t().hoSoon }}</span>
+              </div>
+              <button class="tw-save f5" type="button" [class.done]="saved()">{{ saved() ? t().saved : t().save }}</button>
             </div>
           } @else {
             <div class="scr dash">
@@ -157,8 +167,15 @@ const COPY = {
     .m-sub { font-size: 13px; color: rgba(255,255,255,.55); margin: 5px 0 18px; }
 
     /* Configure */
-    .sec { margin-bottom: 16px; opacity: 0; animation: fld-in .45s ease forwards; }
-    .sec.f1 { animation-delay: .18s; } .sec.f2 { animation-delay: .42s; } .sec.f3 { animation-delay: .66s; }
+    .sec { margin-bottom: 11px; opacity: 0; animation: fld-in .45s ease forwards; }
+    .sec.f1 { animation-delay: .18s; } .sec.f2 { animation-delay: .42s; } .sec.f3 { animation-delay: .66s; } .sec.f4 { animation-delay: .9s; }
+    /* Atención humana (handoff) */
+    .ho-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12); border-radius: 11px; padding: 12px 14px; }
+    .ho-ch { display: flex; align-items: center; gap: 11px; }
+    .ho-ic { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; color: #229ED9; background: rgba(34,158,217,.14); border: 1px solid rgba(34,158,217,.3); }
+    .ho-ch b { display: block; font-size: 13.5px; }
+    .ho-ok { font-size: 11.5px; color: #34e0a1; }
+    .ho-soon { display: block; margin-top: 8px; font-size: 11px; color: rgba(255,255,255,.5); }
     @keyframes fld-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
     .sec-t { display: block; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #E7AB2E; margin-bottom: 10px; }
     .fld { margin-bottom: 11px; }
@@ -171,7 +188,7 @@ const COPY = {
     .tgl { width: 40px; height: 23px; border-radius: 999px; background: #E7AB2E; position: relative; display: inline-block; }
     .tgl i { position: absolute; top: 3px; right: 3px; width: 17px; height: 17px; border-radius: 50%; background: #fff; }
     .tw-save { margin-top: 4px; min-height: 44px; padding: 0 24px; border: none; border-radius: 999px; font: inherit; font-weight: 700; color: #0A0A0A;
-      background: #E7AB2E; box-shadow: 0 10px 26px rgba(231,171,46,.3); opacity: 0; animation: fld-in .45s ease .9s forwards; }
+      background: #E7AB2E; box-shadow: 0 10px 26px rgba(231,171,46,.3); opacity: 0; animation: fld-in .45s ease 1.15s forwards; }
     .tw-save.done { background: #16a34a; color: #fff; }
 
     /* Dashboard */
