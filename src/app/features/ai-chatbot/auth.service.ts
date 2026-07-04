@@ -9,6 +9,9 @@ import { ChatbotSessionService, rowToConfig } from './session.service';
  * Mantiene la sesión y, al iniciar sesión, carga el perfil y los chatbots
  * del usuario en ChatbotSessionService (que alimenta la UI).
  */
+/** URL pública fija de la app. Los correos y redirecciones de auth SIEMPRE apuntan aquí (nunca a localhost). */
+const APP_URL = 'https://www.wearevectis.com';
+
 @Injectable({ providedIn: 'root' })
 export class ChatbotAuthService {
   private sb = inject(SupabaseClientService).client;
@@ -86,7 +89,7 @@ export class ChatbotAuthService {
       password,
       options: {
         data: { first_name: firstName, last_name: lastName, preferred_lang: 'es' },
-        emailRedirectTo: `${location.origin}/ai-chatbot`,
+        emailRedirectTo: `${APP_URL}/ai-chatbot`,
       },
     });
   }
@@ -100,7 +103,7 @@ export class ChatbotAuthService {
     return this.sb.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${location.origin}/ai-chatbot`,
+        redirectTo: `${APP_URL}/ai-chatbot`,
         queryParams: { prompt: 'select_account' },
       },
     });
@@ -108,7 +111,7 @@ export class ChatbotAuthService {
 
   forgot(email: string) {
     return this.sb.auth.resetPasswordForEmail(email, {
-      redirectTo: `${location.origin}/ai-chatbot/reset`,
+      redirectTo: `${APP_URL}/ai-chatbot/reset`,
     });
   }
 
