@@ -301,21 +301,41 @@
     history.push({ role: 'user', text: text }); saveHistory();
     var typing = el('div', 'vxc-typing', '<span></span><span></span><span></span>'); $body.appendChild(typing); scroll();
 
-    api({ action: 'chat', client_id: CLIENT_ID, session_id: sessionId(), message: text, history: history.slice(0, -1) })
-      .then(function (r) {
-        typing.remove();
-        var reply = (r && r.reply) || (r && r.error === 'origin_not_allowed'
-          ? 'Este chat no está autorizado en este dominio.'
-          : 'Lo siento, no pude responder. Intenta de nuevo.');
-        addBot(reply);
-        history.push({ role: 'bot', text: reply });
-        if (history.length > 20) history = history.slice(-20);
-        saveHistory();
-        // Si el cliente cerró (gracias/adiós), pide opinión tras una breve pausa; si no, espera a que haya inactividad.
-        scheduleCsat(closing ? 4000 : 45000);
-      })
-      .catch(function () { typing.remove(); addBot('Hubo un problema de conexión. Intenta de nuevo.'); })
-      .finally(function () { sending = false; });
+    // Auto-reintento silencioso: si la IA cae por un rate-limit momentáneo (retry:true)
+    // o hay un error de red, mantenemos el "escribiendo…" y reintentamos solo, con
+    // esperas crecientes, antes de mostrar cualquier mensaje de error. Así el cliente
+    // casi nunca ve "tuve un problema para responder".
+    var MAX_TRIES = 4;
+    var RETRY_DELAYS = [1500, 3000, 4500];
+
+    function attempt(n) {
+      api({ action: 'chat', client_id: CLIENT_ID, session_id: sessionId(), message: text, history: history.slice(0, -1) })
+        .then(function (r) {
+          if (r && r.retry && n < MAX_TRIES) { setTimeout(function () { attempt(n + 1); }, RETRY_DELAYS[n - 1] || 4500); return; }
+          finish(r, null);
+        })
+        .catch(function (err) {
+          if (n < MAX_TRIES) { setTimeout(function () { attempt(n + 1); }, RETRY_DELAYS[n - 1] || 4500); return; }
+          finish(null, err);
+        });
+    }
+
+    function finish(r, err) {
+      typing.remove();
+      var reply = err ? 'Hubo un problema de conexión. Intenta de nuevo.'
+        : ((r && r.reply) || (r && r.error === 'origin_not_allowed'
+            ? 'Este chat no está autorizado en este dominio.'
+            : 'Lo siento, no pude responder. Intenta de nuevo.'));
+      addBot(reply);
+      history.push({ role: 'bot', text: reply });
+      if (history.length > 20) history = history.slice(-20);
+      saveHistory();
+      // Si el cliente cerró (gracias/adiós), pide opinión tras una breve pausa; si no, espera a que haya inactividad.
+      scheduleCsat(closing ? 4000 : 45000);
+      sending = false;
+    }
+
+    attempt(1);
   }
 
   // Fin de sesión: al salir de la página (confiable vía sendBeacon).
