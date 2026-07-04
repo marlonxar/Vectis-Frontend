@@ -209,7 +209,11 @@
     foot.appendChild(input); foot.appendChild(send);
     function doSend() { var v = input.value.trim(); if (v) { input.value = ''; ask(v); } }
     send.onclick = doSend;
-    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') doSend(); });
+    // stopPropagation evita que un handler global de la página (p. ej. bloquear la
+    // barra espaciadora para el scroll) impida escribir espacios en el input.
+    input.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter') doSend(); });
+    input.addEventListener('keypress', function (e) { e.stopPropagation(); });
+    input.addEventListener('keyup', function (e) { e.stopPropagation(); });
 
     var note = null;
     if (cfg.privacyText) {
