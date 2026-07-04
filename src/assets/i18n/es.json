@@ -1181,7 +1181,7 @@
       "ENABLE": "Activar Telegram",
       "GUIDE_TITLE": "Configura tu Telegram (grupo con Temas)",
       "G1": "En Telegram, abre @BotFather y envía /newbot. Elige un nombre y un usuario que termine en \"bot\". Copia el token que te da.",
-      "G2": "En @BotFather envía /setprivacy, elige tu bot y ponlo en \"Disable\" (así el bot puede leer los mensajes del grupo).",
+      "G2": "En @BotFather envía /setprivacy, elige tu bot y desactiva la \"Group Privacy\" (que quede en \"disabled\"). Como el bot es admin del grupo igual verá todos los mensajes, pero así te aseguras.",
       "G3": "Crea un grupo en Telegram y actívale los \"Temas\" (ajustes del grupo → Temas / Topics).",
       "G4": "Agrega tu bot al grupo como administrador, con permiso para gestionar Temas.",
       "F_TOKEN": "Token del bot (BotFather)",
@@ -1197,7 +1197,7 @@
       "CHECK": "Verificar conexión",
       "CHECKING": "Verificando…",
       "G5": "Pega el token aquí abajo y guarda: registramos tu bot automáticamente.",
-      "G6": "En el grupo, envía /start para vincularlo. A partir de ahí, cada conversación cae en su propio Tema y respondes dentro de cada uno."
+      "G6": "En el GRUPO (no en el chat privado del bot) envía /start para vincularlo. Si ya habías hecho /start en el privado, hazlo de nuevo dentro del grupo para cambiar el destino. Cada conversación caerá en su propio Tema."
     }
   },
   "REFUNDS": {
