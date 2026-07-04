@@ -8,7 +8,9 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { firstValueFrom } from 'rxjs';
 
 export function httpLoaderFactory(http: HttpClient): TranslateHttpLoader {
-  return new TranslateHttpLoader(http, 'assets/i18n/', '.json');
+  // Cache-busting: cada carga de la app pide el JSON con un parámetro nuevo, así el
+  // navegador NUNCA sirve una versión vieja cacheada de las traducciones.
+  return new TranslateHttpLoader(http, 'assets/i18n/', '.json?v=' + Date.now());
 }
 
 /** Idioma inicial: /en > ?lang= > preferencia guardada > 'es'. */
