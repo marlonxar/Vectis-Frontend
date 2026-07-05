@@ -961,7 +961,11 @@
         "LIVE": "Publica el chatbot en tu web"
       },
       "FILTER_TYPE": "Filtrar por tipo",
-      "ALL_TYPES": "Todos los tipos"
+      "ALL_TYPES": "Todos los tipos",
+      "HO_RESP": "Tiempo de respuesta",
+      "HO_RESP_HINT": "Promedio del agente (mes)",
+      "HO_PEAK": "Hora pico de atención",
+      "HO_PEAK_HINT": "Cuándo escriben más"
     },
     "SUPPORT": {
       "EYEBROW": "Soporte técnico",

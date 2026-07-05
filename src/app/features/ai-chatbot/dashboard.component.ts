@@ -122,6 +122,18 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
                     <div class="sub">{{ 'AICHATBOT.DASH.HANDOFF_HINT' | translate }}</div>
                   }
                 </div>
+                @if (canInsights()) {
+                  <div class="stat">
+                    <div class="cap">{{ 'AICHATBOT.DASH.HO_RESP' | translate }}</div>
+                    <div class="n">{{ hoRespText() }}</div>
+                    <div class="sub">{{ 'AICHATBOT.DASH.HO_RESP_HINT' | translate }}</div>
+                  </div>
+                  <div class="stat">
+                    <div class="cap">{{ 'AICHATBOT.DASH.HO_PEAK' | translate }}</div>
+                    <div class="n">{{ hoPeakHour() || '—' }}</div>
+                    <div class="sub">{{ 'AICHATBOT.DASH.HO_PEAK_HINT' | translate }}</div>
+                  </div>
+                }
               }
               @if (canInsights()) {
                 <div class="stat">
@@ -433,6 +445,16 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
   readonly handoffOn = computed(() => !!this.s.currentConfig()?.handoffEnabled);
   readonly handoffChats = signal(0);
   readonly handoffLive = signal(0);
+  // Métricas de handoff (Pro+): tiempo de respuesta y hora pico de atención.
+  readonly hoAvgSec = signal<number | null>(null);
+  readonly hoPeakHour = signal<string>('');
+  readonly hoRespText = computed(() => {
+    const s = this.hoAvgSec();
+    if (s === null) return '—';
+    if (s < 60) return Math.round(s) + 's';
+    const m = Math.floor(s / 60); const sec = Math.round(s % 60);
+    return m + 'm' + (sec ? ' ' + sec + 's' : '');
+  });
   limit = computed(() => this.stats()?.limit ?? 1000);
   // Los insights con IA son función de Pro/Business (Basic no los ve).
   canInsights = computed(() => this.s.plan() !== 'basic');
@@ -568,7 +590,8 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
       this.recentLeads.set((rl.data as any[]) ?? []);
       this.recentInsights.set((ri.data as any[]) ?? []);
       // Handoff: chats con agente del mes + en vivo ahora (solo si está habilitado).
-      if (this.handoffOn()) { this.loadHandoff(id, range); } else { this.handoffChats.set(0); this.handoffLive.set(0); }
+      if (this.handoffOn()) { this.loadHandoff(id, range); if (this.canInsights()) this.loadHandoffTiming(id, range); }
+      else { this.handoffChats.set(0); this.handoffLive.set(0); this.hoAvgSec.set(null); this.hoPeakHour.set(''); }
       // Mes anterior para comparar (solo Pro/Business).
       if (this.canInsights()) {
         const sp = await this.sb.rpc('chatbot_dashboard_stats', { p_client_id: id, p_month: this.prevMonthOf(month) });
@@ -592,6 +615,33 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
         .eq('chatbot_id', id).eq('active', true).gte('updated_at', liveSince);
       this.handoffLive.set(live.count ?? 0);
     } catch (e) { this.handoffChats.set(0); this.handoffLive.set(0); }
+  }
+
+  /** Tiempo de respuesta promedio del agente + hora pico (Pro+). Calcula desde handoff_events. */
+  private async loadHandoffTiming(id: string, range: { start: string; end: string }): Promise<void> {
+    try {
+      const { data } = await this.sb.from('handoff_events').select('session_id,direction,created_at')
+        .eq('chatbot_id', id).gte('created_at', range.start).lt('created_at', range.end)
+        .order('created_at', { ascending: true }).limit(4000);
+      const evs = (data as any[]) ?? [];
+      const pendingIn: Record<string, number> = {};
+      const gaps: number[] = [];
+      const byHour = new Array(24).fill(0);
+      for (const e of evs) {
+        const t = new Date(e.created_at).getTime();
+        if (e.direction === 'in') {
+          if (pendingIn[e.session_id] === undefined) pendingIn[e.session_id] = t;   // primer 'in' sin responder
+          byHour[new Date(e.created_at).getHours()]++;
+        } else if (e.direction === 'out') {
+          const inT = pendingIn[e.session_id];
+          if (inT !== undefined) { const g = (t - inT) / 1000; if (g > 0 && g < 86400) gaps.push(g); delete pendingIn[e.session_id]; }
+        }
+      }
+      this.hoAvgSec.set(gaps.length ? Math.round(gaps.reduce((a, b) => a + b, 0) / gaps.length) : null);
+      let peak = -1, peakN = 0;
+      for (let h = 0; h < 24; h++) { if (byHour[h] > peakN) { peakN = byHour[h]; peak = h; } }
+      this.hoPeakHour.set(peak >= 0 ? (peak < 10 ? '0' + peak : '' + peak) + ':00' : '');
+    } catch (e) { this.hoAvgSec.set(null); this.hoPeakHour.set(''); }
   }
 
   /** Lleva el scroll de la gráfica de días al final (día más reciente / actual). */

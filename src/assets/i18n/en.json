@@ -961,7 +961,11 @@
         "LIVE": "Publish the chatbot on your site"
       },
       "FILTER_TYPE": "Filter by type",
-      "ALL_TYPES": "All types"
+      "ALL_TYPES": "All types",
+      "HO_RESP": "Response time",
+      "HO_RESP_HINT": "Agent average (month)",
+      "HO_PEAK": "Peak support hour",
+      "HO_PEAK_HINT": "When customers write most"
     },
     "SUPPORT": {
       "EYEBROW": "Technical support",
