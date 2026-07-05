@@ -450,7 +450,7 @@
     var RETRY_DELAYS = [1500, 3000, 4500];
 
     function attempt(n) {
-      api({ action: 'chat', client_id: CLIENT_ID, session_id: sessionId(), message: text, history: history.slice(0, -1) })
+      api({ action: 'chat', client_id: CLIENT_ID, session_id: sessionId(), message: text, history: history.slice(0, -1), handoff: !!cfg.handoff })
         .then(function (r) {
           if (r && r.retry && n < MAX_TRIES) { setTimeout(function () { attempt(n + 1); }, RETRY_DELAYS[n - 1] || 4500); return; }
           finish(r, null);
