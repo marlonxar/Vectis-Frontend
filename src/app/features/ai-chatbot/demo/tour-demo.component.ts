@@ -228,6 +228,19 @@ const COPY = {
     .stv { font-size: 17px; font-weight: 800; color: #E7AB2E; font-variant-numeric: tabular-nums; }
 
     @media (prefers-reduced-motion: reduce) { .scr, .sec, .mc, .panel, .st, .tw-save, .bar { animation: none; opacity: 1; } .ldot, .agdot { animation: none; } }
+    /* Móvil: mockup fluido (sin sidebar fijo, grids apilados) para no quedar comprimido */
+    @media (max-width: 640px) {
+      .tw { height: auto; min-height: 480px; }
+      .app { grid-template-columns: 1fr; }
+      .side { display: none; }
+      .main { padding: 18px 16px; }
+      .m-h { font-size: 18px; }
+      .m-sub { margin-bottom: 14px; }
+      .mgrid { grid-template-columns: 1fr 1fr; }
+      .d-low, .d-stats, .grid2 { grid-template-columns: 1fr; }
+      .tw-url { display: none; }
+      .d-head { flex-wrap: wrap; }
+    }
   `],
 })
 export class TourDemoComponent implements OnInit, OnDestroy {

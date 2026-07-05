@@ -5,6 +5,14 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+
+/* ---- Responsive safety nets (site-wide) ---- */
+/* Media never overflows its container on small screens */
+img, video, canvas { max-width: 100%; }
+img, video { height: auto; }
+/* Long unbreakable strings (URLs, tokens, emails) can't force horizontal scroll */
+body { overflow-wrap: break-word; }
+
 /* overflow-x: clip (not hidden) — `hidden` on the root makes it a scroll container,
    which on iOS Safari breaks position:fixed + safe-area insets (content bled above the navbar
    on Dynamic Island iPhones). `clip` hides horizontal overflow without that side effect. */
