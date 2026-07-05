@@ -907,15 +907,15 @@
       "MANAGE_LINK": "Gestionar ChatBots",
       "CONVERSATIONS": "Conversaciones",
       "CONV_7D": "Últimos 7 días",
-      "USAGE_MONTH": "Mensajes este mes",
+      "USAGE_MONTH": "Mensajes a la IA (mes)",
       "RECENT_CONV": "Conversaciones recientes",
       "COL_USER": "Cliente",
       "COL_REPLY": "Bot",
       "EMPTY_LEADS": "Aún no hay leads capturados.",
       "EMPTY_CONV": "Aún no hay conversaciones.",
       "LOADING": "Cargando métricas…",
-      "MESSAGES": "Mensajes",
-      "BY_DAY": "Mensajes por día",
+      "MESSAGES": "Mensajes a la IA",
+      "BY_DAY": "Mensajes a la IA por día",
       "THIS_MONTH": "Este mes",
       "AUTO": "En vivo",
       "EMPTY_INSIGHTS": "Aún no hay insights este mes.",
@@ -946,7 +946,10 @@
         "thu": "Jueves",
         "fri": "Viernes",
         "sat": "Sábado"
-      }
+      },
+      "HANDOFF_CHATS": "Chats con agente",
+      "HANDOFF_HINT": "Conversaciones que hablaron con una persona",
+      "AGENT_LIVE": "en vivo con un agente"
     },
     "SUPPORT": {
       "EYEBROW": "Soporte técnico",

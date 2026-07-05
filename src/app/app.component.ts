@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
     const path = (this.doc.defaultView?.location.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
     this.showIntro.set(path === '/' || path === '/en');
 
-    this.useLang(this.detectLang());
+    this.applyLangForUrl(this.router.url);
     this.updateCanonical(this.router.url);
     this.router.events.subscribe((e) => {
       if (e instanceof NavigationStart) {
@@ -63,9 +63,16 @@ export class AppComponent implements OnInit {
       } else if (e instanceof NavigationEnd || e instanceof NavigationCancel || e instanceof NavigationError) {
         if (this.navTimer) { clearTimeout(this.navTimer); this.navTimer = null; }
         this.loading.set(false);
-        if (e instanceof NavigationEnd) this.updateCanonical(e.urlAfterRedirects);
+        if (e instanceof NavigationEnd) { this.updateCanonical(e.urlAfterRedirects); this.applyLangForUrl(e.urlAfterRedirects); }
       }
     });
+  }
+
+  /** Ajusta el idioma según la ruta: rutas legales imponen su idioma; el resto usa la preferencia. */
+  private applyLangForUrl(url: string): void {
+    const forced = this.routeLang(url);
+    if (forced) { if (this.currentLang() !== forced) this.useLang(forced, false); }
+    else { const pref = this.detectLang(); if (this.currentLang() !== pref) this.useLang(pref, false); }
   }
 
   private updateCanonical(url: string): void {
@@ -77,12 +84,20 @@ export class AppComponent implements OnInit {
     link.setAttribute('href', href);
   }
 
-  useLang(lang: 'es' | 'en'): void {
+  useLang(lang: 'es' | 'en', persist = true): void {
     this.currentLang.set(lang);
     this.translate.use(lang);
     this.doc.documentElement.lang = lang;
-    this.safeSetLang(lang);
+    if (persist) this.safeSetLang(lang);   // no persiste cuando el idioma lo impone la ruta
     this.updateMeta(lang);
+  }
+
+  /** Idioma forzado por rutas legales: EN para /privacy /terms /refunds, ES para las españolas. */
+  private routeLang(url: string): 'es' | 'en' | null {
+    const clean = url.split('?')[0].split('#')[0].toLowerCase().replace(/\/+$/, '');
+    if (['/privacy', '/terms', '/refunds', '/refounds'].includes(clean)) return 'en';
+    if (['/privacidad', '/terminos', '/reembolsos'].includes(clean)) return 'es';
+    return null;
   }
 
   /** Priority: /en path > ?lang= query > saved preference > 'es'. */

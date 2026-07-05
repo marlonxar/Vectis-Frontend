@@ -907,15 +907,15 @@
       "MANAGE_LINK": "Manage ChatBots",
       "CONVERSATIONS": "Conversations",
       "CONV_7D": "Last 7 days",
-      "USAGE_MONTH": "Messages this month",
+      "USAGE_MONTH": "Messages to AI (month)",
       "RECENT_CONV": "Recent conversations",
       "COL_USER": "Customer",
       "COL_REPLY": "Bot",
       "EMPTY_LEADS": "No leads captured yet.",
       "EMPTY_CONV": "No conversations yet.",
       "LOADING": "Loading metrics…",
-      "MESSAGES": "Messages",
-      "BY_DAY": "Messages per day",
+      "MESSAGES": "Messages to AI",
+      "BY_DAY": "Messages to AI per day",
       "THIS_MONTH": "This month",
       "AUTO": "Live",
       "EMPTY_INSIGHTS": "No insights yet this month.",
@@ -946,7 +946,10 @@
         "thu": "Thursday",
         "fri": "Friday",
         "sat": "Saturday"
-      }
+      },
+      "HANDOFF_CHATS": "Agent chats",
+      "HANDOFF_HINT": "Conversations that talked to a person",
+      "AGENT_LIVE": "live with an agent"
     },
     "SUPPORT": {
       "EYEBROW": "Technical support",

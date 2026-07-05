@@ -91,6 +91,17 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
                   <div class="sub">{{ 'AICHATBOT.DASH.THIS_MONTH' | translate }}</div>
                 }
               </div>
+              @if (handoffOn()) {
+                <div class="stat">
+                  <div class="cap">{{ 'AICHATBOT.DASH.HANDOFF_CHATS' | translate }}</div>
+                  <div class="n">{{ handoffChats() }}</div>
+                  @if (handoffLive() > 0 && isCurrentMonth()) {
+                    <div class="live"><span class="pulse"></span>{{ handoffLive() }} {{ 'AICHATBOT.DASH.AGENT_LIVE' | translate }}</div>
+                  } @else {
+                    <div class="sub">{{ 'AICHATBOT.DASH.HANDOFF_HINT' | translate }}</div>
+                  }
+                </div>
+              }
               @if (canInsights()) {
                 <div class="stat">
                   <div class="cap">{{ 'AICHATBOT.DASH.INSIGHTS' | translate }}</div>
@@ -359,6 +370,10 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
   leads = computed(() => this.stats()?.leads ?? 0);
   insights = computed(() => this.stats()?.insights ?? 0);
   activeNow = computed(() => this.stats()?.active_now ?? 0);
+  // Handoff (solo si está habilitado para este chatbot)
+  readonly handoffOn = computed(() => !!this.s.currentConfig()?.handoffEnabled);
+  readonly handoffChats = signal(0);
+  readonly handoffLive = signal(0);
   limit = computed(() => this.stats()?.limit ?? 1000);
   // Los insights con IA son función de Pro/Business (Basic no los ve).
   canInsights = computed(() => this.s.plan() !== 'basic');
@@ -488,6 +503,8 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
       if (st.data) this.stats.set(st.data as any);
       this.recentLeads.set((rl.data as any[]) ?? []);
       this.recentInsights.set((ri.data as any[]) ?? []);
+      // Handoff: chats con agente del mes + en vivo ahora (solo si está habilitado).
+      if (this.handoffOn()) { this.loadHandoff(id, range); } else { this.handoffChats.set(0); this.handoffLive.set(0); }
       // Mes anterior para comparar (solo Pro/Business).
       if (this.canInsights()) {
         const sp = await this.sb.rpc('chatbot_dashboard_stats', { p_client_id: id, p_month: this.prevMonthOf(month) });
@@ -498,6 +515,19 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
     } catch { /* noop */ }
     this.loading.set(false);
     if (!silent) setTimeout(() => this.scrollDailyToToday(), 80);   // al abrir/cambiar bot, muestra los días recientes
+  }
+
+  /** Cuenta los chats que hablaron con un agente (mes) y los que están en vivo ahora. */
+  private async loadHandoff(id: string, range: { start: string; end: string }): Promise<void> {
+    try {
+      const total = await this.sb.from('handoff_sessions').select('session_id', { count: 'exact', head: true })
+        .eq('chatbot_id', id).gte('updated_at', range.start).lt('updated_at', range.end);
+      this.handoffChats.set(total.count ?? 0);
+      const liveSince = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      const live = await this.sb.from('handoff_sessions').select('session_id', { count: 'exact', head: true })
+        .eq('chatbot_id', id).eq('active', true).gte('updated_at', liveSince);
+      this.handoffLive.set(live.count ?? 0);
+    } catch (e) { this.handoffChats.set(0); this.handoffLive.set(0); }
   }
 
   /** Lleva el scroll de la gráfica de días al final (día más reciente / actual). */
