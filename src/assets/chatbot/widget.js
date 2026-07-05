@@ -168,13 +168,18 @@
       '.vxc-hobar .vxc-dot{background:#f97316;box-shadow:0 0 6px #f97316}' +
       '.vxc-hoback{border:none;background:#E7AB2E;color:#fff;font:inherit;font-size:11.5px;font-weight:700;padding:5px 10px;border-radius:8px;cursor:pointer;white-space:nowrap}' +
       '.vxc-hoback:hover{filter:brightness(1.06)}' +
+      '.vxc-file{display:none}' +
+      '.vxc-attach{display:none;flex-shrink:0;width:40px;height:40px;border:none;background:transparent;color:#8a8f98;cursor:pointer;border-radius:10px;place-items:center}' +
+      '.vxc-attach.on{display:grid}.vxc-attach:hover{background:#f2f2f5;color:#555}' +
+      '.vxc-img{max-width:100%;max-height:240px;border-radius:10px;display:block;object-fit:cover}' +
+      '.vxc-imgcap{margin-top:6px;font-size:13px}' +
       '@keyframes vxc-pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}' +
       '@keyframes vxc-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}' +
       '@keyframes vxc-bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}';
     var st = el('style'); st.textContent = css; document.head.appendChild(st);
   }
 
-  var $body, $panel, $launch, $cal = null, calReady = false, handoff = false, hoTimer = null, lastBookOpen = 0;
+  var $body, $panel, $launch, $cal = null, calReady = false, handoff = false, hoTimer = null, lastBookOpen = 0, $attach = null;
 
   function render() {
     // launcher
@@ -206,11 +211,18 @@
     $body = el('div', 'vxc-body');
 
     var foot = el('div', 'vxc-foot');
+    // Adjuntar imagen (solo visible en modo humano).
+    $attach = el('button', 'vxc-attach');
+    $attach.setAttribute('aria-label', 'Adjuntar imagen'); $attach.setAttribute('title', 'Adjuntar imagen');
+    $attach.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>';
+    var $file = el('input', 'vxc-file'); $file.type = 'file'; $file.accept = 'image/*';
+    $attach.onclick = function () { $file.click(); };
+    $file.addEventListener('change', function () { var f = $file.files && $file.files[0]; if (f) sendImageFile(f); $file.value = ''; });
     var input = el('input', 'vxc-in'); input.type = 'text'; input.placeholder = 'Escribe tu mensaje…';
     var send = el('button', 'vxc-send');
     send.setAttribute('aria-label', 'Enviar');
     send.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-    foot.appendChild(input); foot.appendChild(send);
+    foot.appendChild($attach); foot.appendChild($file); foot.appendChild(input); foot.appendChild(send);
     function doSend() { var v = input.value.trim(); if (v) { input.value = ''; ask(v); } }
     send.onclick = doSend;
     // stopPropagation evita que un handler global de la página (p. ej. bloquear la
@@ -268,7 +280,7 @@
 
   // Cerrar: analiza la sesión vieja (insight), la borra e inicia una conversación nueva.
   function closeChat() {
-    if (handoff) { handoff = false; if (hoTimer) { clearInterval(hoTimer); hoTimer = null; } api({ action: 'handoff_end', client_id: CLIENT_ID, session_id: sessionId() }).catch(function () {}); removeHandoffBar(); }
+    if (handoff) { handoff = false; if (hoTimer) { clearInterval(hoTimer); hoTimer = null; } api({ action: 'handoff_end', client_id: CLIENT_ID, session_id: sessionId() }).catch(function () {}); removeHandoffBar(); if ($attach) $attach.classList.remove('on'); }
     endSession();                                  // captura el insight de la sesión actual antes de descartarla
     try { sessionStorage.removeItem(SKEY); sessionStorage.removeItem(SIDKEY); } catch (e) { /* noop */ }
     history = []; sentEnd = false;                  // nueva sesión (sessionId() generará un id nuevo)
@@ -307,8 +319,9 @@
     handoff = true;
     if (csatTimer) { clearTimeout(csatTimer); csatTimer = null; }
     var qr = $body.querySelector('.vxc-qr'); if (qr) qr.remove();
-    addSystem('🙋 Te estoy conectando con una persona del equipo. Puedes seguir escribiendo aquí; en breve te responden.');
+    addSystem('🙋 Te estoy conectando con una persona del equipo. Puedes seguir escribiendo (y enviar imágenes con 📎); en breve te responden.');
     showHandoffBar();
+    if ($attach) $attach.classList.add('on');
     api({ action: 'handoff_start', client_id: CLIENT_ID, session_id: sessionId() }).catch(function () { /* noop */ });
     if (hoTimer) clearInterval(hoTimer);
     hoTimer = setInterval(pollHandoff, 4000);
@@ -319,6 +332,7 @@
     if (hoTimer) { clearInterval(hoTimer); hoTimer = null; }
     if (notify !== false) api({ action: 'handoff_end', client_id: CLIENT_ID, session_id: sessionId() }).catch(function () { /* noop */ });
     removeHandoffBar();
+    if ($attach) $attach.classList.remove('on');
     addSystem('Volviste con el asistente ✨ ¿En qué más te ayudo?');
     scheduleCsat(2500);   // al cerrar el chat con la persona, pide la opinión
   }
@@ -326,7 +340,10 @@
     if (!handoff) return;
     api({ action: 'handoff_poll', client_id: CLIENT_ID, session_id: sessionId() }).then(function (r) {
       if (r && r.messages && r.messages.length) {
-        r.messages.forEach(function (t) { addAgent(t); history.push({ role: 'bot', text: t }); });
+        r.messages.forEach(function (m) {
+          if (m && m.image) { addAgentImage(m.image, m.text); history.push({ role: 'bot', text: m.text || '📷 (imagen)' }); }
+          else if (m && m.text) { addAgent(m.text); history.push({ role: 'bot', text: m.text }); }
+        });
         if (history.length > 20) history = history.slice(-20);
         saveHistory();
       }
@@ -343,6 +360,30 @@
   function removeHandoffBar() { var b = $panel && $panel.querySelector('.vxc-hobar'); if (b) b.remove(); }
   function addSystem(text) { var b = el('div', 'vxc-sys', esc(text)); $body.appendChild(b); scroll(); }
   function addAgent(text) { var b = el('div', 'vxc-b vxc-bot'); b.innerHTML = '<span class="vxc-agtag">Agente</span>' + mdToHtml(text); $body.appendChild(b); scroll(); }
+  function addAgentImage(url, caption) {
+    var b = el('div', 'vxc-b vxc-bot');
+    b.innerHTML = '<span class="vxc-agtag">Agente</span><a href="' + esc(url) + '" target="_blank" rel="noopener"><img class="vxc-img" src="' + esc(url) + '" alt=""></a>' + (caption ? '<div class="vxc-imgcap">' + mdToHtml(caption) + '</div>' : '');
+    $body.appendChild(b); scroll();
+  }
+  function addUserImage(dataUrl) {
+    var b = el('div', 'vxc-b vxc-user');
+    b.innerHTML = '<img class="vxc-img" src="' + dataUrl + '" alt="">';
+    $body.appendChild(b); scroll();
+  }
+  // Adjuntar imagen (solo en modo humano): la muestra y la envía al agente.
+  function sendImageFile(f) {
+    if (!handoff || !f) return;
+    if (!/^image\//.test(f.type)) { addSystem('Solo se pueden enviar imágenes.'); return; }
+    if (f.size > 5 * 1024 * 1024) { addSystem('La imagen es muy grande (máximo 5 MB).'); return; }
+    var rd = new FileReader();
+    rd.onload = function () {
+      var dataUrl = rd.result;
+      addUserImage(dataUrl);
+      history.push({ role: 'user', text: '📷 (imagen)' }); saveHistory();
+      api({ action: 'handoff_msg', client_id: CLIENT_ID, session_id: sessionId(), image: dataUrl }).catch(function () { /* noop */ });
+    };
+    rd.readAsDataURL(f);
+  }
 
   function addBot(text) { var b = el('div', 'vxc-b vxc-bot', mdToHtml(text)); $body.appendChild(b); scroll(); }
   function addUser(text) { var b = el('div', 'vxc-b vxc-user', esc(text)); $body.appendChild(b); scroll(); }
