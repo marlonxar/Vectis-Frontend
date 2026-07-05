@@ -242,12 +242,20 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
             <div class="card pad">
               <div class="card-h">
                 <h3>{{ 'AICHATBOT.DASH.RECENT_INSIGHTS' | translate }}</h3>
-                @if (insights() > 0) {
-                  <button class="exp" type="button" (click)="exportInsights()">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                    {{ 'AICHATBOT.DASH.EXPORT_CSV' | translate }}
-                  </button>
-                }
+                <div class="card-actions">
+                  <select class="type-sel" [value]="insightType()" (change)="onInsightType($any($event.target).value)" [attr.aria-label]="'AICHATBOT.DASH.FILTER_TYPE' | translate">
+                    <option value="">{{ 'AICHATBOT.DASH.ALL_TYPES' | translate }}</option>
+                    @for (t of insightTypeOptions; track t) {
+                      <option [value]="t">{{ ('AICHATBOT.DASH.TYPE.' + t) | translate }}</option>
+                    }
+                  </select>
+                  @if (insights() > 0) {
+                    <button class="exp" type="button" (click)="exportInsights()">
+                      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                      {{ 'AICHATBOT.DASH.EXPORT_CSV' | translate }}
+                    </button>
+                  }
+                </div>
               </div>
               @if (recentInsights().length) {
                 <div class="tbl">
@@ -316,6 +324,9 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
     .dash-alert > svg { color: #ff8a8a; flex-shrink: 0; }
     .dash-alert a { color: #fff; font-weight: 700; text-decoration: underline; margin-left: 4px; }
 
+    .card-actions { display: flex; align-items: center; gap: 10px; }
+    .type-sel { padding: 7px 10px; border-radius: var(--radius-md); border: 1px solid var(--line-light); background: rgba(255,255,255,.04); color: var(--text-inv); font: inherit; font-size: 12.5px; outline: none; cursor: pointer; }
+    .type-sel:focus { border-color: var(--gold-bright); }
     .setup { background: var(--ink-soft); border: 1px solid rgba(231,171,46,.3); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 16px; }
     .setup-head { display: flex; align-items: center; justify-content: space-between; }
     .setup-ttl { font-weight: 700; font-size: 15px; }
@@ -475,6 +486,9 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
   deltaInsights = computed(() => this.delta(this.insights(), this.prevStats()?.insights ?? null));
 
   onMonthChange(v: string): void { this.selectedMonth.set(v); this.load(false); }
+  readonly insightType = signal<string>('');
+  readonly insightTypeOptions = ['pregunta', 'interes_compra', 'agendar', 'soporte', 'queja', 'sin_respuesta', 'otro'];
+  onInsightType(v: string): void { this.insightType.set(v); this.load(true); }
   private monthRange(m: string): { start: string; end: string } {
     const [y, mm] = m.split('-').map(Number);
     return { start: new Date(y, mm - 1, 1).toISOString(), end: new Date(y, mm, 1).toISOString() };
@@ -542,11 +556,13 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
     if (!silent) this.loading.set(true);
     const month = this.selectedMonth();
     const range = this.monthRange(month);
+    let insQ = this.sb.from('chatbot_insights').select('type,summary,created_at').eq('chatbot_id', id).gte('created_at', range.start).lt('created_at', range.end).order('created_at', { ascending: false }).limit(this.insightType() ? 40 : 8);
+    if (this.insightType()) insQ = insQ.eq('type', this.insightType());
     try {
       const [st, rl, ri] = await Promise.all([
         this.sb.rpc('chatbot_dashboard_stats', { p_client_id: id, p_month: month }),
         this.sb.from('chatbot_leads').select('name,email,phone,note,created_at').eq('chatbot_id', id).gte('created_at', range.start).lt('created_at', range.end).order('created_at', { ascending: false }).limit(8),
-        this.sb.from('chatbot_insights').select('type,summary,created_at').eq('chatbot_id', id).gte('created_at', range.start).lt('created_at', range.end).order('created_at', { ascending: false }).limit(8),
+        insQ,
       ]);
       if (st.data) this.stats.set(st.data as any);
       this.recentLeads.set((rl.data as any[]) ?? []);
@@ -598,9 +614,11 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
   async exportInsights(): Promise<void> {
     const id = this.s.currentClientId(); if (!id) return;
     const r = this.monthRange(this.selectedMonth());
-    const { data } = await this.sb.from('chatbot_insights')
+    let q = this.sb.from('chatbot_insights')
       .select('created_at,type,summary').eq('chatbot_id', id)
       .gte('created_at', r.start).lt('created_at', r.end).order('created_at', { ascending: false }).limit(5000);
+    if (this.insightType()) q = q.eq('type', this.insightType());
+    const { data } = await q;
     const rows = (data as any[] ?? []).map((i) => [this.fmt(i.created_at), this.i18n.instant('AICHATBOT.DASH.TYPE.' + i.type), i.summary]);
     this.downloadCsv('insights', ['Fecha', 'Tipo', 'Resumen'], rows);
   }

@@ -959,7 +959,9 @@
         "LOOK": "Personaliza la apariencia",
         "FAQ": "Agrega preguntas frecuentes",
         "LIVE": "Publica el chatbot en tu web"
-      }
+      },
+      "FILTER_TYPE": "Filtrar por tipo",
+      "ALL_TYPES": "Todos los tipos"
     },
     "SUPPORT": {
       "EYEBROW": "Soporte técnico",

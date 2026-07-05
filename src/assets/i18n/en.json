@@ -959,7 +959,9 @@
         "LOOK": "Customize the appearance",
         "FAQ": "Add frequently asked questions",
         "LIVE": "Publish the chatbot on your site"
-      }
+      },
+      "FILTER_TYPE": "Filter by type",
+      "ALL_TYPES": "All types"
     },
     "SUPPORT": {
       "EYEBROW": "Technical support",
