@@ -581,7 +581,8 @@
       "STEP3_T": "3. Pégalo en tu web",
       "STEP3_D": "Copia una línea de código y pégala en tu sitio. La burbuja de chat aparece al instante.",
       "STEPS_NOTE": "Cámbialo cuando quieras — sin contratos.",
-      "B6": "Handoff a humano: pasa la conversación a una persona cuando haga falta (vía Telegram; más canales pronto)."
+      "B6": "Handoff a humano con imágenes: pasa la conversación a una persona cuando haga falta (vía Telegram; más canales pronto).",
+      "B7": "Métricas e insights: conversaciones, leads, satisfacción y preguntas sin responder, con filtros y exportación."
     },
     "HERO": {
       "EYEBROW": "Vectis AI ChatBot",
@@ -687,7 +688,8 @@
       "REFUNDS_LINK": "Política de reembolsos",
       "TERMS_LINK": "Términos",
       "PRIVACY_LINK": "Privacidad",
-      "HANDOFF": "Handoff a humano (Telegram)"
+      "HANDOFF": "Handoff a humano (Telegram)",
+      "WHITELABEL": "Marca blanca (sin \"Powered by Vectis\")"
     },
     "CONFIGURE": {
       "EYEBROW": "¡Listo!",
@@ -1135,7 +1137,7 @@
       "F7_T": "Captura de leads",
       "F7_D": "Detecta interés y guarda nombre y contacto automáticamente, listos para tu seguimiento (Pro y Business).",
       "F8_T": "Métricas e insights",
-      "F8_D": "Panel con conversaciones, mensajes, leads, satisfacción, temas más consultados y tasa de resolución.",
+      "F8_D": "Panel con conversaciones, mensajes, leads, satisfacción, temas más consultados, tasa de resolución, preguntas sin responder y (con handoff) tiempo de respuesta y hora pico. Con filtros y exportación a CSV.",
       "F9_T": "Multi-idioma",
       "F9_D": "Detecta el idioma del visitante y responde en español o inglés automáticamente.",
       "TRUST_EYEBROW": "Confidencialidad",
@@ -1169,9 +1171,11 @@
       "Q8": "¿Hay permanencia o contratos?",
       "A8": "No. Cambias de plan o cancelas cuando quieras.",
       "F10_T": "Handoff a humano",
-      "F10_D": "Cuando el bot no basta, el cliente toca \"Hablar con un agente\" y sus mensajes llegan a tu Telegram; tú respondes desde ahí y aparece en el mismo chat, sin que el cliente cambie de app. Puede volver al asistente cuando quiera, y esos mensajes no consumen IA. Hoy vía Telegram; más canales próximamente.",
+      "F10_D": "Con un botón \"Hablar con un agente\" el cliente pasa a hablar con una persona real; los mensajes (y también imágenes en ambos sentidos) llegan a tu Telegram y respondes desde ahí, sin que el cliente salga del chat. Cada conversación queda separada. Hoy vía Telegram; más canales pronto.",
       "Q9": "¿El bot puede pasar la conversación a una persona?",
-      "A9": "Sí. Con el handoff a humano, el cliente toca \"Hablar con un agente\" y a partir de ahí sus mensajes ya no van a la IA sino a tu Telegram. Respondes desde tu teléfono o computadora y tu respuesta aparece al instante en el mismo chat del cliente; él nunca sale de tu web. Cuando termina, puede volver al asistente con un botón. Ventajas: es en vivo y de dos vías, no gasta créditos de IA mientras habla contigo, y se configura pegando el token de tu bot de Telegram. De momento el canal es Telegram y próximamente añadiremos más (WhatsApp, Slack y otros)."
+      "A9": "Sí. Con el handoff a humano, el cliente toca \"Hablar con un agente\" y sus mensajes ya no van a la IA sino a tu Telegram. Respondes desde tu teléfono o computadora y aparece al instante en el mismo chat; el cliente nunca sale de tu web. Pueden intercambiar imágenes en ambos sentidos (ej. foto de un producto o un recibo). Cuando termina, vuelve al asistente con un botón. De momento el canal es Telegram y próximamente añadiremos más.",
+      "Q10": "¿Qué puedo medir en el panel?",
+      "A10": "Ves conversaciones, mensajes, leads capturados, satisfacción (CSAT), tasa de resolución, temas más consultados y las preguntas que el bot no supo responder (para mejorar). Con el handoff activo, además el tiempo de respuesta de tu equipo y las horas pico. Puedes filtrar y exportar a CSV."
     },
     "DEMO": {
       "EYEBROW": "En acción",

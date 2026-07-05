@@ -434,7 +434,7 @@ interface Plan {
           <h2 class="band-title">{{ 'AICHATBOT.GUIDE.FAQ_TITLE' | translate }}</h2>
         </div>
         <div class="faq-list">
-          @for (i of [1,2,3,4,5,6,7,8,9]; track i) {
+          @for (i of [1,2,3,4,5,6,7,8,9,10]; track i) {
             <details class="faq-item">
               <summary>{{ ('AICHATBOT.GUIDE.Q' + i) | translate }}</summary>
               <p>{{ ('AICHATBOT.GUIDE.A' + i) | translate }}</p>
@@ -733,7 +733,7 @@ export class ChatbotLandingComponent implements OnInit {
     {
       id: 'business', popular: false, nameKey: 'AICHATBOT.PLANS.BUSINESS.NAME', price: '$99',
       taglineKey: 'AICHATBOT.PLANS.BUSINESS.TAG',
-      features: ['AICHATBOT.PLANS.BUSINESS.F1', 'AICHATBOT.PLANS.BUSINESS.F2', 'AICHATBOT.PLANS.BUSINESS.F3', 'AICHATBOT.PLANS.BUSINESS.F4', 'AICHATBOT.PLANS.BUSINESS.F5', 'AICHATBOT.PLANS.BUSINESS.F6', 'AICHATBOT.PLANS.BUSINESS.F7', 'AICHATBOT.PLANS.HANDOFF'],
+      features: ['AICHATBOT.PLANS.BUSINESS.F1', 'AICHATBOT.PLANS.BUSINESS.F2', 'AICHATBOT.PLANS.BUSINESS.F3', 'AICHATBOT.PLANS.BUSINESS.F4', 'AICHATBOT.PLANS.BUSINESS.F5', 'AICHATBOT.PLANS.BUSINESS.F6', 'AICHATBOT.PLANS.BUSINESS.F7', 'AICHATBOT.PLANS.HANDOFF', 'AICHATBOT.PLANS.WHITELABEL'],
     },
   ];
 
