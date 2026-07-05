@@ -950,7 +950,16 @@
       },
       "HANDOFF_CHATS": "Chats con agente",
       "HANDOFF_HINT": "Conversaciones que hablaron con una persona",
-      "AGENT_LIVE": "en vivo con un agente"
+      "AGENT_LIVE": "en vivo con un agente",
+      "SETUP_TITLE": "Termina de configurar tu chatbot",
+      "SETUP_CTA": "Ir a Configurar →",
+      "SETUP": {
+        "INFO": "Cuéntanos de tu negocio",
+        "KNOW": "Conecta tu conocimiento (docs, web o inventario)",
+        "LOOK": "Personaliza la apariencia",
+        "FAQ": "Agrega preguntas frecuentes",
+        "LIVE": "Publica el chatbot en tu web"
+      }
     },
     "SUPPORT": {
       "EYEBROW": "Soporte técnico",

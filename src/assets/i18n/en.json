@@ -950,7 +950,16 @@
       },
       "HANDOFF_CHATS": "Agent chats",
       "HANDOFF_HINT": "Conversations that talked to a person",
-      "AGENT_LIVE": "live with an agent"
+      "AGENT_LIVE": "live with an agent",
+      "SETUP_TITLE": "Finish setting up your chatbot",
+      "SETUP_CTA": "Go to Configure →",
+      "SETUP": {
+        "INFO": "Tell us about your business",
+        "KNOW": "Connect your knowledge (docs, web or inventory)",
+        "LOOK": "Customize the appearance",
+        "FAQ": "Add frequently asked questions",
+        "LIVE": "Publish the chatbot on your site"
+      }
     },
     "SUPPORT": {
       "EYEBROW": "Technical support",

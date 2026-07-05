@@ -62,6 +62,26 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
           @if (loading()) {
             <p class="muted">{{ 'AICHATBOT.DASH.LOADING' | translate }}</p>
           } @else {
+            <!-- CHECKLIST DE CONFIGURACIÓN (se oculta al completarse) -->
+            @if (setupPct() < 100) {
+              <div class="setup">
+                <div class="setup-head">
+                  <span class="setup-ttl">{{ 'AICHATBOT.DASH.SETUP_TITLE' | translate }}</span>
+                  <span class="setup-pct">{{ setupPct() }}%</span>
+                </div>
+                <div class="setup-bar"><span [style.width.%]="setupPct()"></span></div>
+                <ul class="setup-list">
+                  @for (st of setupSteps(); track st.key) {
+                    <li [class.on]="st.done">
+                      <span class="sck" aria-hidden="true">@if (st.done) { <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg> }</span>
+                      {{ ('AICHATBOT.DASH.SETUP.' + st.key) | translate }}
+                    </li>
+                  }
+                </ul>
+                <a class="setup-cta" routerLink="/ai-chatbot/configure">{{ 'AICHATBOT.DASH.SETUP_CTA' | translate }}</a>
+              </div>
+            }
+
             <!-- TARJETAS -->
             <div class="stats">
               <div class="stat">
@@ -296,6 +316,19 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
     .dash-alert > svg { color: #ff8a8a; flex-shrink: 0; }
     .dash-alert a { color: #fff; font-weight: 700; text-decoration: underline; margin-left: 4px; }
 
+    .setup { background: var(--ink-soft); border: 1px solid rgba(231,171,46,.3); border-radius: var(--radius-lg); padding: 18px 20px; margin-bottom: 16px; }
+    .setup-head { display: flex; align-items: center; justify-content: space-between; }
+    .setup-ttl { font-weight: 700; font-size: 15px; }
+    .setup-pct { font-weight: 800; color: var(--gold-bright); }
+    .setup-bar { height: 7px; border-radius: 999px; background: rgba(255,255,255,.08); margin: 12px 0 14px; overflow: hidden; }
+    .setup-bar span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--gold-soft), var(--gold-bright)); transition: width .5s var(--ease); }
+    .setup-list { list-style: none; padding: 0; margin: 0 0 14px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px 18px; }
+    .setup-list li { display: flex; align-items: center; gap: 9px; font-size: 13.5px; color: var(--text-inv-2); }
+    .setup-list li.on { color: var(--text-inv); }
+    .setup-list .sck { display: inline-grid; place-items: center; width: 19px; height: 19px; border-radius: 50%; flex-shrink: 0; border: 1px solid var(--line-light); color: var(--ink); }
+    .setup-list li.on .sck { background: var(--gold-bright); border-color: var(--gold-bright); }
+    .setup-cta { display: inline-block; font-size: 13px; font-weight: 700; color: var(--gold-bright); }
+    .setup-cta:hover { text-decoration: underline; }
     .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 16px; }
     .stat { background: var(--ink-card); border: 1px solid var(--line-light); border-radius: var(--radius-md); padding: 18px; }
     .cap { font-size: 12.5px; color: var(--text-inv-2); }
@@ -371,6 +404,20 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
   leads = computed(() => this.stats()?.leads ?? 0);
   insights = computed(() => this.stats()?.insights ?? 0);
   activeNow = computed(() => this.stats()?.active_now ?? 0);
+  // Checklist de configuración (progreso de puesta en marcha)
+  readonly setupSteps = computed(() => {
+    const c = this.s.currentConfig();
+    const conv = this.conversations();
+    return [
+      { key: 'INFO', done: !!(c && (c.info || '').trim()) },
+      { key: 'KNOW', done: !!(c && (((c.kbText || '').trim()) || ((c.urlDoc || '').trim()) || ((c.websiteUrl || '').trim()) || ((c.inventoryUrl || '').trim()) || ((c.inventoryText || '').trim()))) },
+      { key: 'LOOK', done: !!(c && (((c.brandColor || '').trim()) || ((c.brandLogoUrl || '').trim()) || ((c.welcome || '').trim()))) },
+      { key: 'FAQ', done: !!(c && Array.isArray(c.faqs) && c.faqs.filter((f) => f.q && f.a).length > 0) },
+      { key: 'LIVE', done: conv > 0 },
+    ];
+  });
+  readonly setupPct = computed(() => { const s = this.setupSteps(); return Math.round(s.filter((x) => x.done).length / s.length * 100); });
+
   // Handoff (solo si está habilitado para este chatbot)
   readonly handoffOn = computed(() => !!this.s.currentConfig()?.handoffEnabled);
   readonly handoffChats = signal(0);
