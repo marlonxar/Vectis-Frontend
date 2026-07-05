@@ -478,6 +478,7 @@ interface Plan {
     .auth input::placeholder { color: rgba(255,255,255,.4); }
     .auth input:focus { border-color: var(--gold-bright); box-shadow: 0 0 0 3px rgba(231,171,46,.22); }
     .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 480px) { .two { grid-template-columns: 1fr; } }
     .two label { margin-top: 0; }
     .row-label { display: flex; align-items: flex-end; justify-content: space-between; }
     .row-label label { margin-bottom: 6px; }

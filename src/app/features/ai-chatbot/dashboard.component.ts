@@ -407,6 +407,18 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
 
     @media (max-width: 980px) { .charts { grid-template-columns: 1fr; } }
     @media (max-width: 860px) { .layout { flex-direction: column; } .stats { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) {
+      .content { padding: 20px 15px; }
+      .h1 { font-size: 24px; }
+      .h1 .of { font-size: 14px; }
+      .head { margin-bottom: 16px; gap: 10px; }
+      .head-right { padding-top: 0; flex-wrap: wrap; }
+      .card-actions, .card-h, .setup-head { flex-wrap: wrap; }
+      .bar-row { grid-template-columns: 84px 1fr 28px; gap: 8px; }
+      .pad { padding: 15px; }
+      .stat { padding: 15px; }
+      .stat .n { font-size: 26px; }
+    }
     @media (max-width: 460px) { .stats { grid-template-columns: 1fr; } }
   `],
 })

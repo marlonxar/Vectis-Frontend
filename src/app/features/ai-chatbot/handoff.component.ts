@@ -148,6 +148,14 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .ghost-btn { display: inline-flex; align-items: center; gap: 7px; padding: 9px 15px; border-radius: var(--radius-pill); border: 1px solid var(--line-light); background: rgba(255,255,255,.04); color: var(--text-inv); font: inherit; font-weight: 600; font-size: 13px; cursor: pointer; }
     .ghost-btn:hover { border-color: rgba(231,171,46,.4); }
     @media (max-width: 860px) { .layout { flex-direction: column; } }
+    @media (max-width: 560px) {
+      .wrap { padding: 30px 16px 32px; }
+      .card { padding: 18px 16px; }
+      .ch-info { gap: 10px; }
+      .save { width: 100%; }
+      .status-actions { flex-direction: column; }
+      .status-actions .ghost-btn { width: 100%; justify-content: center; }
+    }
   `],
 })
 export class ChatbotHandoffComponent implements OnInit {

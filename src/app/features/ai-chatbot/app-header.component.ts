@@ -147,6 +147,15 @@ import { ChatbotAuthService } from './auth.service';
     .uitem.danger { color: #ff8a8a; }
 
     @media (max-width: 620px) { .uname { display: none; } .company-btn .of { display: none; } }
+    @media (max-width: 480px) {
+      .ah-inner { gap: 10px; padding: 0 14px; }
+      .company { margin-left: 0; }
+      .company-btn { padding: 8px 11px; max-width: 44vw; }
+      .company-btn strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .company-btn .inact.sm { display: none; }
+      .user-btn { padding: 6px; }
+      .menu, .umenu { min-width: 200px; }
+    }
   `],
 })
 export class ChatbotAppHeaderComponent {

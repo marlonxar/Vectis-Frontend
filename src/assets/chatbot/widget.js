@@ -173,6 +173,20 @@
       '.vxc-attach.on{display:grid}.vxc-attach:hover{background:#f2f2f5;color:#555}' +
       '.vxc-img{max-width:100%;max-height:240px;border-radius:10px;display:block;object-fit:cover}' +
       '.vxc-imgcap{margin-top:6px;font-size:13px}' +
+      // --- responsive: teléfonos (pantalla completa, sin zoom de iOS) ---
+      '@media (max-width:560px){' +
+        '.vxc-panel{width:100%;max-width:100%;height:100%;max-height:100%;top:0;right:0;bottom:0;left:0;border-radius:0;transform-origin:center;transform:translateY(10px) scale(.99)}' +
+        '.vxc-panel.vxc-left{left:0;right:0}' +
+        '.vxc-panel.vxc-on{transform:none}' +
+        '.vxc-launch{bottom:16px;right:16px;width:56px;height:56px}' +
+        '.vxc-launch.vxc-left{left:16px;right:auto}' +
+        '.vxc-head{padding:13px 14px;padding-top:max(13px,env(safe-area-inset-top))}' +
+        '.vxc-in{font-size:16px}' +          // 16px evita el auto-zoom en iOS
+        '.vxc-b{max-width:88%;font-size:15px}' +
+        '.vxc-body{padding:14px}' +
+        '.vxc-foot{padding:10px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom))}' +
+        '.vxc-img{max-height:52vh}' +
+      '}' +
       '@keyframes vxc-pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}' +
       '@keyframes vxc-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}' +
       '@keyframes vxc-bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}';

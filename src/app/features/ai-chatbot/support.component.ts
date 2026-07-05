@@ -232,6 +232,15 @@ import { FocusTrapDirective } from './focus-trap.directive';
 
     @media (max-width: 860px) { .layout { flex-direction: column; } }
     @media (max-width: 600px) { .two { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) {
+      .wrap { padding: 30px 16px 8px; }
+      .card { padding: 18px 16px; }
+      .card-head { flex-wrap: wrap; }
+      .form-actions { flex-direction: column; }
+      .form-actions > * { width: 100%; }
+      .modal { padding: 22px 18px; }
+      .m-title { margin-right: 40px; font-size: 19px; }
+    }
   `],
 })
 export class ChatbotSupportComponent implements OnInit {

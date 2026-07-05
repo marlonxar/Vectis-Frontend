@@ -579,7 +579,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .app-screen { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; overflow: hidden; background: var(--ink); color: var(--text-inv); }
     .layout { flex: 1; display: flex; min-height: 0; }
     .content { flex: 1; min-width: 0; overflow-y: auto; }
-    .cfg { position: relative; overflow: hidden; padding: 40px 0 80px; }
+    .cfg { position: relative; overflow: hidden; padding: 40px clamp(16px, 4vw, 40px) 80px; }
     .callout { display: flex; align-items: flex-start; gap: 12px; margin: 0 auto 22px; max-width: 820px; padding: 14px 16px;
       border: 1px solid rgba(231,171,46,.4); background: rgba(231,171,46,.08); border-radius: var(--radius-md); }
     .callout svg { color: var(--gold-bright); flex-shrink: 0; margin-top: 1px; }
@@ -777,6 +777,16 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
 
     @media (max-width: 1000px) { .cfg-grid { grid-template-columns: 1fr; } .preview { order: -1; } .preview-sticky { position: static; } .wchat, .wlaunch-row { max-width: 360px; } }
     @media (max-width: 600px) { .two, .faq, .qr { grid-template-columns: 1fr; } }
+    @media (max-width: 560px) {
+      .cfg { padding-top: 26px; padding-bottom: 60px; }
+      .acc-head { padding: 15px 15px; gap: 10px; }
+      .acc-body { padding: 4px 15px 16px; }
+      .acc-title { font-size: 14px; }
+      .sched-day { width: 100%; }
+      .acc-nav .next { width: 100%; justify-content: center; }
+      .del-zone, .modal-actions, .actions { flex-direction: column; }
+      .del-zone > *, .actions > * { width: 100%; }
+    }
   `],
 })
 export class ChatbotConfigureComponent implements OnInit {
