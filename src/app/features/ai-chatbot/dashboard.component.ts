@@ -15,9 +15,10 @@ const TYPE_COLOR: Record<string, string> = {
   queja: '#e3624d',
   soporte: '#c98bff',
   agendar: '#E7AB2E',
+  sin_respuesta: '#ef8a3c',
   otro: '#8a8f98',
 };
-const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja', 'otro'];
+const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja', 'sin_respuesta', 'otro'];
 
 /** /ai-chatbot/dashboard — métricas del MES ACTUAL (Supabase), con refresco automático. */
 @Component({

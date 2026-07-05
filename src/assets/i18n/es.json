@@ -900,7 +900,8 @@
         "queja": "Queja",
         "soporte": "Soporte",
         "agendar": "Agendar",
-        "otro": "Otro"
+        "otro": "Otro",
+        "sin_respuesta": "Sin respuesta"
       },
       "OVER_LIMIT": "Tienes más ChatBots activos de los que permite tu plan.",
       "INACTIVE_BOT": "Este ChatBot está inactivo por el límite de tu plan.",
