@@ -26,8 +26,8 @@
         <div class="code-bar"><i class="d r"></i><i class="d y"></i><i class="d g"></i><span>vectis.ts</span></div>
         <pre class="code-body"><span class="c-com">// el equipo detrás de Vectis</span>
 <span class="c-kw">const</span> team = [
-  <span class="c-str">'Sergio'</span>, <span class="c-str">'Christofer'</span>,
-  <span class="c-str">'Marlon'</span>, <span class="c-str">'Guillermo'</span>
+  <span class="c-str">'Sergio'</span>, <span class="c-str">'Marlon'</span>,
+  <span class="c-str">'Guillermo'</span>, <span class="c-str">'Christofer'</span>
 ];
 
 <span class="c-kw">await</span> <span class="c-fn">build</span>(team)
@@ -45,7 +45,7 @@
       </header>
       <div class="team-grid">
         <article class="member" *ngFor="let m of team; let i = index" appReveal [revealDelay]="i * 90">
-          <div class="m-photo"><img [ngSrc]="m.photo" [alt]="m.name" fill /></div>
+          <div class="m-photo"><img [ngSrc]="m.photo" [alt]="m.name" [style.object-position]="m.pos || null" fill /></div>
           <div class="m-info">
             <h4>{{ m.name }}</h4>
             <span class="m-role"><i aria-hidden="true">&lt;/&gt;</i>{{ 'ABOUT.ROLE_' + m.roleKey | translate }}</span>
