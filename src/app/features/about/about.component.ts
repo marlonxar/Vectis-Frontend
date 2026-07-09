@@ -22,8 +22,9 @@ export class AboutComponent {
     { key: 'SENIOR',     textKey: 'SENIOR_VAL' },
   ];
   readonly team: Member[] = [
-    { name: 'Sergio Arce',       roleKey: 'CEO', photo: 'assets/images/sergio-arce.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
-    { name: 'Marlon Álvarez',    roleKey: 'ENG', photo: 'assets/images/marlon-alvarez.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
-    { name: 'Guillermo Ramírez', roleKey: 'ENG', photo: 'assets/images/guillermo-ramirez.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
+    { name: 'Sergio Arce',       roleKey: 'CEO',   photo: 'assets/images/sergio-arce.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
+    { name: 'Christofer Merlo',  roleKey: 'SALES', photo: 'assets/images/christofer-merlo.jpeg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
+    { name: 'Marlon Álvarez',    roleKey: 'ENG',   photo: 'assets/images/marlon-alvarez.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
+    { name: 'Guillermo Ramírez', roleKey: 'ENG',   photo: 'assets/images/guillermo-ramirez.jpg', linkedin: 'https://www.linkedin.com/', github: 'https://github.com/' },
   ];
 }
