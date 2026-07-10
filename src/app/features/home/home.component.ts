@@ -6,7 +6,6 @@ import { PortfolioComponent } from '../portfolio/portfolio.component';
 import { AboutComponent } from '../about/about.component';
 import { ContactComponent } from '../contact/contact.component';
 import { FaqComponent } from '../faq/faq.component';
-import { ChatbotPromoComponent } from '../ai-chatbot/chatbot-promo.component';
 
 @Component({
   selector: 'app-home',
@@ -14,13 +13,11 @@ import { ChatbotPromoComponent } from '../ai-chatbot/chatbot-promo.component';
   imports: [
     HeroComponent, ServicesSectionComponent, StatsComponent,
     PortfolioComponent, AboutComponent, ContactComponent, FaqComponent,
-    ChatbotPromoComponent,
   ],
   template: `
     <main id="main-content">
       <app-hero></app-hero>
       <app-services-section></app-services-section>
-      <app-chatbot-promo></app-chatbot-promo>
       <app-stats></app-stats>
       <app-portfolio></app-portfolio>
       <app-about></app-about>
