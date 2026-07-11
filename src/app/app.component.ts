@@ -55,9 +55,21 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Chatbot subdomain: no marketing chrome, intro or canonical/meta — the chatbot
-    // components manage their own title, description, canonical and language.
-    if (this.isChatbot) { this.showIntro.set(false); return; }
+    // Chatbot subdomain: no marketing intro or canonical/meta (the chatbot manages its own),
+    // but KEEP the route-change loader so guarded/lazy pages show a loader until they activate.
+    if (this.isChatbot) {
+      this.showIntro.set(false);
+      this.router.events.subscribe((e) => {
+        if (e instanceof NavigationStart) {
+          if (this.navTimer) clearTimeout(this.navTimer);
+          this.navTimer = setTimeout(() => this.loading.set(true), 140);
+        } else if (e instanceof NavigationEnd || e instanceof NavigationCancel || e instanceof NavigationError) {
+          if (this.navTimer) { clearTimeout(this.navTimer); this.navTimer = null; }
+          this.loading.set(false);
+        }
+      });
+      return;
+    }
 
     // Show the intro loader only when the site is opened on the home page (not on
     // privacy, terms, 404, etc.).

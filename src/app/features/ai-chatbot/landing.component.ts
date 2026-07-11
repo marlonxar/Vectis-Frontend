@@ -37,7 +37,11 @@ interface Plan {
           <p class="ls-text">{{ 'AICHATBOT.LANDING.SESSION_ACTIVE' | translate }}</p>
         </div>
       </section>
-    } @else if (ready()) {
+    } @else if (!ready()) {
+      <section class="loadscreen">
+        <div class="ls-inner"><span class="spinner" aria-hidden="true"></span></div>
+      </section>
+    } @else {
     <section class="cbp">
       <div class="grid" aria-hidden="true"></div>
       <div class="glow" aria-hidden="true"></div>

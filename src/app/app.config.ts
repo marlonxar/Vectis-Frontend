@@ -1,5 +1,5 @@
 import { ApplicationConfig, inject, provideAppInitializer } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { routes, chatbotRoutes } from './app.routes';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, HttpClient } from '@angular/common/http';
@@ -33,7 +33,8 @@ function isChatbotHost(): boolean {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(isChatbotHost() ? chatbotRoutes : routes),
+    // anchorScrolling: al llegar a wearevectis.com/#seccion (p. ej. desde el subdominio), baja a la sección.
+    provideRouter(isChatbotHost() ? chatbotRoutes : routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
     provideAnimations(),
     provideHttpClient(),
     provideTranslateService({
