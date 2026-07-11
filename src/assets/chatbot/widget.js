@@ -301,7 +301,7 @@
 
     $panel.appendChild(head); $panel.appendChild($body); $panel.appendChild(foot);
     if (note) $panel.appendChild(note);
-    $panel.appendChild(powered);
+    if (powered) $panel.appendChild(powered);   // null en plan Business (white-label): NO añadir (appendChild(null) rompe el render)
 
     // Panel de agenda (Cal.com) — solo si hay enlace configurado.
     if (cfg._cal) {
