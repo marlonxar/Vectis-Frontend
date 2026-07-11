@@ -11,7 +11,7 @@ import { SupabaseClientService } from './supabase.client';
 const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
 
 /**
- * /ai-chatbot/handoff — Handoff a humano.
+ * /handoff — Handoff a humano.
  * Canal actual: Telegram (bot propio del negocio). El dueño pega el token de su bot,
  * el worker registra el webhook automáticamente, y luego el dueño envía /start para vincular.
  */

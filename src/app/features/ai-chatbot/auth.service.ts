@@ -10,7 +10,7 @@ import { ChatbotSessionService, rowToConfig } from './session.service';
  * del usuario en ChatbotSessionService (que alimenta la UI).
  */
 /** URL pública fija de la app. Los correos y redirecciones de auth SIEMPRE apuntan aquí (nunca a localhost). */
-const APP_URL = 'https://www.wearevectis.com';
+const APP_URL = 'https://www.aichatbot.wearevectis.com';
 
 @Injectable({ providedIn: 'root' })
 export class ChatbotAuthService {
@@ -89,7 +89,7 @@ export class ChatbotAuthService {
       password,
       options: {
         data: { first_name: firstName, last_name: lastName, preferred_lang: 'es' },
-        emailRedirectTo: `${APP_URL}/ai-chatbot`,
+        emailRedirectTo: `${APP_URL}`,
       },
     });
   }
@@ -103,7 +103,7 @@ export class ChatbotAuthService {
     return this.sb.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${APP_URL}/ai-chatbot`,
+        redirectTo: `${APP_URL}`,
         queryParams: { prompt: 'select_account' },
       },
     });
@@ -111,7 +111,7 @@ export class ChatbotAuthService {
 
   forgot(email: string) {
     return this.sb.auth.resetPasswordForEmail(email, {
-      redirectTo: `${APP_URL}/ai-chatbot/reset`,
+      redirectTo: `${APP_URL}/reset`,
     });
   }
 
@@ -130,11 +130,11 @@ export class ChatbotAuthService {
   async routeAfterAuth(): Promise<string> {
     try {
       const { data: prof } = await this.sb.from('profiles').select('plan_expiry').maybeSingle();
-      if (!prof || !prof['plan_expiry']) return '/ai-chatbot/plans';   // aún no elige plan
+      if (!prof || !prof['plan_expiry']) return '/plans';   // aún no elige plan
       const { data } = await this.sb.from('chatbots').select('id').neq('status', 'DELETED').limit(1);
-      return data && data.length ? '/ai-chatbot/dashboard' : '/ai-chatbot/configure';
+      return data && data.length ? '/dashboard' : '/configure';
     } catch {
-      return '/ai-chatbot/plans';
+      return '/plans';
     }
   }
 }

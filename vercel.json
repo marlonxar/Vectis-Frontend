@@ -1,5 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "redirects": [
+    { "source": "/ai-chatbot", "has": [{ "type": "host", "value": "^(www\\.)?wearevectis\\.com$" }], "destination": "https://www.aichatbot.wearevectis.com/", "permanent": true },
+    { "source": "/ai-chatbot/:path*", "has": [{ "type": "host", "value": "^(www\\.)?wearevectis\\.com$" }], "destination": "https://www.aichatbot.wearevectis.com/:path*", "permanent": true },
+    { "source": "/chatbot", "has": [{ "type": "host", "value": "^(www\\.)?wearevectis\\.com$" }], "destination": "https://www.aichatbot.wearevectis.com/", "permanent": true },
+    { "source": "/chatbot/:path*", "has": [{ "type": "host", "value": "^(www\\.)?wearevectis\\.com$" }], "destination": "https://www.aichatbot.wearevectis.com/:path*", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/((?!api/|_vercel/).*)", "destination": "/index.html" }
   ],

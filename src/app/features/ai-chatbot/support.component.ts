@@ -12,7 +12,7 @@ import { SupabaseClientService } from './supabase.client';
 import { FocusTrapDirective } from './focus-trap.directive';
 
 /**
- * /ai-chatbot/support — Soporte Técnico: leyenda, tickets de soporte (crear + seguimiento)
+ * /support — Soporte Técnico: leyenda, tickets de soporte (crear + seguimiento)
  * y contacto de Vectis (desplegable).
  */
 @Component({

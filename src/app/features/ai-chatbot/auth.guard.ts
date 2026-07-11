@@ -18,21 +18,21 @@ export const chatbotAuthGuard: CanActivateFn = async (_route, state) => {
     });
   }
 
-  if (!auth.isLoggedIn()) return router.createUrlTree(['/ai-chatbot']);
+  if (!auth.isLoggedIn()) return router.createUrlTree(['/']);
 
   // Si excedió el límite de chatbots activos del plan, obliga a resolverlo primero.
-  if (session.needsActiveReview() && !state.url.startsWith('/ai-chatbot/manage')) {
-    return router.createUrlTree(['/ai-chatbot/manage']);
+  if (session.needsActiveReview() && !state.url.startsWith('/manage')) {
+    return router.createUrlTree(['/manage']);
   }
 
   // Aún no elige plan: lo primero es elegir uno (permite /plans y /account).
-  if (!session.planExpiry() && !/\/ai-chatbot\/(plans|account)/.test(state.url)) {
-    return router.createUrlTree(['/ai-chatbot/plans']);
+  if (!session.planExpiry() && !/^\/(plans|account)/.test(state.url)) {
+    return router.createUrlTree(['/plans']);
   }
 
   // Sin chatbots configurados: no puede entrar a dashboard ni soporte -> a configurar.
-  if (session.companies().length === 0 && /\/ai-chatbot\/(dashboard|support)/.test(state.url)) {
-    return router.createUrlTree(['/ai-chatbot/configure']);
+  if (session.companies().length === 0 && /^\/(dashboard|support)/.test(state.url)) {
+    return router.createUrlTree(['/configure']);
   }
 
   return true;

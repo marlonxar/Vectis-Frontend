@@ -19,7 +19,7 @@ import { ChatbotAuthService } from './auth.service';
       <div class="mbanner" role="alert">
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
         <span class="mb-text">{{ (s.bannerReason() === 'expired' ? 'AICHATBOT.BANNER.TEXT_EXPIRED' : 'AICHATBOT.BANNER.TEXT') | translate }}
-          <a routerLink="/ai-chatbot/plans">{{ (s.bannerReason() === 'expired' ? 'AICHATBOT.BANNER.CTA_EXPIRED' : 'AICHATBOT.BANNER.CTA') | translate }}</a>
+          <a routerLink="/plans">{{ (s.bannerReason() === 'expired' ? 'AICHATBOT.BANNER.CTA_EXPIRED' : 'AICHATBOT.BANNER.CTA') | translate }}</a>
         </span>
         <button type="button" class="mb-x" (click)="s.bannerDismissed.set(true)" [attr.aria-label]="'AICHATBOT.BANNER.CLOSE' | translate">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
@@ -58,7 +58,7 @@ import { ChatbotAuthService } from './auth.service';
                 </button>
               }
               @if (s.canAddCompany()) {
-                <a class="add" routerLink="/ai-chatbot/configure" [queryParams]="{ new: 1 }" (click)="open.set(false)">
+                <a class="add" routerLink="/configure" [queryParams]="{ new: 1 }" (click)="open.set(false)">
                   <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
                   {{ 'AICHATBOT.HEADER.ADD_CHAT' | translate }}
                 </a>
@@ -80,7 +80,7 @@ import { ChatbotAuthService } from './auth.service';
                 <strong>{{ s.userName() }}</strong>
                 <span class="uplan">@if (s.hasPlan()) { {{ 'AICHATBOT.HEADER.HAS_PLAN' | translate }} {{ s.planName() }} } @else { {{ 'AICHATBOT.HEADER.NO_PLAN' | translate }} }</span>
               </div>
-              <a class="uitem" role="menuitem" routerLink="/ai-chatbot/account" (click)="userOpen.set(false)">
+              <a class="uitem" role="menuitem" routerLink="/account" (click)="userOpen.set(false)">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 {{ 'AICHATBOT.HEADER.MANAGE' | translate }}
               </a>
@@ -168,8 +168,8 @@ export class ChatbotAppHeaderComponent {
 
   goHome(): void {
     this.open.set(false); this.userOpen.set(false);
-    const dest = !this.s.planExpiry() ? '/ai-chatbot/plans'
-      : (this.s.companies().length > 0 ? '/ai-chatbot/dashboard' : '/ai-chatbot/configure');
+    const dest = !this.s.planExpiry() ? '/plans'
+      : (this.s.companies().length > 0 ? '/dashboard' : '/configure');
     this.router.navigateByUrl(dest);
   }
   toggle(): void { this.userOpen.set(false); if (this.s.companies().length) this.open.set(!this.open()); }
@@ -179,7 +179,7 @@ export class ChatbotAppHeaderComponent {
   async logout(): Promise<void> {
     this.userOpen.set(false);
     await this.auth.signOut();
-    this.router.navigateByUrl('/ai-chatbot');
+    this.router.navigateByUrl('/');
   }
 
   @HostListener('document:click', ['$event'])

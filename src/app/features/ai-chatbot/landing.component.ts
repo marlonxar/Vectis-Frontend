@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
@@ -686,6 +686,7 @@ export class ChatbotLandingComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private title = inject(Title);
   private meta = inject(Meta);
+  private doc = inject(DOCUMENT);
   private scroll = inject(ScrollService);
   private i18n = inject(TranslateService);
 
@@ -752,8 +753,8 @@ export class ChatbotLandingComponent implements OnInit {
         if (this.auth.isLoggedIn()) {
           this.loggedIn.set(true);
           const dest = !this.session.planExpiry()
-            ? '/ai-chatbot/plans'
-            : (this.session.companies().length > 0 ? '/ai-chatbot/dashboard' : '/ai-chatbot/configure');
+            ? '/plans'
+            : (this.session.companies().length > 0 ? '/dashboard' : '/configure');
           setTimeout(() => this.router.navigateByUrl(dest), 1300);
         } else {
           this.ready.set(true);
@@ -766,12 +767,52 @@ export class ChatbotLandingComponent implements OnInit {
 
     const t = 'Vectis AI ChatBot — Chatbot con IA para tu negocio';
     const d = 'Crea un chatbot con IA para tu sitio web en minutos: ventas, atención y captura de leads 24/7. Self-service, sin código. Vectis Automation Group.';
+    const url = 'https://www.aichatbot.wearevectis.com/';
+    const img = 'https://wearevectis.com/assets/images/og-cover.jpg';
     this.title.setTitle(t);
     this.meta.updateTag({ name: 'description', content: d });
     this.meta.updateTag({ name: 'robots', content: 'index, follow, max-image-preview:large' });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:site_name', content: 'Vectis AI ChatBot' });
     this.meta.updateTag({ property: 'og:title', content: t });
     this.meta.updateTag({ property: 'og:description', content: d });
-    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:url', content: url });
+    this.meta.updateTag({ property: 'og:image', content: img });
+    this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+    this.meta.updateTag({ name: 'twitter:title', content: t });
+    this.meta.updateTag({ name: 'twitter:description', content: d });
+    this.meta.updateTag({ name: 'twitter:image', content: img });
+    this.setCanonical(url);
+    this.injectJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Vectis AI ChatBot',
+      url,
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      inLanguage: ['es', 'en'],
+      description: d,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      provider: { '@type': 'Organization', name: 'Vectis Automation Group', url: 'https://wearevectis.com/' },
+    });
+  }
+
+  private setCanonical(href: string): void {
+    let link = this.doc.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!link) { link = this.doc.createElement('link'); link.rel = 'canonical'; this.doc.head.appendChild(link); }
+    link.href = href;
+    // og:locale hreflang alternates for the subdomain
+    this.doc.querySelectorAll('link[rel="alternate"][data-da-alt]').forEach((n) => n.remove());
+    const alt = (lang: string, h: string) => { const l = this.doc.createElement('link'); l.rel = 'alternate'; l.setAttribute('hreflang', lang); l.setAttribute('href', h); l.setAttribute('data-da-alt', ''); this.doc.head.appendChild(l); };
+    alt('es', href); alt('x-default', href);
+  }
+
+  private injectJsonLd(data: unknown): void {
+    this.doc.querySelectorAll('script[data-chatbot-jsonld]').forEach((n) => n.remove());
+    const s = this.doc.createElement('script');
+    s.type = 'application/ld+json'; s.setAttribute('data-chatbot-jsonld', '');
+    s.textContent = JSON.stringify(data);
+    this.doc.head.appendChild(s);
   }
 
   async login(): Promise<void> {
@@ -797,7 +838,7 @@ export class ChatbotLandingComponent implements OnInit {
     if (error) { this.errorMsg.set(this.mapError(error.message)); return; }
     if (data.session) {
       // Sin confirmación de correo: ya hay sesión.
-      this.router.navigateByUrl('/ai-chatbot/plans');
+      this.router.navigateByUrl('/plans');
     } else {
       // Con confirmación de correo activada: avisar al usuario.
       this.infoMsg.set('Te enviamos un correo para confirmar tu cuenta. Ábrelo y luego inicia sesión.');

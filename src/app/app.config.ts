@@ -1,6 +1,6 @@
 import { ApplicationConfig, inject, provideAppInitializer } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { routes } from './app.routes';
+import { routes, chatbotRoutes } from './app.routes';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, HttpClient } from '@angular/common/http';
 import { TranslateLoader, TranslateService, provideTranslateService } from '@ngx-translate/core';
@@ -26,9 +26,14 @@ function detectInitialLang(): 'es' | 'en' {
   return 'es';
 }
 
+/** The AI ChatBot product is served from the aichatbot.wearevectis.com subdomain. */
+function isChatbotHost(): boolean {
+  try { return /(^|\.)aichatbot\./i.test(location.hostname); } catch { return false; }
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(isChatbotHost() ? chatbotRoutes : routes),
     provideAnimations(),
     provideHttpClient(),
     provideTranslateService({

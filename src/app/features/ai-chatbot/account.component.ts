@@ -12,7 +12,7 @@ import { SupabaseClientService } from './supabase.client';
 import { FocusTrapDirective } from './focus-trap.directive';
 
 /**
- * /ai-chatbot/account — Administrar cuenta (UI). Información básica, editar perfil,
+ * /account — Administrar cuenta (UI). Información básica, editar perfil,
  * reset de contraseña y eliminar cuenta.
  */
 @Component({
@@ -99,7 +99,7 @@ import { FocusTrapDirective } from './focus-trap.directive';
                     </span></li>
                   }
                 </ul>
-                <a class="btn-ghost sm manage-link" routerLink="/ai-chatbot/manage">{{ 'AICHATBOT.ACCOUNT.MANAGE_CHATBOTS' | translate }}</a>
+                <a class="btn-ghost sm manage-link" routerLink="/manage">{{ 'AICHATBOT.ACCOUNT.MANAGE_CHATBOTS' | translate }}</a>
               } @else { <p class="empty">{{ 'AICHATBOT.ACCOUNT.NO_CHATBOTS' | translate }}</p> }
             </section>
 
@@ -109,19 +109,19 @@ import { FocusTrapDirective } from './focus-trap.directive';
               @if (!s.hasPlan()) {
                 <!-- Sin plan elegido todavía -->
                 <p class="sub-info">{{ 'AICHATBOT.ACCOUNT.NO_PLAN' | translate }}</p>
-                <a class="btn-gold sm resub" routerLink="/ai-chatbot/plans">{{ 'AICHATBOT.ACCOUNT.CHOOSE_PLAN' | translate }}</a>
+                <a class="btn-gold sm resub" routerLink="/plans">{{ 'AICHATBOT.ACCOUNT.CHOOSE_PLAN' | translate }}</a>
               } @else if (s.cancelAtPeriodEnd()) {
                 <p class="sub-info">{{ 'AICHATBOT.ACCOUNT.SUB_INFO' | translate:{ plan: s.planName(), date: s.planExpiry() } }}</p>
                 <p class="okmsg" role="status" aria-live="polite">{{ 'AICHATBOT.ACCOUNT.CANCELLED_MSG' | translate:{ date: s.planExpiry() } }}</p>
-                <a class="btn-gold sm resub" routerLink="/ai-chatbot/plans">{{ 'AICHATBOT.ACCOUNT.RESUBSCRIBE' | translate }}</a>
+                <a class="btn-gold sm resub" routerLink="/plans">{{ 'AICHATBOT.ACCOUNT.RESUBSCRIBE' | translate }}</a>
               } @else if (s.planExpired()) {
                 <!-- Plan vencido -->
                 <p class="sub-info expired">{{ 'AICHATBOT.ACCOUNT.SUB_EXPIRED' | translate:{ plan: s.planName(), date: s.planExpiry() } }}</p>
-                <a class="btn-gold sm resub" routerLink="/ai-chatbot/plans">{{ 'AICHATBOT.ACCOUNT.RENEW_PLAN' | translate }}</a>
+                <a class="btn-gold sm resub" routerLink="/plans">{{ 'AICHATBOT.ACCOUNT.RENEW_PLAN' | translate }}</a>
               } @else {
                 <p class="sub-info">{{ 'AICHATBOT.ACCOUNT.SUB_INFO' | translate:{ plan: s.planName(), date: s.planExpiry() } }}</p>
                 <div class="sub-actions">
-                  <a class="btn-gold sm resub" routerLink="/ai-chatbot/plans">{{ 'AICHATBOT.ACCOUNT.CHANGE_PLAN' | translate }}</a>
+                  <a class="btn-gold sm resub" routerLink="/plans">{{ 'AICHATBOT.ACCOUNT.CHANGE_PLAN' | translate }}</a>
                   <button type="button" class="btn-ghost sm" (click)="confirmKind.set('cancel')">{{ 'AICHATBOT.ACCOUNT.CANCEL_SUB' | translate }}</button>
                 </div>
               }
@@ -393,7 +393,7 @@ export class ChatbotAccountComponent implements OnInit {
       this.s.reset();
       this.confirmBusy.set(false);
       this.confirmKind.set(null);
-      this.router.navigate(['/ai-chatbot'], { queryParams: { deleted: '1' } });
+      this.router.navigate(['/'], { queryParams: { deleted: '1' } });
     } else {
       // Cancelar suscripción: marca cancel_at_period_end; el acceso sigue hasta el vencimiento.
       this.confirmBusy.set(true);

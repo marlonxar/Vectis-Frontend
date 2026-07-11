@@ -17,7 +17,7 @@ interface Faq { q: string; a: string; }
 const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
 
 /**
- * /ai-chatbot/configure — Onboarding/edición del chatbot.
+ * /configure — Onboarding/edición del chatbot.
  *  - Usuario nuevo: formulario; el widget aparece al guardar.
  *  - Usuario con chatbot: muestra el widget (copiar/pegar) y debajo el formulario
  *    pre-cargado para editar.
@@ -49,7 +49,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 <div class="paused-banner" role="status">
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10 9v6M14 9v6"/></svg>
                   {{ 'AICHATBOT.CONFIGURE.INACTIVE_BOT' | translate }}
-                  <a routerLink="/ai-chatbot/manage">{{ 'AICHATBOT.CONFIGURE.MANAGE_LINK' | translate }}</a>
+                  <a routerLink="/manage">{{ 'AICHATBOT.CONFIGURE.MANAGE_LINK' | translate }}</a>
                 </div>
               }
               @if (returning()) {
@@ -77,7 +77,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   <li><span class="n">3</span>{{ 'AICHATBOT.CONFIGURE.STEP3' | translate }}</li>
                 </ol>
                 <div class="actions">
-                  <a class="go" routerLink="/ai-chatbot/dashboard">{{ 'AICHATBOT.CONFIGURE.GO_PANEL' | translate }}</a>
+                  <a class="go" routerLink="/dashboard">{{ 'AICHATBOT.CONFIGURE.GO_PANEL' | translate }}</a>
                   @if (s.canAddCompany()) {
                     <button type="button" class="go ghost" (click)="startNew()">{{ 'AICHATBOT.CONFIGURE.CONFIGURE_ANOTHER' | translate }}</button>
                   }

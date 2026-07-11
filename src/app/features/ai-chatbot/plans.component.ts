@@ -17,8 +17,8 @@ interface Plan {
 }
 
 /**
- * /ai-chatbot/plans — Elegir plan (Basic / Pro / Business).
- * Al elegir: guarda el plan y va al onboarding (/ai-chatbot/configure).
+ * /plans — Elegir plan (Basic / Pro / Business).
+ * Al elegir: guarda el plan y va al onboarding (/configure).
  */
 @Component({
   selector: 'app-chatbot-plans',
@@ -149,9 +149,9 @@ export class ChatbotPlansComponent implements OnInit {
     }
     // Si quedó con más chatbots activos de los que permite el nuevo plan, ir a elegir cuáles.
     if (this.session.overLimit()) {
-      this.router.navigateByUrl('/ai-chatbot/manage');
+      this.router.navigateByUrl('/manage');
     } else {
-      this.router.navigateByUrl('/ai-chatbot/configure');
+      this.router.navigateByUrl('/configure');
     }
   }
 }

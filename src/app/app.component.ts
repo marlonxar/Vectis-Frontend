@@ -10,6 +10,11 @@ import { BackToTopComponent } from './shared/components/back-to-top/back-to-top.
 import { IntroComponent } from './features/intro/intro.component';
 import { LoadingComponent } from './shared/components/loading/loading.component';
 
+/** The AI ChatBot product runs on the aichatbot.wearevectis.com subdomain. */
+function detectChatbotHost(): boolean {
+  try { return /(^|\.)aichatbot\./i.test(location.hostname); } catch { return false; }
+}
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -33,6 +38,9 @@ export class AppComponent implements OnInit {
   private readonly doc = inject(DOCUMENT);
   private readonly router = inject(Router);
 
+  /** On the chatbot subdomain we hide the marketing chrome and let the chatbot own its SEO. */
+  readonly isChatbot = detectChatbotHost();
+
   readonly currentLang = signal<'es' | 'en'>('es');
   readonly progress = signal(0);
   readonly showIntro = signal(false);
@@ -47,6 +55,10 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Chatbot subdomain: no marketing chrome, intro or canonical/meta — the chatbot
+    // components manage their own title, description, canonical and language.
+    if (this.isChatbot) { this.showIntro.set(false); return; }
+
     // Show the intro loader only when the site is opened on the home page (not on
     // privacy, terms, 404, etc.).
     const path = (this.doc.defaultView?.location.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';

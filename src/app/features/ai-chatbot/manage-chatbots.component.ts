@@ -9,7 +9,7 @@ import { ChatbotAuthService } from './auth.service';
 import { SupabaseClientService } from './supabase.client';
 
 /**
- * /ai-chatbot/manage — Elegir qué chatbots quedan ACTIVOS según el plan.
+ * /manage — Elegir qué chatbots quedan ACTIVOS según el plan.
  * Al bajar de plan (Business → Pro/Basic), el usuario solo puede mantener
  * un número limitado de chatbots activos; los demás quedan inactivos (visibles).
  */
@@ -130,7 +130,7 @@ export class ChatbotManageComponent implements OnInit {
       await this.auth.reload();
       this.s.needsActiveReview.set(false);   // revisión resuelta
       this.saving.set(false);
-      this.router.navigateByUrl('/ai-chatbot/dashboard');
+      this.router.navigateByUrl('/dashboard');
     } catch (e: any) {
       this.saving.set(false);
       this.saveErr.set(e?.message || 'No se pudo guardar. Intenta de nuevo.');

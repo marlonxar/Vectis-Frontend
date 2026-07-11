@@ -6,7 +6,7 @@ import { Title } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
 import { ChatbotAuthService } from './auth.service';
 
-/** /ai-chatbot/reset — define una nueva contraseña (link del correo de recuperación). */
+/** /reset — define una nueva contraseña (link del correo de recuperación). */
 @Component({
   selector: 'app-chatbot-reset',
   standalone: true,
@@ -116,5 +116,5 @@ export class ChatbotResetComponent implements OnInit {
     this.done.set(true);
   }
 
-  goLogin(): void { this.router.navigateByUrl('/ai-chatbot'); }
+  goLogin(): void { this.router.navigateByUrl('/'); }
 }

@@ -29,7 +29,7 @@ import { TranslateModule } from '@ngx-translate/core';
             <li><span class="dot" aria-hidden="true"></span>{{ 'AICHATBOT.PROMO.B6' | translate }}</li>
             <li><span class="dot" aria-hidden="true"></span>{{ 'AICHATBOT.PROMO.B7' | translate }}</li>
           </ul>
-          <a class="cta" routerLink="/ai-chatbot">
+          <a class="cta" routerLink="/">
             {{ 'AICHATBOT.PROMO.CTA' | translate }}
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
@@ -100,7 +100,7 @@ import { TranslateModule } from '@ngx-translate/core';
           </div>
         </div>
         <div class="steps-cta">
-          <a class="cta" routerLink="/ai-chatbot">{{ 'AICHATBOT.PROMO.CTA' | translate }}
+          <a class="cta" routerLink="/">{{ 'AICHATBOT.PROMO.CTA' | translate }}
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
           </a>
           <span class="steps-note on-dark">{{ 'AICHATBOT.PROMO.STEPS_NOTE' | translate }}</span>

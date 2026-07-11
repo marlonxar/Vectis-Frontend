@@ -20,7 +20,7 @@ const TYPE_COLOR: Record<string, string> = {
 };
 const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja', 'sin_respuesta', 'otro'];
 
-/** /ai-chatbot/dashboard — métricas del MES ACTUAL (Supabase), con refresco automático. */
+/** /dashboard — métricas del MES ACTUAL (Supabase), con refresco automático. */
 @Component({
   selector: 'app-chatbot-dashboard',
   standalone: true,
@@ -54,7 +54,7 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
             <div class="dash-alert" role="status">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>
               <span>{{ (s.overLimit() ? 'AICHATBOT.DASH.OVER_LIMIT' : 'AICHATBOT.DASH.INACTIVE_BOT') | translate }}
-                <a routerLink="/ai-chatbot/manage">{{ 'AICHATBOT.DASH.MANAGE_LINK' | translate }}</a>
+                <a routerLink="/manage">{{ 'AICHATBOT.DASH.MANAGE_LINK' | translate }}</a>
               </span>
             </div>
           }
@@ -78,7 +78,7 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
                     </li>
                   }
                 </ul>
-                <a class="setup-cta" routerLink="/ai-chatbot/configure">{{ 'AICHATBOT.DASH.SETUP_CTA' | translate }}</a>
+                <a class="setup-cta" routerLink="/configure">{{ 'AICHATBOT.DASH.SETUP_CTA' | translate }}</a>
               </div>
             }
 
