@@ -123,14 +123,16 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
                   }
                 </div>
                 @if (canInsights()) {
-                  <div class="stat">
-                    <div class="cap">{{ 'AICHATBOT.DASH.HO_RESP' | translate }}</div>
-                    <div class="n">{{ hoRespText() }}</div>
-                    <div class="sub">{{ 'AICHATBOT.DASH.HO_RESP_HINT' | translate }}</div>
-                  </div>
+                  @if (hoRespText() !== '—') {
+                    <div class="stat">
+                      <div class="cap">{{ 'AICHATBOT.DASH.HO_RESP' | translate }}</div>
+                      <div class="n">{{ hoRespText() }}</div>
+                      <div class="sub">{{ 'AICHATBOT.DASH.HO_RESP_HINT' | translate }}</div>
+                    </div>
+                  }
                   <div class="stat">
                     <div class="cap">{{ 'AICHATBOT.DASH.HO_PEAK' | translate }}</div>
-                    <div class="n">{{ hoPeakHour() || '—' }}</div>
+                    <div class="n">{{ hoPeakDisplay() || '—' }}</div>
                     <div class="sub">{{ 'AICHATBOT.DASH.HO_PEAK_HINT' | translate }}</div>
                   </div>
                 }
@@ -469,6 +471,13 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
     if (s < 60) return Math.round(s) + 's';
     const m = Math.floor(s / 60); const sec = Math.round(s % 60);
     return m + 'm' + (sec ? ' ' + sec + 's' : '');
+  });
+  /** Hora pico: usa la de handoff si existe; si no, la hora pico GENERAL (todos los mensajes). */
+  readonly hoPeakDisplay = computed(() => {
+    const h = this.hoPeakHour();
+    if (h) return h;
+    const gen = this.peakHour();
+    return gen !== null ? String(gen).padStart(2, '0') + ':00' : '';
   });
   limit = computed(() => this.stats()?.limit ?? 1000);
   // Los insights con IA son función de Pro/Business (Basic no los ve).
