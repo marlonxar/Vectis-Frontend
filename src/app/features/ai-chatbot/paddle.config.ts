@@ -15,7 +15,7 @@ export type PaddleEnv = 'sandbox' | 'production';
 
 export const PADDLE_ENV: PaddleEnv = 'sandbox';
 
-export const PADDLE_CLIENT_TOKEN = ''; // ← pega tu client-side token (test_... / live_...)
+export const PADDLE_CLIENT_TOKEN = 'test_ff2e38c401a5dceedba51bd0bd4'; // client-side token (público, seguro en frontend)
 
 // OJO: Paddle necesita el ID del PRICE (empieza con `pri_...`), NO el del PRODUCT (`pro_...`).
 // Los valores de abajo son PRODUCT IDs; reemplázalos por el `pri_...` del price mensual de cada
