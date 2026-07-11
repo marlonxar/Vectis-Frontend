@@ -15,13 +15,17 @@ const APP_URL = 'https://www.aichatbot.wearevectis.com';
 
 /**
  * Caducidad de sesión (lado cliente).
- * Supabase por sí solo renueva el token para siempre; aquí forzamos que la sesión
- * expire de forma ABSOLUTA a las N horas del login. Para pasar a "por inactividad",
- * reinicia SESSION_START_KEY en cada interacción (ver nota en el README).
+ * Supabase por sí solo renueva el token para siempre; aquí forzamos que la sesión expire por:
+ *   1) INACTIVIDAD: tras SESSION_IDLE_HOURS sin usar la app.
+ *   2) ABSOLUTA:    como tope, SESSION_ABSOLUTE_DAYS desde el login (aunque siga activo).
+ * (Ajusta ambos números aquí.)
  */
-const SESSION_MAX_HOURS = 24;
-const SESSION_MAX_MS = SESSION_MAX_HOURS * 60 * 60 * 1000;
-const SESSION_START_KEY = 'da_session_started';
+const SESSION_IDLE_HOURS = 48;       // inactividad
+const SESSION_ABSOLUTE_DAYS = 7;     // tope absoluto desde el login
+const SESSION_IDLE_MS = SESSION_IDLE_HOURS * 60 * 60 * 1000;
+const SESSION_ABSOLUTE_MS = SESSION_ABSOLUTE_DAYS * 24 * 60 * 60 * 1000;
+const SESSION_START_KEY = 'da_session_started';   // hora de login (tope absoluto)
+const SESSION_LAST_KEY = 'da_session_last';       // última actividad (inactividad)
 
 @Injectable({ providedIn: 'root' })
 export class ChatbotAuthService {
@@ -44,16 +48,20 @@ export class ChatbotAuthService {
   constructor() {
     this.sb.auth.getSession().then(async ({ data }) => {
       if (data.session) {
-        if (!this.sessionStart()) this.setSessionStart(Date.now());   // ancla la caducidad (sesiones previas: desde ahora)
+        const now = Date.now();
+        if (!this.sessionStart()) this.setSessionStart(now);   // sesiones previas: ancla el tope absoluto desde ahora
+        if (!this.lastActivity()) this.setLastActivity(now);
         if (this.isSessionExpired()) { await this.forceLogout(); this.authReady.set(true); return; }
+        this.setLastActivity(now);   // abrir la app cuenta como actividad
       }
       await this.apply(data.session);
       this.authReady.set(true);
+      this.startActivityTracking();
       this.startExpiryWatcher();
     });
     this.sb.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN') this.setSessionStart(Date.now());   // login nuevo → reinicia el reloj de 24 h
-      if (event === 'SIGNED_OUT') this.clearSessionStart();
+      if (event === 'SIGNED_IN') { const now = Date.now(); this.setSessionStart(now); this.setLastActivity(now); }   // login nuevo → reinicia relojes
+      if (event === 'SIGNED_OUT') this.clearSessionMarks();
       if (session && this.isSessionExpired()) { void this.forceLogout(); return; }
       void this.apply(session);
     });
@@ -61,15 +69,42 @@ export class ChatbotAuthService {
 
   isLoggedIn(): boolean { return !!this.user(); }
 
-  // ── Caducidad de sesión (absoluta, lado cliente) ──
-  private sessionStart(): number | null { try { const v = localStorage.getItem(SESSION_START_KEY); return v ? Number(v) : null; } catch { return null; } }
-  private setSessionStart(ts: number): void { try { localStorage.setItem(SESSION_START_KEY, String(ts)); } catch { /* noop */ } }
-  private clearSessionStart(): void { try { localStorage.removeItem(SESSION_START_KEY); } catch { /* noop */ } }
-  private isSessionExpired(): boolean { const s = this.sessionStart(); return s != null && (Date.now() - s) > SESSION_MAX_MS; }
+  // ── Caducidad de sesión (inactividad + tope absoluto, lado cliente) ──
+  private read(key: string): number | null { try { const v = localStorage.getItem(key); return v ? Number(v) : null; } catch { return null; } }
+  private write(key: string, ts: number): void { try { localStorage.setItem(key, String(ts)); } catch { /* noop */ } }
+  private sessionStart(): number | null { return this.read(SESSION_START_KEY); }
+  private setSessionStart(ts: number): void { this.write(SESSION_START_KEY, ts); }
+  private lastActivity(): number | null { return this.read(SESSION_LAST_KEY); }
+  private setLastActivity(ts: number): void { this.write(SESSION_LAST_KEY, ts); }
+  private clearSessionMarks(): void { try { localStorage.removeItem(SESSION_START_KEY); localStorage.removeItem(SESSION_LAST_KEY); } catch { /* noop */ } }
+
+  private isSessionExpired(): boolean {
+    const start = this.sessionStart(), last = this.lastActivity(), now = Date.now();
+    if (start != null && now - start > SESSION_ABSOLUTE_MS) return true;   // tope absoluto (7 días)
+    if (last != null && now - last > SESSION_IDLE_MS) return true;         // inactividad (48 h)
+    return false;
+  }
+
+  /** Marca actividad reciente (throttle: escribe como máximo cada 60 s). */
+  private touchSession(): void {
+    if (!this.user()) return;
+    const last = this.lastActivity();
+    const now = Date.now();
+    if (last == null || now - last > 60_000) this.setLastActivity(now);
+  }
+
+  /** Escucha interacción del usuario para renovar la sesión por actividad. */
+  private startActivityTracking(): void {
+    try {
+      const on = () => this.touchSession();
+      ['click', 'keydown', 'pointerdown', 'scroll', 'visibilitychange'].forEach((ev) =>
+        window.addEventListener(ev, on, { passive: true }));
+    } catch { /* SSR / noop */ }
+  }
 
   /** Cierra la sesión por caducidad y manda al login. */
   private async forceLogout(): Promise<void> {
-    this.clearSessionStart();
+    this.clearSessionMarks();
     try { await this.sb.auth.signOut(); } catch { /* noop */ }
     this.user.set(null); this.store.reset();
     try { void this.router.navigateByUrl('/?expired=1'); } catch { /* noop */ }

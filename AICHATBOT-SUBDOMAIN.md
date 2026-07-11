@@ -94,20 +94,21 @@ Todos los redirects de auth de la app apuntan a `https://www.aichatbot.wearevect
 ## Caducidad de sesión
 
 Por defecto Supabase renueva el token indefinidamente (la sesión no vence nunca). Añadimos una
-**caducidad absoluta del lado cliente** en `src/app/features/ai-chatbot/auth.service.ts`:
+caducidad **del lado cliente** en `src/app/features/ai-chatbot/auth.service.ts` con dos reglas:
 
 ```ts
-const SESSION_MAX_HOURS = 24;   // ← cámbialo aquí
+const SESSION_IDLE_HOURS = 48;     // ← inactividad: cierra tras 48 h sin usar la app
+const SESSION_ABSOLUTE_DAYS = 7;   // ← tope absoluto: cierra a los 7 días del login, siempre
 ```
 
-- Al iniciar sesión se guarda la marca de tiempo (`da_session_started`).
-- Al arrancar la app, en cada cambio de auth y cada minuto, si pasaron más de `SESSION_MAX_HOURS`
-  desde el login, se cierra la sesión y se manda a `/?expired=1` (muestra "Tu sesión expiró").
-- Es **absoluta** (cuenta desde el login, no desde la última actividad).
+- **Inactividad (48 h):** cada interacción del usuario (`click`, `keydown`, `scroll`, volver a la
+  pestaña) renueva la marca `da_session_last`. Si pasan 48 h sin actividad, se cierra la sesión.
+- **Tope absoluto (7 días):** desde el login (`da_session_started`), aunque el usuario siga activo.
+- Se verifica al arrancar, en cada cambio de auth y **cada minuto**. Al vencer, cierra sesión y va
+  a `/?expired=1` (muestra "Tu sesión expiró por seguridad").
 
-**Cambiar a "por inactividad"** (cerrar tras X horas sin usar la app): en vez de anclar la marca
-solo en el login, reiníciala en cada interacción del usuario (p. ej. un listener global de
-`click`/`keydown`/`visibilitychange` que llame a `setSessionStart(Date.now())`).
+Para cambiar los tiempos, edita las dos constantes de arriba. Para volver a **solo absoluta**,
+pon `SESSION_IDLE_HOURS` muy alto (o quita la regla de inactividad).
 
 **Recomendado a futuro (servidor):** en Supabase Pro, Auth → Sessions permite "time-box user
 sessions" (absoluta) e "inactivity timeout" del lado servidor, que es más robusto que el cliente.
