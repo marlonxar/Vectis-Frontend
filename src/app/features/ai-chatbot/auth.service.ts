@@ -1,4 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import type { Session, User } from '@supabase/supabase-js';
 import { SupabaseClientService } from './supabase.client';
@@ -12,11 +13,22 @@ import { ChatbotSessionService, rowToConfig } from './session.service';
 /** URL pública fija de la app. Los correos y redirecciones de auth SIEMPRE apuntan aquí (nunca a localhost). */
 const APP_URL = 'https://www.aichatbot.wearevectis.com';
 
+/**
+ * Caducidad de sesión (lado cliente).
+ * Supabase por sí solo renueva el token para siempre; aquí forzamos que la sesión
+ * expire de forma ABSOLUTA a las N horas del login. Para pasar a "por inactividad",
+ * reinicia SESSION_START_KEY en cada interacción (ver nota en el README).
+ */
+const SESSION_MAX_HOURS = 24;
+const SESSION_MAX_MS = SESSION_MAX_HOURS * 60 * 60 * 1000;
+const SESSION_START_KEY = 'da_session_started';
+
 @Injectable({ providedIn: 'root' })
 export class ChatbotAuthService {
   private sb = inject(SupabaseClientService).client;
   private store = inject(ChatbotSessionService);
   private translate = inject(TranslateService);
+  private router = inject(Router);
 
   /** Aplica el idioma de preferencia del usuario a toda la interfaz. */
   applyLang(lang: 'es' | 'en'): void {
@@ -31,13 +43,42 @@ export class ChatbotAuthService {
 
   constructor() {
     this.sb.auth.getSession().then(async ({ data }) => {
+      if (data.session) {
+        if (!this.sessionStart()) this.setSessionStart(Date.now());   // ancla la caducidad (sesiones previas: desde ahora)
+        if (this.isSessionExpired()) { await this.forceLogout(); this.authReady.set(true); return; }
+      }
       await this.apply(data.session);
       this.authReady.set(true);
+      this.startExpiryWatcher();
     });
-    this.sb.auth.onAuthStateChange((_event, session) => { void this.apply(session); });
+    this.sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') this.setSessionStart(Date.now());   // login nuevo → reinicia el reloj de 24 h
+      if (event === 'SIGNED_OUT') this.clearSessionStart();
+      if (session && this.isSessionExpired()) { void this.forceLogout(); return; }
+      void this.apply(session);
+    });
   }
 
   isLoggedIn(): boolean { return !!this.user(); }
+
+  // ── Caducidad de sesión (absoluta, lado cliente) ──
+  private sessionStart(): number | null { try { const v = localStorage.getItem(SESSION_START_KEY); return v ? Number(v) : null; } catch { return null; } }
+  private setSessionStart(ts: number): void { try { localStorage.setItem(SESSION_START_KEY, String(ts)); } catch { /* noop */ } }
+  private clearSessionStart(): void { try { localStorage.removeItem(SESSION_START_KEY); } catch { /* noop */ } }
+  private isSessionExpired(): boolean { const s = this.sessionStart(); return s != null && (Date.now() - s) > SESSION_MAX_MS; }
+
+  /** Cierra la sesión por caducidad y manda al login. */
+  private async forceLogout(): Promise<void> {
+    this.clearSessionStart();
+    try { await this.sb.auth.signOut(); } catch { /* noop */ }
+    this.user.set(null); this.store.reset();
+    try { void this.router.navigateByUrl('/?expired=1'); } catch { /* noop */ }
+  }
+
+  /** Revisa cada minuto si la sesión ya venció (por si la pestaña queda abierta). */
+  private startExpiryWatcher(): void {
+    setInterval(() => { if (this.user() && this.isSessionExpired()) void this.forceLogout(); }, 60_000);
+  }
 
   private async apply(session: Session | null): Promise<void> {
     this.user.set(session?.user ?? null);

@@ -1137,7 +1137,8 @@
     },
     "LANDING": {
       "SESSION_ACTIVE": "Se encuentra una sesión activa. Redirigiendo al Panel Principal…",
-      "ACCOUNT_DELETED": "Tu cuenta fue eliminada. Si quieres volver, crea una cuenta nueva."
+      "ACCOUNT_DELETED": "Tu cuenta fue eliminada. Si quieres volver, crea una cuenta nueva.",
+      "SESSION_EXPIRED": "Tu sesión expiró por seguridad. Vuelve a iniciar sesión."
     },
     "GUIDE": {
       "HOW_EYEBROW": "Self-serve",

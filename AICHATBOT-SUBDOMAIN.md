@@ -91,6 +91,29 @@ Todos los redirects de auth de la app apuntan a `https://www.aichatbot.wearevect
 
 ---
 
+## Caducidad de sesión
+
+Por defecto Supabase renueva el token indefinidamente (la sesión no vence nunca). Añadimos una
+**caducidad absoluta del lado cliente** en `src/app/features/ai-chatbot/auth.service.ts`:
+
+```ts
+const SESSION_MAX_HOURS = 24;   // ← cámbialo aquí
+```
+
+- Al iniciar sesión se guarda la marca de tiempo (`da_session_started`).
+- Al arrancar la app, en cada cambio de auth y cada minuto, si pasaron más de `SESSION_MAX_HOURS`
+  desde el login, se cierra la sesión y se manda a `/?expired=1` (muestra "Tu sesión expiró").
+- Es **absoluta** (cuenta desde el login, no desde la última actividad).
+
+**Cambiar a "por inactividad"** (cerrar tras X horas sin usar la app): en vez de anclar la marca
+solo en el login, reiníciala en cada interacción del usuario (p. ej. un listener global de
+`click`/`keydown`/`visibilitychange` que llame a `setSessionStart(Date.now())`).
+
+**Recomendado a futuro (servidor):** en Supabase Pro, Auth → Sessions permite "time-box user
+sessions" (absoluta) e "inactivity timeout" del lado servidor, que es más robusto que el cliente.
+
+---
+
 ## Verificación tras el deploy
 1. `https://www.aichatbot.wearevectis.com/` → muestra el login del chatbot en la raíz.
 2. `https://wearevectis.com/ai-chatbot` → **301** al subdominio.

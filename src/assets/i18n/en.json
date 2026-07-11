@@ -1137,7 +1137,8 @@
     },
     "LANDING": {
       "SESSION_ACTIVE": "You have an active session. Redirecting to your Dashboard…",
-      "ACCOUNT_DELETED": "Your account was deleted. If you want to come back, create a new account."
+      "ACCOUNT_DELETED": "Your account was deleted. If you want to come back, create a new account.",
+      "SESSION_EXPIRED": "Your session expired for security. Please sign in again."
     },
     "GUIDE": {
       "HOW_EYEBROW": "Self-serve",

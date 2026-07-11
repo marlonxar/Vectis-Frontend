@@ -746,6 +746,10 @@ export class ChatbotLandingComponent implements OnInit {
     if (this.route.snapshot.queryParamMap.get('deleted') === '1') {
       this.infoMsg.set(this.i18n.instant('AICHATBOT.LANDING.ACCOUNT_DELETED'));
     }
+    // Aviso cuando la sesión expiró por caducidad.
+    if (this.route.snapshot.queryParamMap.get('expired') === '1') {
+      this.infoMsg.set(this.i18n.instant('AICHATBOT.LANDING.SESSION_EXPIRED'));
+    }
 
     // Si ya hay sesión activa, no mostramos el login: avisamos y redirigimos al panel.
     const check = () => {
