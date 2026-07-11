@@ -123,13 +123,11 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
                   }
                 </div>
                 @if (canInsights()) {
-                  @if (hoRespText() !== '—') {
-                    <div class="stat">
-                      <div class="cap">{{ 'AICHATBOT.DASH.HO_RESP' | translate }}</div>
-                      <div class="n">{{ hoRespText() }}</div>
-                      <div class="sub">{{ 'AICHATBOT.DASH.HO_RESP_HINT' | translate }}</div>
-                    </div>
-                  }
+                  <div class="stat">
+                    <div class="cap">{{ 'AICHATBOT.DASH.HO_RESP' | translate }}</div>
+                    <div class="n">{{ hoRespText() }}</div>
+                    <div class="sub">{{ 'AICHATBOT.DASH.HO_RESP_HINT' | translate }}</div>
+                  </div>
                   <div class="stat">
                     <div class="cap">{{ 'AICHATBOT.DASH.HO_PEAK' | translate }}</div>
                     <div class="n">{{ hoPeakDisplay() || '—' }}</div>
