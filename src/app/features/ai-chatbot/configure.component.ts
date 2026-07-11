@@ -432,7 +432,15 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                       <ng-container [ngTemplateOutlet]="tip" [ngTemplateOutletContext]="{ k: 'AICHATBOT.ONBOARD.TIP_ORIGINS' }"></ng-container>
                     </label>
                     @for (o of origins(); track $index) {
-                      <input class="mb" [ngModel]="o" (ngModelChange)="setOrigin($index, $event)" [ngModelOptions]="{ standalone: true }" placeholder="https://tutienda.com" />
+                      <div class="qr">
+                        <input [ngModel]="o" (ngModelChange)="setOrigin($index, $event)" [ngModelOptions]="{ standalone: true }" placeholder="https://tutienda.com" />
+                        @if (origins().length > 1) {
+                          <button type="button" class="x" (click)="removeOrigin($index)" aria-label="Quitar dominio"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                        }
+                      </div>
+                    }
+                    @if (origins().length < originLimit()) {
+                      <button type="button" class="ghost-btn" (click)="addOrigin()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>{{ 'AICHATBOT.ONBOARD.ADD_ORIGIN' | translate }}</button>
                     }
                     <p class="hintline">{{ (s.plan() === 'business' ? 'AICHATBOT.ONBOARD.ORIGINS_BIZ' : 'AICHATBOT.ONBOARD.ORIGINS_ONE') | translate }}</p>
                     <p class="hintline warn">{{ 'AICHATBOT.ONBOARD.ORIGINS_ANY' | translate }}</p>
@@ -862,6 +870,8 @@ export class ChatbotConfigureComponent implements OnInit {
 
   dbId = '';  // id real en la tabla chatbots (para editar)
   quickLimit = computed(() => (this.s.plan() === 'basic' ? 3 : 6));
+  /** Dominios/subdominios permitidos: Business hasta 3; el resto, 1. */
+  readonly originLimit = computed(() => (this.s.plan() === 'business' ? 3 : 1));
 
   constructor() {
     // Al cambiar de chatbot desde el header, recarga la config y el widget del seleccionado.
@@ -1124,6 +1134,8 @@ export class ChatbotConfigureComponent implements OnInit {
   removeQuick(i: number): void { this.quickReplies.set(this.quickReplies().filter((_, x) => x !== i)); }
 
   setOrigin(i: number, v: string): void { const a = [...this.origins()]; a[i] = v; this.origins.set(a); }
+  addOrigin(): void { if (this.origins().length < this.originLimit()) this.origins.set([...this.origins(), '']); }
+  removeOrigin(i: number): void { if (this.origins().length > 1) this.origins.set(this.origins().filter((_, x) => x !== i)); }
 
   private gatherConfig(): ChatbotConfig {
     return {
@@ -1168,7 +1180,7 @@ export class ChatbotConfigureComponent implements OnInit {
     this.widgetTitle = c.widgetTitle; this.widgetPosition = c.widgetPosition === 'left' ? 'left' : 'right'; this.brandColor = c.brandColor;
     this.secondBrandColor = c.secondBrandColor; this.brandLogoUrl = c.brandLogoUrl; this.welcome = c.welcome;
     this.quickReplies.set(c.quickReplies.length ? [...c.quickReplies] : ['']);
-    this.origins.set(c.origins.length ? [...c.origins] : (this.s.plan() === 'business' ? ['', ''] : ['']));
+    this.origins.set(c.origins.length ? [...c.origins].slice(0, this.originLimit()) : (this.s.plan() === 'business' ? ['', ''] : ['']));
     this.extraRules = c.extraRules; this.language = c.language || 'auto'; this.privacyUrl = c.privacyUrl; this.privacyText = c.privacyText;
     this.handoffEnabled = !!c.handoffEnabled; this.telegramChatId = c.telegramChatId || '';
   }
