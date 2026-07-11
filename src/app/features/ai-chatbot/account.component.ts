@@ -9,6 +9,7 @@ import { ChatbotSidebarComponent } from './sidebar.component';
 import { ChatbotSessionService } from './session.service';
 import { ChatbotAuthService } from './auth.service';
 import { SupabaseClientService } from './supabase.client';
+import { PaddleService } from './paddle.service';
 import { FocusTrapDirective } from './focus-trap.directive';
 
 /**
@@ -122,7 +123,11 @@ import { FocusTrapDirective } from './focus-trap.directive';
                 <p class="sub-info">{{ 'AICHATBOT.ACCOUNT.SUB_INFO' | translate:{ plan: s.planName(), date: s.planExpiry() } }}</p>
                 <div class="sub-actions">
                   <a class="btn-gold sm resub" routerLink="/plans">{{ 'AICHATBOT.ACCOUNT.CHANGE_PLAN' | translate }}</a>
-                  <button type="button" class="btn-ghost sm" (click)="confirmKind.set('cancel')">{{ 'AICHATBOT.ACCOUNT.CANCEL_SUB' | translate }}</button>
+                  @if (paddle.configured()) {
+                    <button type="button" class="btn-ghost sm" (click)="openBillingPortal()" [disabled]="portalBusy()">{{ (portalBusy() ? 'AICHATBOT.ACCOUNT.PORTAL_LOADING' : 'AICHATBOT.ACCOUNT.MANAGE_BILLING') | translate }}</button>
+                  } @else {
+                    <button type="button" class="btn-ghost sm" (click)="confirmKind.set('cancel')">{{ 'AICHATBOT.ACCOUNT.CANCEL_SUB' | translate }}</button>
+                  }
                 </div>
               }
             </section>
@@ -284,7 +289,9 @@ export class ChatbotAccountComponent implements OnInit {
   private sb = inject(SupabaseClientService).client;
   private i18n = inject(TranslateService);
   readonly s = inject(ChatbotSessionService);
+  readonly paddle = inject(PaddleService);
 
+  portalBusy = signal(false);
   editing = signal(false);
   pwdOpen = signal(false);
   pwdErr = signal('');     // mensaje de error (vacío = sin error)
@@ -294,6 +301,15 @@ export class ChatbotAccountComponent implements OnInit {
   confirmBusy = signal(false);
   confirmErr = signal('');
   showPwd = signal(false);
+
+  /** Abre el portal de Paddle (gestionar pago/facturas/cancelar) en una sesión autenticada. */
+  async openBillingPortal(): Promise<void> {
+    if (this.portalBusy()) return;
+    this.portalBusy.set(true);
+    const url = await this.paddle.customerPortalUrl();
+    this.portalBusy.set(false);
+    if (url) window.location.href = url;
+  }
 
   fn = ''; ln = ''; lg: 'es' | 'en' = 'es';
   phoneCode = ''; phoneNum = '';

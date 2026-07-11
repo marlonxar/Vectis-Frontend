@@ -1085,6 +1085,8 @@
       "ACTIVE_TAG": "activo",
       "MANAGE_CHATBOTS": "Gestionar ChatBots activos",
       "CHANGE_PLAN": "Adquirir otro plan",
+      "MANAGE_BILLING": "Gestionar suscripción",
+      "PORTAL_LOADING": "Abriendo…",
       "DELETE_FAIL": "No se pudo eliminar la cuenta. Intenta de nuevo o contacta a soporte.",
       "NO_PLAN": "Aún no has elegido un plan.",
       "CHOOSE_PLAN": "Elegir un plan",

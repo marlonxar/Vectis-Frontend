@@ -32,8 +32,27 @@ supabase secrets set PADDLE_WEBHOOK_SECRET=pdl_ntfset_...   # el "signing secret
 ## 4. Registrar el webhook en Paddle
 Paddle (sandbox) → **Developer Tools → Notifications → New destination**:
 - **URL:** `https://<PROJECT_REF>.functions.supabase.co/paddle-webhook`
-- **Events:** `subscription.created`, `subscription.activated`, `subscription.updated`, `subscription.canceled`
-- Copia el **signing secret** que genera y ponlo en `PADDLE_WEBHOOK_SECRET` (paso 3).
+- **Events:** `transaction.completed` (fulfillment) + `subscription.created`, `subscription.activated`,
+  `subscription.updated`, `subscription.canceled` (ciclo de vida).
+- Copia el **signing secret** (la "secret key" del destino, NO el `ntfset_` que es el ID) y ponlo en
+  `PADDLE_WEBHOOK_SECRET` (paso 3).
+
+El handler verifica la firma antes de procesar y responde 2xx en <5s. Guarda en `profiles`:
+`plan`, `plan_expiry`, `subscription_status`, `cancel_at_period_end`, `paddle_subscription_id`,
+`paddle_customer_id`, `paddle_price_id`, `paddle_product_id`. En `subscription.updated` detecta
+upgrade/downgrade comparando el rango del plan.
+
+## 6. Customer Portal (`paddle-portal`)
+Página de Paddle donde el cliente gestiona pago, facturas y cancela. La Edge Function
+`supabase/functions/paddle-portal` genera una sesión autenticada (`POST /customers/{id}/portal-sessions`)
+y devuelve la URL; el botón **"Gestionar suscripción"** de la cuenta redirige ahí.
+
+```bash
+supabase functions deploy paddle-portal            # CON verificación de JWT (identifica al usuario)
+supabase secrets set PADDLE_API_KEY=pdl_sdbx_apikey_...   # API key secreta (server-only)
+```
+> Esta función SÍ usa la API key de Paddle, pero vive como **secret** (nunca en el frontend ni en git),
+> y solo genera el portal del propio `customer_id` del usuario autenticado.
 
 ## 5. Probar
 1. Haz una compra de prueba en `…/plans` (tarjeta `4242 4242 4242 4242`, CVV `100`).

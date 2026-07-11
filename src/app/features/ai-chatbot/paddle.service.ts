@@ -1,7 +1,8 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { initializePaddle, type Paddle, type CheckoutEventsData } from '@paddle/paddle-js';
 import { PADDLE_ENV, PADDLE_CLIENT_TOKEN, PADDLE_PRICE_IDS } from './paddle.config';
 import { PlanId } from './session.service';
+import { SupabaseClientService } from './supabase.client';
 
 type PaddleEvent = { name?: string; data?: CheckoutEventsData };
 
@@ -14,7 +15,17 @@ export class PaddleService {
   private paddle: Paddle | undefined;
   private initPromise: Promise<Paddle | undefined> | null = null;
   private onEvent: ((e: PaddleEvent) => void) | null = null;
+  private sb = inject(SupabaseClientService).client;
   readonly ready = signal(false);
+
+  /** Sesión del portal de Paddle (Edge Function `paddle-portal`) para gestionar la suscripción. */
+  async customerPortalUrl(): Promise<string | null> {
+    try {
+      const { data, error } = await this.sb.functions.invoke('paddle-portal', { body: {} });
+      if (error) return null;
+      return (data as { url?: string })?.url ?? null;
+    } catch { return null; }
+  }
 
   /** ¿Hay token y al menos un price configurado? */
   configured(): boolean { return !!PADDLE_CLIENT_TOKEN && Object.values(PADDLE_PRICE_IDS).some(Boolean); }
