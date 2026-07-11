@@ -112,8 +112,7 @@
       loading = false;
       // Reintenta ante fallos de red / worker frío (esperas crecientes).
       if (attempt < 5) { setTimeout(function () { loadConfig(attempt + 1); }, 700 * (attempt + 1)); return; }
-      try { console.warn('[Vectis ChatBot] No se pudo cargar la configuración (¿worker caído, dominio no permitido o CORS?):', e); } catch (_) { /* noop */ }
-      // El botón queda: al hacer clic se vuelve a intentar (ver toggle()).
+      // Se agotaron los reintentos; el botón queda y al hacer clic se vuelve a intentar (ver toggle()).
     });
   }
 
@@ -121,12 +120,12 @@
     var brand = (cfg && cfg.brandColor) || '#E7AB2E';
     var brand2 = (cfg && cfg.secondColor) || '#0A0A0A';
     var css =
-      '.vxc-launch{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;z-index:2147483001;' +
+      '.vxc-launch{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;z-index:2147483000;' +
       'background:linear-gradient(135deg,' + brand + ',' + brand2 + ');box-shadow:0 10px 30px rgba(0,0,0,.25);display:grid;place-items:center;transition:transform .2s;animation:vxc-pop .42s cubic-bezier(.2,.9,.3,1.3) both}' +
       '.vxc-launch:hover{transform:translateY(-2px) scale(1.05)}.vxc-launch:active{transform:scale(.96)}' +
       '.vxc-launch svg{width:28px;height:28px;color:#fff}' +
       '.vxc-panel{position:fixed;bottom:92px;right:20px;width:410px;max-width:calc(100vw - 32px);height:640px;max-height:calc(100vh - 110px);' +
-      'background:#fff;border-radius:18px;overflow:hidden;z-index:2147483000;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(0,0,0,.3);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;' +
+      'background:#fff;border-radius:18px;overflow:hidden;z-index:2147483001;display:flex;flex-direction:column;box-shadow:0 24px 70px rgba(0,0,0,.3);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;' +
       'opacity:0;visibility:hidden;transform:translateY(14px) scale(.97);transform-origin:bottom right;pointer-events:none;transition:opacity .22s ease,transform .24s cubic-bezier(.2,.8,.2,1),visibility .24s}' +
       '.vxc-panel.vxc-on{opacity:1;visibility:visible;transform:none;pointer-events:auto}' +
       '.vxc-head{display:flex;align-items:center;gap:10px;padding:14px 16px;color:#fff;background:linear-gradient(135deg,' + brand + ',' + brand2 + ')}' +
@@ -200,9 +199,11 @@
       '.vxc-imgcap{margin-top:6px;font-size:13px}' +
       // --- responsive: teléfonos (pantalla completa, sin zoom de iOS) ---
       '@media (max-width:560px){' +
-        '.vxc-panel{width:100%;max-width:100%;height:100%;max-height:100%;top:0;right:0;bottom:0;left:0;border-radius:0;transform-origin:center;transform:translateY(10px) scale(.99)}' +
-        '.vxc-panel.vxc-left{left:0;right:0}' +
-        '.vxc-panel.vxc-on{transform:none}' +
+        // La pantalla completa se aplica SOLO cuando el chat está ABIERTO (.vxc-on).
+        // Cerrado queda como una caja pequeña oculta arriba a la derecha, para que NUNCA
+        // tape el botón flotante (evita que intercepte el toque en móvil).
+        '.vxc-panel.vxc-on{width:100%;max-width:100%;height:100%;max-height:100%;top:0;right:0;bottom:0;left:0;border-radius:0;transform:none}' +
+        '.vxc-panel.vxc-on.vxc-left{left:0;right:0}' +
         '.vxc-launch{bottom:16px;right:16px;width:56px;height:56px}' +
         '.vxc-launch.vxc-left{left:16px;right:auto}' +
         '.vxc-head{padding:13px 14px;padding-top:max(13px,env(safe-area-inset-top))}' +
@@ -323,7 +324,6 @@
   function openChat() {
     open = true;
     if ($panel) $panel.classList.add('vxc-on');
-    if ($launch) $launch.style.visibility = 'hidden';
     var i = $panel && $panel.querySelector('.vxc-in'); if (i) i.focus();
   }
   function toggle() {
@@ -332,9 +332,6 @@
     if (!ready || !$panel) { pendingOpen = true; if (!loading) loadConfig(0); return; }
     open = !open;
     $panel.classList.toggle('vxc-on', open);
-    // El launcher va por encima del panel (para que el tap siempre funcione en móvil);
-    // por eso lo ocultamos mientras el chat está abierto.
-    if ($launch) $launch.style.visibility = open ? 'hidden' : 'visible';
     if (open) { var i = $panel.querySelector('.vxc-in'); if (i) i.focus(); }
   }
 
@@ -350,7 +347,6 @@
       if ((cfg.quickReplies && cfg.quickReplies.length) || cfg.handoff) addQuickReplies(cfg.quickReplies);
     }
     open = false; $panel.classList.remove('vxc-on');
-    if ($launch) $launch.style.visibility = 'visible';
     closeCal();
   }
 
