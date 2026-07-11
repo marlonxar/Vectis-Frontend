@@ -22,6 +22,7 @@
   if (window.__vxcLoaded) return; window.__vxcLoaded = true;
 
   var cfg = null, history = [], open = false, sending = false, sentEnd = false, csatTimer = null, $styleEl = null;
+  var ready = false, pendingOpen = false, loading = false;   // ready = panel construido; pendingOpen = clic mientras cargaba; loading = config en curso
   var SKEY = 'vxc_hist_' + CLIENT_ID;
   function loadHistory() { try { return JSON.parse(sessionStorage.getItem(SKEY) || '[]') || []; } catch (e) { return []; } }
   function saveHistory() { try { sessionStorage.setItem(SKEY, JSON.stringify(history.slice(-20))); } catch (e) { /* noop */ } }
@@ -85,19 +86,36 @@
 
   // --- arranque ---
   // 1) Mostramos el botón ENSEGUIDA (sin esperar a la red) para que aparezca rápido.
-  // 2) Pedimos la config en segundo plano y construimos el panel al llegar.
-  // Si el visitante hace clic mientras carga, recordamos la intención y abrimos al terminar.
+  // 2) Cargamos la config en segundo plano CON REINTENTOS (el worker puede estar "frío"
+  //    o haber un error transitorio de red; sin reintentos el chat quedaría muerto).
+  // 3) Si el visitante hace clic mientras carga, recordamos la intención y abrimos al terminar.
   injectStyles();
   renderLauncher();
-  api({ action: 'config', client_id: CLIENT_ID }).then(function (c) {
-    if (!c || !c.available) { if ($launch) $launch.style.display = 'none'; return; }  // bot inactivo / cancelado
-    cfg = c;
-    cfg._cal = calInfo(c.agenda);          // link de Cal.com (para el botón "Agendar")
-    injectStyles();                        // reaplica los colores reales de la marca
-    render();                              // construye el panel
-    ready = true;
-    if (pendingOpen) { pendingOpen = false; openChat(); }
-  }).catch(function () { /* silencioso: el botón queda; el chat abrirá cuando cargue la config */ });
+  loadConfig(0);
+
+  function loadConfig(attempt) {
+    if (loading || ready) return;
+    loading = true;
+    api({ action: 'config', client_id: CLIENT_ID }).then(function (c) {
+      loading = false;
+      // Bot realmente no disponible (inactivo/cancelado/vencido): oculta el botón y no reintenta.
+      if (c && c.available === false) { if ($launch) $launch.style.display = 'none'; return; }
+      // Respuesta inesperada (error del worker, etc.): trátala como fallo transitorio → reintentar.
+      if (!c || c.available !== true) throw new Error('config no disponible');
+      cfg = c;
+      cfg._cal = calInfo(c.agenda);        // link de Cal.com (para el botón "Agendar")
+      injectStyles();                      // reaplica los colores reales de la marca
+      render();                            // construye el panel
+      ready = true;
+      if (pendingOpen) { pendingOpen = false; openChat(); }
+    }).catch(function (e) {
+      loading = false;
+      // Reintenta ante fallos de red / worker frío (esperas crecientes).
+      if (attempt < 5) { setTimeout(function () { loadConfig(attempt + 1); }, 700 * (attempt + 1)); return; }
+      try { console.warn('[Vectis ChatBot] No se pudo cargar la configuración (¿worker caído, dominio no permitido o CORS?):', e); } catch (_) { /* noop */ }
+      // El botón queda: al hacer clic se vuelve a intentar (ver toggle()).
+    });
+  }
 
   function injectStyles() {
     var brand = (cfg && cfg.brandColor) || '#E7AB2E';
@@ -203,7 +221,6 @@
   }
 
   var $body, $panel, $launch, $cal = null, calReady = false, handoff = false, hoTimer = null, lastBookOpen = 0, $attach = null;
-  var ready = false, pendingOpen = false;   // ready = panel construido; pendingOpen = clic recibido mientras cargaba
 
   // El botón flotante se muestra de inmediato (antes de la config) para que aparezca rápido.
   function renderLauncher() {
@@ -310,9 +327,9 @@
     var i = $panel && $panel.querySelector('.vxc-in'); if (i) i.focus();
   }
   function toggle() {
-    // Si tocan el botón antes de que el panel esté listo (config aún cargando),
-    // recordamos la intención y abrimos en cuanto termine de construirse.
-    if (!ready || !$panel) { pendingOpen = true; return; }
+    // Si tocan el botón antes de que el panel esté listo (config aún cargando o falló),
+    // recordamos la intención y (re)intentamos cargar la config; abrirá al terminar.
+    if (!ready || !$panel) { pendingOpen = true; if (!loading) loadConfig(0); return; }
     open = !open;
     $panel.classList.toggle('vxc-on', open);
     // El launcher va por encima del panel (para que el tap siempre funcione en móvil);
