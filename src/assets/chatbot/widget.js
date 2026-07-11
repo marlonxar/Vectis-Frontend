@@ -577,10 +577,15 @@
       // El bot pide abrir el calendario de Cal.com: quitamos el marcador y lo abrimos.
       var openBook = /\[\[\s*AGENDAR\s*\]\]/i.test(reply);
       if (openBook) { reply = reply.replace(/\[\[\s*AGENDAR\s*\]\]/ig, '').trim() || '¡Claro! Te abro el calendario para que elijas el día y la hora 📅'; }
+      // El bot decide conectar con una persona: quitamos el marcador y arrancamos el handoff nosotros.
+      var wantAgent = cfg.handoff && !handoff && /\[\[\s*AGENTE\s*\]\]/i.test(reply);
+      if (wantAgent) { reply = reply.replace(/\[\[\s*AGENTE\s*\]\]/ig, '').trim() || '¡Claro! Te conecto con alguien de nuestro equipo, un momento…'; }
       addBot(reply);
       // Abre solo si hay Cal, no está ya abierto y no se abrió en los últimos 25s (evita reaperturas en cada mensaje).
       var calOpen = $cal && $cal.classList.contains('vxc-on');
       if (openBook && cfg._cal && !calOpen && (Date.now() - lastBookOpen > 25000)) { lastBookOpen = Date.now(); setTimeout(openCal, 500); }
+      // Conexión con agente disparada por el propio bot (tras mostrar su mensaje).
+      if (wantAgent) { setTimeout(startHandoff, 400); }
       history.push({ role: 'bot', text: reply });
       if (history.length > 20) history = history.slice(-20);
       saveHistory();
