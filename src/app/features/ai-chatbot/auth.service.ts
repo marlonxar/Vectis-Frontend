@@ -89,7 +89,7 @@ export class ChatbotAuthService {
       password,
       options: {
         data: { first_name: firstName, last_name: lastName, preferred_lang: 'es' },
-        emailRedirectTo: `${APP_URL}`,
+        emailRedirectTo: `${APP_URL}/`,
       },
     });
   }
@@ -103,7 +103,7 @@ export class ChatbotAuthService {
     return this.sb.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${APP_URL}`,
+        redirectTo: `${APP_URL}/`,
         queryParams: { prompt: 'select_account' },
       },
     });
