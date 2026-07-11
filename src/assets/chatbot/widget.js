@@ -74,14 +74,21 @@
   // Analiza el enlace de agenda: si es de Cal.com lo podemos embeber; si no, se abre en otra pestaña.
   function calInfo(url) {
     if (!url) return null;
+    var s = String(url).trim();
+    if (!s) return null;
     try {
-      var u = new URL(String(url).trim());
+      var u = new URL(s);
       var host = u.hostname.toLowerCase();
-      var isCal = host === 'cal.com' || host.slice(-8) === '.cal.com';
+      var isCalHost = host === 'cal.com' || host.slice(-8) === '.cal.com';
       var path = u.pathname.replace(/^\/+/, '').replace(/\/+$/, '');
-      if (!path && isCal) return null;                       // sin ruta no hay evento que embeber
-      return { url: url, isCal: isCal, path: path, embedOrigin: isCal ? 'https://cal.com' : u.origin };
-    } catch (e) { return null; }
+      // Solo se puede EMBEBER si es Cal.com CON ruta de evento; en cualquier otro caso
+      // (Cal.com sin ruta, u otro sistema de reservas) mostramos el botón igual y abrimos en otra pestaña.
+      var canEmbed = isCalHost && !!path;
+      return { url: s, isCal: canEmbed, path: path, embedOrigin: 'https://cal.com' };
+    } catch (e) {
+      // No es una URL absoluta válida: aun así mostramos el botón y la abrimos tal cual.
+      return { url: s, isCal: false, path: '', embedOrigin: '' };
+    }
   }
 
   // --- arranque ---
@@ -120,7 +127,7 @@
     var brand = (cfg && cfg.brandColor) || '#E7AB2E';
     var brand2 = (cfg && cfg.secondColor) || '#0A0A0A';
     var css =
-      '.vxc-launch{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;z-index:2147483000;' +
+      '.vxc-launch{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;z-index:2147483000;touch-action:manipulation;-webkit-tap-highlight-color:transparent;pointer-events:auto;' +
       'background:linear-gradient(135deg,' + brand + ',' + brand2 + ');box-shadow:0 10px 30px rgba(0,0,0,.25);display:grid;place-items:center;transition:transform .2s;animation:vxc-pop .42s cubic-bezier(.2,.9,.3,1.3) both}' +
       '.vxc-launch:hover{transform:translateY(-2px) scale(1.05)}.vxc-launch:active{transform:scale(.96)}' +
       '.vxc-launch svg{width:28px;height:28px;color:#fff}' +
