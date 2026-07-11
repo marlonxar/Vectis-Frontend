@@ -188,7 +188,9 @@
       html.classList.add('vxc-intro');
       function reveal() { html.classList.remove('vxc-intro'); }
       window.addEventListener('intro-finished', reveal);
-      setTimeout(reveal, 9000); // failsafe: nunca dejar la burbuja oculta para siempre
+      // Mostramos la burbuja al terminar la intro O a los 2.5s (lo que ocurra primero),
+      // para que no tarde varios segundos en aparecer en la primera visita.
+      setTimeout(reveal, 2500);
     })();
   </script>
 
