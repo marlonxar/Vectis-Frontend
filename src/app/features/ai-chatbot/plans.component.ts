@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
@@ -6,6 +6,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ChatbotAppHeaderComponent } from './app-header.component';
 import { ChatbotSessionService, PlanId } from './session.service';
 import { ChatbotAuthService } from './auth.service';
+import { PaddleService } from './paddle.service';
 
 interface Plan {
   id: PlanId;
@@ -42,7 +43,7 @@ interface Plan {
                 @if (p.popular) { <span class="badge">{{ 'AICHATBOT.PLANS.POPULAR' | translate }}</span> }
                 <h2 class="name">{{ p.nameKey | translate }}</h2>
                 <p class="tag">{{ p.taglineKey | translate }}</p>
-                <div class="price"><span class="amt">{{ p.price }}</span><span class="per">{{ 'AICHATBOT.PLANS.PER_MONTH' | translate }}</span></div>
+                <div class="price"><span class="amt">{{ localizedPrice()[p.id] || p.price }}</span><span class="per">{{ 'AICHATBOT.PLANS.PER_MONTH' | translate }}</span></div>
                 <ul class="feat">
                   @for (f of p.features; track f) {
                     <li>
@@ -113,6 +114,10 @@ export class ChatbotPlansComponent implements OnInit {
   private title = inject(Title);
   private session = inject(ChatbotSessionService);
   private auth = inject(ChatbotAuthService);
+  private paddle = inject(PaddleService);
+
+  /** Precios localizados por Paddle (país del visitante); fallback a los precios fijos. */
+  readonly localizedPrice = signal<Partial<Record<PlanId, string>>>({});
 
   plans: Plan[] = [
     {
@@ -134,10 +139,34 @@ export class ChatbotPlansComponent implements OnInit {
 
   ngOnInit(): void {
     this.title.setTitle('Planes — Vectis AI ChatBot');
+    if (this.paddle.configured()) {
+      // Precios localizados según el país del visitante (Paddle los formatea; sin cálculos).
+      this.paddle.previewPrices().then((m) => this.localizedPrice.set(m)).catch(() => { /* deja los fijos */ });
+      // Al completar el pago, aprovisiona el plan y continúa.
+      this.paddle.setEventHandler((e) => {
+        if (e?.name === 'checkout.completed') {
+          const priceId = e.data?.items?.[0]?.price_id ?? '';
+          const plan = this.paddle.planForPrice(priceId);
+          if (plan) void this.grantPlan(plan);
+        }
+      });
+    }
   }
 
   async choose(id: PlanId): Promise<void> {
-    // Guarda el plan en la base de datos (RPC) y calcula el vencimiento (30 días).
+    // Con Paddle configurado: abre el checkout (email prellenado). Sin él: flujo previo (sin cobro).
+    if (this.paddle.configured() && this.paddle.priceId(id)) {
+      await this.paddle.openCheckout(id, this.auth.user()?.email ?? undefined);
+      return;
+    }
+    await this.grantPlan(id);
+  }
+
+  /**
+   * Aplica el plan al usuario y continúa. Hoy también se llama tras el checkout como puente;
+   * lo CORRECTO en producción es que un webhook de Paddle (server) confirme el pago y fije el plan.
+   */
+  private async grantPlan(id: PlanId): Promise<void> {
     const { error } = await this.auth.selectPlan(id);
     if (!error) {
       this.session.plan.set(id);

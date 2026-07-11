@@ -115,6 +115,42 @@ sessions" (absoluta) e "inactivity timeout" del lado servidor, que es más robus
 
 ---
 
+## Pagos con Paddle (Billing)
+
+La página de planes (`/plans`) usa **Paddle.js**: muestra precios **localizados** (PricePreview) y
+abre el **checkout** con el email del usuario prellenado.
+
+### Configurar (una vez)
+Edita `src/app/features/ai-chatbot/paddle.config.ts`:
+
+```ts
+export const PADDLE_ENV = 'sandbox';           // 'production' al salir a producción
+export const PADDLE_CLIENT_TOKEN = 'test_...'; // Developer Tools → Authentication → Client-side tokens
+export const PADDLE_PRICE_IDS = {
+  basic:    'pri_...',   // Catalog → Products → tu producto → el Price mensual → ID
+  pro:      'pri_...',
+  business: 'pri_...',
+};
+```
+
+- El **client-side token** es público (seguro en el frontend), distinto de la API key secreta.
+- Mientras estén vacíos, `/plans` sigue con el flujo anterior (sin cobro), útil para desarrollo.
+
+### Probar el pago (sandbox)
+1. Llena `paddle.config.ts` con el token `test_...` y los `pri_...` de sandbox. `npm run build` / deploy.
+2. Inicia sesión y entra a `/plans` (`https://www.aichatbot.wearevectis.com/plans`).
+3. Elige un plan → se abre el checkout (overlay) con tu email prellenado.
+4. Tarjeta de prueba: **4242 4242 4242 4242**, cualquier nombre, fecha futura, **CVV 100**.
+5. Confirma que la transacción aparece en **Transactions** del dashboard de Paddle (sandbox).
+
+### Pendiente para producción (webhook)
+Hoy, tras el checkout, el plan se aplica **desde el cliente** (puente temporal). Lo correcto es un
+**webhook de Paddle** (Supabase Edge Function o endpoint) que escuche `transaction.completed` /
+`subscription.created|updated|canceled`, lea el `plan_code` de Custom Data y fije el plan/vencimiento
+en la base de datos (fuente de verdad). Cuando lo tengas, quita el `grantPlan` del `checkout.completed`.
+
+---
+
 ## Verificación tras el deploy
 1. `https://www.aichatbot.wearevectis.com/` → muestra el login del chatbot en la raíz.
 2. `https://wearevectis.com/ai-chatbot` → **301** al subdominio.
