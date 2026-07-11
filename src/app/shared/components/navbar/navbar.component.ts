@@ -10,6 +10,10 @@ import { mobileMenuStagger } from '../../animations/page-animations';
 
 interface NavLink { id: string; key: string; }
 
+const SITE_BASE = 'https://www.wearevectis.com';
+/** True when the marketing navbar renders on the AI ChatBot subdomain. */
+function onChatbotHost(): boolean { try { return /(^|\.)aichatbot\./i.test(location.hostname); } catch { return false; } }
+
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -31,6 +35,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   readonly menuOpen = signal(false);
   readonly activeId = signal('inicio');
   readonly forceSolid = signal(false);
+  readonly isChatbot = onChatbotHost();
 
   readonly links: NavLink[] = [
     { id: 'inicio', key: 'NAV.HOME' },
@@ -72,8 +77,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   /** Scroll-spy: mark the section currently under the probe line as active. */
   private updateActive(): void {
     if (!this.scroll.isBrowser) return;
-    // En el producto AI ChatBot, resaltar "Servicios & Productos".
-    if (/ai-chatbot/.test(this.router.url)) { this.activeId.set('servicios'); return; }
+    // En el producto AI ChatBot (subdominio o ruta), resaltar "Servicios & Productos".
+    if (this.isChatbot || /ai-chatbot/.test(this.router.url)) { this.activeId.set('servicios'); return; }
     const probe = window.innerHeight * 0.35;
     let current = this.links[0].id;
     for (const l of this.links) {
@@ -86,6 +91,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   go(id: string): void {
     this.menuOpen.set(false);
     this.lockScroll(false);
+    // On the chatbot subdomain the marketing sections don't exist here → go to the main site.
+    if (this.isChatbot) { window.location.href = SITE_BASE + (id === 'inicio' ? '/' : '/#' + id); return; }
     this.scroll.scrollToId(id);
   }
 

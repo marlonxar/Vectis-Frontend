@@ -25,7 +25,7 @@
         } @else {
           <a [href]="'#' + l.id" class="nav-link" [class.active]="activeId() === l.id"
              [attr.aria-current]="activeId() === l.id ? 'true' : null"
-             (click)="$event.preventDefault(); go(l.id)">{{ l.key | translate }}</a>
+             (click)="$event.preventDefault(); go(l.id)">{{ (isChatbot && l.id === 'inicio') ? 'Vectis' : (l.key | translate) }}</a>
         }
       }
     </nav>
@@ -49,7 +49,7 @@
 <div class="mobile-menu" *ngIf="menuOpen()" @mobileMenuStagger role="dialog" aria-modal="true"
      [attr.aria-label]="'A11Y.MAIN_NAV' | translate">
   <a *ngFor="let l of links; let i = index" [href]="'#' + l.id" (click)="$event.preventDefault(); go(l.id)">
-    <em>0{{ i + 1 }}</em>{{ l.key | translate }}
+    <em>0{{ i + 1 }}</em>{{ (isChatbot && l.id === 'inicio') ? 'Vectis' : (l.key | translate) }}
   </a>
   <a href="https://www.aichatbot.wearevectis.com">
     <em>0{{ links.length + 1 }}</em>{{ 'NAV.AICHATBOT' | translate }}

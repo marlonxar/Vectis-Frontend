@@ -16,7 +16,7 @@
     <nav class="col" [attr.aria-label]="'FOOTER.NAV_TITLE' | translate">
       <h4 class="col-title">{{ 'FOOTER.NAV_TITLE' | translate }}</h4>
       <ul class="link-list">
-        <li *ngFor="let l of navLinks"><a [href]="'#' + l.id" (click)="$event.preventDefault(); go(l.id)">{{ l.key | translate }}</a></li>
+        <li *ngFor="let l of navLinks"><a [href]="'#' + l.id" (click)="$event.preventDefault(); go(l.id)">{{ (isChatbot && l.id === 'inicio') ? 'Vectis' : (l.key | translate) }}</a></li>
       </ul>
     </nav>
 

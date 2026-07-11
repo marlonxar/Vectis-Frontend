@@ -5,6 +5,9 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { RouterLink } from '@angular/router';
 import { ScrollService } from '../../../core/services/scroll.service';
 
+const SITE_BASE = 'https://www.wearevectis.com';
+function onChatbotHost(): boolean { try { return /(^|\.)aichatbot\./i.test(location.hostname); } catch { return false; } }
+
 @Component({
   selector: 'app-footer',
   standalone: true,
@@ -15,6 +18,7 @@ import { ScrollService } from '../../../core/services/scroll.service';
 export class FooterComponent {
   private readonly scroll = inject(ScrollService);
   private readonly translate = inject(TranslateService);
+  readonly isChatbot = onChatbotHost();
 
   privacyPath(): string { return this.translate.currentLang === 'en' ? '/privacy' : '/privacidad'; }
   termsPath(): string { return this.translate.currentLang === 'en' ? '/terms' : '/terminos'; }
@@ -35,7 +39,10 @@ export class FooterComponent {
     { id: 'contacto', key: 'NAV.CONTACT' },
   ];
 
-  go(id: string): void { this.scroll.scrollToId(id); }
+  go(id: string): void {
+    if (this.isChatbot) { window.location.href = SITE_BASE + (id === 'inicio' ? '/' : '/#' + id); return; }
+    this.scroll.scrollToId(id);
+  }
 
   async subscribe(): Promise<void> {
     if (this.hp.trim()) { this.subscribed.set(true); return; } // honeypot

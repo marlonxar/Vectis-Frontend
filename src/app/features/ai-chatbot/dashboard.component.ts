@@ -62,8 +62,8 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
           @if (loading()) {
             <p class="muted">{{ 'AICHATBOT.DASH.LOADING' | translate }}</p>
           } @else {
-            <!-- CHECKLIST DE CONFIGURACIÓN (se oculta al completarse) -->
-            @if (setupPct() < 100) {
+            <!-- CHECKLIST DE CONFIGURACIÓN (se oculta cuando la config está completa, sin importar el mes) -->
+            @if (!setupComplete()) {
               <div class="setup">
                 <div class="setup-head">
                   <span class="setup-ttl">{{ 'AICHATBOT.DASH.SETUP_TITLE' | translate }}</span>
@@ -452,6 +452,9 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
     ];
   });
   readonly setupPct = computed(() => { const s = this.setupSteps(); return Math.round(s.filter((x) => x.done).length / s.length * 100); });
+  /** El checklist se oculta cuando la CONFIGURACIÓN está completa (los pasos de config, sin contar
+   *  'LIVE', que depende de conversaciones del mes). Así no reaparece al ver un mes sin datos. */
+  readonly setupComplete = computed(() => this.setupSteps().filter((x) => x.key !== 'LIVE').every((x) => x.done));
 
   // Handoff (solo si está habilitado para este chatbot)
   readonly handoffOn = computed(() => !!this.s.currentConfig()?.handoffEnabled);
