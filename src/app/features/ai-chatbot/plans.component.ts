@@ -27,6 +27,12 @@ interface Plan {
   imports: [CommonModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent],
   template: `
     <div class="app-screen">
+      @if (confirming()) {
+        <div class="pay-overlay" role="status" aria-live="polite">
+          <span class="spin" aria-hidden="true"></span>
+          <p>{{ 'AICHATBOT.PLANS.CONFIRMING' | translate }}</p>
+        </div>
+      }
       <app-chatbot-app-header></app-chatbot-app-header>
       <section class="plans">
         <div class="glow" aria-hidden="true"></div>
@@ -107,6 +113,12 @@ interface Plan {
     .note.legal a:hover { text-decoration: underline; }
 
     @media (max-width: 920px) { .cards { grid-template-columns: 1fr; max-width: 460px; margin: 0 auto; } }
+
+    .pay-overlay { position: fixed; inset: 0; z-index: 300; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+      background: rgba(6,5,9,.9); color: var(--text-inv); padding: 24px; text-align: center; }
+    .pay-overlay .spin { width: 44px; height: 44px; border-radius: 50%; border: 3px solid rgba(231,171,46,.25); border-top-color: var(--gold-bright); animation: pay-sp .8s linear infinite; }
+    .pay-overlay p { font-size: 15px; color: var(--text-inv-2); max-width: 32ch; }
+    @keyframes pay-sp { to { transform: rotate(360deg); } }
   `],
 })
 export class ChatbotPlansComponent implements OnInit {
@@ -118,6 +130,8 @@ export class ChatbotPlansComponent implements OnInit {
 
   /** Precios localizados por Paddle (país del visitante); fallback a los precios fijos. */
   readonly localizedPrice = signal<Partial<Record<PlanId, string>>>({});
+  /** Overlay "confirmando pago" mientras el webhook aprovisiona el plan. */
+  readonly confirming = signal(false);
 
   plans: Plan[] = [
     {
@@ -142,19 +156,16 @@ export class ChatbotPlansComponent implements OnInit {
     if (this.paddle.configured()) {
       // Precios localizados según el país del visitante (Paddle los formatea; sin cálculos).
       this.paddle.previewPrices().then((m) => this.localizedPrice.set(m)).catch(() => { /* deja los fijos */ });
-      // Al completar el pago, aprovisiona el plan y continúa.
+      // Al completar el pago, el PLAN lo fija el webhook (servidor). Aquí solo esperamos a que
+      // se refleje en el perfil y avanzamos.
       this.paddle.setEventHandler((e) => {
-        if (e?.name === 'checkout.completed') {
-          const priceId = e.data?.items?.[0]?.price_id ?? '';
-          const plan = this.paddle.planForPrice(priceId);
-          if (plan) void this.grantPlan(plan);
-        }
+        if (e?.name === 'checkout.completed') void this.afterCheckout();
       });
     }
   }
 
   async choose(id: PlanId): Promise<void> {
-    // Con Paddle configurado: abre el checkout (email prellenado). Sin él: flujo previo (sin cobro).
+    // Con Paddle configurado: abre el checkout (email prellenado). Sin él: flujo previo (sin cobro, solo dev).
     if (this.paddle.configured() && this.paddle.priceId(id)) {
       const u = this.auth.user();
       await this.paddle.openCheckout(id, u?.email ?? undefined, u?.id ? { user_id: u.id, plan: id } : { plan: id });
@@ -163,10 +174,19 @@ export class ChatbotPlansComponent implements OnInit {
     await this.grantPlan(id);
   }
 
-  /**
-   * Aplica el plan al usuario y continúa. Hoy también se llama tras el checkout como puente;
-   * lo CORRECTO en producción es que un webhook de Paddle (server) confirme el pago y fije el plan.
-   */
+  /** Tras el pago: el webhook fija el plan; esperamos a que el perfil lo refleje y avanzamos. */
+  private async afterCheckout(): Promise<void> {
+    this.confirming.set(true);
+    for (let i = 0; i < 12; i++) {                 // ~18 s máximo
+      await this.auth.reload();
+      if (this.session.planExpiry()) break;
+      await new Promise((r) => setTimeout(r, 1500));
+    }
+    this.confirming.set(false);
+    this.router.navigateByUrl(this.session.overLimit() ? '/manage' : '/configure');
+  }
+
+  /** Fallback SOLO para desarrollo (sin Paddle configurado): fija el plan directamente. */
   private async grantPlan(id: PlanId): Promise<void> {
     const { error } = await this.auth.selectPlan(id);
     if (!error) {
