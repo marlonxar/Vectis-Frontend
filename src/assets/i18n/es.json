@@ -969,6 +969,7 @@
       "ALL_TYPES": "Todos los tipos",
       "HO_RESP": "Tiempo de respuesta",
       "HO_RESP_HINT": "Promedio del agente (mes)",
+      "HO_RESP_BOT_HINT": "Promedio del asistente (mes)",
       "HO_PEAK": "Hora pico de atención",
       "HO_PEAK_HINT": "Cuándo escriben más"
     },

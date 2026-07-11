@@ -21,7 +21,7 @@
   if (!CLIENT_ID) { console.warn('[Vectis ChatBot] Falta data-client-id'); return; }
   if (window.__vxcLoaded) return; window.__vxcLoaded = true;
 
-  var cfg = null, history = [], open = false, sending = false, sentEnd = false, csatTimer = null;
+  var cfg = null, history = [], open = false, sending = false, sentEnd = false, csatTimer = null, $styleEl = null;
   var SKEY = 'vxc_hist_' + CLIENT_ID;
   function loadHistory() { try { return JSON.parse(sessionStorage.getItem(SKEY) || '[]') || []; } catch (e) { return []; } }
   function saveHistory() { try { sessionStorage.setItem(SKEY, JSON.stringify(history.slice(-20))); } catch (e) { /* noop */ } }
@@ -83,18 +83,25 @@
     } catch (e) { return null; }
   }
 
-  // --- arranque: pedir config ---
+  // --- arranque ---
+  // 1) Mostramos el botón ENSEGUIDA (sin esperar a la red) para que aparezca rápido.
+  // 2) Pedimos la config en segundo plano y construimos el panel al llegar.
+  // Si el visitante hace clic mientras carga, recordamos la intención y abrimos al terminar.
+  injectStyles();
+  renderLauncher();
   api({ action: 'config', client_id: CLIENT_ID }).then(function (c) {
-    if (!c || !c.available) return;        // bot inactivo / cancelado / no disponible
+    if (!c || !c.available) { if ($launch) $launch.style.display = 'none'; return; }  // bot inactivo / cancelado
     cfg = c;
     cfg._cal = calInfo(c.agenda);          // link de Cal.com (para el botón "Agendar")
-    injectStyles();
-    render();
-  }).catch(function () { /* silencioso */ });
+    injectStyles();                        // reaplica los colores reales de la marca
+    render();                              // construye el panel
+    ready = true;
+    if (pendingOpen) { pendingOpen = false; openChat(); }
+  }).catch(function () { /* silencioso: el botón queda; el chat abrirá cuando cargue la config */ });
 
   function injectStyles() {
-    var brand = cfg.brandColor || '#E7AB2E';
-    var brand2 = cfg.secondColor || '#0A0A0A';
+    var brand = (cfg && cfg.brandColor) || '#E7AB2E';
+    var brand2 = (cfg && cfg.secondColor) || '#0A0A0A';
     var css =
       '.vxc-launch{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;z-index:2147483001;' +
       'background:linear-gradient(135deg,' + brand + ',' + brand2 + ');box-shadow:0 10px 30px rgba(0,0,0,.25);display:grid;place-items:center;transition:transform .2s;animation:vxc-pop .42s cubic-bezier(.2,.9,.3,1.3) both}' +
@@ -190,19 +197,25 @@
       '@keyframes vxc-pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}' +
       '@keyframes vxc-rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}' +
       '@keyframes vxc-bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}';
-    var st = el('style'); st.textContent = css; document.head.appendChild(st);
+    // Reutiliza el mismo <style> (permite reaplicar los colores de marca al llegar la config).
+    if (!$styleEl) { $styleEl = el('style'); document.head.appendChild($styleEl); }
+    $styleEl.textContent = css;
   }
 
   var $body, $panel, $launch, $cal = null, calReady = false, handoff = false, hoTimer = null, lastBookOpen = 0, $attach = null;
+  var ready = false, pendingOpen = false;   // ready = panel construido; pendingOpen = clic recibido mientras cargaba
 
-  function render() {
-    // launcher
+  // El botón flotante se muestra de inmediato (antes de la config) para que aparezca rápido.
+  function renderLauncher() {
+    if ($launch) return;
     $launch = el('button', 'vxc-launch');
     $launch.setAttribute('aria-label', 'Abrir chat');
     $launch.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
     $launch.onclick = toggle;
     document.body.appendChild($launch);
+  }
 
+  function render() {
     // panel
     $panel = el('div', 'vxc-panel');
     var head = el('div', 'vxc-head');
@@ -290,7 +303,16 @@
     }
   }
 
+  function openChat() {
+    open = true;
+    if ($panel) $panel.classList.add('vxc-on');
+    if ($launch) $launch.style.visibility = 'hidden';
+    var i = $panel && $panel.querySelector('.vxc-in'); if (i) i.focus();
+  }
   function toggle() {
+    // Si tocan el botón antes de que el panel esté listo (config aún cargando),
+    // recordamos la intención y abrimos en cuanto termine de construirse.
+    if (!ready || !$panel) { pendingOpen = true; return; }
     open = !open;
     $panel.classList.toggle('vxc-on', open);
     // El launcher va por encima del panel (para que el tap siempre funcione en móvil);

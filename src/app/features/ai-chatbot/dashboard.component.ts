@@ -126,7 +126,7 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
                   <div class="stat">
                     <div class="cap">{{ 'AICHATBOT.DASH.HO_RESP' | translate }}</div>
                     <div class="n">{{ hoRespText() }}</div>
-                    <div class="sub">{{ 'AICHATBOT.DASH.HO_RESP_HINT' | translate }}</div>
+                    <div class="sub">{{ (respIsAgent() ? 'AICHATBOT.DASH.HO_RESP_HINT' : 'AICHATBOT.DASH.HO_RESP_BOT_HINT') | translate }}</div>
                   </div>
                   <div class="stat">
                     <div class="cap">{{ 'AICHATBOT.DASH.HO_PEAK' | translate }}</div>
@@ -463,12 +463,22 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
   // Métricas de handoff (Pro+): tiempo de respuesta y hora pico de atención.
   readonly hoAvgSec = signal<number | null>(null);
   readonly hoPeakHour = signal<string>('');
-  readonly hoRespText = computed(() => {
-    const s = this.hoAvgSec();
-    if (s === null) return '—';
-    if (s < 60) return Math.round(s) + 's';
+  // Tiempo de respuesta del BOT (server-side, avg_response_ms del RPC), en segundos.
+  readonly botAvgSec = computed<number | null>(() => {
+    const ms = this.stats()?.avg_response_ms;
+    return (ms === null || ms === undefined) ? null : Number(ms) / 1000;
+  });
+  private fmtSec(s: number): string {
+    if (s < 60) return (s < 10 ? Math.round(s * 10) / 10 : Math.round(s)) + 's';
     const m = Math.floor(s / 60); const sec = Math.round(s % 60);
     return m + 'm' + (sec ? ' ' + sec + 's' : '');
+  }
+  // ¿el tiempo mostrado es del agente humano? (si no, es del asistente/bot)
+  readonly respIsAgent = computed(() => this.hoAvgSec() !== null);
+  /** Tiempo de respuesta: usa el del agente si hay datos de handoff; si no, cae al del bot. */
+  readonly hoRespText = computed(() => {
+    const s = this.hoAvgSec() ?? this.botAvgSec();
+    return s === null ? '—' : this.fmtSec(s);
   });
   /** Hora pico: usa la de handoff si existe; si no, la hora pico GENERAL (todos los mensajes). */
   readonly hoPeakDisplay = computed(() => {

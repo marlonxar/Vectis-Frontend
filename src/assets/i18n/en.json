@@ -969,6 +969,7 @@
       "ALL_TYPES": "All types",
       "HO_RESP": "Response time",
       "HO_RESP_HINT": "Agent average (month)",
+      "HO_RESP_BOT_HINT": "Assistant average (month)",
       "HO_PEAK": "Peak support hour",
       "HO_PEAK_HINT": "When customers write most"
     },
