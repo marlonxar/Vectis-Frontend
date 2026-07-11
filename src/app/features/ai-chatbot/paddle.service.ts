@@ -58,14 +58,19 @@ export class PaddleService {
     return out;
   }
 
-  /** Abre el checkout (overlay) para un plan, prellenando el email del usuario. */
-  async openCheckout(plan: PlanId, email?: string): Promise<void> {
+  /**
+   * Abre el checkout (overlay) para un plan, prellenando el email.
+   * `customData` viaja a la transacción/suscripción y lo lee el webhook para
+   * asociar el pago al usuario (user_id) y al plan.
+   */
+  async openCheckout(plan: PlanId, email?: string, customData?: Record<string, string>): Promise<void> {
     const p = await this.init();
     const priceId = PADDLE_PRICE_IDS[plan];
     if (!p || !priceId) return;
     p.Checkout.open({
       items: [{ priceId, quantity: 1 }],
       ...(email ? { customer: { email } } : {}),
+      ...(customData ? { customData } : {}),
       settings: { displayMode: 'overlay', theme: 'dark', allowLogout: false },
     });
   }

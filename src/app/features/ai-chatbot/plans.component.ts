@@ -156,7 +156,8 @@ export class ChatbotPlansComponent implements OnInit {
   async choose(id: PlanId): Promise<void> {
     // Con Paddle configurado: abre el checkout (email prellenado). Sin él: flujo previo (sin cobro).
     if (this.paddle.configured() && this.paddle.priceId(id)) {
-      await this.paddle.openCheckout(id, this.auth.user()?.email ?? undefined);
+      const u = this.auth.user();
+      await this.paddle.openCheckout(id, u?.email ?? undefined, u?.id ? { user_id: u.id, plan: id } : { plan: id });
       return;
     }
     await this.grantPlan(id);
