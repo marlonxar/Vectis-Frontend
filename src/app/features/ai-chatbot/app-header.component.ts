@@ -26,6 +26,17 @@ import { ChatbotAuthService } from './auth.service';
         </button>
       </div>
     }
+    @if (s.originsTrimmed()) {
+      <div class="mbanner info" role="status">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>
+        <span class="mb-text">{{ 'AICHATBOT.BANNER.ORIGINS_TRIMMED' | translate }}
+          <a routerLink="/configure">{{ 'AICHATBOT.BANNER.ORIGINS_CTA' | translate }}</a>
+        </span>
+        <button type="button" class="mb-x" (click)="s.originsTrimmed.set(false)" [attr.aria-label]="'AICHATBOT.BANNER.CLOSE' | translate">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    }
     <header class="ah">
       <div class="ah-inner">
         <a class="brand" href="#" (click)="$event.preventDefault(); goHome()" aria-label="Vectis AI ChatBot">
@@ -102,6 +113,10 @@ import { ChatbotAuthService } from './auth.service';
     .mb-text a { color: #fff; font-weight: 700; text-decoration: underline; }
     .mb-x { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #ffd9d9; cursor: pointer; padding: 5px; border-radius: 7px; display: grid; place-items: center; }
     .mb-x:hover { background: rgba(255,255,255,.1); color: #fff; }
+    /* variante informativa (dorado) para avisos no críticos */
+    .mbanner.info { background: linear-gradient(90deg, rgba(231,171,46,.20), rgba(231,171,46,.12)); border-bottom-color: rgba(231,171,46,.4); color: #f4dfa8; }
+    .mbanner.info > svg { color: var(--gold-bright); }
+    .mbanner.info .mb-x { color: #f4dfa8; }
 
     .ah { position: sticky; top: 0; z-index: 50; background: rgba(10,10,10,.86); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line-light); }
     .ah-inner { display: flex; align-items: center; gap: 20px; height: 66px; padding: 0 clamp(18px, 4vw, 40px); }

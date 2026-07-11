@@ -205,6 +205,7 @@ export class ChatbotSessionService {
   readonly cancelAtPeriodEnd = signal(false);
   readonly bannerDismissed = signal(false);
   readonly needsActiveReview = signal(false); // se forzó a elegir chatbots activos
+  readonly originsTrimmed = signal(false);    // al bajar de plan se recortaron dominios → avisar
 
   // --- ChatBots (empresas) creados ---
   readonly companies = signal<string[]>([]);
@@ -221,6 +222,8 @@ export class ChatbotSessionService {
   readonly currentConfig = computed<ChatbotConfig | null>(() => this.configs()[this.current()] ?? null);
   readonly maxCompanies = computed(() => (this.plan() === 'business' ? 3 : 1));
   readonly canAddCompany = computed(() => this.companies().length < this.maxCompanies());
+  /** Dominios/subdominios permitidos por chatbot según el plan (Business 3, resto 1). */
+  readonly originLimit = computed(() => (this.plan() === 'business' ? 3 : 1));
 
   // --- Límite de chatbots ACTIVOS según el plan ---
   readonly maxActive = computed(() => (this.plan() === 'business' ? 3 : 1));
@@ -232,6 +235,11 @@ export class ChatbotSessionService {
   isActiveAt(i: number): boolean { return (this.statuses()[i] ?? 'ACTIVE') === 'ACTIVE'; }
   setStatusLocal(i: number, status: string): void {
     const a = [...this.statuses()]; a[i] = status; this.statuses.set(a);
+  }
+  /** Actualiza (en memoria) los dominios permitidos de un chatbot por índice. */
+  setOriginsLocal(i: number, origins: string[]): void {
+    const a = [...this.configs()];
+    if (a[i]) { a[i] = { ...a[i], origins }; this.configs.set(a); }
   }
   readonly planName = computed(() => ({ basic: 'Basic', pro: 'Pro', business: 'Business' }[this.plan()]));
   /** ¿El usuario ya eligió un plan? (tiene fecha de vencimiento). */

@@ -1126,7 +1126,9 @@
       "CTA": "Get a membership",
       "CLOSE": "Dismiss",
       "TEXT_EXPIRED": "Your plan expired. Renew to reactivate your ChatBots.",
-      "CTA_EXPIRED": "Renew plan"
+      "CTA_EXPIRED": "Renew plan",
+      "ORIGINS_TRIMMED": "Your current plan allows fewer domains: we kept only the first one on your ChatBots.",
+      "ORIGINS_CTA": "Review domains"
     },
     "MANAGE": {
       "EYEBROW": "Your plan",

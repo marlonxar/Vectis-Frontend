@@ -137,6 +137,7 @@ export class ChatbotAuthService {
       this.store.hydrate(user.email ?? '', profile, rows);
       this.applyLang(this.store.preferredLang());     // idioma del perfil → toda la UI del panel
       await this.enforceActiveLimit();
+      await this.enforceOriginLimit();
     } catch {
       // Si falla la carga, al menos refleja el correo.
       this.store.hydrate(user.email ?? '', null, []);
@@ -156,6 +157,25 @@ export class ChatbotAuthService {
       this.store.setStatusLocal(i, 'INACTIVE');
     }
     this.store.needsActiveReview.set(true);
+  }
+
+  /** Al bajar de plan (p. ej. Business → Pro/Basic), recorta los dominios permitidos al límite del
+   *  plan (deja el primero) y persiste el cambio. Marca `originsTrimmed` para avisar al usuario. */
+  private async enforceOriginLimit(): Promise<void> {
+    const limit = this.store.originLimit();
+    const ids = this.store.clientIds();
+    const configs = this.store.configs();
+    let trimmedAny = false;
+    for (let i = 0; i < configs.length; i++) {
+      const origins = configs[i]?.origins ?? [];
+      if (origins.length > limit) {
+        const kept = origins.slice(0, limit);   // limit=1 → conserva solo el primero
+        try { await this.sb.from('chatbots').update({ allowed_origins: kept }).eq('id', ids[i]); } catch { /* noop */ }
+        this.store.setOriginsLocal(i, kept);
+        trimmedAny = true;
+      }
+    }
+    if (trimmedAny) this.store.originsTrimmed.set(true);
   }
 
   // ── Acciones de auth ──

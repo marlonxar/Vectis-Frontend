@@ -115,39 +115,97 @@ sessions" (absoluta) e "inactivity timeout" del lado servidor, que es más robus
 
 ---
 
-## Pagos con Paddle (Billing)
+## Pasarela de pagos (Paddle Billing) — detalle técnico
 
-La página de planes (`/plans`) usa **Paddle.js**: muestra precios **localizados** (PricePreview) y
-abre el **checkout** con el email del usuario prellenado.
+Paddle es un **Merchant of Record**: cobra, factura y paga impuestos por nosotros. No tocamos datos
+de tarjeta (PCI queda del lado de Paddle). Nuestra integración tiene tres partes: **Paddle.js**
+(frontend), **webhook** (servidor, fuente de verdad) y **customer portal** (autoservicio).
 
-### Configurar (una vez)
-Edita `src/app/features/ai-chatbot/paddle.config.ts`:
+### Piezas y archivos
+| Pieza | Dónde | Rol |
+|---|---|---|
+| `paddle.config.ts` | frontend | `PADDLE_ENV`, client-side token (público) y `price_id` por plan |
+| `paddle.service.ts` | frontend | init de Paddle.js, `PricePreview`, `Checkout.open`, `customerPortalUrl` |
+| `plans.component.ts` | frontend | pinta precios localizados y dispara el checkout |
+| `paddle-webhook` | Supabase Edge Function | **fuente de verdad**: verifica firma y fija el plan en `profiles` |
+| `paddle-portal` | Supabase Edge Function | genera la sesión del portal de Paddle (usa la API key secreta) |
 
+### Identidades y secretos (importante)
+- **Client-side token** (`live_...` / `test_...`): PÚBLICO, va en `paddle.config.ts`. Solo permite abrir
+  checkout y previews. Es lo único de Paddle que vive en el frontend.
+- **API key** (`pdl_apikey_...` / `pdl_sdbx_apikey_...`): SECRETA, server-only. Solo en el secret
+  `PADDLE_API_KEY` de la función `paddle-portal`. Nunca en el repo ni en el frontend.
+- **Webhook signing secret** (`pdl_ntfset_...`): SECRETO, en `PADDLE_WEBHOOK_SECRET`. Es la "secret key"
+  del destino de notificaciones (NO el `ntfset_...` que es el ID del destino).
+- Sandbox y producción son entornos **separados** (catálogo, IDs, tokens y secrets distintos).
+
+### 1) Precios (PricePreview)
+`plans.component` llama `paddle.previewPrices()` → `Paddle.PricePreview({ items:[{priceId,quantity}] })`.
+Paddle detecta el país del visitante y devuelve el total **ya formateado y localizado**
+(`formattedTotals.total`, ej. `US$49.00`). No hacemos conversión de moneda. Si Paddle no está
+configurado o falla, se muestran los precios fijos del componente.
+
+### 2) Checkout (Checkout.open)
+Al elegir un plan:
 ```ts
-export const PADDLE_ENV = 'sandbox';           // 'production' al salir a producción
-export const PADDLE_CLIENT_TOKEN = 'test_...'; // Developer Tools → Authentication → Client-side tokens
-export const PADDLE_PRICE_IDS = {
-  basic:    'pri_...',   // Catalog → Products → tu producto → el Price mensual → ID
-  pro:      'pri_...',
-  business: 'pri_...',
-};
+Paddle.Checkout.open({
+  items: [{ priceId, quantity: 1 }],
+  customer: { email },                       // prellena el correo (salta la pantalla de contacto)
+  customData: { user_id, plan },             // ← clave: viaja a la transacción y a la suscripción
+  settings: { displayMode: 'overlay', theme: 'dark' },
+});
 ```
+El `customData.user_id` (id de Supabase) es lo que después usa el webhook para saber **a qué usuario**
+pertenece el pago. `plan` es un respaldo por si el mapa de precios no matchea.
 
-- El **client-side token** es público (seguro en el frontend), distinto de la API key secreta.
-- Mientras estén vacíos, `/plans` sigue con el flujo anterior (sin cobro), útil para desarrollo.
+### 3) Provisión del plan (webhook = fuente de verdad)
+El plan **NO** se activa desde el cliente. Tras `checkout.completed`, `plans.component` solo muestra un
+overlay "Confirmando pago…" y hace *polling* a `profiles` (`auth.reload()` hasta ~18 s) hasta que el
+webhook haya fijado el plan; luego navega a `/configure` (o `/manage`).
 
-### Probar el pago (sandbox)
-1. Llena `paddle.config.ts` con el token `test_...` y los `pri_...` de sandbox. `npm run build` / deploy.
-2. Inicia sesión y entra a `/plans` (`https://www.aichatbot.wearevectis.com/plans`).
-3. Elige un plan → se abre el checkout (overlay) con tu email prellenado.
-4. Tarjeta de prueba: **4242 4242 4242 4242**, cualquier nombre, fecha futura, **CVV 100**.
-5. Confirma que la transacción aparece en **Transactions** del dashboard de Paddle (sandbox).
+La función **`paddle-webhook`** (deploy con `--no-verify-jwt`):
+1. Lee el body **crudo** y verifica `Paddle-Signature`: `HMAC-SHA256(`​`${ts}:${rawBody}`​`)` con el
+   signing secret, comparación en tiempo constante. Si no valida → **401** (no procesa nada).
+2. Procesa `transaction.completed` (fulfillment) y `subscription.created|activated|updated|canceled`.
+3. Identifica al usuario por `data.custom_data.user_id`; obtiene el plan de `custom_data.plan` o del
+   `price_id` (mapa `PRICE_TO_PLAN`).
+4. Con el **service-role** actualiza `profiles`: `plan`, `plan_expiry` (`current_billing_period.ends_at`),
+   `subscription_status`, `cancel_at_period_end`, `paddle_subscription_id/customer_id/price_id/product_id`.
+5. En `subscription.updated` compara el rango del plan (basic<pro<business) para detectar
+   **upgrade/downgrade**. Responde **2xx en <5 s** (Paddle reintenta si no).
 
-### Pendiente para producción (webhook)
-Hoy, tras el checkout, el plan se aplica **desde el cliente** (puente temporal). Lo correcto es un
-**webhook de Paddle** (Supabase Edge Function o endpoint) que escuche `transaction.completed` /
-`subscription.created|updated|canceled`, lea el `plan_code` de Custom Data y fije el plan/vencimiento
-en la base de datos (fuente de verdad). Cuando lo tengas, quita el `grantPlan` del `checkout.completed`.
+> Nota de seguridad: como el plan lo fija el servidor (validado por firma), el usuario no puede
+> "auto-asignarse" un plan desde el navegador.
+
+### 4) Gestión de suscripción (customer portal)
+En la cuenta, "Gestionar suscripción" invoca la función **`paddle-portal`** (deploy con verificación de
+JWT). La función:
+1. Identifica al usuario por su JWT de Supabase (`auth.getUser`).
+2. Lee **su** `paddle_customer_id` del perfil.
+3. Llama `POST {api}/customers/{customer_id}/portal-sessions` con `PADDLE_API_KEY` (el `{api}` es
+   `sandbox-api.paddle.com` o `api.paddle.com`, detectado por el prefijo de la key).
+4. Devuelve `data.urls.general.overview` y el frontend redirige. Ahí el cliente actualiza pago, ve
+   facturas y cancela — todo hosteado por Paddle.
+
+### 5) Downgrade y límites
+Los límites por plan (chatbots activos, dominios) se recalculan al cargar la sesión:
+- `enforceActiveLimit()` desactiva chatbots que excedan el máximo del plan.
+- `enforceOriginLimit()`: si el plan permite menos dominios que los guardados (p. ej. Business→Pro),
+  recorta cada chatbot al **primer dominio**, lo persiste en `allowed_origins` y muestra un aviso
+  (`originsTrimmed`) en el header.
+
+### Mapa de precios (mantener sincronizado)
+El `price_id → plan` vive en **dos** lugares y deben coincidir con el entorno activo:
+- Frontend: `PADDLE_PRICE_IDS` en `paddle.config.ts`.
+- Webhook: `PRICE_TO_PLAN` en `paddle-webhook`.
+
+### Datos que guardamos en `profiles`
+`plan`, `plan_expiry`, `subscription_status`, `cancel_at_period_end`, `paddle_customer_id`,
+`paddle_subscription_id`, `paddle_price_id`, `paddle_product_id`.
+
+### Prueba (sandbox)
+`/plans` → elegir plan → tarjeta `4242 4242 4242 4242`, fecha futura, **CVV 100**. Verifica: evento
+**200** en Notifications, transacción en **Transactions**, y `profiles` actualizado.
 
 ---
 
