@@ -13,13 +13,13 @@
  */
 export type PaddleEnv = 'sandbox' | 'production';
 
-export const PADDLE_ENV: PaddleEnv = 'sandbox';
+export const PADDLE_ENV: PaddleEnv = 'production';
 
-export const PADDLE_CLIENT_TOKEN = 'test_ff2e38c401a5dceedba51bd0bd4'; // client-side token (público, seguro en frontend)
+export const PADDLE_CLIENT_TOKEN = 'live_398fa1d3c821019a294b41d948c'; // client-side token (público, seguro en frontend)
 
-// IDs de PRICE (pri_...) del price mensual de cada producto (sandbox).
+// IDs de PRICE (pri_...) del price mensual de cada producto (PRODUCCIÓN / live).
 export const PADDLE_PRICE_IDS: Record<'basic' | 'pro' | 'business', string> = {
-  basic: 'pri_01kx7csgs4hsgd4v314pz6ef52',
-  pro: 'pri_01kx7crwa0zzk9g5qkzp96487e',
-  business: 'pri_01kx7cpj7676k5qbb2gqb37w8g',
+  basic: 'pri_01kx7h21hd93s94sn0pw766r8f',
+  pro: 'pri_01kx7h4tn7xn6grqwpethvscrv',
+  business: 'pri_01kx7h8jsc5aj3ztnmvc4p84rz',
 };
