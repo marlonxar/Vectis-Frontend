@@ -37,11 +37,7 @@ interface Plan {
           <p class="ls-text">{{ 'AICHATBOT.LANDING.SESSION_ACTIVE' | translate }}</p>
         </div>
       </section>
-    } @else if (!ready()) {
-      <section class="loadscreen">
-        <div class="ls-inner"><span class="spinner" aria-hidden="true"></span></div>
-      </section>
-    } @else {
+    } @else if (ready()) {
     <section class="cbp">
       <div class="grid" aria-hidden="true"></div>
       <div class="glow" aria-hidden="true"></div>
@@ -763,7 +759,7 @@ export class ChatbotLandingComponent implements OnInit {
           const dest = !this.session.planExpiry()
             ? '/plans'
             : (this.session.companies().length > 0 ? '/dashboard' : '/configure');
-          setTimeout(() => this.router.navigateByUrl(dest), 1300);
+          setTimeout(() => this.router.navigateByUrl(dest), 600);
         } else {
           this.ready.set(true);
         }
