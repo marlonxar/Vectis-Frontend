@@ -564,6 +564,19 @@ interface Plan {
     .snippet2 { display: block; margin-top: 12px; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 12px; color: var(--gold-soft);
       background: rgba(0,0,0,.35); border: 1px solid var(--line-light); border-radius: 10px; padding: 9px 12px; overflow-x: auto; white-space: nowrap; }
     @media (max-width: 900px) { .how-grid { grid-template-columns: 1fr; } .how-intro { position: static; } }
+    @media (max-width: 560px) {
+      .fstep { grid-template-columns: 42px 1fr; gap: 13px; padding-bottom: 18px; }
+      .fnode { width: 42px; height: 42px; }
+      .fnum { font-size: 16px; }
+      .fstep:not(:last-child) .fnode::after { top: 42px; left: 20px; bottom: -18px; }
+      .fbody { padding: 14px 15px; }
+      .fhead { gap: 9px; }
+      .fhead h3 { font-size: 14.5px; }
+      .fbody p { font-size: 13.5px; }
+      .snippet2 { font-size: 11px; }
+      .think-row { grid-template-columns: 34px 1fr; gap: 11px; }
+      .think-row .tico { width: 34px; height: 34px; }
+    }
 
     /* Qué puede manejar — lista de iconos sin cajas */
     .feats2 { background: var(--ink); color: var(--text-inv); padding: clamp(52px, 7vw, 90px) 0; border-top: 1px solid var(--line-light); }

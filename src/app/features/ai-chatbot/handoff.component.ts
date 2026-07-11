@@ -44,19 +44,23 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
             <!-- Canal: Telegram -->
             <section class="card">
               <div class="ch-row">
-                <div class="ch-info">
+                <button type="button" class="ch-info" [class.clickable]="enabled()" (click)="toggleOpen()" [disabled]="!enabled()"
+                        [attr.aria-expanded]="enabled() && open()" [attr.aria-label]="'AICHATBOT.HANDOFF.TOGGLE_DETAILS' | translate">
                   <span class="ch-ic">
                     <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3 18.7 19.4c-.24 1.06-.87 1.32-1.76.82l-4.87-3.59-2.35 2.26c-.26.26-.48.48-.98.48l.35-4.96 9.02-8.15c.39-.35-.09-.55-.6-.2L6.35 13.1l-4.8-1.5c-1.04-.33-1.06-1.04.22-1.54l18.77-7.23c.87-.32 1.63.2 1.36 1.47z"/></svg>
                   </span>
-                  <div>
+                  <div class="ch-txt">
                     <b>{{ 'AICHATBOT.HANDOFF.CH_TELEGRAM' | translate }}</b>
                     <span class="ch-sub">{{ 'AICHATBOT.HANDOFF.CH_SOON' | translate }}</span>
                   </div>
-                </div>
+                  @if (enabled()) {
+                    <svg class="ch-chev" [class.up]="open()" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  }
+                </button>
                 <button type="button" class="tgl" [class.on]="enabled()" (click)="toggle()" [attr.aria-pressed]="enabled()" [attr.aria-label]="'AICHATBOT.HANDOFF.ENABLE' | translate"><span></span></button>
               </div>
 
-              @if (enabled()) {
+              @if (enabled() && open()) {
                 <div class="tg-body">
                   <p class="guide-title">{{ 'AICHATBOT.HANDOFF.GUIDE_TITLE' | translate }}</p>
                   <ol class="guide">
@@ -117,7 +121,12 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .how li, .guide li { font-size: 14px; line-height: 1.55; color: var(--text-inv-2); }
 
     .ch-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
-    .ch-info { display: flex; align-items: center; gap: 13px; }
+    .ch-info { flex: 1; min-width: 0; display: flex; align-items: center; gap: 13px; background: transparent; border: none; color: inherit; font: inherit; text-align: left; padding: 0; }
+    .ch-info.clickable { cursor: pointer; }
+    .ch-info:disabled { cursor: default; }
+    .ch-txt { min-width: 0; }
+    .ch-chev { margin-left: auto; color: var(--text-inv-2); transition: transform var(--dur) var(--ease); flex-shrink: 0; }
+    .ch-chev.up { transform: rotate(180deg); }
     .ch-ic { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; color: #229ED9; background: rgba(34,158,217,.12); border: 1px solid rgba(34,158,217,.3); }
     .ch-info b { display: block; font-size: 15.5px; }
     .ch-sub { font-size: 12px; color: var(--text-inv-2); }
@@ -164,6 +173,7 @@ export class ChatbotHandoffComponent implements OnInit {
   private readonly title = inject(Title);
 
   readonly enabled = signal(false);
+  readonly open = signal(false);   // acordeón: solo se puede abrir si está habilitado
   readonly tokenV = signal('');
   readonly userV = signal('');
   readonly username = signal('');
@@ -181,6 +191,7 @@ export class ChatbotHandoffComponent implements OnInit {
     const c = this.s.currentConfig();
     if (c) {
       this.enabled.set(!!c.handoffEnabled);
+      this.open.set(!!c.handoffEnabled);   // si ya está habilitado, arranca abierto
       this.tokenV.set(c.telegramBotToken || '');
       this.userV.set(c.telegramBotUsername || '');
       this.username.set(c.telegramBotUsername || '');
@@ -193,9 +204,13 @@ export class ChatbotHandoffComponent implements OnInit {
   async toggle(): Promise<void> {
     const next = !this.enabled();
     this.enabled.set(next);
+    this.open.set(next);   // al habilitar se abre; al deshabilitar se cierra
     // Al apagar, persistimos de una vez (desactiva el botón "Hablar con una persona").
     if (!next) await this.persist(false);
   }
+
+  // Acordeón: solo se puede plegar/desplegar cuando está habilitado.
+  toggleOpen(): void { if (this.enabled()) this.open.update((v) => !v); }
 
   async save(): Promise<void> {
     this.err.set(''); this.okMsg.set('');

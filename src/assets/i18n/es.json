@@ -993,7 +993,7 @@
       "I5_T": "Integraciones a medida",
       "I5_D": "¿Otra herramienta o necesidad especial de tu negocio? Lo vemos contigo y lo dejamos andando.",
       "LEGEND": "El chatbot es self-serve, pero no estás por tu cuenta. Abre un ticket y nuestro equipo te ayuda a dejarlo funcionando al 100%.",
-      "B1": "Integración de inventarios (CSV, Google Sheets o Excel).",
+      "B1": "Integración de inventarios.",
       "B2": "Documentación y base de conocimiento para respuestas precisas.",
       "B3": "Agenda con Cal.com e integraciones a medida.",
       "TICKETS_TITLE": "Tickets de soporte",
@@ -1245,11 +1245,11 @@
       "NAV": "Handoff a humano",
       "EYEBROW": "Atención humana",
       "TITLE": "Handoff a humano",
-      "LEAD": "Deja que un cliente hable con una persona real. Sus mensajes te llegan a Telegram —cada cliente en su propio Tema— y tú respondes desde ahí; el cliente sigue en el mismo chat.",
+      "LEAD": "Deja que un cliente hable con una persona real. Recibes sus mensajes en la aplicación que conectes y respondes desde ahí; el cliente sigue en el mismo chat.",
       "HOW_TITLE": "Cómo funciona",
       "HOW1": "El cliente toca \"Hablar con una persona\" en el chat.",
-      "HOW2": "Sus mensajes te llegan a Telegram, cada cliente en su propio Tema (hebra).",
-      "HOW3": "Respondes desde Telegram y tu respuesta aparece en el chat del cliente.",
+      "HOW2": "Recibes su mensaje al instante en la aplicación que conectaste, con cada cliente por separado.",
+      "HOW3": "Respondes desde esa aplicación y tu respuesta le aparece al cliente en el mismo chat.",
       "HOW4": "El cliente puede volver al asistente cuando quiera.",
       "CH_TELEGRAM": "Telegram",
       "CH_SOON": "Más canales próximamente",
@@ -1272,7 +1272,8 @@
       "CHECK": "Verificar conexión",
       "CHECKING": "Verificando…",
       "G5": "Pega el token aquí abajo y guarda: registramos tu bot automáticamente.",
-      "G6": "En el GRUPO (no en el chat privado del bot) envía /start para vincularlo. Si ya habías hecho /start en el privado, hazlo de nuevo dentro del grupo para cambiar el destino. Cada conversación caerá en su propio Tema."
+      "G6": "En el GRUPO (no en el chat privado del bot) envía /start para vincularlo. Si ya habías hecho /start en el privado, hazlo de nuevo dentro del grupo para cambiar el destino. Cada conversación caerá en su propio Tema.",
+      "TOGGLE_DETAILS": "Mostrar u ocultar la configuración"
     }
   },
   "REFUNDS": {

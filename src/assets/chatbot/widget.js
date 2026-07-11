@@ -96,7 +96,7 @@
     var brand = cfg.brandColor || '#E7AB2E';
     var brand2 = cfg.secondColor || '#0A0A0A';
     var css =
-      '.vxc-launch{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;z-index:2147483000;' +
+      '.vxc-launch{position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;border:none;cursor:pointer;z-index:2147483001;' +
       'background:linear-gradient(135deg,' + brand + ',' + brand2 + ');box-shadow:0 10px 30px rgba(0,0,0,.25);display:grid;place-items:center;transition:transform .2s;animation:vxc-pop .42s cubic-bezier(.2,.9,.3,1.3) both}' +
       '.vxc-launch:hover{transform:translateY(-2px) scale(1.05)}.vxc-launch:active{transform:scale(.96)}' +
       '.vxc-launch svg{width:28px;height:28px;color:#fff}' +
@@ -290,7 +290,14 @@
     }
   }
 
-  function toggle() { open = !open; $panel.classList.toggle('vxc-on', open); if (open) { var i = $panel.querySelector('.vxc-in'); if (i) i.focus(); } }
+  function toggle() {
+    open = !open;
+    $panel.classList.toggle('vxc-on', open);
+    // El launcher va por encima del panel (para que el tap siempre funcione en móvil);
+    // por eso lo ocultamos mientras el chat está abierto.
+    if ($launch) $launch.style.visibility = open ? 'hidden' : 'visible';
+    if (open) { var i = $panel.querySelector('.vxc-in'); if (i) i.focus(); }
+  }
 
   // Cerrar: analiza la sesión vieja (insight), la borra e inicia una conversación nueva.
   function closeChat() {
@@ -304,6 +311,7 @@
       if ((cfg.quickReplies && cfg.quickReplies.length) || cfg.handoff) addQuickReplies(cfg.quickReplies);
     }
     open = false; $panel.classList.remove('vxc-on');
+    if ($launch) $launch.style.visibility = 'visible';
     closeCal();
   }
 
@@ -399,7 +407,9 @@
     rd.readAsDataURL(f);
   }
 
-  function addBot(text) { var b = el('div', 'vxc-b vxc-bot', mdToHtml(text)); $body.appendChild(b); scroll(); }
+  // Red de seguridad: nunca mostrar un marcador interno crudo ([[AGENDAR]], [[SINDATO]], etc.)
+  function stripMarkers(t) { return String(t == null ? '' : t).replace(/\[\[\s*[A-Za-z_]+\s*\]\]/g, '').trim(); }
+  function addBot(text) { var b = el('div', 'vxc-b vxc-bot', mdToHtml(stripMarkers(text))); $body.appendChild(b); scroll(); }
   function addUser(text) { var b = el('div', 'vxc-b vxc-user', esc(text)); $body.appendChild(b); scroll(); }
   function scroll() { $body.scrollTop = $body.scrollHeight; }
 
