@@ -6,7 +6,7 @@ import { Title } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChatbotAppHeaderComponent } from './app-header.component';
 import { ChatbotSidebarComponent } from './sidebar.component';
-import { ChatbotSessionService, ChatbotConfig, DaySchedule, defaultSchedule, configToDb, CONFIG_DEFAULTS } from './session.service';
+import { ChatbotSessionService, ChatbotConfig, DaySchedule, defaultSchedule, configToDb, WEB_DB_KEYS, CONFIG_DEFAULTS } from './session.service';
 import { SupabaseClientService } from './supabase.client';
 import { ChatbotAuthService } from './auth.service';
 import { FocusTrapDirective } from './focus-trap.directive';
@@ -111,7 +111,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
             <!-- Barra de progreso por secciones -->
             <div class="progress" role="status" aria-live="polite">
               <div class="progress-top">
-                <span>{{ 'AICHATBOT.ONBOARD.PROGRESS' | translate:{ done: sectionsDone(), total: 3 } }}</span>
+                <span>{{ 'AICHATBOT.ONBOARD.PROGRESS' | translate:{ done: sectionsDone(), total: 4 } }}</span>
                 <span class="pct">{{ progressPct() }}%</span>
               </div>
               <div class="bar"><span [style.width.%]="progressPct()"></span></div>
@@ -335,23 +335,128 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   }
                 </div>
 
-                <!-- 3. AVANZADO -->
+                <!-- 3. APARIENCIA (el admin la gestiona en el canal "Web") -->
+                @if (!isVectisAdmin()) {
                 <div class="acc" [class.ok]="sectionDone(2)" [class.expanded]="isOpen(2)">
                   <button type="button" class="acc-head" (click)="toggle(2)" [attr.aria-expanded]="isOpen(2)">
                     <span class="acc-num">3</span>
-                    <span class="acc-title">{{ 'AICHATBOT.ONBOARD.SEC_ADVANCED' | translate }}</span>
+                    <span class="acc-title">{{ 'AICHATBOT.ONBOARD.SEC_APPEARANCE' | translate }}</span>
                     @if (sectionDone(2)) { <span class="acc-ok" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> }
                     <svg class="acc-chev" [class.up]="isOpen(2)" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                   </button>
                   @if (isOpen(2)) {
                   <div class="acc-body">
+                  <div class="two">
+                    <div class="field">
+                      <label for="ob-title">{{ 'AICHATBOT.ONBOARD.WIDGET_TITLE' | translate }}</label>
+                      <input id="ob-title" name="wtitle" [(ngModel)]="widgetTitle" [attr.placeholder]="'AICHATBOT.ONBOARD.WIDGET_TITLE_PH' | translate" />
+                    </div>
+                    <div class="field">
+                      <label for="ob-logo">{{ 'AICHATBOT.ONBOARD.LOGO_URL' | translate }}
+                        <ng-container [ngTemplateOutlet]="tip" [ngTemplateOutletContext]="{ k: 'AICHATBOT.ONBOARD.TIP_LOGO' }"></ng-container>
+                      </label>
+                      <input id="ob-logo" name="logo" [(ngModel)]="brandLogoUrl" placeholder="https://tutienda.com/logo.png" />
+                    </div>
+                  </div>
+                  <div class="two">
+                    <div class="field">
+                      <label>{{ 'AICHATBOT.ONBOARD.COLOR' | translate }}
+                        <ng-container [ngTemplateOutlet]="tip" [ngTemplateOutletContext]="{ k: 'AICHATBOT.ONBOARD.TIP_COLOR' }"></ng-container>
+                      </label>
+                      <div class="color">
+                        <input name="color" [(ngModel)]="brandColor" placeholder="#E7AB2E" />
+                        <input type="color" [ngModel]="brandColor || '#E7AB2E'" (ngModelChange)="brandColor = $event" name="colorpick" aria-label="Color" />
+                      </div>
+                    </div>
+                    <div class="field">
+                      <label>{{ 'AICHATBOT.ONBOARD.COLOR2' | translate }}
+                        <ng-container [ngTemplateOutlet]="tip" [ngTemplateOutletContext]="{ k: 'AICHATBOT.ONBOARD.TIP_COLOR2' }"></ng-container>
+                      </label>
+                      <div class="color">
+                        <input name="color2" [(ngModel)]="secondBrandColor" placeholder="#0A0A0A" />
+                        <input type="color" [ngModel]="secondBrandColor || '#0A0A0A'" (ngModelChange)="secondBrandColor = $event" name="colorpick2" aria-label="Color 2" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label>{{ 'AICHATBOT.ONBOARD.POSITION' | translate }}
+                      <ng-container [ngTemplateOutlet]="tip" [ngTemplateOutletContext]="{ k: 'AICHATBOT.ONBOARD.TIP_POSITION' }"></ng-container>
+                    </label>
+                    <div class="pos-seg" role="group" [attr.aria-label]="'AICHATBOT.ONBOARD.POSITION' | translate">
+                      <button type="button" [class.on]="widgetPosition === 'left'" (click)="widgetPosition = 'left'">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="7.5" cy="16.5" r="2.5" fill="currentColor" stroke="none"/></svg>
+                        {{ 'AICHATBOT.ONBOARD.POS_LEFT' | translate }}
+                      </button>
+                      <button type="button" [class.on]="widgetPosition === 'right'" (click)="widgetPosition = 'right'">
+                        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="16.5" cy="16.5" r="2.5" fill="currentColor" stroke="none"/></svg>
+                        {{ 'AICHATBOT.ONBOARD.POS_RIGHT' | translate }}
+                      </button>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label for="ob-welcome">{{ 'AICHATBOT.ONBOARD.WELCOME' | translate }}</label>
+                    <input id="ob-welcome" name="welcome" [(ngModel)]="welcome" [attr.placeholder]="'AICHATBOT.ONBOARD.WELCOME_PH' | translate" />
+                  </div>
+                  <div class="field">
+                    <label>{{ 'AICHATBOT.ONBOARD.QUICK' | translate }}
+                      <ng-container [ngTemplateOutlet]="tip" [ngTemplateOutletContext]="{ k: 'AICHATBOT.ONBOARD.TIP_QUICK' }"></ng-container>
+                    </label>
+                    @for (q of quickReplies(); track $index) {
+                      <div class="qr">
+                        <input [ngModel]="q" (ngModelChange)="setQuick($index, $event)" [ngModelOptions]="{ standalone: true }" [attr.placeholder]="'AICHATBOT.ONBOARD.QUICK_PH' | translate" />
+                        <button type="button" class="x" (click)="removeQuick($index)" aria-label="Quitar"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                      </div>
+                    }
+                    @if (quickReplies().length < quickLimit()) {
+                      <button type="button" class="ghost-btn" (click)="addQuick()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>{{ 'AICHATBOT.ONBOARD.ADD_QUICK' | translate }}</button>
+                    } @else if (s.plan() === 'basic') {
+                      <p class="upgrade">{{ 'AICHATBOT.ONBOARD.QUICK_UPGRADE' | translate }}</p>
+                    }
+                  </div>
+                  <div class="acc-nav"><button type="button" class="next" (click)="next(2)">{{ 'AICHATBOT.ONBOARD.NEXT' | translate }}<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></div>
+                  </div>
+                  }
+                </div>
+                }
+
+                <!-- 4. AVANZADO -->
+                <div class="acc" [class.ok]="sectionDone(3)" [class.expanded]="isOpen(3)">
+                  <button type="button" class="acc-head" (click)="toggle(3)" [attr.aria-expanded]="isOpen(3)">
+                    <span class="acc-num">4</span>
+                    <span class="acc-title">{{ 'AICHATBOT.ONBOARD.SEC_ADVANCED' | translate }}</span>
+                    @if (sectionDone(3)) { <span class="acc-ok" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> }
+                    <svg class="acc-chev" [class.up]="isOpen(3)" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                  </button>
+                  @if (isOpen(3)) {
+                  <div class="acc-body">
+                  <!-- Dominios: el admin los gestiona en el canal "Web" -->
+                  @if (!isVectisAdmin()) {
+                  <div class="field">
+                    <label>{{ 'AICHATBOT.ONBOARD.ORIGINS' | translate }}
+                      <ng-container [ngTemplateOutlet]="tip" [ngTemplateOutletContext]="{ k: 'AICHATBOT.ONBOARD.TIP_ORIGINS' }"></ng-container>
+                    </label>
+                    @for (o of origins(); track $index) {
+                      <div class="qr">
+                        <input [ngModel]="o" (ngModelChange)="setOrigin($index, $event)" [ngModelOptions]="{ standalone: true }" placeholder="https://tutienda.com" />
+                        @if (origins().length > 1) {
+                          <button type="button" class="x" (click)="removeOrigin($index)" aria-label="Quitar dominio"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                        }
+                      </div>
+                    }
+                    @if (origins().length < originLimit()) {
+                      <button type="button" class="ghost-btn" (click)="addOrigin()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>{{ 'AICHATBOT.ONBOARD.ADD_ORIGIN' | translate }}</button>
+                    }
+                    <p class="hintline">{{ (s.plan() === 'business' ? 'AICHATBOT.ONBOARD.ORIGINS_BIZ' : 'AICHATBOT.ONBOARD.ORIGINS_ONE') | translate }}</p>
+                    <p class="hintline warn">{{ 'AICHATBOT.ONBOARD.ORIGINS_ANY' | translate }}</p>
+                  </div>
+                  }
                   <div class="field">
                     <label for="ob-rules">{{ 'AICHATBOT.ONBOARD.RULES' | translate }} <span class="req">*</span>
                       <ng-container [ngTemplateOutlet]="tip" [ngTemplateOutletContext]="{ k: 'AICHATBOT.ONBOARD.TIP_RULES' }"></ng-container>
                     </label>
-                    <textarea id="ob-rules" rows="4" name="rules" [(ngModel)]="extraRules" [class.bad]="showErr(2) && !vRules()" [attr.placeholder]="'AICHATBOT.ONBOARD.RULES_PH' | translate"></textarea>
+                    <textarea id="ob-rules" rows="4" name="rules" [(ngModel)]="extraRules" [class.bad]="showErr(3) && !vRules()" [attr.placeholder]="'AICHATBOT.ONBOARD.RULES_PH' | translate"></textarea>
                     <p class="hintline">{{ 'AICHATBOT.ONBOARD.RULES_HINT' | translate }} ({{ extraRules.trim().length }}/100)</p>
-                    @if (showErr(2) && !vRules()) { <p class="ferr">{{ 'AICHATBOT.ONBOARD.E_MIN100' | translate }}</p> }
+                    @if (showErr(3) && !vRules()) { <p class="ferr">{{ 'AICHATBOT.ONBOARD.E_MIN100' | translate }}</p> }
                   </div>
                   <div class="two">
                     <div class="field">
@@ -705,6 +810,8 @@ export class ChatbotConfigureComponent implements OnInit {
   private host: ElementRef<HTMLElement> = inject(ElementRef);
   private i18n = inject(TranslateService);
   readonly s = inject(ChatbotSessionService);
+  // Admin en pruebas: gestiona Apariencia y Dominios en el canal "Web" (no en Configurar).
+  readonly isVectisAdmin = computed(() => (this.s.email() || '').trim().toLowerCase() === 'vectisauto@gmail.com');
 
   private scrollToError(): void {
     setTimeout(() => {
@@ -806,14 +913,15 @@ export class ChatbotConfigureComponent implements OnInit {
     switch (i) {
       case 0: return this.vCompany() && this.vDesc() && this.vPersona();
       case 1: return this.vInfo() && this.vSchedule() && this.vFaqs();
-      case 2: return this.vRules(); // avanzado (apariencia y dominios se movieron al canal Web)
+      case 2: return true; // apariencia: todo opcional
+      case 3: return this.vRules(); // dominios opcionales (vacío = cualquier dominio)
       default: return false;
     }
   }
   /** Primera sección incompleta (hasta ahí puede navegar el usuario). */
   firstInvalid(): number {
-    for (let i = 0; i < 3; i++) { if (!this.sectionValid(i)) return i; }
-    return 3;
+    for (let i = 0; i < 4; i++) { if (!this.sectionValid(i)) return i; }
+    return 4;
   }
   showErr(i: number): boolean { return this.tried().includes(i); }
 
@@ -1000,8 +1108,8 @@ export class ChatbotConfigureComponent implements OnInit {
 
   // --- Progreso ---
   sectionDone(i: number): boolean { return this.sectionValid(i); }
-  sectionsDone(): number { return [0, 1, 2].filter((i) => this.sectionDone(i)).length; }
-  progressPct(): number { return Math.round((this.sectionsDone() / 3) * 100); }
+  sectionsDone(): number { return [0, 1, 2, 3].filter((i) => this.sectionDone(i)).length; }
+  progressPct(): number { return Math.round((this.sectionsDone() / 4) * 100); }
 
   personaPlaceholder(): string {
     const c = this.company.trim() || '{empresa}';
@@ -1110,8 +1218,8 @@ export class ChatbotConfigureComponent implements OnInit {
   async save(): Promise<void> {
     // Validar TODO lo requerido; si falta algo, marca y abre la primera sección incompleta.
     const firstBad = this.firstInvalid();
-    if (firstBad < 3) {
-      this.tried.set([0, 1, 2]);
+    if (firstBad < 4) {
+      this.tried.set([0, 1, 2, 3]);
       this.openSection.set(firstBad);
       this.err.set(true);
       this.scrollToError();
@@ -1121,6 +1229,8 @@ export class ChatbotConfigureComponent implements OnInit {
     this.saveErr.set('');
     const cfg = this.gatherConfig();
     const db = configToDb(cfg);
+    // El admin gestiona Apariencia + Dominios en el canal "Web"; no los pisamos desde Configurar.
+    if (this.isVectisAdmin()) { for (const k of WEB_DB_KEYS) delete (db as Record<string, unknown>)[k]; }
     this.saving.set(true);
 
     try {
