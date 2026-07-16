@@ -287,7 +287,7 @@ export class ChatbotChannelsComponent {
 
   readonly embed = computed(() => {
     const id = this.s.currentClientId() || 'TU-CLIENT-ID';
-    return '<script src="https://wearevectis.com/assets/chatbot/widget.js"\n  data-client-id="' + id + '"\n  defer></script>';
+    return '<script src="https://www.wearevectis.com/assets/chatbot/widget.js"\n  data-client-id="' + id + '"\n  defer></script>';
   });
 
   // Vista previa

@@ -980,7 +980,7 @@ export class ChatbotConfigureComponent implements OnInit {
   }
 
   buildSnippet(id: string): string {
-    return `<script src="https://wearevectis.com/assets/chatbot/widget.js"\n  data-client-id="${id}"\n  defer></script>`;
+    return `<script src="https://www.wearevectis.com/assets/chatbot/widget.js"\n  data-client-id="${id}"\n  defer></script>`;
   }
 
   // --- Base de conocimiento: subir archivos ---

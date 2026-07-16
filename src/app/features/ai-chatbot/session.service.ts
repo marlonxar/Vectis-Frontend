@@ -58,7 +58,7 @@ export const CONFIG_DEFAULTS = {
   brandColor: '#E7AB2E',
   secondBrandColor: '#0A0A0A',
   welcome: '¡Hola! 👋 ¿En qué puedo ayudarte hoy?',
-  privacyUrl: 'https://wearevectis.com/privacy',
+  privacyUrl: 'https://www.wearevectis.com/privacy',
   privacyText: 'Al chatear aceptas el tratamiento de tus datos según el aviso de privacidad de Vectis.',
 };
 

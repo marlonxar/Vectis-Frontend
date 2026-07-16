@@ -101,7 +101,10 @@ export class AppComponent implements OnInit {
 
   private updateCanonical(url: string): void {
     const clean = url.split('?')[0].split('#')[0];
-    const base = 'https://wearevectis.com';
+    // Auto-referencial al dominio servido (www.wearevectis.com o el subdominio del chatbot).
+    // Evita el desajuste www/no-www que causaba "redirect error" en Search Console.
+    const win = this.doc.defaultView;
+    const base = (win && win.location && win.location.origin) || 'https://www.wearevectis.com';
     const href = clean === '/' || clean === '' ? base + '/' : base + clean;
     let link = this.doc.querySelector("link[rel='canonical']") as HTMLLinkElement | null;
     if (!link) { link = this.doc.createElement('link'); link.setAttribute('rel', 'canonical'); this.doc.head.appendChild(link); }

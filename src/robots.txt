@@ -1,4 +1,4 @@
-# Vectis Automation Group — https://wearevectis.com
+# Vectis Automation — https://www.wearevectis.com
 User-agent: *
 Allow: /
 
@@ -58,5 +58,5 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Host: https://wearevectis.com
-Sitemap: https://wearevectis.com/sitemap.xml
+Host: https://www.wearevectis.com
+Sitemap: https://www.wearevectis.com/sitemap.xml

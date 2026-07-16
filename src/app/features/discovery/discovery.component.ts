@@ -23,13 +23,13 @@ interface DiscoveryAssistantApi { init: (cfg: { key: string; target: string; pag
       <h1>Discovery Assistant de Vectis</h1>
       <p>
         Cuéntanos sobre tu proyecto y recibe una propuesta a medida. Responde unas pocas preguntas
-        sobre tu sitio web, automatización o software y el equipo de Vectis Automation Group
+        sobre tu sitio web, automatización o software y el equipo de Vectis Automation
         (San José, Costa Rica) te contactará con los siguientes pasos.
       </p>
       <noscript>
         Este asistente necesita JavaScript. Escríbenos a
         <a href="mailto:contact&#64;wearevectis.com">contact&#64;wearevectis.com</a>
-        o visita <a href="https://wearevectis.com/">wearevectis.com</a>.
+        o visita <a href="https://www.wearevectis.com/">wearevectis.com</a>.
       </noscript>
     </section>
     <div #host class="da-host" [id]="hostId" role="application" aria-label="Discovery Assistant"></div>
@@ -55,9 +55,9 @@ export class DiscoveryComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id') || '';
-    const url = `https://wearevectis.com/discovery-assistant/${id}`;
+    const url = `https://www.wearevectis.com/discovery-assistant/${id}`;
     const t = 'Discovery Assistant — Cuéntanos tu proyecto | Vectis';
-    const d = 'Asistente de descubrimiento de Vectis Automation Group: responde unas preguntas y recibe una propuesta a medida para tu sitio web, automatización con IA o software. San José, Costa Rica, para clientes en todo el mundo.';
+    const d = 'Asistente de descubrimiento de Vectis Automation: responde unas preguntas y recibe una propuesta a medida para tu sitio web, automatización con IA o software. San José, Costa Rica, para clientes en todo el mundo.';
 
     this.title.setTitle(t);
     this.meta.updateTag({ name: 'description', content: d });
@@ -85,7 +85,7 @@ export class DiscoveryComponent implements OnInit, AfterViewInit, OnDestroy {
       description: d,
       isAccessibleForFree: true,
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      provider: { '@type': 'Organization', name: 'Vectis Automation Group', url: 'https://wearevectis.com/' },
+      provider: { '@type': 'Organization', name: 'Vectis Automation', url: 'https://www.wearevectis.com/' },
     });
     // warm up the API connection before the widget makes its first request
     this.addPreconnect(this.SUPABASE_ORIGIN);

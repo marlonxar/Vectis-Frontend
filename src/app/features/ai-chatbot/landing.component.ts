@@ -783,9 +783,9 @@ export class ChatbotLandingComponent implements OnInit {
     check();
 
     const t = 'Vectis AI ChatBot — Chatbot con IA para tu negocio';
-    const d = 'Crea un chatbot con IA para tu sitio web en minutos: ventas, atención y captura de leads 24/7. Self-service, sin código. Vectis Automation Group.';
+    const d = 'Crea un chatbot con IA para tu sitio web en minutos: ventas, atención y captura de leads 24/7. Self-service, sin código. Vectis Automation.';
     const url = 'https://www.aichatbot.wearevectis.com/';
-    const img = 'https://wearevectis.com/assets/images/og-cover.jpg';
+    const img = 'https://www.wearevectis.com/assets/images/og-cover.jpg';
     this.title.setTitle(t);
     this.meta.updateTag({ name: 'description', content: d });
     this.meta.updateTag({ name: 'robots', content: 'index, follow, max-image-preview:large' });
@@ -810,7 +810,7 @@ export class ChatbotLandingComponent implements OnInit {
       inLanguage: ['es', 'en'],
       description: d,
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      provider: { '@type': 'Organization', name: 'Vectis Automation Group', url: 'https://wearevectis.com/' },
+      provider: { '@type': 'Organization', name: 'Vectis Automation', url: 'https://www.wearevectis.com/' },
     });
   }
 
