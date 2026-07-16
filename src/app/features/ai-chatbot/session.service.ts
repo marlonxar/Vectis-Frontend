@@ -128,6 +128,20 @@ export function configToDb(c: ChatbotConfig): Record<string, unknown> {
     inventory_file_name: c.inventoryFileName,
     inventory_file_url: c.inventoryFileUrl,
     faqs: c.faqs,
+    extra_rules: c.extraRules,
+    language: c.language,
+    privacy_url: c.privacyUrl,
+    privacy_text: c.privacyText,
+    // Nota: los campos de APARIENCIA (widget_title, widget_position, brand_color, second_brand_color,
+    // brand_logo_url, welcome_message, quick_replies) y DOMINIOS (allowed_origins) NO se guardan aquí:
+    // se gestionan en la página "Web" (canal), para no pisarlos al guardar el configure.
+    // Igual que los de handoff (handoff_enabled, telegram_*), que viven en "Handoff a humano".
+  };
+}
+
+/** Columnas del canal WEB (apariencia + dominios). Se guardan desde la página "Web". */
+export function webConfigToDb(c: ChatbotConfig): Record<string, unknown> {
+  return {
     widget_title: c.widgetTitle,
     widget_position: c.widgetPosition || 'right',
     brand_color: c.brandColor,
@@ -136,12 +150,6 @@ export function configToDb(c: ChatbotConfig): Record<string, unknown> {
     welcome_message: c.welcome,
     quick_replies: c.quickReplies,
     allowed_origins: c.origins,
-    extra_rules: c.extraRules,
-    language: c.language,
-    privacy_url: c.privacyUrl,
-    privacy_text: c.privacyText,
-    // Nota: los campos de handoff (handoff_enabled, telegram_*) NO se guardan aquí;
-    // se gestionan en la página "Handoff a humano" para no pisarlos al guardar el configure.
   };
 }
 
