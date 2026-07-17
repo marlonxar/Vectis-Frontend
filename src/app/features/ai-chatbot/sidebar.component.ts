@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -14,7 +14,16 @@ import { ChatbotSessionService } from './session.service';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule],
   template: `
-    <aside class="side">
+    <aside class="side" [class.open]="menuOpen()">
+      <button type="button" class="burger" (click)="menuOpen.set(!menuOpen())" [attr.aria-expanded]="menuOpen()" aria-label="Abrir menú">
+        @if (menuOpen()) {
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        } @else {
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        }
+        <span>Menú</span>
+      </button>
+      <nav class="items" (click)="menuOpen.set(false)">
       @if (s.companies().length > 0) {
         <a class="nav" routerLink="/dashboard" routerLinkActive="active">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
@@ -64,11 +73,14 @@ import { ChatbotSessionService } from './session.service';
           {{ 'AICHATBOT.SUPPORT.NAV' | translate }}
         </a>
       }
+      </nav>
     </aside>
   `,
   styles: [`
     :host { display: flex; align-self: stretch; }
     .side { width: 240px; flex-shrink: 0; border-right: 1px solid var(--line-light); padding: 22px 14px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
+    .items { display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 0; }
+    .burger { display: none; }
     .nav { display: flex; align-items: center; gap: 11px; padding: 11px 13px; border-radius: var(--radius-md); color: var(--text-inv-2); font-weight: 500; font-size: 14px; }
     .nav:hover { background: rgba(255,255,255,.05); color: var(--text-inv); }
     .nav.active { background: rgba(231,171,46,.14); color: var(--gold-bright); }
@@ -76,15 +88,23 @@ import { ChatbotSessionService } from './session.service';
     .group-title { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-inv-2);
       opacity: .7; padding: 14px 13px 6px; margin-top: 6px; border-top: 1px solid var(--line-light); }
     @media (max-width: 860px) {
-      .group-title { width: 100%; border-top: none; padding: 6px 8px 2px; }
-      .side { width: 100%; flex-direction: row; flex-wrap: wrap; border-right: none; border-bottom: 1px solid var(--line-light); padding: 10px; overflow-x: auto; }
-      .nav { padding: 9px 12px; font-size: 13px; }
-      .nav.support { margin-top: 0; border-top: none; padding-top: 9px; border-radius: var(--radius-md); }
+      :host { width: 100%; }
+      .side { width: 100%; flex-direction: column; gap: 0; border-right: none; border-bottom: 1px solid var(--line-light); padding: 10px; overflow: visible; }
+      .burger { display: flex; align-items: center; gap: 10px; width: 100%; padding: 12px 13px; border-radius: var(--radius-md);
+        border: 1px solid var(--line-light); background: rgba(255,255,255,.05); color: var(--text-inv); font: inherit; font-weight: 600; font-size: 14px; cursor: pointer; }
+      .burger:hover { border-color: rgba(231,171,46,.4); }
+      .items { display: none; margin-top: 8px; }
+      .side.open .items { display: flex; }
+      .group-title { width: 100%; border-top: none; padding: 10px 8px 2px; margin-top: 4px; }
+      .nav { padding: 12px 13px; font-size: 14px; }
+      .nav.support { margin-top: 6px; border-top: 1px solid var(--line-light); padding-top: 12px; border-radius: var(--radius-md); }
     }
   `],
 })
 export class ChatbotSidebarComponent {
   readonly s = inject(ChatbotSessionService);
+  // Menú colapsable en móvil (hamburger). En desktop siempre visible.
+  readonly menuOpen = signal(false);
   // Solo el admin ve la sección de Canales mientras está en pruebas de producción.
   readonly isVectisAdmin = computed(() => (this.s.email() || '').trim().toLowerCase() === 'vectisauto@gmail.com');
 }

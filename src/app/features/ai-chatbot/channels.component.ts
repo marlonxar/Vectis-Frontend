@@ -168,46 +168,55 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 </div>
               </div>
             } @else if (channel() === 'telegram') {
-              <!-- 1 · Conexión del bot -->
+              <!-- Conexión del bot (una sola vez; sirve para el canal y para el handoff) -->
               <section class="card">
-                <h3 class="ch">1 · Conecta tu bot de Telegram</h3>
-                <ol class="tg-steps">
-                  <li>Abre <b>&#64;BotFather</b> en Telegram y envía <code>/newbot</code>. Sigue los pasos y copia el <b>token</b> que te da.</li>
-                  <li>Pega el token aquí y presiona <b>Conectar bot</b>: registramos el webhook automáticamente.</li>
-                  <li>Para <b>hablar con un agente</b> (handoff): crea un grupo, agrega tu bot y envía <code>/start</code> dentro del grupo para vincularlo.</li>
-                </ol>
-                <div class="field">
-                  <label for="tg-token">Token del bot (BotFather)</label>
-                  <input id="tg-token" [ngModel]="tgToken()" (ngModelChange)="tgToken.set($event)" name="tgtoken" placeholder="123456:ABC-DEF…" autocomplete="off" spellcheck="false" />
-                </div>
-                <div class="field">
-                  <label for="tg-user">Usuario del bot (opcional)</label>
-                  <div class="at"><span>&#64;</span><input id="tg-user" [ngModel]="tgUser()" (ngModelChange)="tgUser.set($event)" name="tguser" placeholder="mi_negocio_bot" autocomplete="off" spellcheck="false" /></div>
-                </div>
-                <div class="save-row">
-                  <button type="button" class="save" [disabled]="tgSaving()" (click)="connectBot()">{{ tgSaving() ? 'Conectando…' : 'Conectar bot' }}</button>
-                  @if (tgChatId()) { <span class="status linked"><span class="sdot"></span>Telegram vinculado ✓</span> }
-                </div>
-                @if (!tgChatId() && tgUsername()) {
-                  <p class="hint">Bot conectado. Abre <a [href]="'https://t.me/' + tgUsername() + '?startgroup=true'" target="_blank" rel="noopener">&#64;{{ tgUsername() }}</a> y envía <code>/start</code> en tu grupo para activar el handoff.</p>
+                <h3 class="ch">Conecta tu bot</h3>
+                <p class="muted">Una sola conexión: el mismo bot responde a tus clientes en Telegram y también sirve para “hablar con un agente”.</p>
+
+                @if (botConnected() && !editToken()) {
+                  <div class="tg-connected">
+                    <span class="status linked"><span class="sdot"></span>Bot conectado — &#64;{{ tgUsername() }}</span>
+                    <button type="button" class="ghost-btn" (click)="editToken.set(true)">Cambiar token</button>
+                  </div>
+                  <p class="hint">Tus clientes le escriben a <a [href]="'https://t.me/' + tgUsername()" target="_blank" rel="noopener">&#64;{{ tgUsername() }}</a> en Telegram y el bot responde solo. Activa el canal abajo para encenderlo.</p>
+                } @else {
+                  <ol class="tg-steps">
+                    <li>Abre <b>&#64;BotFather</b> en Telegram, envía <code>/newbot</code> y copia el <b>token</b> que te da.</li>
+                    <li>Pégalo aquí y presiona <b>Conectar bot</b>: registramos el webhook automáticamente.</li>
+                  </ol>
+                  <div class="field">
+                    <label for="tg-token">Token del bot (BotFather)</label>
+                    <input id="tg-token" [ngModel]="tgToken()" (ngModelChange)="tgToken.set($event)" name="tgtoken" placeholder="123456:ABC-DEF…" autocomplete="off" spellcheck="false" />
+                  </div>
+                  <div class="field">
+                    <label for="tg-user">Usuario del bot (opcional)</label>
+                    <div class="at"><span>&#64;</span><input id="tg-user" [ngModel]="tgUser()" (ngModelChange)="tgUser.set($event)" name="tguser" placeholder="mi_negocio_bot" autocomplete="off" spellcheck="false" /></div>
+                  </div>
+                  <div class="save-row">
+                    <button type="button" class="save" [disabled]="tgSaving()" (click)="connectBot()">{{ tgSaving() ? 'Conectando…' : 'Conectar bot' }}</button>
+                    @if (botConnected()) { <button type="button" class="ghost-btn" (click)="editToken.set(false)">Cancelar</button> }
+                  </div>
                 }
                 @if (tgOk()) { <p class="ok-line">{{ tgOk() }}</p> }
                 @if (tgErr()) { <p class="err-line">{{ tgErr() }}</p> }
               </section>
 
-              <!-- 2 · Canal + citas -->
+              <!-- Canal + agente + citas -->
               <section class="card">
-                <h3 class="ch">2 · Activa el canal y las citas</h3>
+                <h3 class="ch">Activa el canal y las citas</h3>
                 <div class="tg-toggle">
-                  <div class="tg-tl"><b>El bot responde en Telegram</b><span class="ch-sub">Cuando un cliente le escribe a tu bot, contesta con la información de tu negocio.</span></div>
+                  <div class="tg-tl"><b>El bot responde en Telegram</b><span class="ch-sub">Tus clientes le escriben al bot en un chat privado y contesta con la información de tu negocio.</span></div>
                   <button type="button" class="tgl" [class.on]="channelOn()" (click)="channelOn.set(!channelOn())" [attr.aria-pressed]="channelOn()" aria-label="Activar el bot en Telegram"><span></span></button>
                 </div>
                 <div class="tg-toggle">
-                  <div class="tg-tl"><b>Permitir hablar con un agente</b><span class="ch-sub">El bot conecta al cliente con una persona (handoff) cuando lo pida.</span></div>
+                  <div class="tg-tl"><b>Permitir hablar con un agente</b><span class="ch-sub">Cuando el cliente lo pida, el bot lo conecta con una persona de tu equipo.</span></div>
                   <button type="button" class="tgl" [class.on]="handoffOn()" (click)="handoffOn.set(!handoffOn())" [attr.aria-pressed]="handoffOn()" aria-label="Permitir hablar con un agente"><span></span></button>
                 </div>
+                @if (handoffOn()) {
+                  <p class="hint">Para recibir los chats en vivo: crea un grupo en Telegram, agrega a {{ tgUsername() ? '@' + tgUsername() : 'tu bot' }} y envía <code>/start</code> dentro del grupo. Los clientes seguirán en su chat privado; tú les respondes desde el grupo.</p>
+                }
 
-                <p class="hint mt">Citas por Cal.com: en Telegram el bot comparte tu enlace de reservas (el de <a routerLink="/configure">Configurar</a>). Ingresa tus datos de Cal.com para el agendado automático.</p>
+                <p class="hint mt">Citas por Cal.com: hoy el bot comparte tu enlace de reservas (el de <a routerLink="/configure">Configurar</a>). Ingresa tus datos de Cal.com para habilitar el agendado automático (el bot pregunta y reserva solo).</p>
                 <div class="two">
                   <div class="field">
                     <label for="cal-key">Cal.com — API key</label>
@@ -245,12 +254,8 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .layout { flex: 1; display: flex; min-height: 0; }
     .content { flex: 1; min-width: 0; overflow-y: auto; }
     .wrap { padding: 44px clamp(20px, 4vw, 48px) 60px; max-width: 1120px; }
-    .ch-logo { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; margin-bottom: 14px;
-      color: var(--gold-bright); background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.3); }
-    .ch-logo[data-ch="telegram"] { color: #229ED9; background: rgba(34,158,217,.14); border-color: rgba(34,158,217,.35); }
-    .ch-logo[data-ch="whatsapp"] { color: #25D366; background: rgba(37,211,102,.14); border-color: rgba(37,211,102,.35); }
-    .ch-logo[data-ch="instagram"] { color: #E4405F; background: rgba(228,64,95,.14); border-color: rgba(228,64,95,.35); }
-    .ch-logo[data-ch="messenger"] { color: #0084FF; background: rgba(0,132,255,.14); border-color: rgba(0,132,255,.35); }
+    .ch-logo { display: block; color: var(--text-inv); margin-bottom: 18px; opacity: .92; }
+    .ch-logo svg { width: 30px; height: 30px; }
     .ttl { font-size: clamp(28px, 4vw, 44px); margin-top: 12px; }
     .wrap .lead { margin-top: 14px; }
     .callout { display: flex; align-items: flex-start; gap: 12px; margin: 22px 0 0; padding: 14px 16px; border-radius: var(--radius-md);
@@ -272,6 +277,8 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .col-form { min-width: 0; }
     .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .field { margin-top: 14px; } .field:first-child { margin-top: 0; }
+    .two .field { margin-top: 0; }
+    .two > .field label { min-height: 18px; }
     .field label { display: block; font-size: 13px; font-weight: 600; color: var(--text-inv-2); margin-bottom: 7px; }
     input, textarea { width: 100%; padding: 11px 13px; border-radius: var(--radius-md); border: 1px solid var(--line-light); background: rgba(255,255,255,.04); color: var(--text-inv); font: inherit; outline: none; }
     input:focus { border-color: var(--gold-bright); box-shadow: 0 0 0 3px rgba(231,171,46,.2); }
@@ -309,6 +316,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .at { display: flex; align-items: center; }
     .at span { padding: 11px 12px; border: 1px solid var(--line-light); border-right: none; border-radius: var(--radius-md) 0 0 var(--radius-md); background: rgba(255,255,255,.06); color: var(--text-inv-2); }
     .at input { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+    .tg-connected { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 4px 0 8px; }
     .tg-toggle { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line-light); }
     .tg-toggle:first-of-type { padding-top: 0; }
     .tg-tl { min-width: 0; } .tg-tl b { display: block; font-size: 14.5px; } .ch-sub { font-size: 12.5px; color: var(--text-inv-2); }
@@ -368,6 +376,8 @@ export class ChatbotChannelsComponent {
   readonly tgSaving = signal(false);
   readonly tgOk = signal('');
   readonly tgErr = signal('');
+  readonly editToken = signal(false);
+  readonly botConnected = computed(() => !!this.tgUsername() || !!this.tgChatId());
 
   private initialized = false;
   constructor() {
@@ -475,7 +485,8 @@ export class ChatbotChannelsComponent {
       if (j && j.ok) {
         if (j.username) { this.tgUsername.set(j.username); this.tgUser.set(j.username); }
         this.tgChatId.set('');
-        this.tgOk.set('Bot conectado. Para el handoff, abre tu bot y envía /start en tu grupo.');
+        this.editToken.set(false);
+        this.tgOk.set('Bot conectado. Activa el canal abajo para que responda a tus clientes.');
         this.syncLocal();
       } else {
         this.tgErr.set('No pude conectar el bot: ' + ((j && j.error) || 'revisa el token'));

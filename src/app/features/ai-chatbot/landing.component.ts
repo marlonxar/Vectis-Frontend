@@ -522,11 +522,11 @@ interface Plan {
     @media (max-width: 760px) { .cap-list { grid-template-columns: 1fr; column-gap: 0; } .cap { padding: 22px 0; } }
 
     /* Cómo funciona */
-    .how { position: relative; background: var(--ink); color: var(--text-inv); padding: clamp(56px, 8vw, 100px) 0; border-top: 1px solid var(--line-light); }
+    .how { position: relative; overflow: hidden; background: var(--ink); color: var(--text-inv); padding: clamp(56px, 8vw, 100px) 0; border-top: 1px solid var(--line-light); }
     .how::before { content: ""; position: absolute; top: -80px; left: -140px; width: 520px; height: 520px; pointer-events: none;
       background: radial-gradient(closest-side, rgba(231,171,46,.14), transparent 70%); filter: blur(4px); }
     .how-grid { position: relative; display: grid; grid-template-columns: .92fr 1.08fr; gap: clamp(36px, 5vw, 72px); align-items: start; }
-    .how-intro { position: sticky; top: calc(var(--nav-h) + 28px); }
+    .how-intro { position: sticky; top: calc(var(--nav-h) + 28px); min-width: 0; }
     .how-intro .band-title { margin-top: 12px; }
     .how-intro .lead { margin-top: 16px; max-width: 42ch; }
     .how-chips { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 22px; }
@@ -539,24 +539,26 @@ interface Plan {
     .think-title { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-inv-2); margin-bottom: 14px; }
     .think-row { display: grid; grid-template-columns: 40px 1fr; gap: 13px; align-items: start; }
     .think-row + .think-row { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line-light); }
+    .think-row > div { min-width: 0; }
     .think-row .tico { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 11px; color: var(--gold-bright);
       background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.25); }
     .think-row h4 { font-size: 14.5px; margin-bottom: 3px; }
     .think-row p { font-size: 13px; line-height: 1.5; color: var(--text-inv-2); }
 
     /* Timeline de pasos */
-    .flow { position: relative; list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
-    .fstep { position: relative; display: grid; grid-template-columns: 56px 1fr; gap: 20px; padding-bottom: 22px; }
+    .flow { position: relative; list-style: none; padding: 0; margin: 0; display: grid; gap: 0; min-width: 0; }
+    .fstep { position: relative; display: grid; grid-template-columns: 56px 1fr; gap: 20px; padding-bottom: 22px; min-width: 0; }
     .fstep:last-child { padding-bottom: 0; }
     .fnode { position: relative; width: 56px; height: 56px; }
     .fnum { position: absolute; inset: 0; display: grid; place-items: center; border-radius: 50%; font-weight: 800; font-size: 20px; color: var(--ink);
       background: linear-gradient(135deg, var(--gold-soft), var(--gold-bright)); box-shadow: 0 10px 26px rgba(231,171,46,.32); z-index: 1; }
     .fstep:not(:last-child) .fnode::after { content: ""; position: absolute; top: 56px; left: 27px; bottom: -22px; width: 2px;
       background: linear-gradient(rgba(231,171,46,.6), rgba(231,171,46,.08)); }
-    .fbody { background: rgba(255,255,255,.03); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: 18px 22px;
+    .fbody { min-width: 0; background: rgba(255,255,255,.03); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: 18px 22px;
       transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease); }
     .fbody:hover { transform: translateY(-2px); border-color: rgba(231,171,46,.4); }
-    .fhead { display: flex; align-items: center; gap: 11px; margin-bottom: 7px; }
+    .fhead { display: flex; align-items: center; gap: 11px; margin-bottom: 7px; min-width: 0; }
+    .fhead h3 { min-width: 0; overflow-wrap: anywhere; }
     .fhead .fico { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; color: var(--gold-bright);
       background: rgba(231,171,46,.1); border: 1px solid rgba(231,171,46,.22); }
     .fhead h3 { font-size: 16.5px; }
@@ -581,6 +583,7 @@ interface Plan {
       .snippet2 { font-size: 11px; }
       .think-row { grid-template-columns: 34px 1fr; gap: 11px; }
       .think-row .tico { width: 34px; height: 34px; }
+      .snippet2 { white-space: normal; overflow-wrap: anywhere; overflow-x: visible; }
     }
     @media (max-width: 400px) {
       .fstep { grid-template-columns: 36px 1fr; gap: 11px; }
