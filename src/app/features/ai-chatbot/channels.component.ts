@@ -9,6 +9,8 @@ import { ChatbotSidebarComponent } from './sidebar.component';
 import { ChatbotSessionService, webConfigToDb, ChatbotConfig } from './session.service';
 import { SupabaseClientService } from './supabase.client';
 
+const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
+
 /**
  * /channels/:channel — Canales donde puede operar el chatbot.
  * WEB: instrucciones de embed + apariencia + dominios + vista previa (guardado propio, no pisa el configure).
@@ -165,6 +167,63 @@ import { SupabaseClientService } from './supabase.client';
                   </div>
                 </div>
               </div>
+            } @else if (channel() === 'telegram') {
+              <!-- 1 · Conexión del bot -->
+              <section class="card">
+                <h3 class="ch">1 · Conecta tu bot de Telegram</h3>
+                <ol class="tg-steps">
+                  <li>Abre <b>&#64;BotFather</b> en Telegram y envía <code>/newbot</code>. Sigue los pasos y copia el <b>token</b> que te da.</li>
+                  <li>Pega el token aquí y presiona <b>Conectar bot</b>: registramos el webhook automáticamente.</li>
+                  <li>Para <b>hablar con un agente</b> (handoff): crea un grupo, agrega tu bot y envía <code>/start</code> dentro del grupo para vincularlo.</li>
+                </ol>
+                <div class="field">
+                  <label for="tg-token">Token del bot (BotFather)</label>
+                  <input id="tg-token" [ngModel]="tgToken()" (ngModelChange)="tgToken.set($event)" name="tgtoken" placeholder="123456:ABC-DEF…" autocomplete="off" spellcheck="false" />
+                </div>
+                <div class="field">
+                  <label for="tg-user">Usuario del bot (opcional)</label>
+                  <div class="at"><span>&#64;</span><input id="tg-user" [ngModel]="tgUser()" (ngModelChange)="tgUser.set($event)" name="tguser" placeholder="mi_negocio_bot" autocomplete="off" spellcheck="false" /></div>
+                </div>
+                <div class="save-row">
+                  <button type="button" class="save" [disabled]="tgSaving()" (click)="connectBot()">{{ tgSaving() ? 'Conectando…' : 'Conectar bot' }}</button>
+                  @if (tgChatId()) { <span class="status linked"><span class="sdot"></span>Telegram vinculado ✓</span> }
+                </div>
+                @if (!tgChatId() && tgUsername()) {
+                  <p class="hint">Bot conectado. Abre <a [href]="'https://t.me/' + tgUsername() + '?startgroup=true'" target="_blank" rel="noopener">&#64;{{ tgUsername() }}</a> y envía <code>/start</code> en tu grupo para activar el handoff.</p>
+                }
+                @if (tgOk()) { <p class="ok-line">{{ tgOk() }}</p> }
+                @if (tgErr()) { <p class="err-line">{{ tgErr() }}</p> }
+              </section>
+
+              <!-- 2 · Canal + citas -->
+              <section class="card">
+                <h3 class="ch">2 · Activa el canal y las citas</h3>
+                <div class="tg-toggle">
+                  <div class="tg-tl"><b>El bot responde en Telegram</b><span class="ch-sub">Cuando un cliente le escribe a tu bot, contesta con la información de tu negocio.</span></div>
+                  <button type="button" class="tgl" [class.on]="channelOn()" (click)="channelOn.set(!channelOn())" [attr.aria-pressed]="channelOn()" aria-label="Activar el bot en Telegram"><span></span></button>
+                </div>
+                <div class="tg-toggle">
+                  <div class="tg-tl"><b>Permitir hablar con un agente</b><span class="ch-sub">El bot conecta al cliente con una persona (handoff) cuando lo pida.</span></div>
+                  <button type="button" class="tgl" [class.on]="handoffOn()" (click)="handoffOn.set(!handoffOn())" [attr.aria-pressed]="handoffOn()" aria-label="Permitir hablar con un agente"><span></span></button>
+                </div>
+
+                <p class="hint mt">Citas por Cal.com: en Telegram el bot comparte tu enlace de reservas (el de <a routerLink="/configure">Configurar</a>). Ingresa tus datos de Cal.com para el agendado automático.</p>
+                <div class="two">
+                  <div class="field">
+                    <label for="cal-key">Cal.com — API key</label>
+                    <input id="cal-key" [ngModel]="calKey()" (ngModelChange)="calKey.set($event)" name="calkey" placeholder="cal_live_…" autocomplete="off" spellcheck="false" />
+                  </div>
+                  <div class="field">
+                    <label for="cal-ev">Cal.com — Event Type ID</label>
+                    <input id="cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="calev" placeholder="123456" autocomplete="off" spellcheck="false" />
+                  </div>
+                </div>
+                <div class="save-row">
+                  <button type="button" class="save" [disabled]="tgSaving()" (click)="saveTelegram()">{{ tgSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
+                  @if (tgOk()) { <span class="ok-msg">{{ tgOk() }}</span> }
+                  @if (tgErr()) { <span class="err-msg">{{ tgErr() }}</span> }
+                </div>
+              </section>
             } @else {
               <section class="card soon-card">
                 <span class="soon">En preparación</span>
@@ -244,6 +303,23 @@ import { SupabaseClientService } from './supabase.client';
     .pv-launch { position: absolute; bottom: 12px; right: 12px; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; box-shadow: 0 8px 20px rgba(0,0,0,.25); }
     .pv-win.left .pv-launch { right: auto; left: 12px; }
 
+    .tg-steps { margin: 0 0 6px; padding-left: 20px; display: grid; gap: 8px; }
+    .tg-steps li { font-size: 14px; line-height: 1.55; color: var(--text-inv-2); }
+    .tg-steps b { color: var(--text-inv); }
+    .at { display: flex; align-items: center; }
+    .at span { padding: 11px 12px; border: 1px solid var(--line-light); border-right: none; border-radius: var(--radius-md) 0 0 var(--radius-md); background: rgba(255,255,255,.06); color: var(--text-inv-2); }
+    .at input { border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+    .tg-toggle { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line-light); }
+    .tg-toggle:first-of-type { padding-top: 0; }
+    .tg-tl { min-width: 0; } .tg-tl b { display: block; font-size: 14.5px; } .ch-sub { font-size: 12.5px; color: var(--text-inv-2); }
+    .tgl { width: 46px; height: 26px; border-radius: 999px; border: 1px solid var(--line-light); background: rgba(255,255,255,.08); position: relative; cursor: pointer; flex-shrink: 0; transition: background var(--dur, .2s) var(--ease, ease); }
+    .tgl span { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform var(--dur, .2s) var(--ease, ease); }
+    .tgl.on { background: var(--gold-bright); border-color: var(--gold-bright); } .tgl.on span { transform: translateX(20px); }
+    .hint.mt { margin-top: 16px; }
+    .status.linked { display: inline-flex; align-items: center; gap: 8px; color: #34e0a1; font-size: 13.5px; font-weight: 600; }
+    .sdot { width: 9px; height: 9px; border-radius: 50%; background: #34e0a1; box-shadow: 0 0 8px #34e0a1; }
+    .ok-line { margin-top: 12px; font-size: 13px; color: var(--gold-soft); background: rgba(231,171,46,.1); padding: 10px 12px; border-radius: 10px; }
+    .err-line { margin-top: 12px; font-size: 13px; color: #ff8a8a; background: rgba(214,69,69,.1); padding: 10px 12px; border-radius: 10px; }
     .soon { position: absolute; top: 16px; right: 16px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
       color: var(--gold-bright); background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.3); border-radius: 999px; padding: 4px 10px; }
     .soon-card { padding-top: 26px; }
@@ -280,6 +356,19 @@ export class ChatbotChannelsComponent {
   readonly quickLimit = computed(() => (this.s.plan() === 'basic' ? 3 : 20));
   readonly originLimit = computed(() => (this.s.plan() === 'business' ? 3 : 1));
 
+  // Telegram (conexión del bot + canal + Cal.com)
+  readonly tgToken = signal('');
+  readonly tgUser = signal('');
+  readonly tgUsername = signal('');
+  readonly tgChatId = signal('');
+  readonly channelOn = signal(false);
+  readonly handoffOn = signal(false);
+  readonly calKey = signal('');
+  readonly calEvent = signal('');
+  readonly tgSaving = signal(false);
+  readonly tgOk = signal('');
+  readonly tgErr = signal('');
+
   private initialized = false;
   constructor() {
     // Carga los valores del chatbot actual una sola vez (cuando la config esté disponible).
@@ -298,6 +387,14 @@ export class ChatbotChannelsComponent {
     this.widgetPosition.set(c.widgetPosition === 'left' ? 'left' : 'right');
     this.quickReplies.set(c.quickReplies && c.quickReplies.length ? [...c.quickReplies] : ['']);
     this.origins.set(c.origins && c.origins.length ? [...c.origins] : ['']);
+    this.tgToken.set(c.telegramBotToken || '');
+    this.tgUser.set(c.telegramBotUsername || '');
+    this.tgUsername.set(c.telegramBotUsername || '');
+    this.tgChatId.set(c.telegramChatId || '');
+    this.channelOn.set(!!c.telegramChannelEnabled);
+    this.handoffOn.set(!!c.handoffEnabled);
+    this.calKey.set(c.calApiKey || '');
+    this.calEvent.set(c.calEventType || '');
   }
 
   readonly embed = computed(() => {
@@ -353,6 +450,78 @@ export class ChatbotChannelsComponent {
     try { navigator.clipboard.writeText(text); } catch (e) { /* noop */ }
     this.copied.set(true);
     setTimeout(() => this.copied.set(false), 1800);
+  }
+
+  /** Guarda el token y registra el webhook del bot en el worker (igual que la página de handoff). */
+  async connectBot(): Promise<void> {
+    this.tgErr.set(''); this.tgOk.set('');
+    const id = this.s.currentClientId();
+    if (!id) { this.tgErr.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    if (!this.tgToken().trim()) { this.tgErr.set('Pega el token de tu bot de Telegram (BotFather).'); return; }
+    this.tgSaving.set(true);
+    try {
+      const patch: Record<string, unknown> = {
+        telegram_bot_token: this.tgToken().trim(),
+        telegram_bot_username: this.tgUser().trim().replace(/^@/, '') || null,
+      };
+      const { error } = await this.sb.from('chatbots').update(patch).eq('id', id);
+      if (error) { this.tgErr.set(error.message); return; }
+      const at = (await this.sb.auth.getSession()).data.session?.access_token;
+      const res = await fetch(WORKER_URL, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'handoff_setup', client_id: id, access_token: at }),
+      });
+      const j = await res.json();
+      if (j && j.ok) {
+        if (j.username) { this.tgUsername.set(j.username); this.tgUser.set(j.username); }
+        this.tgChatId.set('');
+        this.tgOk.set('Bot conectado. Para el handoff, abre tu bot y envía /start en tu grupo.');
+        this.syncLocal();
+      } else {
+        this.tgErr.set('No pude conectar el bot: ' + ((j && j.error) || 'revisa el token'));
+      }
+    } catch (e) {
+      this.tgErr.set('No pude conectar el bot. Revisa el token e intenta de nuevo.');
+    } finally { this.tgSaving.set(false); }
+  }
+
+  /** Activa/desactiva Telegram como canal, el handoff y guarda las credenciales de Cal.com. */
+  async saveTelegram(): Promise<void> {
+    this.tgErr.set(''); this.tgOk.set('');
+    const id = this.s.currentClientId();
+    if (!id) { this.tgErr.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    this.tgSaving.set(true);
+    try {
+      const patch: Record<string, unknown> = {
+        telegram_channel_enabled: this.channelOn(),
+        handoff_enabled: this.handoffOn(),
+        cal_api_key: this.calKey().trim() || null,
+        cal_event_type: this.calEvent().trim() || null,
+      };
+      const { error } = await this.sb.from('chatbots').update(patch).eq('id', id);
+      if (error) { this.tgErr.set(error.message); return; }
+      this.syncLocal();
+      this.tgOk.set('Guardado ✓');
+      setTimeout(() => this.tgOk.set(''), 2500);
+    } finally { this.tgSaving.set(false); }
+  }
+
+  /** Refleja los cambios de Telegram en el config en memoria. */
+  private syncLocal(): void {
+    const cfgs = [...this.s.configs()]; const i = this.s.current();
+    if (cfgs[i]) {
+      cfgs[i] = {
+        ...cfgs[i],
+        telegramBotToken: this.tgToken().trim(),
+        telegramBotUsername: this.tgUsername(),
+        telegramChatId: this.tgChatId(),
+        telegramChannelEnabled: this.channelOn(),
+        handoffEnabled: this.handoffOn(),
+        calApiKey: this.calKey().trim(),
+        calEventType: this.calEvent().trim(),
+      };
+      this.s.configs.set(cfgs);
+    }
   }
 
   private readonly META: Record<string, { title: string; lead: string; soon: string; points: string[] }> = {

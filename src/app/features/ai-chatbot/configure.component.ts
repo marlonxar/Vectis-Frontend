@@ -868,6 +868,10 @@ export class ChatbotConfigureComponent implements OnInit {
   // Handoff a humano (se gestiona en su propia página; aquí solo se preservan)
   handoffEnabled = false;
   telegramChatId = '';
+  telegramBotUsernameKeep = '';
+  telegramChannelEnabled = false;
+  calApiKey = '';
+  calEventType = '';
 
   // Apariencia
   widgetTitle = '';
@@ -1176,9 +1180,10 @@ export class ChatbotConfigureComponent implements OnInit {
       // Privacidad: default de Vectis si quedan vacíos
       privacyUrl: this.privacyUrl.trim() || CONFIG_DEFAULTS.privacyUrl,
       privacyText: this.privacyText.trim() || CONFIG_DEFAULTS.privacyText,
-      // Handoff se gestiona en su propia página; aquí solo se preservan (no se guardan).
+      // Handoff/canal se gestionan en sus propias páginas; aquí solo se preservan (no se guardan).
       handoffEnabled: this.handoffEnabled, telegramChatId: this.telegramChatId,
-      telegramBotToken: '', telegramBotUsername: '',
+      telegramBotToken: '', telegramBotUsername: this.telegramBotUsernameKeep,
+      telegramChannelEnabled: this.telegramChannelEnabled, calApiKey: this.calApiKey, calEventType: this.calEventType,
     };
   }
 
@@ -1199,6 +1204,8 @@ export class ChatbotConfigureComponent implements OnInit {
     this.origins.set(c.origins.length ? [...c.origins].slice(0, this.originLimit()) : (this.s.plan() === 'business' ? ['', ''] : ['']));
     this.extraRules = c.extraRules; this.language = c.language || 'auto'; this.privacyUrl = c.privacyUrl; this.privacyText = c.privacyText;
     this.handoffEnabled = !!c.handoffEnabled; this.telegramChatId = c.telegramChatId || '';
+    this.telegramBotUsernameKeep = c.telegramBotUsername || '';
+    this.telegramChannelEnabled = !!c.telegramChannelEnabled; this.calApiKey = c.calApiKey || ''; this.calEventType = c.calEventType || '';
   }
 
   /** Volver al formulario para configurar otro chatbot (genera un nuevo client_id). */
@@ -1216,6 +1223,7 @@ export class ChatbotConfigureComponent implements OnInit {
     this.origins.set(this.s.plan() === 'business' ? ['', ''] : ['']);
     this.extraRules = ''; this.language = 'auto'; this.privacyUrl = ''; this.privacyText = '';
     this.handoffEnabled = false; this.telegramChatId = '';
+    this.telegramBotUsernameKeep = ''; this.telegramChannelEnabled = false; this.calApiKey = ''; this.calEventType = '';
     this.openSection.set(0);
     this.tried.set([]);
     this.saved.set(false);

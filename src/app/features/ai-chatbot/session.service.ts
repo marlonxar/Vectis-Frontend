@@ -50,6 +50,9 @@ export interface ChatbotConfig {
   telegramBotToken: string;
   telegramBotUsername: string;
   telegramChatId: string;   // solo lectura (lo llena el worker al vincular)
+  telegramChannelEnabled: boolean;   // el bot responde a clientes en Telegram
+  calApiKey: string;                 // Cal.com API key (para agendar en canales sin ventana)
+  calEventType: string;              // Cal.com event type ID
 }
 
 /** Defaults para campos opcionales de apariencia/privacidad. */
@@ -102,6 +105,9 @@ export function rowToConfig(r: Record<string, any>): ChatbotConfig {
     telegramBotToken: r['telegram_bot_token'] ?? '',
     telegramBotUsername: r['telegram_bot_username'] ?? '',
     telegramChatId: r['telegram_chat_id'] ?? '',
+    telegramChannelEnabled: !!r['telegram_channel_enabled'],
+    calApiKey: r['cal_api_key'] ?? '',
+    calEventType: r['cal_event_type'] ?? '',
   };
 }
 
@@ -318,6 +324,7 @@ export class ChatbotSessionService {
       faqs: [], widgetTitle: '', widgetPosition: 'right', brandColor: '', secondBrandColor: '', brandLogoUrl: '', welcome: '',
       quickReplies: [], origins: [], extraRules: '', language: 'auto', privacyUrl: '', privacyText: '',
       handoffEnabled: false, telegramBotToken: '', telegramBotUsername: '', telegramChatId: '',
+      telegramChannelEnabled: false, calApiKey: '', calEventType: '',
     };
   }
 

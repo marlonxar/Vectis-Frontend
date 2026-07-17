@@ -247,6 +247,38 @@ const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja',
                   <div class="axis-cap">{{ 'AICHATBOT.DASH.DAY_AXIS_FULL' | translate }}</div>
                 } @else { <p class="muted">{{ 'AICHATBOT.DASH.EMPTY_CONV' | translate }}</p> }
               </div>
+
+              <!-- Conversaciones por canal -->
+              <div class="card pad">
+                <h3>Conversaciones por canal</h3>
+                @if (byChannelConvs().length) {
+                  <div class="bars">
+                    @for (c of byChannelConvs(); track c.channel) {
+                      <div class="bar-row">
+                        <span class="bl">{{ c.label }}</span>
+                        <div class="bt"><span [style.width.%]="c.pct" [style.background]="c.color"></span></div>
+                        <span class="bn">{{ c.n }}</span>
+                      </div>
+                    }
+                  </div>
+                } @else { <p class="muted">{{ 'AICHATBOT.DASH.EMPTY_CONV' | translate }}</p> }
+              </div>
+
+              <!-- Mensajes a la IA por canal -->
+              <div class="card pad">
+                <h3>Mensajes a la IA por canal</h3>
+                @if (byChannelMsgs().length) {
+                  <div class="bars">
+                    @for (c of byChannelMsgs(); track c.channel) {
+                      <div class="bar-row">
+                        <span class="bl">{{ c.label }}</span>
+                        <div class="bt"><span [style.width.%]="c.pct" [style.background]="c.color"></span></div>
+                        <span class="bn">{{ c.n }}</span>
+                      </div>
+                    }
+                  </div>
+                } @else { <p class="muted">{{ 'AICHATBOT.DASH.EMPTY_CONV' | translate }}</p> }
+              </div>
             </div>
 
             <!-- INSIGHTS RECIENTES (solo Pro/Business) -->
@@ -560,6 +592,18 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
       .sort((a, b) => TYPE_ORDER.indexOf(a.type) - TYPE_ORDER.indexOf(b.type))
       .map((x) => ({ ...x, pct: Math.round((x.n / max) * 100), color: TYPE_COLOR[x.type] || TYPE_COLOR['otro'] }));
   });
+  private readonly CH_LABEL: Record<string, string> = { web: 'Web', telegram: 'Telegram', whatsapp: 'WhatsApp', instagram: 'Instagram', messenger: 'Messenger' };
+  private readonly CH_COLOR: Record<string, string> = { web: '#E7AB2E', telegram: '#229ED9', whatsapp: '#25D366', instagram: '#E4405F', messenger: '#0084FF' };
+  private channelRows(field: 'conversations' | 'messages') {
+    const arr: Array<{ channel: string; conversations: number; messages: number }> = this.stats()?.by_channel ?? [];
+    const rows = arr.map((x) => ({ channel: x.channel || 'web', n: Number(x[field] || 0) })).filter((x) => x.n > 0);
+    const max = Math.max(1, ...rows.map((x) => x.n));
+    return rows
+      .sort((a, b) => b.n - a.n)
+      .map((x) => ({ channel: x.channel, label: this.CH_LABEL[x.channel] || x.channel, n: x.n, pct: Math.round((x.n / max) * 100), color: this.CH_COLOR[x.channel] || '#8a8a8a' }));
+  }
+  byChannelConvs = computed(() => this.channelRows('conversations'));
+  byChannelMsgs = computed(() => this.channelRows('messages'));
   daily = computed(() => {
     const arr: Array<{ day: string; n: number }> = this.stats()?.daily ?? [];
     const max = Math.max(1, ...arr.map((x) => x.n));
