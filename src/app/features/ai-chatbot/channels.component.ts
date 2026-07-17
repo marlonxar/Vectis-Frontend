@@ -216,17 +216,18 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   <p class="hint">Para recibir los chats en vivo: crea un grupo en Telegram, agrega a {{ tgUsername() ? '@' + tgUsername() : 'tu bot' }} y envía <code>/start</code> dentro del grupo. Los clientes seguirán en su chat privado; tú les respondes desde el grupo.</p>
                 }
 
-                <p class="hint mt">Citas por Cal.com: hoy el bot comparte tu enlace de reservas (el de <a routerLink="/configure">Configurar</a>). Ingresa tus datos de Cal.com para habilitar el agendado automático (el bot pregunta y reserva solo).</p>
+                <p class="hint mt">Citas por Cal.com: con estos datos el bot pregunta día y hora según tu disponibilidad real y <b>agenda la cita solo</b>. Sin ellos, solo comparte tu enlace de reservas (el de <a routerLink="/configure">Configurar</a>).</p>
                 <div class="two">
                   <div class="field">
                     <label for="cal-key">Cal.com — API key</label>
                     <input id="cal-key" [ngModel]="calKey()" (ngModelChange)="calKey.set($event)" name="calkey" placeholder="cal_live_…" autocomplete="off" spellcheck="false" />
                   </div>
                   <div class="field">
-                    <label for="cal-ev">Cal.com — Event Type ID</label>
-                    <input id="cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="calev" placeholder="123456" autocomplete="off" spellcheck="false" />
+                    <label for="cal-ev">Cal.com — URL de tu evento</label>
+                    <input id="cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="calev" placeholder="https://cal.com/tu-usuario/30min" autocomplete="off" spellcheck="false" />
                   </div>
                 </div>
+                <p class="hint">Pega la URL pública de tu evento (la que compartes para reservar); nosotros sacamos el resto. También sirve el ID numérico si lo tienes.</p>
                 <div class="save-row">
                   <button type="button" class="save" [disabled]="tgSaving()" (click)="saveTelegram()">{{ tgSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
                   @if (tgOk()) { <span class="ok-msg">{{ tgOk() }}</span> }
