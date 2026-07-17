@@ -53,23 +53,32 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 </div>
               }
               @if (returning()) {
-                <div class="check widget" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg></div>
-                <span class="eyebrow on-dark">{{ 'AICHATBOT.CONFIGURE.WIDGET_EYEBROW' | translate }}</span>
-                <h1 class="ttl">{{ 'AICHATBOT.CONFIGURE.WIDGET_TITLE' | translate }}</h1>
-                <p class="lead on-dark">{{ 'AICHATBOT.CONFIGURE.WIDGET_SUBTITLE' | translate:{ company: s.currentCompany() } }}</p>
+                @if (isVectisAdmin()) {
+                  <span class="eyebrow on-dark">{{ 'AICHATBOT.DASH.NAV_CONFIGURE' | translate }}</span>
+                  <h1 class="ttl">{{ 'AICHATBOT.CONFIGURE.EDIT_TITLE' | translate }}</h1>
+                  <p class="lead on-dark">Tu código de instalación y la apariencia se gestionan ahora en el canal <a routerLink="/channels/web">Web</a>.</p>
+                } @else {
+                  <div class="check widget" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg></div>
+                  <span class="eyebrow on-dark">{{ 'AICHATBOT.CONFIGURE.WIDGET_EYEBROW' | translate }}</span>
+                  <h1 class="ttl">{{ 'AICHATBOT.CONFIGURE.WIDGET_TITLE' | translate }}</h1>
+                  <p class="lead on-dark">{{ 'AICHATBOT.CONFIGURE.WIDGET_SUBTITLE' | translate:{ company: s.currentCompany() } }}</p>
+                }
               } @else {
                 <div class="check" aria-hidden="true"><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
                 <span class="eyebrow on-dark">{{ 'AICHATBOT.CONFIGURE.EYEBROW' | translate }}</span>
                 <h1 class="ttl">{{ 'AICHATBOT.CONFIGURE.TITLE' | translate }}</h1>
                 <p class="lead on-dark">{{ 'AICHATBOT.CONFIGURE.SUBTITLE' | translate }}</p>
               }
-              <div class="panel">
-                <div class="panel-head">
-                  <span>{{ 'AICHATBOT.CONFIGURE.SNIPPET_LABEL' | translate }}</span>
-                  <button type="button" class="copy" (click)="copy()">{{ (copied() ? 'AICHATBOT.CONFIGURE.COPIED' : 'AICHATBOT.CONFIGURE.COPY') | translate }}</button>
+              <!-- El código del widget para el admin vive en el canal Web (no se muestra aquí en la vista de retorno). -->
+              @if (!(returning() && isVectisAdmin())) {
+                <div class="panel">
+                  <div class="panel-head">
+                    <span>{{ 'AICHATBOT.CONFIGURE.SNIPPET_LABEL' | translate }}</span>
+                    <button type="button" class="copy" (click)="copy()">{{ (copied() ? 'AICHATBOT.CONFIGURE.COPIED' : 'AICHATBOT.CONFIGURE.COPY') | translate }}</button>
+                  </div>
+                  <pre class="code"><code>{{ snippet }}</code></pre>
                 </div>
-                <pre class="code"><code>{{ snippet }}</code></pre>
-              </div>
+              }
               @if (!returning()) {
                 <ol class="steps">
                   <li><span class="n">1</span>{{ 'AICHATBOT.CONFIGURE.STEP1' | translate }}</li>
