@@ -26,6 +26,15 @@ import { SupabaseClientService } from './supabase.client';
         <app-chatbot-sidebar></app-chatbot-sidebar>
         <main class="content">
           <div class="wrap">
+            <div class="ch-logo" [attr.data-ch]="channel()" aria-hidden="true">
+              @switch (channel()) {
+                @case ('telegram') { <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M21.9 4.3 18.7 19.4c-.24 1.06-.87 1.32-1.76.82l-4.87-3.59-2.35 2.26c-.26.26-.48.48-.98.48l.35-4.96 9.02-8.15c.39-.35-.09-.55-.6-.2L6.35 13.1l-4.8-1.5c-1.04-.33-1.06-1.04.22-1.54l18.77-7.23c.87-.32 1.63.2 1.36 1.47z"/></svg> }
+                @case ('whatsapp') { <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.13c-.24.68-1.42 1.3-1.95 1.34-.5.05-.98.24-3.3-.69-2.78-1.1-4.55-3.95-4.69-4.13-.14-.19-1.13-1.5-1.13-2.87s.72-2.03.97-2.31c.25-.28.55-.35.73-.35.18 0 .37 0 .53.01.17 0 .4-.06.62.48.24.55.8 1.92.87 2.06.07.14.12.3.02.49-.09.19-.14.3-.28.46-.14.16-.3.36-.42.48-.14.14-.29.29-.12.57.16.28.72 1.19 1.55 1.93 1.07.95 1.97 1.25 2.25 1.39.28.14.44.12.6-.07.16-.18.7-.81.88-1.09.18-.28.37-.23.62-.14.25.09 1.61.76 1.89.9.28.14.46.21.53.32.07.12.07.68-.17 1.36z"/></svg> }
+                @case ('instagram') { <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg> }
+                @case ('messenger') { <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.19.16.14.26.35.27.57l.05 1.78c.02.57.6.94 1.12.71l1.99-.88c.17-.07.36-.09.54-.04 1.06.29 2.19.45 3.35.45 5.64 0 10-4.13 10-9.7S17.64 2 12 2zm6 7.46-2.93 4.65c-.47.74-1.47.93-2.17.4l-2.33-1.75a.6.6 0 0 0-.72 0l-3.15 2.39c-.42.32-.97-.18-.69-.63l2.93-4.65c.47-.74 1.47-.93 2.17-.4l2.33 1.75a.6.6 0 0 0 .72 0l3.15-2.39c.42-.32.97.18.69.63z"/></svg> }
+                @default { <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg> }
+              }
+            </div>
             <span class="eyebrow on-dark">Canal</span>
             <h1 class="ttl">{{ meta().title }}</h1>
             <p class="lead on-dark">{{ meta().lead }}</p>
@@ -177,6 +186,12 @@ import { SupabaseClientService } from './supabase.client';
     .layout { flex: 1; display: flex; min-height: 0; }
     .content { flex: 1; min-width: 0; overflow-y: auto; }
     .wrap { padding: 44px clamp(20px, 4vw, 48px) 60px; max-width: 1120px; }
+    .ch-logo { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; margin-bottom: 14px;
+      color: var(--gold-bright); background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.3); }
+    .ch-logo[data-ch="telegram"] { color: #229ED9; background: rgba(34,158,217,.14); border-color: rgba(34,158,217,.35); }
+    .ch-logo[data-ch="whatsapp"] { color: #25D366; background: rgba(37,211,102,.14); border-color: rgba(37,211,102,.35); }
+    .ch-logo[data-ch="instagram"] { color: #E4405F; background: rgba(228,64,95,.14); border-color: rgba(228,64,95,.35); }
+    .ch-logo[data-ch="messenger"] { color: #0084FF; background: rgba(0,132,255,.14); border-color: rgba(0,132,255,.35); }
     .ttl { font-size: clamp(28px, 4vw, 44px); margin-top: 12px; }
     .wrap .lead { margin-top: 14px; }
     .callout { display: flex; align-items: flex-start; gap: 12px; margin: 22px 0 0; padding: 14px 16px; border-radius: var(--radius-md);

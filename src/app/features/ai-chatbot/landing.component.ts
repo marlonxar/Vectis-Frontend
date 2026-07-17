@@ -563,8 +563,13 @@ interface Plan {
     .fbody p { font-size: 14px; line-height: 1.6; color: var(--text-inv-2); }
     .snippet2 { display: block; margin-top: 12px; font-family: ui-monospace, "SFMono-Regular", Menlo, monospace; font-size: 12px; color: var(--gold-soft);
       background: rgba(0,0,0,.35); border: 1px solid var(--line-light); border-radius: 10px; padding: 9px 12px; overflow-x: auto; white-space: nowrap; }
-    @media (max-width: 900px) { .how-grid { grid-template-columns: 1fr; } .how-intro { position: static; } }
+    @media (max-width: 900px) { .how-grid { grid-template-columns: 1fr; } .how-intro { position: static; } .how-intro .lead { max-width: none; } }
     @media (max-width: 560px) {
+      .how { padding: clamp(40px, 10vw, 64px) 0; }
+      .how-grid { gap: 28px; }
+      .how-chips { gap: 7px; margin-top: 18px; }
+      .how-chips span { font-size: 12px; padding: 6px 11px; }
+      .think { padding: 16px; margin-top: 22px; }
       .fstep { grid-template-columns: 42px 1fr; gap: 13px; padding-bottom: 18px; }
       .fnode { width: 42px; height: 42px; }
       .fnum { font-size: 16px; }
@@ -576,6 +581,12 @@ interface Plan {
       .snippet2 { font-size: 11px; }
       .think-row { grid-template-columns: 34px 1fr; gap: 11px; }
       .think-row .tico { width: 34px; height: 34px; }
+    }
+    @media (max-width: 400px) {
+      .fstep { grid-template-columns: 36px 1fr; gap: 11px; }
+      .fnode { width: 36px; height: 36px; } .fnum { font-size: 15px; }
+      .fstep:not(:last-child) .fnode::after { top: 36px; left: 17px; }
+      .fbody { padding: 13px 13px; } .fhead h3 { font-size: 14px; }
     }
 
     /* Qué puede manejar — lista de iconos sin cajas */
