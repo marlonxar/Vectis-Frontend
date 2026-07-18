@@ -55,7 +55,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 </div>
               }
               @if (returning()) {
-                @if (isVectisAdmin()) {
+                @if (appearanceInWebChannel) {
                   <span class="eyebrow on-dark">{{ 'AICHATBOT.DASH.NAV_CONFIGURE' | translate }}</span>
                   <h1 class="ttl">{{ 'AICHATBOT.CONFIGURE.EDIT_TITLE' | translate }}</h1>
                   <p class="lead on-dark">Tu código de instalación y la apariencia se gestionan ahora en el canal <a routerLink="/channels/web">Web</a>.</p>
@@ -72,7 +72,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 <p class="lead on-dark">{{ 'AICHATBOT.CONFIGURE.SUBTITLE' | translate }}</p>
               }
               <!-- El código del widget para el admin vive en el canal Web (no se muestra aquí en la vista de retorno). -->
-              @if (!(returning() && isVectisAdmin())) {
+              @if (!(returning() && appearanceInWebChannel)) {
                 <div class="panel">
                   <div class="panel-head">
                     <span>{{ 'AICHATBOT.CONFIGURE.SNIPPET_LABEL' | translate }}</span>
@@ -347,7 +347,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 </div>
 
                 <!-- 3. APARIENCIA (el admin la gestiona en el canal "Web") -->
-                @if (!isVectisAdmin()) {
+                @if (!appearanceInWebChannel) {
                 <div class="acc" [class.ok]="sectionDone(2)" [class.expanded]="isOpen(2)">
                   <button type="button" class="acc-head" (click)="toggle(2)" [attr.aria-expanded]="isOpen(2)">
                     <span class="acc-num">3</span>
@@ -441,7 +441,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   @if (isOpen(3)) {
                   <div class="acc-body">
                   <!-- Dominios: el admin los gestiona en el canal "Web" -->
-                  @if (!isVectisAdmin()) {
+                  @if (!appearanceInWebChannel) {
                   <div class="field">
                     <label>{{ 'AICHATBOT.ONBOARD.ORIGINS' | translate }}
                       <ng-container [ngTemplateOutlet]="tip" [ngTemplateOutletContext]="{ k: 'AICHATBOT.ONBOARD.TIP_ORIGINS' }"></ng-container>
@@ -822,8 +822,10 @@ export class ChatbotConfigureComponent implements OnInit {
   private i18n = inject(TranslateService);
   readonly s = inject(ChatbotSessionService);
   // Admin en pruebas: gestiona Apariencia y Dominios en el canal "Web" (no en Configurar).
-  // Canales/Web ya es una funcionalidad general (GA): apariencia, dominios y widget viven en el canal Web para todos.
-  readonly isVectisAdmin = computed(() => true);
+  // La apariencia, los dominios y el código del widget se gestionan en el canal "Web"
+  // (Canales → Web) para TODOS los usuarios, no en esta pantalla. Las secciones inline
+  // de más abajo quedan detrás de este flag como legado y no se muestran.
+  readonly appearanceInWebChannel = true;
 
   private scrollToError(): void {
     setTimeout(() => {
@@ -1280,7 +1282,7 @@ export class ChatbotConfigureComponent implements OnInit {
     const cfg = this.gatherConfig();
     const db = configToDb(cfg);
     // El admin gestiona Apariencia + Dominios en el canal "Web"; no los pisamos desde Configurar.
-    if (this.isVectisAdmin()) { for (const k of WEB_DB_KEYS) delete (db as Record<string, unknown>)[k]; }
+    if (this.appearanceInWebChannel) { for (const k of WEB_DB_KEYS) delete (db as Record<string, unknown>)[k]; }
     this.saving.set(true);
 
     try {

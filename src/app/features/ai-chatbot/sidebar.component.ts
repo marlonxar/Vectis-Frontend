@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -42,8 +42,8 @@ import { ChatbotSessionService } from './session.service';
         </a>
       }
 
-      <!-- Canales (en pruebas de producción: solo el admin lo ve) -->
-      @if (isVectisAdmin() && s.companies().length > 0) {
+      <!-- Canales donde opera el chatbot (disponible para todos) -->
+      @if (s.companies().length > 0) {
         <span class="group-title">Canales</span>
         <a class="nav" routerLink="/channels/web" routerLinkActive="active">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg>
@@ -106,6 +106,4 @@ export class ChatbotSidebarComponent {
   // Menú colapsable en móvil (hamburger). En desktop siempre visible.
   readonly menuOpen = signal(false);
   // Solo el admin ve la sección de Canales mientras está en pruebas de producción.
-  // Canales ya es una funcionalidad general (GA): visible para todos los usuarios.
-  readonly isVectisAdmin = computed(() => true);
 }
