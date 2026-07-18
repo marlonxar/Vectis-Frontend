@@ -3,8 +3,9 @@ import { RouterLink } from '@angular/router';
 import { APP_VERSION } from './version';
 
 /**
- * Footer minimalista del producto: «@Vectis» a la izquierda y la versión a la
- * derecha como enlace al historial de versiones (changelog).
+ * Footer minimalista y centrado del producto:
+ * «Developed by Vectis · v1.1.0» — «Vectis» enlaza al sitio y la versión al changelog.
+ * Centrado para no chocar con la burbuja del widget (esquina inferior derecha).
  */
 @Component({
   selector: 'app-chatbot-version-footer',
@@ -12,19 +13,23 @@ import { APP_VERSION } from './version';
   imports: [RouterLink],
   template: `
     <footer class="vf">
-      <span class="vf-brand">&#64;Vectis</span>
-      <a class="vf-ver" routerLink="/changelog" [fragment]="anchor" [attr.aria-label]="'Ver novedades de la versión ' + version">v{{ version }}</a>
+      <span class="vf-txt">
+        Developed by <a class="vf-link" href="https://www.wearevectis.com" target="_blank" rel="noopener">Vectis</a>
+        <span class="vf-sep">·</span>
+        <a class="vf-link vf-ver" routerLink="/changelog" [fragment]="anchor" [attr.aria-label]="'Ver novedades de la versión ' + version">v{{ version }}</a>
+      </span>
     </footer>
   `,
   styles: [`
-    .vf { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; height: 40px;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-      padding: 0 clamp(16px, 4vw, 28px); border-top: 1px solid var(--line-light);
-      background: var(--ink); color: var(--text-inv-2); font-size: 12.5px; }
-    .vf-brand { font-weight: 600; letter-spacing: .01em; }
-    .vf-ver { color: var(--text-inv-2); font-weight: 600; font-variant-numeric: tabular-nums;
-      padding: 3px 8px; border-radius: 999px; border: 1px solid var(--line-light); transition: color .15s ease, border-color .15s ease; }
-    .vf-ver:hover, .vf-ver:focus-visible { color: var(--gold-bright); border-color: rgba(231,171,46,.5); }
+    .vf { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 90px; border-top: 1px solid var(--line-light);
+      background: var(--ink); color: var(--text-inv-2); font-size: 12.5px; pointer-events: none; }
+    .vf-txt { pointer-events: auto; display: inline-flex; align-items: center; gap: 7px; }
+    .vf-sep { opacity: .5; }
+    .vf-link { color: var(--text-inv-2); font-weight: 600; transition: color .15s ease; }
+    .vf-link:hover, .vf-link:focus-visible { color: var(--gold-bright); }
+    .vf-ver { font-variant-numeric: tabular-nums; }
   `],
 })
 export class ChatbotVersionFooterComponent {
