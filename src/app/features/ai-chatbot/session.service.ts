@@ -188,6 +188,8 @@ export interface ProfileRow {
   plan_expiry?: string | null;
   created_at?: string | null;
   cancel_at_period_end?: boolean | null;
+  paddle_customer_id?: string | null;
+  paddle_subscription_id?: string | null;
 }
 
 export interface ChatbotRow {
@@ -227,6 +229,8 @@ export class ChatbotSessionService {
 
   readonly plan = signal<PlanId>('pro');
   readonly cancelAtPeriodEnd = signal(false);
+  readonly paddleCustomerId = signal('');       // vacío = usuario sin cliente en Paddle (bypass/cortesía)
+  readonly paddleSubscriptionId = signal('');   // vacío = sin suscripción en Paddle
   readonly bannerDismissed = signal(false);
   readonly needsActiveReview = signal(false); // se forzó a elegir chatbots activos
   readonly originsTrimmed = signal(false);    // al bajar de plan se recortaron dominios → avisar
@@ -359,6 +363,8 @@ export class ChatbotSessionService {
       this.planExpiry.set(profile.plan_expiry ? String(profile.plan_expiry).slice(0, 10) : '');
       this.createdAt.set(profile.created_at ? String(profile.created_at).slice(0, 10) : '');
       this.cancelAtPeriodEnd.set(!!profile.cancel_at_period_end);
+      this.paddleCustomerId.set(profile.paddle_customer_id ?? '');
+      this.paddleSubscriptionId.set(profile.paddle_subscription_id ?? '');
     }
     this.companies.set(bots.map((b) => b.company));
     this.clientIds.set(bots.map((b) => b.id));
@@ -377,6 +383,7 @@ export class ChatbotSessionService {
   reset(): void {
     this.firstName.set(''); this.lastName.set(''); this.email.set(''); this.phone.set('');
     this.preferredLang.set('es'); this.plan.set('basic'); this.planExpiry.set(''); this.createdAt.set(''); this.cancelAtPeriodEnd.set(false);
+    this.paddleCustomerId.set(''); this.paddleSubscriptionId.set('');
     this.companies.set([]); this.clientIds.set([]); this.configs.set([]); this.statuses.set([]); this.current.set(0);
     this.needsActiveReview.set(false);
   }

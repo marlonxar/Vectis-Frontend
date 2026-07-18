@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Title } from '@angular/platform-browser';
+import { Title, Meta } from '@angular/platform-browser';
 import { ChatbotAppHeaderComponent } from './app-header.component';
 import { ChatbotVersionFooterComponent } from './version-footer.component';
 import { CHANGELOG } from './version';
@@ -22,7 +22,7 @@ import { CHANGELOG } from './version';
           <ol class="rels">
             @for (e of log; track e.version; let first = $first) {
               <li class="rel" [id]="anchor(e.version)" [class.open]="isOpen(e.version)">
-                <button type="button" class="rel-head" (click)="toggle(e.version)" [attr.aria-expanded]="isOpen(e.version)">
+                <button type="button" class="rel-head" (click)="toggle(e.version)" [attr.aria-expanded]="isOpen(e.version)" [attr.aria-label]="'Versión ' + e.version + ' — ' + e.title">
                   <span class="ver">v{{ e.version }}</span>
                   <span class="rel-title">{{ e.title }}</span>
                   @if (first) { <span class="latest">Actual</span> }
@@ -76,6 +76,7 @@ import { CHANGELOG } from './version';
 export class ChatbotChangelogComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
   readonly log = CHANGELOG;
   // Abierta solo la más nueva; las viejas arrancan cerradas.
   private readonly openSet = signal<Set<string>>(new Set(this.log.length ? [this.log[0].version] : []));
@@ -89,7 +90,24 @@ export class ChatbotChangelogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.title.setTitle('Historial de versiones · Vectis AI ChatBot');
+    // SEO / GEO / AIO: la página es pública e indexable; el subdominio maneja su propio meta.
+    const title = 'Historial de versiones · Vectis AI ChatBot';
+    const desc = 'Novedades y versiones de Vectis AI ChatBot: cada actualización del chatbot de IA multicanal para negocios — web, Telegram, agendado de citas con Cal.com y atención con agente.';
+    this.title.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: desc });
+    this.meta.updateTag({ name: 'robots', content: 'index, follow' });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: desc });
+    try {
+      const base = (typeof location !== 'undefined' && location.origin) || 'https://www.aichatbot.wearevectis.com';
+      const href = base + '/changelog';
+      this.meta.updateTag({ property: 'og:url', content: href });
+      let link = document.querySelector("link[rel='canonical']") as HTMLLinkElement | null;
+      if (!link) { link = document.createElement('link'); link.setAttribute('rel', 'canonical'); document.head.appendChild(link); }
+      link.setAttribute('href', href);
+    } catch (e) { /* noop */ }
+
     const frag = this.route.snapshot.fragment;
     if (frag) {
       // Abre la versión enlazada y hace scroll hacia ella.

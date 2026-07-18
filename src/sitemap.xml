@@ -24,9 +24,16 @@
   <!-- Producto: AI ChatBot (self-serve SaaS) — subdominio propio -->
   <url>
     <loc>https://www.aichatbot.wearevectis.com/</loc>
-    <lastmod>2026-07-16</lastmod>
+    <lastmod>2026-07-18</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+  <!-- Novedades / historial de versiones (público) -->
+  <url>
+    <loc>https://www.aichatbot.wearevectis.com/changelog</loc>
+    <lastmod>2026-07-18</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
   </url>
 
   <!-- Política de privacidad -->

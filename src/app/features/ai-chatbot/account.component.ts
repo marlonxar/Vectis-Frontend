@@ -125,7 +125,7 @@ import { FocusTrapDirective } from './focus-trap.directive';
                 <p class="sub-info">{{ 'AICHATBOT.ACCOUNT.SUB_INFO' | translate:{ plan: s.planName(), date: s.planExpiry() } }}</p>
                 <div class="sub-actions">
                   <a class="btn-gold sm resub" routerLink="/plans">{{ 'AICHATBOT.ACCOUNT.CHANGE_PLAN' | translate }}</a>
-                  @if (paddle.configured()) {
+                  @if (paddle.configured() && s.paddleCustomerId()) {
                     <button type="button" class="btn-ghost sm" (click)="openBillingPortal()" [disabled]="portalBusy()">{{ (portalBusy() ? 'AICHATBOT.ACCOUNT.PORTAL_LOADING' : 'AICHATBOT.ACCOUNT.BILLING_PORTAL') | translate }}</button>
                   }
                   <button type="button" class="btn-ghost sm" (click)="confirmKind.set('cancel')">{{ 'AICHATBOT.ACCOUNT.CANCEL_SUB' | translate }}</button>
@@ -420,16 +420,17 @@ export class ChatbotAccountComponent implements OnInit {
       this.confirmBusy.set(true);
       this.confirmErr.set('');
       let ok = false;
-      if (this.paddle.configured()) {
-        // Cancela DE VERDAD en Paddle (agenda el fin al próximo período → frena el cobro).
+      if (this.paddle.configured() && this.s.paddleSubscriptionId()) {
+        // Hay suscripción real en Paddle → cancela allá (agenda el fin al próximo período → frena el cobro).
         try {
           const { data, error } = await this.sb.functions.invoke('paddle-cancel', { body: {} });
           ok = !error && !!(data as { ok?: boolean } | null)?.ok;
         } catch { ok = false; }
+        // Red de seguridad: si Paddle no la reconoce, marca cancelado local igual.
+        if (!ok) ok = await this.localCancel();
       } else {
-        // Sin Paddle configurado (desarrollo): solo marca local.
-        const uid = this.auth.user()?.id;
-        if (uid) { const { error } = await this.sb.from('profiles').update({ cancel_at_period_end: true }).eq('id', uid); ok = !error; }
+        // Usuario sin suscripción en Paddle (bypass/cortesía): solo marca local (acceso hasta el vencimiento).
+        ok = await this.localCancel();
       }
       if (ok) {
         this.s.cancelAtPeriodEnd.set(true);
@@ -440,5 +441,13 @@ export class ChatbotAccountComponent implements OnInit {
         this.confirmErr.set(this.i18n.instant('AICHATBOT.ACCOUNT.CANCEL_FAIL'));
       }
     }
+  }
+
+  /** Cancelado local: marca cancel_at_period_end (acceso hasta el vencimiento). Devuelve si tuvo éxito. */
+  private async localCancel(): Promise<boolean> {
+    const uid = this.auth.user()?.id;
+    if (!uid) return false;
+    const { error } = await this.sb.from('profiles').update({ cancel_at_period_end: true }).eq('id', uid);
+    return !error;
   }
 }
