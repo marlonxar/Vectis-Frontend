@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.3.0';
+export const APP_VERSION = '1.4.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,16 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.4.0',
+    date: '2026-07-18',
+    title: 'Handoff a humano por WhatsApp',
+    changes: [
+      'Nueva opción de atención humana por WhatsApp: recibe los chats en vivo (de cualquier canal) en tu WhatsApp y responde desde ahí.',
+      'Un solo destino de handoff a la vez: WhatsApp o Telegram, nunca los dos. Al activar uno, el otro se desactiva.',
+      'El agente responde desde su WhatsApp y el mensaje llega al cliente en el canal por el que escribió (web, Telegram, WhatsApp, Messenger o Instagram); escribe /fin para cerrar el chat.',
+    ],
+  },
   {
     version: '1.3.0',
     date: '2026-07-18',
