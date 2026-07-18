@@ -49,6 +49,7 @@ export interface ChatbotConfig {
   handoffEnabled: boolean;
   handoffChannel: string;          // 'telegram' | 'whatsapp'
   handoffWhatsappOwner: string;    // teléfono del agente en WhatsApp
+  handoffWhatsappTemplate: string; // nombre de la plantilla aprobada (avisa fuera de la ventana de 24h)
   telegramBotToken: string;
   telegramBotUsername: string;
   telegramChatId: string;   // solo lectura (lo llena el worker al vincular)
@@ -118,6 +119,7 @@ export function rowToConfig(r: Record<string, any>): ChatbotConfig {
     handoffEnabled: !!r['handoff_enabled'],
     handoffChannel: r['handoff_channel'] ?? 'telegram',
     handoffWhatsappOwner: r['handoff_whatsapp_owner'] ?? '',
+    handoffWhatsappTemplate: r['handoff_whatsapp_template'] ?? '',
     telegramBotToken: r['telegram_bot_token'] ?? '',
     telegramBotUsername: r['telegram_bot_username'] ?? '',
     telegramChatId: r['telegram_chat_id'] ?? '',
@@ -355,7 +357,7 @@ export class ChatbotSessionService {
       inventoryUrl: '', kbText: '', kbFileName: '', kbFileUrl: '', inventoryText: '', inventoryFileName: '', inventoryFileUrl: '',
       faqs: [], widgetTitle: '', widgetPosition: 'right', brandColor: '', secondBrandColor: '', brandLogoUrl: '', welcome: '',
       quickReplies: [], origins: [], extraRules: '', language: 'auto', privacyUrl: '', privacyText: '',
-      handoffEnabled: false, handoffChannel: 'telegram', handoffWhatsappOwner: '', telegramBotToken: '', telegramBotUsername: '', telegramChatId: '',
+      handoffEnabled: false, handoffChannel: 'telegram', handoffWhatsappOwner: '', handoffWhatsappTemplate: '', telegramBotToken: '', telegramBotUsername: '', telegramChatId: '',
       telegramChannelEnabled: false, calApiKey: '', calEventType: '',
       whatsappChannelEnabled: false, whatsappPhoneNumberId: '', whatsappAccessToken: '', whatsappVerifyToken: '',
       messengerChannelEnabled: false, messengerPageId: '', messengerAccessToken: '', messengerVerifyToken: '',

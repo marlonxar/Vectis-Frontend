@@ -25,6 +25,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Nueva opción de atención humana por WhatsApp: recibe los chats en vivo (de cualquier canal) en tu WhatsApp y responde desde ahí.',
       'Un solo destino de handoff a la vez: WhatsApp o Telegram, nunca los dos. Al activar uno, el otro se desactiva.',
       'El agente responde desde su WhatsApp y el mensaje llega al cliente en el canal por el que escribió (web, Telegram, WhatsApp, Messenger o Instagram); escribe /fin para cerrar el chat.',
+      'El aviso al agente puede usar una plantilla aprobada de Meta, para que le llegue aunque hayan pasado más de 24 h desde su último mensaje.',
     ],
   },
   {

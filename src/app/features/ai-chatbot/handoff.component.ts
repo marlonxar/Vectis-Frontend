@@ -56,7 +56,11 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                       </div>
                       <div class="field"><label for="ho-wa-token">Token de acceso permanente</label><input id="ho-wa-token" [ngModel]="waToken()" (ngModelChange)="waToken.set($event)" name="howatoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" /></div>
                       <div class="field"><label for="ho-wa-owner">Número de WhatsApp del agente</label><input id="ho-wa-owner" [ngModel]="waOwner()" (ngModelChange)="waOwner.set($event)" name="howaowner" placeholder="50688887777" autocomplete="off" spellcheck="false" /></div>
-                      <p class="hint">Importante: para recibir los avisos, el número del agente debe haberle escrito al menos una vez al WhatsApp del negocio (ventana de 24 h de WhatsApp). Mantén la conversación activa respondiendo.</p>
+                      <div class="field">
+                        <label for="ho-wa-tpl">Plantilla de aviso (recomendado)</label>
+                        <input id="ho-wa-tpl" [ngModel]="waTemplate()" (ngModelChange)="waTemplate.set($event)" name="howatpl" placeholder="nuevo_chat" autocomplete="off" spellcheck="false" />
+                      </div>
+                      <p class="hint"><b>Recomendado:</b> crea en Meta una <b>plantilla de mensaje aprobada</b> con un cuerpo tipo <code>🔔 Nuevo chat en vivo: {{ '{{' }}1{{ '}}' }}</code> (un solo parámetro) y pon aquí su <b>nombre</b>. Así el aviso al agente llega <b>aunque hayan pasado más de 24 h</b>. Sin plantilla, el aviso solo funciona si el agente le escribió al WhatsApp del negocio en las últimas 24 h.</p>
                       <button type="button" class="save" [disabled]="waSaving()" (click)="saveWhatsapp()">{{ waSaving() ? 'Guardando…' : 'Guardar' }}</button>
                       @if (waOk()) { <p class="ok">{{ waOk() }}</p> }
                       @if (waErr()) { <p class="err">{{ waErr() }}</p> }
@@ -160,7 +164,7 @@ export class ChatbotHandoffComponent implements OnInit {
   readonly tgToken = signal(''); readonly tgUser = signal(''); readonly tgUsername = signal(''); readonly tgChatId = signal('');
   readonly tgSaving = signal(false); readonly tgOk = signal(''); readonly tgErr = signal(''); readonly editToken = signal(false); readonly checking = signal(false);
   // WhatsApp
-  readonly waPhoneId = signal(''); readonly waToken = signal(''); readonly waVerify = signal(''); readonly waOwner = signal('');
+  readonly waPhoneId = signal(''); readonly waToken = signal(''); readonly waVerify = signal(''); readonly waOwner = signal(''); readonly waTemplate = signal('');
   readonly waSaving = signal(false); readonly waOk = signal(''); readonly waErr = signal('');
   readonly copiedUrl = signal(false);
 
@@ -177,7 +181,7 @@ export class ChatbotHandoffComponent implements OnInit {
       this.tgToken.set(c.telegramBotToken || ''); this.tgUser.set(c.telegramBotUsername || '');
       this.tgUsername.set(c.telegramBotUsername || ''); this.tgChatId.set(c.telegramChatId || '');
       this.waPhoneId.set(c.whatsappPhoneNumberId || ''); this.waToken.set(c.whatsappAccessToken || '');
-      this.waVerify.set(c.whatsappVerifyToken || ''); this.waOwner.set(c.handoffWhatsappOwner || '');
+      this.waVerify.set(c.whatsappVerifyToken || ''); this.waOwner.set(c.handoffWhatsappOwner || ''); this.waTemplate.set(c.handoffWhatsappTemplate || '');
     }
   }
 
@@ -209,6 +213,7 @@ export class ChatbotHandoffComponent implements OnInit {
         whatsapp_access_token: this.waToken().trim() || null,
         whatsapp_verify_token: this.waVerify().trim() || null,
         handoff_whatsapp_owner: this.waOwner().trim().replace(/\D/g, '') || null,
+        handoff_whatsapp_template: this.waTemplate().trim() || null,
       });
       if (ok) { this.waOk.set('Guardado ✓'); setTimeout(() => this.waOk.set(''), 2500); }
       else this.waErr.set('No se pudo guardar. Intenta de nuevo.');
@@ -260,7 +265,7 @@ export class ChatbotHandoffComponent implements OnInit {
     if (cfgs[i]) {
       cfgs[i] = {
         ...cfgs[i],
-        handoffEnabled: this.active() !== '', handoffChannel: this.active() || 'telegram', handoffWhatsappOwner: this.waOwner().trim(),
+        handoffEnabled: this.active() !== '', handoffChannel: this.active() || 'telegram', handoffWhatsappOwner: this.waOwner().trim(), handoffWhatsappTemplate: this.waTemplate().trim(),
         telegramBotToken: this.tgToken().trim(), telegramBotUsername: this.tgUsername(), telegramChatId: this.tgChatId(),
         whatsappPhoneNumberId: this.waPhoneId().trim(), whatsappAccessToken: this.waToken().trim(), whatsappVerifyToken: this.waVerify().trim(),
       };

@@ -871,6 +871,7 @@ export class ChatbotConfigureComponent implements OnInit {
   handoffEnabled = false;
   handoffChannel = 'telegram';
   handoffWhatsappOwner = '';
+  handoffWhatsappTemplate = '';
   telegramChatId = '';
   telegramBotUsernameKeep = '';
   telegramChannelEnabled = false;
@@ -1197,7 +1198,7 @@ export class ChatbotConfigureComponent implements OnInit {
       privacyUrl: this.privacyUrl.trim() || CONFIG_DEFAULTS.privacyUrl,
       privacyText: this.privacyText.trim() || CONFIG_DEFAULTS.privacyText,
       // Handoff/canal se gestionan en sus propias páginas; aquí solo se preservan (no se guardan).
-      handoffEnabled: this.handoffEnabled, handoffChannel: this.handoffChannel, handoffWhatsappOwner: this.handoffWhatsappOwner, telegramChatId: this.telegramChatId,
+      handoffEnabled: this.handoffEnabled, handoffChannel: this.handoffChannel, handoffWhatsappOwner: this.handoffWhatsappOwner, handoffWhatsappTemplate: this.handoffWhatsappTemplate, telegramChatId: this.telegramChatId,
       telegramBotToken: '', telegramBotUsername: this.telegramBotUsernameKeep,
       telegramChannelEnabled: this.telegramChannelEnabled, calApiKey: this.calApiKey, calEventType: this.calEventType,
       whatsappChannelEnabled: this.whatsappChannelEnabled, whatsappPhoneNumberId: this.whatsappPhoneNumberId,
@@ -1225,7 +1226,7 @@ export class ChatbotConfigureComponent implements OnInit {
     this.quickReplies.set(c.quickReplies.length ? [...c.quickReplies] : ['']);
     this.origins.set(c.origins.length ? [...c.origins].slice(0, this.originLimit()) : (this.s.plan() === 'business' ? ['', ''] : ['']));
     this.extraRules = c.extraRules; this.language = c.language || 'auto'; this.privacyUrl = c.privacyUrl; this.privacyText = c.privacyText;
-    this.handoffEnabled = !!c.handoffEnabled; this.handoffChannel = c.handoffChannel || 'telegram'; this.handoffWhatsappOwner = c.handoffWhatsappOwner || ''; this.telegramChatId = c.telegramChatId || '';
+    this.handoffEnabled = !!c.handoffEnabled; this.handoffChannel = c.handoffChannel || 'telegram'; this.handoffWhatsappOwner = c.handoffWhatsappOwner || ''; this.handoffWhatsappTemplate = c.handoffWhatsappTemplate || ''; this.telegramChatId = c.telegramChatId || '';
     this.telegramBotUsernameKeep = c.telegramBotUsername || '';
     this.telegramChannelEnabled = !!c.telegramChannelEnabled; this.calApiKey = c.calApiKey || ''; this.calEventType = c.calEventType || '';
     this.whatsappChannelEnabled = !!c.whatsappChannelEnabled; this.whatsappPhoneNumberId = c.whatsappPhoneNumberId || '';
@@ -1250,7 +1251,7 @@ export class ChatbotConfigureComponent implements OnInit {
     this.quickReplies.set(['']);
     this.origins.set(this.s.plan() === 'business' ? ['', ''] : ['']);
     this.extraRules = ''; this.language = 'auto'; this.privacyUrl = ''; this.privacyText = '';
-    this.handoffEnabled = false; this.handoffChannel = 'telegram'; this.handoffWhatsappOwner = ''; this.telegramChatId = '';
+    this.handoffEnabled = false; this.handoffChannel = 'telegram'; this.handoffWhatsappOwner = ''; this.handoffWhatsappTemplate = ''; this.telegramChatId = '';
     this.telegramBotUsernameKeep = ''; this.telegramChannelEnabled = false; this.calApiKey = ''; this.calEventType = '';
     this.whatsappChannelEnabled = false; this.whatsappPhoneNumberId = ''; this.whatsappAccessToken = ''; this.whatsappVerifyToken = '';
     this.messengerChannelEnabled = false; this.messengerPageId = ''; this.messengerAccessToken = ''; this.messengerVerifyToken = '';
