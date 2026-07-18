@@ -1151,6 +1151,16 @@
       "ACCOUNT_DELETED": "Your account was deleted. If you want to come back, create a new account.",
       "SESSION_EXPIRED": "Your session expired for security. Please sign in again."
     },
+    "CHANNELS": {
+      "EYEBROW": "Omnichannel",
+      "TITLE": "One chatbot, on every channel",
+      "SUB": "The same assistant, with your business info, answers on your website and in the apps where your customers already message you.",
+      "WEB": "On your site with one line of code.",
+      "WA": "On your WhatsApp Business.",
+      "TG": "With your Telegram bot.",
+      "IG": "In your Instagram DMs.",
+      "MS": "On your Facebook page."
+    },
     "GUIDE": {
       "HOW_EYEBROW": "Self-serve",
       "HOW_TITLE": "This is how it works, and you are in control",
@@ -1231,7 +1241,13 @@
       "Q9": "Can the bot hand the conversation to a person?",
       "A9": "Yes. With human handoff, the customer taps \"Talk to an agent\" and their messages no longer go to the AI but to your Telegram. You reply from your phone or computer and it appears instantly in the same chat; the customer never leaves your site. You can exchange images both ways (e.g. a product photo or a receipt). When done, they return to the assistant with a button. Telegram for now, with more channels soon.",
       "Q10": "What can I measure in the dashboard?",
-      "A10": "You see conversations, messages, captured leads, satisfaction (CSAT), resolution rate, trending topics and the questions the bot could not answer (to improve). With handoff active, also your team’s response time and peak hours. You can filter and export to CSV."
+      "A10": "You see conversations, messages, captured leads, satisfaction (CSAT), resolution rate, trending topics and the questions the bot could not answer (to improve). With handoff active, also your team’s response time and peak hours. You can filter and export to CSV.",
+      "Q11": "Which channels can the chatbot answer on?",
+      "A11": "Your website plus WhatsApp, Telegram, Instagram and Messenger. You connect each channel from the dashboard and the bot answers with the same business info on all of them.",
+      "Q12": "Can it hand the conversation to a human?",
+      "A12": "Yes. When the customer asks, the bot connects them with a human agent (handoff). You receive and reply to live chats from your WhatsApp or Telegram, no matter which channel the customer wrote from.",
+      "Q13": "Does the chatbot book appointments by itself?",
+      "A13": "Yes. It integrates with Cal.com: it checks your calendar’s real availability, asks the customer for details and creates the booking. On the web it opens a booking window; on other channels the bot books via chat."
     },
     "DEMO": {
       "EYEBROW": "In action",

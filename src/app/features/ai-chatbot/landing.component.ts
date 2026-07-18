@@ -194,6 +194,39 @@ interface Plan {
       </div>
     </section>
 
+    <!-- Canales (omnicanal) -->
+    <section class="chb" [attr.aria-label]="'AICHATBOT.CHANNELS.TITLE' | translate">
+      <div class="container">
+        <div class="band-head center">
+          <span class="eyebrow on-dark">{{ 'AICHATBOT.CHANNELS.EYEBROW' | translate }}</span>
+          <h2 class="band-title">{{ 'AICHATBOT.CHANNELS.TITLE' | translate }}</h2>
+          <p class="lead on-dark">{{ 'AICHATBOT.CHANNELS.SUB' | translate }}</p>
+        </div>
+        <ul class="chb-grid">
+          <li class="chb-card" data-ch="web">
+            <span class="chb-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg></span>
+            <b>Web</b><span class="chb-d">{{ 'AICHATBOT.CHANNELS.WEB' | translate }}</span>
+          </li>
+          <li class="chb-card" data-ch="whatsapp">
+            <span class="chb-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.13c-.24.68-1.42 1.3-1.95 1.34-.5.05-.98.24-3.3-.69-2.78-1.1-4.55-3.95-4.69-4.13-.14-.19-1.13-1.5-1.13-2.87s.72-2.03.97-2.31c.25-.28.55-.35.73-.35.18 0 .37 0 .53.01.17 0 .4-.06.62.48.24.55.8 1.92.87 2.06.07.14.12.3.02.49-.09.19-.14.3-.28.46-.14.16-.3.36-.42.48-.14.14-.29.29-.12.57.16.28.72 1.19 1.55 1.93 1.07.95 1.97 1.25 2.25 1.39.28.14.44.12.6-.07.16-.18.7-.81.88-1.09.18-.28.37-.23.62-.14.25.09 1.61.76 1.89.9.28.14.46.21.53.32.07.12.07.68-.17 1.36z"/></svg></span>
+            <b>WhatsApp</b><span class="chb-d">{{ 'AICHATBOT.CHANNELS.WA' | translate }}</span>
+          </li>
+          <li class="chb-card" data-ch="telegram">
+            <span class="chb-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3 18.7 19.4c-.24 1.06-.87 1.32-1.76.82l-4.87-3.59-2.35 2.26c-.26.26-.48.48-.98.48l.35-4.96 9.02-8.15c.39-.35-.09-.55-.6-.2L6.35 13.1l-4.8-1.5c-1.04-.33-1.06-1.04.22-1.54l18.77-7.23c.87-.32 1.63.2 1.36 1.47z"/></svg></span>
+            <b>Telegram</b><span class="chb-d">{{ 'AICHATBOT.CHANNELS.TG' | translate }}</span>
+          </li>
+          <li class="chb-card" data-ch="instagram">
+            <span class="chb-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></span>
+            <b>Instagram</b><span class="chb-d">{{ 'AICHATBOT.CHANNELS.IG' | translate }}</span>
+          </li>
+          <li class="chb-card" data-ch="messenger">
+            <span class="chb-ic"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.19.16.14.26.35.27.57l.05 1.78c.02.57.6.94 1.12.71l1.99-.88c.17-.07.36-.09.54-.04 1.06.29 2.19.45 3.35.45 5.64 0 10-4.13 10-9.7S17.64 2 12 2zm6 7.46-2.93 4.65c-.47.74-1.47.93-2.17.4l-2.33-1.75a.6.6 0 0 0-.72 0l-3.15 2.39c-.42.32-.97-.18-.69-.63l2.93-4.65c.47-.74 1.47-.93 2.17-.4l2.33 1.75a.6.6 0 0 0 .72 0l3.15-2.39c.42-.32.97.18.69.63z"/></svg></span>
+            <b>Messenger</b><span class="chb-d">{{ 'AICHATBOT.CHANNELS.MS' | translate }}</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
     <!-- Cómo funciona (self-serve) -->
     <section class="how" [attr.aria-label]="'AICHATBOT.GUIDE.HOW_TITLE' | translate">
       <div class="container">
@@ -434,7 +467,7 @@ interface Plan {
           <h2 class="band-title">{{ 'AICHATBOT.GUIDE.FAQ_TITLE' | translate }}</h2>
         </div>
         <div class="faq-list">
-          @for (i of [1,2,3,4,5,6,7,8,9,10]; track i) {
+          @for (i of [1,2,3,4,5,6,7,8,9,10,11,12,13]; track i) {
             <details class="faq-item">
               <summary>{{ ('AICHATBOT.GUIDE.Q' + i) | translate }}</summary>
               <p>{{ ('AICHATBOT.GUIDE.A' + i) | translate }}</p>
@@ -678,6 +711,24 @@ interface Plan {
     .faq-item[open] summary::after { content: "\\2013"; }
     .faq-item p { font-size: 14px; line-height: 1.6; color: var(--text-inv-2); margin: 0 0 14px; }
 
+    /* Canales (omnicanal) */
+    .chb { background: var(--ink); color: var(--text-inv); padding: clamp(48px, 7vw, 84px) 0; border-top: 1px solid var(--line-light); }
+    .chb .band-head { max-width: 680px; margin: 0 auto clamp(30px, 4vw, 46px); }
+    .chb .band-head .lead { margin: 14px auto 0; }
+    .chb-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+    .chb-card { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 22px 16px;
+      background: var(--ink-soft); border: 1px solid var(--line-light); border-radius: var(--radius-lg); transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease); }
+    .chb-card:hover { transform: translateY(-3px); border-color: rgba(231,171,46,.4); }
+    .chb-card b { font-size: 15px; }
+    .chb-d { font-size: 12.5px; color: var(--text-inv-2); line-height: 1.45; }
+    .chb-ic { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; margin-bottom: 4px; color: var(--gold-bright); background: rgba(231,171,46,.1); border: 1px solid rgba(231,171,46,.25); }
+    .chb-card[data-ch="whatsapp"] .chb-ic { color: #25D366; background: rgba(37,211,102,.12); border-color: rgba(37,211,102,.3); }
+    .chb-card[data-ch="telegram"] .chb-ic { color: #229ED9; background: rgba(34,158,217,.12); border-color: rgba(34,158,217,.3); }
+    .chb-card[data-ch="instagram"] .chb-ic { color: #E4405F; background: rgba(228,64,95,.12); border-color: rgba(228,64,95,.3); }
+    .chb-card[data-ch="messenger"] .chb-ic { color: #0084FF; background: rgba(0,132,255,.12); border-color: rgba(0,132,255,.3); }
+    @media (max-width: 860px) { .chb-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 520px) { .chb-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } .chb-card { padding: 18px 12px; } }
+
     /* Precios */
     .pricing { background: var(--ink); color: var(--text-inv); padding: 0 0 clamp(64px, 9vw, 110px); }
     .pricing-head { text-align: center; max-width: 640px; margin: 0 auto clamp(36px, 5vw, 52px); }
@@ -796,8 +847,8 @@ export class ChatbotLandingComponent implements OnInit {
     };
     check();
 
-    const t = 'Vectis AI ChatBot — Chatbot con IA para tu negocio';
-    const d = 'Crea un chatbot con IA para tu sitio web en minutos: ventas, atención y captura de leads 24/7. Self-service, sin código. Vectis Automation.';
+    const t = 'Vectis AI ChatBot — Chatbot con IA multicanal para tu negocio';
+    const d = 'Chatbot con IA para tu negocio en todos tus canales: sitio web, WhatsApp, Telegram, Instagram y Messenger. Responde ventas y soporte 24/7, agenda citas por ti, conecta con un agente humano y mide todo por canal. Self-service, sin código. Vectis Automation.';
     const url = 'https://www.aichatbot.wearevectis.com/';
     const img = 'https://www.wearevectis.com/assets/images/og-cover.jpg';
     this.title.setTitle(t);
@@ -814,18 +865,40 @@ export class ChatbotLandingComponent implements OnInit {
     this.meta.updateTag({ name: 'twitter:description', content: d });
     this.meta.updateTag({ name: 'twitter:image', content: img });
     this.setCanonical(url);
-    this.injectJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
-      name: 'Vectis AI ChatBot',
-      url,
-      applicationCategory: 'BusinessApplication',
-      operatingSystem: 'Web',
-      inLanguage: ['es', 'en'],
-      description: d,
-      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      provider: { '@type': 'Organization', name: 'Vectis Automation', url: 'https://www.wearevectis.com/' },
-    });
+    this.injectJsonLd([
+      {
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        name: 'Vectis AI ChatBot',
+        url,
+        applicationCategory: 'BusinessApplication',
+        operatingSystem: 'Web',
+        inLanguage: ['es', 'en'],
+        description: d,
+        featureList: [
+          'Chatbot con IA disponible 24/7',
+          'Multicanal: sitio web, WhatsApp, Telegram, Instagram y Messenger',
+          'Atención humana en vivo (handoff) por WhatsApp o Telegram',
+          'Agendado automático de citas con Cal.com',
+          'Base de conocimiento y estudio del sitio web del negocio',
+          'Métricas y analítica por canal',
+          'Instalación sin código',
+        ],
+        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+        provider: { '@type': 'Organization', name: 'Vectis Automation', url: 'https://www.wearevectis.com/' },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          { '@type': 'Question', name: '¿En qué canales funciona el chatbot?', acceptedAnswer: { '@type': 'Answer', text: 'En tu sitio web y en WhatsApp, Telegram, Instagram y Messenger. El bot responde con la misma información de tu negocio en todos los canales.' } },
+          { '@type': 'Question', name: '¿Puede pasar la conversación a una persona?', acceptedAnswer: { '@type': 'Answer', text: 'Sí. Cuando el cliente lo pide, el bot conecta con un agente humano (handoff). Recibes y respondes los chats en vivo desde tu WhatsApp o desde Telegram, sin importar el canal por el que escribió el cliente.' } },
+          { '@type': 'Question', name: '¿El chatbot agenda citas?', acceptedAnswer: { '@type': 'Answer', text: 'Sí. Se integra con Cal.com: consulta la disponibilidad real de tu calendario, le pregunta los datos al cliente y crea la reserva por sí mismo.' } },
+          { '@type': 'Question', name: '¿Necesito saber programar?', acceptedAnswer: { '@type': 'Answer', text: 'No. Es self-service: configuras tu chatbot y lo instalas en tu web con una sola línea de código, o conectas tus canales pegando tus credenciales.' } },
+          { '@type': 'Question', name: '¿Cuánto cuesta?', acceptedAnswer: { '@type': 'Answer', text: 'Puedes empezar gratis y luego elegir un plan según el volumen y las funciones que necesites.' } },
+        ],
+      },
+    ]);
   }
 
   private setCanonical(href: string): void {

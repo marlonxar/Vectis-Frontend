@@ -1151,6 +1151,16 @@
       "ACCOUNT_DELETED": "Tu cuenta fue eliminada. Si quieres volver, crea una cuenta nueva.",
       "SESSION_EXPIRED": "Tu sesión expiró por seguridad. Vuelve a iniciar sesión."
     },
+    "CHANNELS": {
+      "EYEBROW": "Omnicanal",
+      "TITLE": "Un solo chatbot, en todos tus canales",
+      "SUB": "El mismo asistente, con la información de tu negocio, responde en tu web y en las apps donde ya te escriben tus clientes.",
+      "WEB": "En tu sitio con una línea de código.",
+      "WA": "En tu WhatsApp Business.",
+      "TG": "Con tu bot de Telegram.",
+      "IG": "En los DM de tu Instagram.",
+      "MS": "En tu página de Facebook."
+    },
     "GUIDE": {
       "HOW_EYEBROW": "Self-serve",
       "HOW_TITLE": "Así funciona, y tú tienes el control",
@@ -1231,7 +1241,13 @@
       "Q9": "¿El bot puede pasar la conversación a una persona?",
       "A9": "Sí. Con el handoff a humano, el cliente toca \"Hablar con un agente\" y sus mensajes ya no van a la IA sino a tu Telegram. Respondes desde tu teléfono o computadora y aparece al instante en el mismo chat; el cliente nunca sale de tu web. Pueden intercambiar imágenes en ambos sentidos (ej. foto de un producto o un recibo). Cuando termina, vuelve al asistente con un botón. De momento el canal es Telegram y próximamente añadiremos más.",
       "Q10": "¿Qué puedo medir en el panel?",
-      "A10": "Ves conversaciones, mensajes, leads capturados, satisfacción (CSAT), tasa de resolución, temas más consultados y las preguntas que el bot no supo responder (para mejorar). Con el handoff activo, además el tiempo de respuesta de tu equipo y las horas pico. Puedes filtrar y exportar a CSV."
+      "A10": "Ves conversaciones, mensajes, leads capturados, satisfacción (CSAT), tasa de resolución, temas más consultados y las preguntas que el bot no supo responder (para mejorar). Con el handoff activo, además el tiempo de respuesta de tu equipo y las horas pico. Puedes filtrar y exportar a CSV.",
+      "Q11": "¿En qué canales puede responder el chatbot?",
+      "A11": "En tu sitio web y en WhatsApp, Telegram, Instagram y Messenger. Conectas cada canal desde el panel y el bot responde con la misma información de tu negocio en todos.",
+      "Q12": "¿Puede pasar la conversación a una persona?",
+      "A12": "Sí. Cuando el cliente lo pide, el bot lo conecta con un agente humano (handoff). Recibes y respondes los chats en vivo desde tu WhatsApp o tu Telegram, sin importar el canal por el que escribió el cliente.",
+      "Q13": "¿El chatbot agenda citas por sí mismo?",
+      "A13": "Sí. Se integra con Cal.com: consulta la disponibilidad real de tu calendario, le pregunta los datos al cliente y crea la reserva. En la web abre una ventana de reservas; en los demás canales el bot agenda por chat."
     },
     "DEMO": {
       "EYEBROW": "En acción",
