@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.0.0';
+export const APP_VERSION = '1.1.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,19 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.1.0',
+    date: '2026-07-18',
+    title: 'Telegram, agendado con Cal.com y novedades',
+    changes: [
+      'Telegram como canal de atención: el bot responde a tus clientes directamente en Telegram con la misma información del negocio.',
+      'Hablar con un agente desde Telegram: el bot conecta al cliente con una persona de tu equipo (handoff) dentro del canal.',
+      'Agendado automático de citas en Telegram con Cal.com: el bot consulta la disponibilidad real de tu calendario, pregunta los datos y crea la reserva por sí mismo. Solo pegas la URL pública de tu evento.',
+      'Métricas por canal en el panel: "Conversaciones por canal" y "Mensajes a la IA por canal".',
+      'Menú lateral con botón de hamburguesa en móvil, y mejoras de diseño responsive (incluida la sección Self-serve).',
+      'Historial de versiones (esta página) y footer de versión en el producto.',
+    ],
+  },
   {
     version: '1.0.0',
     date: '2026-07-17',
