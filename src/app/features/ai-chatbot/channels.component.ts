@@ -226,9 +226,13 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 <p class="hint">Pega la URL pública de tu evento (la que compartes para reservar); nosotros sacamos el resto. También sirve el ID numérico si lo tienes.</p>
                 <div class="save-row">
                   <button type="button" class="save" [disabled]="tgSaving()" (click)="saveTelegram()">{{ tgSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
+                  <button type="button" class="ghost-btn" [disabled]="calTesting()" (click)="testCal()">{{ calTesting() ? 'Probando…' : 'Probar conexión con Cal.com' }}</button>
                   @if (tgOk()) { <span class="ok-msg">{{ tgOk() }}</span> }
                   @if (tgErr()) { <span class="err-msg">{{ tgErr() }}</span> }
                 </div>
+                @if (calTestMsg()) {
+                  <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p>
+                }
               </section>
             } @else {
               <section class="card soon-card">
@@ -375,6 +379,9 @@ export class ChatbotChannelsComponent {
   readonly tgErr = signal('');
   readonly editToken = signal(false);
   readonly botConnected = computed(() => !!this.tgUsername() || !!this.tgChatId());
+  readonly calTesting = signal(false);
+  readonly calTestMsg = signal('');
+  readonly calTestOk = signal(false);
 
   private initialized = false;
   constructor() {
@@ -510,6 +517,29 @@ export class ChatbotChannelsComponent {
       this.tgOk.set('Guardado ✓');
       setTimeout(() => this.tgOk.set(''), 2500);
     } finally { this.tgSaving.set(false); }
+  }
+
+  /** Prueba la conexión con Cal.com: guarda lo tecleado y pide disponibilidad al worker. */
+  async testCal(): Promise<void> {
+    const id = this.s.currentClientId();
+    if (!id) { this.calTestOk.set(false); this.calTestMsg.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    this.calTesting.set(true); this.calTestMsg.set('');
+    try {
+      // Guarda exactamente lo que está en pantalla para probar eso.
+      await this.sb.from('chatbots').update({ cal_api_key: this.calKey().trim() || null, cal_event_type: this.calEvent().trim() || null }).eq('id', id);
+      const at = (await this.sb.auth.getSession()).data.session?.access_token;
+      const res = await fetch(WORKER_URL, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'cal_diag', client_id: id, access_token: at }),
+      });
+      const j = await res.json();
+      if (!j || j.error) { this.calTestOk.set(false); this.calTestMsg.set('No pude verificar la conexión (' + ((j && j.error) || res.status) + ').'); }
+      else if (!j.configured) { this.calTestOk.set(false); this.calTestMsg.set(j.hasApiKey ? 'Falta o es inválida la URL del evento.' : 'Falta la API key de Cal.com.'); }
+      else if (!j.slotCount) { this.calTestOk.set(false); this.calTestMsg.set('Conexión OK, pero no hay horarios disponibles en los próximos 10 días. Revisa la disponibilidad de tu evento en Cal.com.'); }
+      else { this.calTestOk.set(true); this.calTestMsg.set('✓ Conectado. ' + j.slotCount + ' horarios disponibles. Ej.: ' + (j.sample || []).join(' · ')); }
+    } catch (e) {
+      this.calTestOk.set(false); this.calTestMsg.set('No pude verificar la conexión. Intenta de nuevo.');
+    } finally { this.calTesting.set(false); }
   }
 
   /** Refleja los cambios de Telegram en el config en memoria. */
