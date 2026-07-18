@@ -1072,6 +1072,7 @@
       "SUBSCRIPTION": "Suscripción",
       "SUB_INFO": "Plan {{plan}} · se renueva el {{date}}.",
       "CANCEL_SUB": "Cancelar suscripción",
+      "CANCEL_FAIL": "No pudimos cancelar tu suscripción. Intenta de nuevo en un momento o contáctanos.",
       "CANCELLED_MSG": "Tu suscripción quedó cancelada y se cerrará al final del periodo actual ({{date}}). Conservarás el acceso a tu cuenta, pero tus ChatBots dejarán de funcionar en tu sitio. Puedes reactivar tu suscripción cuando quieras.",
       "CONFIRM_DELETE_TITLE": "¿Eliminar tu cuenta?",
       "CONFIRM_DELETE_BODY": "Esta acción es permanente. Se eliminarán tu cuenta y los chatbots asociados, y dejarán de funcionar en tu sitio. No se puede deshacer.",

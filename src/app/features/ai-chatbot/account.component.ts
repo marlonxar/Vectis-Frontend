@@ -125,11 +125,7 @@ import { FocusTrapDirective } from './focus-trap.directive';
                 <p class="sub-info">{{ 'AICHATBOT.ACCOUNT.SUB_INFO' | translate:{ plan: s.planName(), date: s.planExpiry() } }}</p>
                 <div class="sub-actions">
                   <a class="btn-gold sm resub" routerLink="/plans">{{ 'AICHATBOT.ACCOUNT.CHANGE_PLAN' | translate }}</a>
-                  @if (paddle.configured()) {
-                    <button type="button" class="btn-ghost sm" (click)="openBillingPortal()" [disabled]="portalBusy()">{{ (portalBusy() ? 'AICHATBOT.ACCOUNT.PORTAL_LOADING' : 'AICHATBOT.ACCOUNT.MANAGE_BILLING') | translate }}</button>
-                  } @else {
-                    <button type="button" class="btn-ghost sm" (click)="confirmKind.set('cancel')">{{ 'AICHATBOT.ACCOUNT.CANCEL_SUB' | translate }}</button>
-                  }
+                  <button type="button" class="btn-ghost sm" (click)="confirmKind.set('cancel')">{{ 'AICHATBOT.ACCOUNT.CANCEL_SUB' | translate }}</button>
                 </div>
               }
             </section>
@@ -413,15 +409,29 @@ export class ChatbotAccountComponent implements OnInit {
       this.confirmKind.set(null);
       this.router.navigate(['/'], { queryParams: { deleted: '1' } });
     } else {
-      // Cancelar suscripción: marca cancel_at_period_end; el acceso sigue hasta el vencimiento.
+      // Cancelar suscripción al final del período: el acceso sigue hasta el vencimiento.
       this.confirmBusy.set(true);
-      const uid = this.auth.user()?.id;
-      if (uid) {
-        const { error } = await this.sb.from('profiles').update({ cancel_at_period_end: true }).eq('id', uid);
-        if (!error) this.s.cancelAtPeriodEnd.set(true);
+      this.confirmErr.set('');
+      let ok = false;
+      if (this.paddle.configured()) {
+        // Cancela DE VERDAD en Paddle (agenda el fin al próximo período → frena el cobro).
+        try {
+          const { data, error } = await this.sb.functions.invoke('paddle-cancel', { body: {} });
+          ok = !error && !!(data as { ok?: boolean } | null)?.ok;
+        } catch { ok = false; }
+      } else {
+        // Sin Paddle configurado (desarrollo): solo marca local.
+        const uid = this.auth.user()?.id;
+        if (uid) { const { error } = await this.sb.from('profiles').update({ cancel_at_period_end: true }).eq('id', uid); ok = !error; }
       }
-      this.confirmBusy.set(false);
-      this.confirmKind.set(null);
+      if (ok) {
+        this.s.cancelAtPeriodEnd.set(true);
+        this.confirmBusy.set(false);
+        this.confirmKind.set(null);
+      } else {
+        this.confirmBusy.set(false);
+        this.confirmErr.set(this.i18n.instant('AICHATBOT.ACCOUNT.CANCEL_FAIL'));
+      }
     }
   }
 }

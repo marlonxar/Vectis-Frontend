@@ -27,6 +27,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'Agendado automático de citas en Telegram con Cal.com: el bot consulta la disponibilidad real de tu calendario, pregunta los datos y crea la reserva por sí mismo. Solo pegas la URL pública de tu evento.',
       'Métricas por canal en el panel: "Conversaciones por canal" y "Mensajes a la IA por canal".',
       'Menú lateral con botón de hamburguesa en móvil, y mejoras de diseño responsive (incluida la sección Self-serve).',
+      'Cancelación de suscripción directa desde tu cuenta: se agenda en Paddle al final del período y conservas el acceso hasta el vencimiento.',
       'Historial de versiones (esta página) y footer de versión en el producto.',
     ],
   },
