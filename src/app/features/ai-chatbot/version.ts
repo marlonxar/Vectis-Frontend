@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.1.0';
+export const APP_VERSION = '1.2.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,17 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.2.0',
+    date: '2026-07-18',
+    title: 'Canal de WhatsApp',
+    changes: [
+      'Canal de WhatsApp (WhatsApp Cloud API de Meta): el bot responde a tus clientes en WhatsApp con la misma información de tu negocio, igual que en Telegram. Cada negocio conecta su número pegando sus credenciales de Meta.',
+      'Hablar con un agente desde WhatsApp: los chats en vivo llegan a tu Telegram, desde donde le respondes al cliente.',
+      'Agendado automático de citas (Cal.com) también en WhatsApp.',
+      'Historial de versiones ahora público, con el header/footer del sitio para visitantes sin sesión.',
+    ],
+  },
   {
     version: '1.1.0',
     date: '2026-07-18',

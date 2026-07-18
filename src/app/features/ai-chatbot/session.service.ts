@@ -53,6 +53,10 @@ export interface ChatbotConfig {
   telegramChannelEnabled: boolean;   // el bot responde a clientes en Telegram
   calApiKey: string;                 // Cal.com API key (para agendar en canales sin ventana)
   calEventType: string;              // Cal.com event type ID
+  whatsappChannelEnabled: boolean;   // el bot responde a clientes en WhatsApp
+  whatsappPhoneNumberId: string;     // Phone Number ID (Meta Cloud API)
+  whatsappAccessToken: string;       // token de acceso permanente (secreto)
+  whatsappVerifyToken: string;       // token de verificación del webhook
 }
 
 /** Defaults para campos opcionales de apariencia/privacidad. */
@@ -108,6 +112,10 @@ export function rowToConfig(r: Record<string, any>): ChatbotConfig {
     telegramChannelEnabled: !!r['telegram_channel_enabled'],
     calApiKey: r['cal_api_key'] ?? '',
     calEventType: r['cal_event_type'] ?? '',
+    whatsappChannelEnabled: !!r['whatsapp_channel_enabled'],
+    whatsappPhoneNumberId: r['whatsapp_phone_number_id'] ?? '',
+    whatsappAccessToken: r['whatsapp_access_token'] ?? '',
+    whatsappVerifyToken: r['whatsapp_verify_token'] ?? '',
   };
 }
 
@@ -329,6 +337,7 @@ export class ChatbotSessionService {
       quickReplies: [], origins: [], extraRules: '', language: 'auto', privacyUrl: '', privacyText: '',
       handoffEnabled: false, telegramBotToken: '', telegramBotUsername: '', telegramChatId: '',
       telegramChannelEnabled: false, calApiKey: '', calEventType: '',
+      whatsappChannelEnabled: false, whatsappPhoneNumberId: '', whatsappAccessToken: '', whatsappVerifyToken: '',
     };
   }
 

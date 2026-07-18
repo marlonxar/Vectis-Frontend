@@ -874,6 +874,10 @@ export class ChatbotConfigureComponent implements OnInit {
   telegramChannelEnabled = false;
   calApiKey = '';
   calEventType = '';
+  whatsappChannelEnabled = false;
+  whatsappPhoneNumberId = '';
+  whatsappAccessToken = '';
+  whatsappVerifyToken = '';
 
   // Apariencia
   widgetTitle = '';
@@ -1186,6 +1190,8 @@ export class ChatbotConfigureComponent implements OnInit {
       handoffEnabled: this.handoffEnabled, telegramChatId: this.telegramChatId,
       telegramBotToken: '', telegramBotUsername: this.telegramBotUsernameKeep,
       telegramChannelEnabled: this.telegramChannelEnabled, calApiKey: this.calApiKey, calEventType: this.calEventType,
+      whatsappChannelEnabled: this.whatsappChannelEnabled, whatsappPhoneNumberId: this.whatsappPhoneNumberId,
+      whatsappAccessToken: this.whatsappAccessToken, whatsappVerifyToken: this.whatsappVerifyToken,
     };
   }
 
@@ -1208,6 +1214,8 @@ export class ChatbotConfigureComponent implements OnInit {
     this.handoffEnabled = !!c.handoffEnabled; this.telegramChatId = c.telegramChatId || '';
     this.telegramBotUsernameKeep = c.telegramBotUsername || '';
     this.telegramChannelEnabled = !!c.telegramChannelEnabled; this.calApiKey = c.calApiKey || ''; this.calEventType = c.calEventType || '';
+    this.whatsappChannelEnabled = !!c.whatsappChannelEnabled; this.whatsappPhoneNumberId = c.whatsappPhoneNumberId || '';
+    this.whatsappAccessToken = c.whatsappAccessToken || ''; this.whatsappVerifyToken = c.whatsappVerifyToken || '';
   }
 
   /** Volver al formulario para configurar otro chatbot (genera un nuevo client_id). */
@@ -1226,6 +1234,7 @@ export class ChatbotConfigureComponent implements OnInit {
     this.extraRules = ''; this.language = 'auto'; this.privacyUrl = ''; this.privacyText = '';
     this.handoffEnabled = false; this.telegramChatId = '';
     this.telegramBotUsernameKeep = ''; this.telegramChannelEnabled = false; this.calApiKey = ''; this.calEventType = '';
+    this.whatsappChannelEnabled = false; this.whatsappPhoneNumberId = ''; this.whatsappAccessToken = ''; this.whatsappVerifyToken = '';
     this.openSection.set(0);
     this.tried.set([]);
     this.saved.set(false);

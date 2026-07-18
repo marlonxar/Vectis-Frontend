@@ -234,6 +234,71 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p>
                 }
               </section>
+            } @else if (channel() === 'whatsapp') {
+              <!-- Conexión con Meta WhatsApp Cloud API -->
+              <section class="card">
+                <h3 class="ch">Conecta tu WhatsApp</h3>
+                <p class="muted">Usa la <b>WhatsApp Cloud API</b> de Meta (oficial y gratuita hasta cierto volumen). Conecta el número de WhatsApp Business de tu negocio.</p>
+                <ol class="tg-steps">
+                  <li>En <b>developers.facebook.com</b> crea una app y agrega el producto <b>WhatsApp</b>. Consigue un número y verifícalo.</li>
+                  <li>Copia el <b>Phone Number ID</b> y genera un <b>token de acceso permanente</b>; pégalos aquí abajo.</li>
+                  <li>Inventa un <b>token de verificación</b> (una palabra secreta tuya) y escríbelo abajo.</li>
+                  <li>En la configuración del <b>Webhook</b> de tu app de Meta, pega la URL de callback de abajo y ese mismo token de verificación, y suscríbete al campo <b>messages</b>.</li>
+                </ol>
+
+                <div class="field">
+                  <label>URL de callback (webhook)</label>
+                  <div class="code">
+                    <pre>{{ waWebhookUrl() }}</pre>
+                    <button type="button" class="copy" (click)="waCopy()">{{ waCopied() ? '¡Copiado!' : 'Copiar' }}</button>
+                  </div>
+                </div>
+                <div class="two">
+                  <div class="field">
+                    <label for="wa-pnid">Phone Number ID</label>
+                    <input id="wa-pnid" [ngModel]="waPhoneId()" (ngModelChange)="waPhoneId.set($event)" name="wapnid" placeholder="123456789012345" autocomplete="off" spellcheck="false" />
+                  </div>
+                  <div class="field">
+                    <label for="wa-verify">Token de verificación</label>
+                    <input id="wa-verify" [ngModel]="waVerifyTok()" (ngModelChange)="waVerifyTok.set($event)" name="waverify" placeholder="mi-palabra-secreta" autocomplete="off" spellcheck="false" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="wa-token">Token de acceso permanente</label>
+                  <input id="wa-token" [ngModel]="waToken()" (ngModelChange)="waToken.set($event)" name="watoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" />
+                </div>
+              </section>
+
+              <!-- Canal + agente + citas -->
+              <section class="card">
+                <h3 class="ch">Activa el canal y las citas</h3>
+                <div class="tg-toggle only">
+                  <div class="tg-tl"><b>El bot responde en WhatsApp</b><span class="ch-sub">Tus clientes le escriben a tu número de WhatsApp Business y el bot contesta con la información de tu negocio.</span></div>
+                  <button type="button" class="tgl" [class.on]="waChannelOn()" (click)="waChannelOn.set(!waChannelOn())" [attr.aria-pressed]="waChannelOn()" aria-label="Activar el bot en WhatsApp"><span></span></button>
+                </div>
+                <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b> en WhatsApp? Eso se activa en <a routerLink="/handoff">Handoff a Humano</a> — los chats en vivo te llegan a tu Telegram.</p>
+
+                <p class="hint mt">Citas por Cal.com: con estos datos el bot pregunta día y hora según tu disponibilidad real y <b>agenda la cita solo</b>. Sin ellos, solo comparte tu enlace de reservas (el de <a routerLink="/configure">Configurar</a>).</p>
+                <div class="two">
+                  <div class="field">
+                    <label for="wa-cal-key">Cal.com — API key</label>
+                    <input id="wa-cal-key" [ngModel]="calKey()" (ngModelChange)="calKey.set($event)" name="wacalkey" placeholder="cal_live_…" autocomplete="off" spellcheck="false" />
+                  </div>
+                  <div class="field">
+                    <label for="wa-cal-ev">Cal.com — URL de tu evento</label>
+                    <input id="wa-cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="wacalev" placeholder="https://cal.com/tu-usuario/30min" autocomplete="off" spellcheck="false" />
+                  </div>
+                </div>
+                <div class="save-row">
+                  <button type="button" class="save" [disabled]="waSaving()" (click)="saveWhatsApp()">{{ waSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
+                  <button type="button" class="ghost-btn" [disabled]="calTesting()" (click)="testCal()">{{ calTesting() ? 'Probando…' : 'Probar conexión con Cal.com' }}</button>
+                  @if (waOk()) { <span class="ok-msg">{{ waOk() }}</span> }
+                  @if (waErr()) { <span class="err-msg">{{ waErr() }}</span> }
+                </div>
+                @if (calTestMsg()) {
+                  <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p>
+                }
+              </section>
             } @else {
               <section class="card soon-card">
                 <span class="soon">En preparación</span>
@@ -382,6 +447,16 @@ export class ChatbotChannelsComponent {
   readonly calTesting = signal(false);
   readonly calTestMsg = signal('');
   readonly calTestOk = signal(false);
+  // WhatsApp (Meta Cloud API)
+  readonly waPhoneId = signal('');
+  readonly waToken = signal('');
+  readonly waVerifyTok = signal('');
+  readonly waChannelOn = signal(false);
+  readonly waSaving = signal(false);
+  readonly waOk = signal('');
+  readonly waErr = signal('');
+  readonly waCopied = signal(false);
+  readonly waWebhookUrl = computed(() => WORKER_URL + '/?c=' + (this.s.currentClientId() || 'TU-CLIENT-ID'));
 
   private initialized = false;
   constructor() {
@@ -408,6 +483,10 @@ export class ChatbotChannelsComponent {
     this.channelOn.set(!!c.telegramChannelEnabled);
     this.calKey.set(c.calApiKey || '');
     this.calEvent.set(c.calEventType || '');
+    this.waPhoneId.set(c.whatsappPhoneNumberId || '');
+    this.waToken.set(c.whatsappAccessToken || '');
+    this.waVerifyTok.set(c.whatsappVerifyToken || '');
+    this.waChannelOn.set(!!c.whatsappChannelEnabled);
   }
 
   readonly embed = computed(() => {
@@ -519,6 +598,35 @@ export class ChatbotChannelsComponent {
     } finally { this.tgSaving.set(false); }
   }
 
+  /** Activa/guarda el canal de WhatsApp (credenciales de Meta) + credenciales de Cal.com. */
+  async saveWhatsApp(): Promise<void> {
+    this.waErr.set(''); this.waOk.set('');
+    const id = this.s.currentClientId();
+    if (!id) { this.waErr.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    this.waSaving.set(true);
+    try {
+      const patch: Record<string, unknown> = {
+        whatsapp_channel_enabled: this.waChannelOn(),
+        whatsapp_phone_number_id: this.waPhoneId().trim() || null,
+        whatsapp_access_token: this.waToken().trim() || null,
+        whatsapp_verify_token: this.waVerifyTok().trim() || null,
+        cal_api_key: this.calKey().trim() || null,
+        cal_event_type: this.calEvent().trim() || null,
+      };
+      const { error } = await this.sb.from('chatbots').update(patch).eq('id', id);
+      if (error) { this.waErr.set(error.message); return; }
+      this.syncLocal();
+      this.waOk.set('Guardado ✓');
+      setTimeout(() => this.waOk.set(''), 2500);
+    } finally { this.waSaving.set(false); }
+  }
+
+  waCopy(): void {
+    try { navigator.clipboard.writeText(this.waWebhookUrl()); } catch (e) { /* noop */ }
+    this.waCopied.set(true);
+    setTimeout(() => this.waCopied.set(false), 1800);
+  }
+
   /** Prueba la conexión con Cal.com: guarda lo tecleado y pide disponibilidad al worker. */
   async testCal(): Promise<void> {
     const id = this.s.currentClientId();
@@ -554,6 +662,10 @@ export class ChatbotChannelsComponent {
         telegramChannelEnabled: this.channelOn(),
         calApiKey: this.calKey().trim(),
         calEventType: this.calEvent().trim(),
+        whatsappChannelEnabled: this.waChannelOn(),
+        whatsappPhoneNumberId: this.waPhoneId().trim(),
+        whatsappAccessToken: this.waToken().trim(),
+        whatsappVerifyToken: this.waVerifyTok().trim(),
       };
       this.s.configs.set(cfgs);
     }
