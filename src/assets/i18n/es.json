@@ -1090,6 +1090,8 @@
       "CHANGE_PLAN": "Adquirir otro plan",
       "MANAGE_BILLING": "Gestionar suscripción",
       "PORTAL_LOADING": "Abriendo…",
+      "BILLING_PORTAL": "Pago y facturas",
+      "PORTAL_FAIL": "No pudimos abrir el portal de pagos. Intenta de nuevo en un momento.",
       "DELETE_FAIL": "No se pudo eliminar la cuenta. Intenta de nuevo o contacta a soporte.",
       "NO_PLAN": "Aún no has elegido un plan.",
       "CHOOSE_PLAN": "Elegir un plan",

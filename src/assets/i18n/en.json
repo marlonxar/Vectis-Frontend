@@ -1090,6 +1090,8 @@
       "CHANGE_PLAN": "Switch plan",
       "MANAGE_BILLING": "Manage subscription",
       "PORTAL_LOADING": "Opening…",
+      "BILLING_PORTAL": "Billing & invoices",
+      "PORTAL_FAIL": "We couldn't open the billing portal. Please try again in a moment.",
       "DELETE_FAIL": "Could not delete the account. Try again or contact support.",
       "NO_PLAN": "You have not chosen a plan yet.",
       "CHOOSE_PLAN": "Choose a plan",

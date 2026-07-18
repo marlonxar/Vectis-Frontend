@@ -22,9 +22,11 @@ export class PaddleService {
   async customerPortalUrl(): Promise<string | null> {
     try {
       const { data, error } = await this.sb.functions.invoke('paddle-portal', { body: {} });
-      if (error) return null;
-      return (data as { url?: string })?.url ?? null;
-    } catch { return null; }
+      if (error) { console.warn('[paddle-portal] error:', error); return null; }
+      const url = (data as { url?: string })?.url ?? null;
+      if (!url) console.warn('[paddle-portal] sin URL en la respuesta:', data);
+      return url;
+    } catch (e) { console.warn('[paddle-portal] excepción:', e); return null; }
   }
 
   /** ¿Hay token y al menos un price configurado? */

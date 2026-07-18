@@ -125,8 +125,12 @@ import { FocusTrapDirective } from './focus-trap.directive';
                 <p class="sub-info">{{ 'AICHATBOT.ACCOUNT.SUB_INFO' | translate:{ plan: s.planName(), date: s.planExpiry() } }}</p>
                 <div class="sub-actions">
                   <a class="btn-gold sm resub" routerLink="/plans">{{ 'AICHATBOT.ACCOUNT.CHANGE_PLAN' | translate }}</a>
+                  @if (paddle.configured()) {
+                    <button type="button" class="btn-ghost sm" (click)="openBillingPortal()" [disabled]="portalBusy()">{{ (portalBusy() ? 'AICHATBOT.ACCOUNT.PORTAL_LOADING' : 'AICHATBOT.ACCOUNT.BILLING_PORTAL') | translate }}</button>
+                  }
                   <button type="button" class="btn-ghost sm" (click)="confirmKind.set('cancel')">{{ 'AICHATBOT.ACCOUNT.CANCEL_SUB' | translate }}</button>
                 </div>
+                @if (portalErr()) { <p class="err">{{ portalErr() }}</p> }
               }
             </section>
 
@@ -290,6 +294,7 @@ export class ChatbotAccountComponent implements OnInit {
   readonly paddle = inject(PaddleService);
 
   portalBusy = signal(false);
+  portalErr = signal('');
   editing = signal(false);
   pwdOpen = signal(false);
   pwdErr = signal('');     // mensaje de error (vacío = sin error)
@@ -300,13 +305,15 @@ export class ChatbotAccountComponent implements OnInit {
   confirmErr = signal('');
   showPwd = signal(false);
 
-  /** Abre el portal de Paddle (gestionar pago/facturas/cancelar) en una sesión autenticada. */
+  /** Abre el portal de Paddle (pago/facturas/cancelar) en una sesión autenticada. */
   async openBillingPortal(): Promise<void> {
     if (this.portalBusy()) return;
+    this.portalErr.set('');
     this.portalBusy.set(true);
     const url = await this.paddle.customerPortalUrl();
     this.portalBusy.set(false);
-    if (url) window.location.href = url;
+    if (url) { window.location.href = url; }
+    else { this.portalErr.set(this.i18n.instant('AICHATBOT.ACCOUNT.PORTAL_FAIL')); }
   }
 
   fn = ''; ln = ''; lg: 'es' | 'en' = 'es';
