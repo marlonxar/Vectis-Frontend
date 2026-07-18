@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
 import { ChatbotAppHeaderComponent } from './app-header.component';
+import { ChatbotVersionFooterComponent } from './version-footer.component';
 import { ChatbotSessionService } from './session.service';
 import { ChatbotAuthService } from './auth.service';
 import { SupabaseClientService } from './supabase.client';
@@ -16,10 +17,11 @@ import { SupabaseClientService } from './supabase.client';
 @Component({
   selector: 'app-chatbot-manage',
   standalone: true,
-  imports: [CommonModule, TranslateModule, ChatbotAppHeaderComponent],
+  imports: [CommonModule, TranslateModule, ChatbotAppHeaderComponent, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       <app-chatbot-app-header></app-chatbot-app-header>
+      <app-chatbot-version-footer></app-chatbot-version-footer>
       <main class="content">
         <div class="wrap">
           <span class="eyebrow on-dark">{{ 'AICHATBOT.MANAGE.EYEBROW' | translate }}</span>

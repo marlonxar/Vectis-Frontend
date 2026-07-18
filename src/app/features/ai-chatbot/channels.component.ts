@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { ChatbotAppHeaderComponent } from './app-header.component';
+import { ChatbotVersionFooterComponent } from './version-footer.component';
 import { ChatbotSidebarComponent } from './sidebar.component';
 import { ChatbotSessionService, webConfigToDb, ChatbotConfig } from './session.service';
 import { SupabaseClientService } from './supabase.client';
@@ -20,10 +21,11 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
 @Component({
   selector: 'app-chatbot-channels',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ChatbotAppHeaderComponent, ChatbotSidebarComponent],
+  imports: [CommonModule, FormsModule, RouterLink, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       <app-chatbot-app-header></app-chatbot-app-header>
+      <app-chatbot-version-footer></app-chatbot-version-footer>
       <div class="layout">
         <app-chatbot-sidebar></app-chatbot-sidebar>
         <main class="content">

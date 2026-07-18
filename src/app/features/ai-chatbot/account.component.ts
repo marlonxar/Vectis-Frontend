@@ -5,6 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChatbotAppHeaderComponent } from './app-header.component';
+import { ChatbotVersionFooterComponent } from './version-footer.component';
 import { ChatbotSidebarComponent } from './sidebar.component';
 import { ChatbotSessionService } from './session.service';
 import { ChatbotAuthService } from './auth.service';
@@ -19,10 +20,11 @@ import { FocusTrapDirective } from './focus-trap.directive';
 @Component({
   selector: 'app-chatbot-account',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, FocusTrapDirective],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, FocusTrapDirective, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       <app-chatbot-app-header></app-chatbot-app-header>
+      <app-chatbot-version-footer></app-chatbot-version-footer>
       <div class="layout">
         <app-chatbot-sidebar></app-chatbot-sidebar>
         <main class="content">

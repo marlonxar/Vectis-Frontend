@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
 import { ChatbotAppHeaderComponent } from './app-header.component';
+import { ChatbotVersionFooterComponent } from './version-footer.component';
 import { ChatbotSidebarComponent } from './sidebar.component';
 import { ContactComponent } from '../contact/contact.component';
 import { ChatbotSessionService, SupportTicket } from './session.service';
@@ -18,10 +19,11 @@ import { FocusTrapDirective } from './focus-trap.directive';
 @Component({
   selector: 'app-chatbot-support',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ContactComponent, FocusTrapDirective],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ContactComponent, FocusTrapDirective, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       <app-chatbot-app-header></app-chatbot-app-header>
+      <app-chatbot-version-footer></app-chatbot-version-footer>
       <div class="layout">
         <app-chatbot-sidebar></app-chatbot-sidebar>
         <main class="content">

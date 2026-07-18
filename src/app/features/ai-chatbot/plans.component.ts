@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { TranslateModule } from '@ngx-translate/core';
 import { ChatbotAppHeaderComponent } from './app-header.component';
+import { ChatbotVersionFooterComponent } from './version-footer.component';
 import { ChatbotSessionService, PlanId } from './session.service';
 import { ChatbotAuthService } from './auth.service';
 import { PaddleService } from './paddle.service';
@@ -24,7 +25,7 @@ interface Plan {
 @Component({
   selector: 'app-chatbot-plans',
   standalone: true,
-  imports: [CommonModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent],
+  imports: [CommonModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       @if (confirming()) {
@@ -34,6 +35,7 @@ interface Plan {
         </div>
       }
       <app-chatbot-app-header></app-chatbot-app-header>
+      <app-chatbot-version-footer></app-chatbot-version-footer>
       <section class="plans">
         <div class="glow" aria-hidden="true"></div>
         <div class="container inner">

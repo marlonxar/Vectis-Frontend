@@ -18,4 +18,5 @@ export const AI_CHATBOT_ROUTES: Routes = [
   { path: 'support', canActivate: [chatbotAuthGuard], loadComponent: () => import('./support.component').then((m) => m.ChatbotSupportComponent) },
   { path: 'manage', canActivate: [chatbotAuthGuard], loadComponent: () => import('./manage-chatbots.component').then((m) => m.ChatbotManageComponent) },
   { path: 'account', canActivate: [chatbotAuthGuard], loadComponent: () => import('./account.component').then((m) => m.ChatbotAccountComponent) },
+  { path: 'changelog', loadComponent: () => import('./changelog.component').then((m) => m.ChatbotChangelogComponent) },
 ];

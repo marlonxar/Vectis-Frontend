@@ -84,3 +84,7 @@ body::after {
 .reveal.in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
 
+
+/* ===== Footer de versión del producto (barra fija) ===== */
+/* Reserva 40px al fondo de las pantallas del producto para que el footer fijo no tape contenido. */
+.app-screen { padding-bottom: 40px; }
