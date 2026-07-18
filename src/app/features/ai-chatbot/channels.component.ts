@@ -206,17 +206,11 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
               <!-- Canal + agente + citas -->
               <section class="card">
                 <h3 class="ch">Activa el canal y las citas</h3>
-                <div class="tg-toggle">
+                <div class="tg-toggle only">
                   <div class="tg-tl"><b>El bot responde en Telegram</b><span class="ch-sub">Tus clientes le escriben al bot en un chat privado y contesta con la información de tu negocio.</span></div>
                   <button type="button" class="tgl" [class.on]="channelOn()" (click)="channelOn.set(!channelOn())" [attr.aria-pressed]="channelOn()" aria-label="Activar el bot en Telegram"><span></span></button>
                 </div>
-                <div class="tg-toggle">
-                  <div class="tg-tl"><b>Permitir hablar con un agente</b><span class="ch-sub">Cuando el cliente lo pida, el bot lo conecta con una persona de tu equipo.</span></div>
-                  <button type="button" class="tgl" [class.on]="handoffOn()" (click)="handoffOn.set(!handoffOn())" [attr.aria-pressed]="handoffOn()" aria-label="Permitir hablar con un agente"><span></span></button>
-                </div>
-                @if (handoffOn()) {
-                  <p class="hint">Para recibir los chats en vivo: crea un grupo en Telegram, agrega a {{ tgUsername() ? '@' + tgUsername() : 'tu bot' }} y envía <code>/start</code> dentro del grupo. Los clientes seguirán en su chat privado; tú les respondes desde el grupo.</p>
-                }
+                <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b> en Telegram? Eso se activa en <a routerLink="/handoff">Handoff a Humano</a> — usa este mismo bot.</p>
 
                 <p class="hint mt">Citas por Cal.com: con estos datos el bot pregunta día y hora según tu disponibilidad real y <b>agenda la cita solo</b>. Sin ellos, solo comparte tu enlace de reservas (el de <a routerLink="/configure">Configurar</a>).</p>
                 <div class="two">
@@ -322,6 +316,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .tg-connected { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 4px 0 8px; }
     .tg-toggle { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line-light); }
     .tg-toggle:first-of-type { padding-top: 0; }
+    .tg-toggle.only { border-bottom: none; padding-bottom: 6px; }
     .tg-tl { min-width: 0; } .tg-tl b { display: block; font-size: 14.5px; } .ch-sub { font-size: 12.5px; color: var(--text-inv-2); }
     .tgl { width: 46px; height: 26px; border-radius: 999px; border: 1px solid var(--line-light); background: rgba(255,255,255,.08); position: relative; cursor: pointer; flex-shrink: 0; transition: background var(--dur, .2s) var(--ease, ease); }
     .tgl span { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform var(--dur, .2s) var(--ease, ease); }
@@ -373,7 +368,6 @@ export class ChatbotChannelsComponent {
   readonly tgUsername = signal('');
   readonly tgChatId = signal('');
   readonly channelOn = signal(false);
-  readonly handoffOn = signal(false);
   readonly calKey = signal('');
   readonly calEvent = signal('');
   readonly tgSaving = signal(false);
@@ -405,7 +399,6 @@ export class ChatbotChannelsComponent {
     this.tgUsername.set(c.telegramBotUsername || '');
     this.tgChatId.set(c.telegramChatId || '');
     this.channelOn.set(!!c.telegramChannelEnabled);
-    this.handoffOn.set(!!c.handoffEnabled);
     this.calKey.set(c.calApiKey || '');
     this.calEvent.set(c.calEventType || '');
   }
@@ -508,7 +501,6 @@ export class ChatbotChannelsComponent {
     try {
       const patch: Record<string, unknown> = {
         telegram_channel_enabled: this.channelOn(),
-        handoff_enabled: this.handoffOn(),
         cal_api_key: this.calKey().trim() || null,
         cal_event_type: this.calEvent().trim() || null,
       };
@@ -530,7 +522,6 @@ export class ChatbotChannelsComponent {
         telegramBotUsername: this.tgUsername(),
         telegramChatId: this.tgChatId(),
         telegramChannelEnabled: this.channelOn(),
-        handoffEnabled: this.handoffOn(),
         calApiKey: this.calKey().trim(),
         calEventType: this.calEvent().trim(),
       };
