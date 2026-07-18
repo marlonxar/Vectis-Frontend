@@ -1,51 +1,64 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { ChatbotAppHeaderComponent } from './app-header.component';
 import { ChatbotVersionFooterComponent } from './version-footer.component';
+import { ChatbotAuthService } from './auth.service';
 import { CHANGELOG } from './version';
 
-/** /changelog — Historial de versiones (novedades). La más nueva abierta; las viejas en acordeón cerrado. */
+/**
+ * /changelog — Historial de versiones (novedades). Página PÚBLICA.
+ * Con sesión: header del producto + footer de versión (chrome del producto).
+ * Sin sesión: se muestra dentro del navbar/footer globales de marketing (igual que /terms).
+ */
 @Component({
   selector: 'app-chatbot-changelog',
   standalone: true,
-  imports: [ChatbotAppHeaderComponent, ChatbotVersionFooterComponent],
+  imports: [NgTemplateOutlet, ChatbotAppHeaderComponent, ChatbotVersionFooterComponent],
   template: `
-    <div class="app-screen">
-      <app-chatbot-app-header></app-chatbot-app-header>
-      <main class="content">
-        <div class="wrap">
-          <span class="eyebrow on-dark">Novedades</span>
-          <h1 class="ttl">Historial de versiones</h1>
-          <p class="lead on-dark">Cada versión de Vectis AI ChatBot y lo que trae.</p>
+    @if (loggedIn()) {
+      <div class="app-screen">
+        <app-chatbot-app-header></app-chatbot-app-header>
+        <main class="content"><div class="wrap"><ng-container [ngTemplateOutlet]="body"></ng-container></div></main>
+        <app-chatbot-version-footer></app-chatbot-version-footer>
+      </div>
+    } @else {
+      <main id="main-content" class="cl-public"><div class="wrap"><ng-container [ngTemplateOutlet]="body"></ng-container></div></main>
+    }
 
-          <ol class="rels">
-            @for (e of log; track e.version; let first = $first) {
-              <li class="rel" [id]="anchor(e.version)" [class.open]="isOpen(e.version)">
-                <button type="button" class="rel-head" (click)="toggle(e.version)" [attr.aria-expanded]="isOpen(e.version)" [attr.aria-label]="'Versión ' + e.version + ' — ' + e.title">
-                  <span class="ver">v{{ e.version }}</span>
-                  <span class="rel-title">{{ e.title }}</span>
-                  @if (first) { <span class="latest">Actual</span> }
-                  <span class="date">{{ e.date }}</span>
-                  <svg class="chev" [class.up]="isOpen(e.version)" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-                </button>
-                @if (isOpen(e.version)) {
-                  <ul class="changes">
-                    @for (c of e.changes; track c) { <li>{{ c }}</li> }
-                  </ul>
-                }
-              </li>
+    <ng-template #body>
+      <span class="eyebrow on-dark">Novedades</span>
+      <h1 class="ttl">Historial de versiones</h1>
+      <p class="lead on-dark">Cada versión de Vectis AI ChatBot y lo que trae.</p>
+
+      <ol class="rels">
+        @for (e of log; track e.version; let first = $first) {
+          <li class="rel" [id]="anchor(e.version)" [class.open]="isOpen(e.version)">
+            <button type="button" class="rel-head" (click)="toggle(e.version)" [attr.aria-expanded]="isOpen(e.version)" [attr.aria-label]="'Versión ' + e.version + ' — ' + e.title">
+              <span class="ver">v{{ e.version }}</span>
+              <span class="rel-title">{{ e.title }}</span>
+              @if (first) { <span class="latest">Actual</span> }
+              <span class="date">{{ e.date }}</span>
+              <svg class="chev" [class.up]="isOpen(e.version)" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            @if (isOpen(e.version)) {
+              <ul class="changes">
+                @for (c of e.changes; track c) { <li>{{ c }}</li> }
+              </ul>
             }
-          </ol>
-        </div>
-      </main>
-      <app-chatbot-version-footer></app-chatbot-version-footer>
-    </div>
+          </li>
+        }
+      </ol>
+    </ng-template>
   `,
   styles: [`
     .app-screen { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; overflow: hidden; background: var(--ink); color: var(--text-inv); }
     .content { flex: 1; min-width: 0; overflow-y: auto; }
-    .wrap { padding: 44px clamp(20px, 4vw, 48px) 56px; max-width: 780px; }
+    /* Vista pública (sin sesión): flujo normal bajo el navbar/footer globales de marketing. */
+    .cl-public { display: block; min-height: 100vh; background: var(--ink); color: var(--text-inv); padding-top: calc(var(--nav-h, 64px) + 20px); }
+    .wrap { padding: 44px clamp(20px, 4vw, 48px) 56px; max-width: 780px; margin: 0 auto; }
+    .cl-public .wrap { padding-top: 20px; }
     .ttl { font-size: clamp(28px, 4vw, 44px); margin-top: 12px; }
     .wrap .lead { margin-top: 14px; }
     .rels { list-style: none; padding: 0; margin: 30px 0 0; display: grid; gap: 12px; }
@@ -77,7 +90,10 @@ export class ChatbotChangelogComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
+  private readonly auth = inject(ChatbotAuthService);
   readonly log = CHANGELOG;
+  // Con sesión resuelta y usuario presente → chrome del producto; si no → chrome público (marketing).
+  readonly loggedIn = computed(() => this.auth.authReady() && !!this.auth.user());
   // Abierta solo la más nueva; las viejas arrancan cerradas.
   private readonly openSet = signal<Set<string>>(new Set(this.log.length ? [this.log[0].version] : []));
 
