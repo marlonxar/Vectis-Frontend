@@ -16,7 +16,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
  * /channels/:channel — Canales donde puede operar el chatbot.
  * WEB: instrucciones de embed + apariencia + dominios + vista previa (guardado propio, no pisa el configure).
  * Otros (WhatsApp/Instagram/Messenger/Telegram): instrucciones / en preparación.
- * Visible SOLO para el admin (vectisauto@gmail.com) — el gating vive en el sidebar.
+ * Disponible para todos los usuarios (GA). El enlace vive en el sidebar.
  */
 @Component({
   selector: 'app-chatbot-channels',

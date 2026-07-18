@@ -106,5 +106,6 @@ export class ChatbotSidebarComponent {
   // Menú colapsable en móvil (hamburger). En desktop siempre visible.
   readonly menuOpen = signal(false);
   // Solo el admin ve la sección de Canales mientras está en pruebas de producción.
-  readonly isVectisAdmin = computed(() => (this.s.email() || '').trim().toLowerCase() === 'vectisauto@gmail.com');
+  // Canales ya es una funcionalidad general (GA): visible para todos los usuarios.
+  readonly isVectisAdmin = computed(() => true);
 }

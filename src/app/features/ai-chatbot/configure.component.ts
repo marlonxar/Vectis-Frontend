@@ -822,7 +822,8 @@ export class ChatbotConfigureComponent implements OnInit {
   private i18n = inject(TranslateService);
   readonly s = inject(ChatbotSessionService);
   // Admin en pruebas: gestiona Apariencia y Dominios en el canal "Web" (no en Configurar).
-  readonly isVectisAdmin = computed(() => (this.s.email() || '').trim().toLowerCase() === 'vectisauto@gmail.com');
+  // Canales/Web ya es una funcionalidad general (GA): apariencia, dominios y widget viven en el canal Web para todos.
+  readonly isVectisAdmin = computed(() => true);
 
   private scrollToError(): void {
     setTimeout(() => {
