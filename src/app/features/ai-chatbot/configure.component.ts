@@ -878,6 +878,14 @@ export class ChatbotConfigureComponent implements OnInit {
   whatsappPhoneNumberId = '';
   whatsappAccessToken = '';
   whatsappVerifyToken = '';
+  messengerChannelEnabled = false;
+  messengerPageId = '';
+  messengerAccessToken = '';
+  messengerVerifyToken = '';
+  instagramChannelEnabled = false;
+  instagramAccountId = '';
+  instagramAccessToken = '';
+  instagramVerifyToken = '';
 
   // Apariencia
   widgetTitle = '';
@@ -1192,6 +1200,10 @@ export class ChatbotConfigureComponent implements OnInit {
       telegramChannelEnabled: this.telegramChannelEnabled, calApiKey: this.calApiKey, calEventType: this.calEventType,
       whatsappChannelEnabled: this.whatsappChannelEnabled, whatsappPhoneNumberId: this.whatsappPhoneNumberId,
       whatsappAccessToken: this.whatsappAccessToken, whatsappVerifyToken: this.whatsappVerifyToken,
+      messengerChannelEnabled: this.messengerChannelEnabled, messengerPageId: this.messengerPageId,
+      messengerAccessToken: this.messengerAccessToken, messengerVerifyToken: this.messengerVerifyToken,
+      instagramChannelEnabled: this.instagramChannelEnabled, instagramAccountId: this.instagramAccountId,
+      instagramAccessToken: this.instagramAccessToken, instagramVerifyToken: this.instagramVerifyToken,
     };
   }
 
@@ -1216,6 +1228,10 @@ export class ChatbotConfigureComponent implements OnInit {
     this.telegramChannelEnabled = !!c.telegramChannelEnabled; this.calApiKey = c.calApiKey || ''; this.calEventType = c.calEventType || '';
     this.whatsappChannelEnabled = !!c.whatsappChannelEnabled; this.whatsappPhoneNumberId = c.whatsappPhoneNumberId || '';
     this.whatsappAccessToken = c.whatsappAccessToken || ''; this.whatsappVerifyToken = c.whatsappVerifyToken || '';
+    this.messengerChannelEnabled = !!c.messengerChannelEnabled; this.messengerPageId = c.messengerPageId || '';
+    this.messengerAccessToken = c.messengerAccessToken || ''; this.messengerVerifyToken = c.messengerVerifyToken || '';
+    this.instagramChannelEnabled = !!c.instagramChannelEnabled; this.instagramAccountId = c.instagramAccountId || '';
+    this.instagramAccessToken = c.instagramAccessToken || ''; this.instagramVerifyToken = c.instagramVerifyToken || '';
   }
 
   /** Volver al formulario para configurar otro chatbot (genera un nuevo client_id). */
@@ -1235,6 +1251,8 @@ export class ChatbotConfigureComponent implements OnInit {
     this.handoffEnabled = false; this.telegramChatId = '';
     this.telegramBotUsernameKeep = ''; this.telegramChannelEnabled = false; this.calApiKey = ''; this.calEventType = '';
     this.whatsappChannelEnabled = false; this.whatsappPhoneNumberId = ''; this.whatsappAccessToken = ''; this.whatsappVerifyToken = '';
+    this.messengerChannelEnabled = false; this.messengerPageId = ''; this.messengerAccessToken = ''; this.messengerVerifyToken = '';
+    this.instagramChannelEnabled = false; this.instagramAccountId = ''; this.instagramAccessToken = ''; this.instagramVerifyToken = '';
     this.openSection.set(0);
     this.tried.set([]);
     this.saved.set(false);

@@ -57,6 +57,14 @@ export interface ChatbotConfig {
   whatsappPhoneNumberId: string;     // Phone Number ID (Meta Cloud API)
   whatsappAccessToken: string;       // token de acceso permanente (secreto)
   whatsappVerifyToken: string;       // token de verificación del webhook
+  messengerChannelEnabled: boolean;  // el bot responde en Facebook Messenger
+  messengerPageId: string;           // ID de la página de Facebook
+  messengerAccessToken: string;      // Page Access Token (secreto)
+  messengerVerifyToken: string;      // token de verificación del webhook
+  instagramChannelEnabled: boolean;  // el bot responde en Instagram
+  instagramAccountId: string;        // ID de la cuenta de Instagram
+  instagramAccessToken: string;      // Page Access Token de la página vinculada (secreto)
+  instagramVerifyToken: string;      // token de verificación del webhook
 }
 
 /** Defaults para campos opcionales de apariencia/privacidad. */
@@ -116,6 +124,14 @@ export function rowToConfig(r: Record<string, any>): ChatbotConfig {
     whatsappPhoneNumberId: r['whatsapp_phone_number_id'] ?? '',
     whatsappAccessToken: r['whatsapp_access_token'] ?? '',
     whatsappVerifyToken: r['whatsapp_verify_token'] ?? '',
+    messengerChannelEnabled: !!r['messenger_channel_enabled'],
+    messengerPageId: r['messenger_page_id'] ?? '',
+    messengerAccessToken: r['messenger_access_token'] ?? '',
+    messengerVerifyToken: r['messenger_verify_token'] ?? '',
+    instagramChannelEnabled: !!r['instagram_channel_enabled'],
+    instagramAccountId: r['instagram_account_id'] ?? '',
+    instagramAccessToken: r['instagram_access_token'] ?? '',
+    instagramVerifyToken: r['instagram_verify_token'] ?? '',
   };
 }
 
@@ -338,6 +354,8 @@ export class ChatbotSessionService {
       handoffEnabled: false, telegramBotToken: '', telegramBotUsername: '', telegramChatId: '',
       telegramChannelEnabled: false, calApiKey: '', calEventType: '',
       whatsappChannelEnabled: false, whatsappPhoneNumberId: '', whatsappAccessToken: '', whatsappVerifyToken: '',
+      messengerChannelEnabled: false, messengerPageId: '', messengerAccessToken: '', messengerVerifyToken: '',
+      instagramChannelEnabled: false, instagramAccountId: '', instagramAccessToken: '', instagramVerifyToken: '',
     };
   }
 

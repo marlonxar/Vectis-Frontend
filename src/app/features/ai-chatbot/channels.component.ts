@@ -299,6 +299,106 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p>
                 }
               </section>
+            } @else if (channel() === 'messenger') {
+              <!-- Conexión con Facebook Messenger -->
+              <section class="card">
+                <h3 class="ch">Conecta tu Messenger</h3>
+                <p class="muted">Conecta la <b>página de Facebook</b> de tu negocio (Messenger Platform de Meta).</p>
+                <ol class="tg-steps">
+                  <li>En <b>developers.facebook.com</b> crea una app y agrega el producto <b>Messenger</b>. Vincula tu <b>página de Facebook</b>.</li>
+                  <li>Genera un <b>Page Access Token</b> y copia el <b>ID de la página</b>; pégalos aquí abajo.</li>
+                  <li>Inventa un <b>token de verificación</b> (una palabra secreta tuya) y escríbelo abajo.</li>
+                  <li>En el <b>Webhook</b> de tu app, pega la URL de callback de abajo y ese token, y suscríbete a <b>messages</b> (para la página).</li>
+                </ol>
+                <div class="field">
+                  <label>URL de callback (webhook)</label>
+                  <div class="code"><pre>{{ waWebhookUrl() }}</pre><button type="button" class="copy" (click)="waCopy()">{{ waCopied() ? '¡Copiado!' : 'Copiar' }}</button></div>
+                </div>
+                <div class="two">
+                  <div class="field">
+                    <label for="ms-pid">ID de la página</label>
+                    <input id="ms-pid" [ngModel]="msPageId()" (ngModelChange)="msPageId.set($event)" name="mspid" placeholder="1234567890" autocomplete="off" spellcheck="false" />
+                  </div>
+                  <div class="field">
+                    <label for="ms-verify">Token de verificación</label>
+                    <input id="ms-verify" [ngModel]="msVerifyTok()" (ngModelChange)="msVerifyTok.set($event)" name="msverify" placeholder="mi-palabra-secreta" autocomplete="off" spellcheck="false" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="ms-token">Page Access Token</label>
+                  <input id="ms-token" [ngModel]="msToken()" (ngModelChange)="msToken.set($event)" name="mstoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" />
+                </div>
+              </section>
+              <section class="card">
+                <h3 class="ch">Activa el canal y las citas</h3>
+                <div class="tg-toggle only">
+                  <div class="tg-tl"><b>El bot responde en Messenger</b><span class="ch-sub">Quien escribe a tu página de Facebook recibe respuesta del bot con la info de tu negocio.</span></div>
+                  <button type="button" class="tgl" [class.on]="msOn()" (click)="msOn.set(!msOn())" [attr.aria-pressed]="msOn()" aria-label="Activar el bot en Messenger"><span></span></button>
+                </div>
+                <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b>? Se activa en <a routerLink="/handoff">Handoff a Humano</a> — los chats en vivo te llegan a tu Telegram.</p>
+                <p class="hint mt">Citas por Cal.com: con estos datos el bot pregunta día y hora según tu disponibilidad y <b>agenda la cita solo</b>.</p>
+                <div class="two">
+                  <div class="field"><label for="ms-cal-key">Cal.com — API key</label><input id="ms-cal-key" [ngModel]="calKey()" (ngModelChange)="calKey.set($event)" name="mscalkey" placeholder="cal_live_…" autocomplete="off" spellcheck="false" /></div>
+                  <div class="field"><label for="ms-cal-ev">Cal.com — URL de tu evento</label><input id="ms-cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="mscalev" placeholder="https://cal.com/tu-usuario/30min" autocomplete="off" spellcheck="false" /></div>
+                </div>
+                <div class="save-row">
+                  <button type="button" class="save" [disabled]="msSaving()" (click)="saveMessenger()">{{ msSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
+                  <button type="button" class="ghost-btn" [disabled]="calTesting()" (click)="testCal()">{{ calTesting() ? 'Probando…' : 'Probar conexión con Cal.com' }}</button>
+                  @if (msOk()) { <span class="ok-msg">{{ msOk() }}</span> }
+                  @if (msErr()) { <span class="err-msg">{{ msErr() }}</span> }
+                </div>
+                @if (calTestMsg()) { <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p> }
+              </section>
+            } @else if (channel() === 'instagram') {
+              <!-- Conexión con Instagram -->
+              <section class="card">
+                <h3 class="ch">Conecta tu Instagram</h3>
+                <p class="muted">Conecta tu <b>cuenta profesional de Instagram</b> vinculada a una página de Facebook (Instagram Messaging de Meta).</p>
+                <ol class="tg-steps">
+                  <li>Tu cuenta de Instagram debe ser <b>profesional</b> y estar vinculada a una <b>página de Facebook</b>.</li>
+                  <li>En <b>developers.facebook.com</b> crea una app con <b>Instagram</b>. Genera un <b>Page Access Token</b> de la página vinculada y copia el <b>ID de tu cuenta de Instagram</b>.</li>
+                  <li>Inventa un <b>token de verificación</b> y escríbelo abajo.</li>
+                  <li>En el <b>Webhook</b>, pega la URL de callback de abajo y ese token, y suscríbete a <b>messages</b> de Instagram.</li>
+                </ol>
+                <div class="field">
+                  <label>URL de callback (webhook)</label>
+                  <div class="code"><pre>{{ waWebhookUrl() }}</pre><button type="button" class="copy" (click)="waCopy()">{{ waCopied() ? '¡Copiado!' : 'Copiar' }}</button></div>
+                </div>
+                <div class="two">
+                  <div class="field">
+                    <label for="ig-id">ID de la cuenta de Instagram</label>
+                    <input id="ig-id" [ngModel]="igId()" (ngModelChange)="igId.set($event)" name="igid" placeholder="17841400000000000" autocomplete="off" spellcheck="false" />
+                  </div>
+                  <div class="field">
+                    <label for="ig-verify">Token de verificación</label>
+                    <input id="ig-verify" [ngModel]="igVerifyTok()" (ngModelChange)="igVerifyTok.set($event)" name="igverify" placeholder="mi-palabra-secreta" autocomplete="off" spellcheck="false" />
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="ig-token">Page Access Token</label>
+                  <input id="ig-token" [ngModel]="igToken()" (ngModelChange)="igToken.set($event)" name="igtoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" />
+                </div>
+              </section>
+              <section class="card">
+                <h3 class="ch">Activa el canal y las citas</h3>
+                <div class="tg-toggle only">
+                  <div class="tg-tl"><b>El bot responde en Instagram</b><span class="ch-sub">El bot contesta los mensajes directos (DM) de tu cuenta de Instagram con la info de tu negocio.</span></div>
+                  <button type="button" class="tgl" [class.on]="igOn()" (click)="igOn.set(!igOn())" [attr.aria-pressed]="igOn()" aria-label="Activar el bot en Instagram"><span></span></button>
+                </div>
+                <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b>? Se activa en <a routerLink="/handoff">Handoff a Humano</a> — los chats en vivo te llegan a tu Telegram.</p>
+                <p class="hint mt">Citas por Cal.com: con estos datos el bot pregunta día y hora según tu disponibilidad y <b>agenda la cita solo</b>.</p>
+                <div class="two">
+                  <div class="field"><label for="ig-cal-key">Cal.com — API key</label><input id="ig-cal-key" [ngModel]="calKey()" (ngModelChange)="calKey.set($event)" name="igcalkey" placeholder="cal_live_…" autocomplete="off" spellcheck="false" /></div>
+                  <div class="field"><label for="ig-cal-ev">Cal.com — URL de tu evento</label><input id="ig-cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="igcalev" placeholder="https://cal.com/tu-usuario/30min" autocomplete="off" spellcheck="false" /></div>
+                </div>
+                <div class="save-row">
+                  <button type="button" class="save" [disabled]="igSaving()" (click)="saveInstagram()">{{ igSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
+                  <button type="button" class="ghost-btn" [disabled]="calTesting()" (click)="testCal()">{{ calTesting() ? 'Probando…' : 'Probar conexión con Cal.com' }}</button>
+                  @if (igOk()) { <span class="ok-msg">{{ igOk() }}</span> }
+                  @if (igErr()) { <span class="err-msg">{{ igErr() }}</span> }
+                </div>
+                @if (calTestMsg()) { <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p> }
+              </section>
             } @else {
               <section class="card soon-card">
                 <span class="soon">En preparación</span>
@@ -457,6 +557,22 @@ export class ChatbotChannelsComponent {
   readonly waErr = signal('');
   readonly waCopied = signal(false);
   readonly waWebhookUrl = computed(() => WORKER_URL + '/?c=' + (this.s.currentClientId() || 'TU-CLIENT-ID'));
+  // Messenger (Facebook Page)
+  readonly msPageId = signal('');
+  readonly msToken = signal('');
+  readonly msVerifyTok = signal('');
+  readonly msOn = signal(false);
+  readonly msSaving = signal(false);
+  readonly msOk = signal('');
+  readonly msErr = signal('');
+  // Instagram
+  readonly igId = signal('');
+  readonly igToken = signal('');
+  readonly igVerifyTok = signal('');
+  readonly igOn = signal(false);
+  readonly igSaving = signal(false);
+  readonly igOk = signal('');
+  readonly igErr = signal('');
 
   private initialized = false;
   constructor() {
@@ -487,6 +603,14 @@ export class ChatbotChannelsComponent {
     this.waToken.set(c.whatsappAccessToken || '');
     this.waVerifyTok.set(c.whatsappVerifyToken || '');
     this.waChannelOn.set(!!c.whatsappChannelEnabled);
+    this.msPageId.set(c.messengerPageId || '');
+    this.msToken.set(c.messengerAccessToken || '');
+    this.msVerifyTok.set(c.messengerVerifyToken || '');
+    this.msOn.set(!!c.messengerChannelEnabled);
+    this.igId.set(c.instagramAccountId || '');
+    this.igToken.set(c.instagramAccessToken || '');
+    this.igVerifyTok.set(c.instagramVerifyToken || '');
+    this.igOn.set(!!c.instagramChannelEnabled);
   }
 
   readonly embed = computed(() => {
@@ -627,6 +751,52 @@ export class ChatbotChannelsComponent {
     setTimeout(() => this.waCopied.set(false), 1800);
   }
 
+  /** Activa/guarda el canal de Messenger (Facebook Page) + credenciales de Cal.com. */
+  async saveMessenger(): Promise<void> {
+    this.msErr.set(''); this.msOk.set('');
+    const id = this.s.currentClientId();
+    if (!id) { this.msErr.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    this.msSaving.set(true);
+    try {
+      const patch: Record<string, unknown> = {
+        messenger_channel_enabled: this.msOn(),
+        messenger_page_id: this.msPageId().trim() || null,
+        messenger_access_token: this.msToken().trim() || null,
+        messenger_verify_token: this.msVerifyTok().trim() || null,
+        cal_api_key: this.calKey().trim() || null,
+        cal_event_type: this.calEvent().trim() || null,
+      };
+      const { error } = await this.sb.from('chatbots').update(patch).eq('id', id);
+      if (error) { this.msErr.set(error.message); return; }
+      this.syncLocal();
+      this.msOk.set('Guardado ✓');
+      setTimeout(() => this.msOk.set(''), 2500);
+    } finally { this.msSaving.set(false); }
+  }
+
+  /** Activa/guarda el canal de Instagram + credenciales de Cal.com. */
+  async saveInstagram(): Promise<void> {
+    this.igErr.set(''); this.igOk.set('');
+    const id = this.s.currentClientId();
+    if (!id) { this.igErr.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    this.igSaving.set(true);
+    try {
+      const patch: Record<string, unknown> = {
+        instagram_channel_enabled: this.igOn(),
+        instagram_account_id: this.igId().trim() || null,
+        instagram_access_token: this.igToken().trim() || null,
+        instagram_verify_token: this.igVerifyTok().trim() || null,
+        cal_api_key: this.calKey().trim() || null,
+        cal_event_type: this.calEvent().trim() || null,
+      };
+      const { error } = await this.sb.from('chatbots').update(patch).eq('id', id);
+      if (error) { this.igErr.set(error.message); return; }
+      this.syncLocal();
+      this.igOk.set('Guardado ✓');
+      setTimeout(() => this.igOk.set(''), 2500);
+    } finally { this.igSaving.set(false); }
+  }
+
   /** Prueba la conexión con Cal.com: guarda lo tecleado y pide disponibilidad al worker. */
   async testCal(): Promise<void> {
     const id = this.s.currentClientId();
@@ -666,6 +836,14 @@ export class ChatbotChannelsComponent {
         whatsappPhoneNumberId: this.waPhoneId().trim(),
         whatsappAccessToken: this.waToken().trim(),
         whatsappVerifyToken: this.waVerifyTok().trim(),
+        messengerChannelEnabled: this.msOn(),
+        messengerPageId: this.msPageId().trim(),
+        messengerAccessToken: this.msToken().trim(),
+        messengerVerifyToken: this.msVerifyTok().trim(),
+        instagramChannelEnabled: this.igOn(),
+        instagramAccountId: this.igId().trim(),
+        instagramAccessToken: this.igToken().trim(),
+        instagramVerifyToken: this.igVerifyTok().trim(),
       };
       this.s.configs.set(cfgs);
     }
