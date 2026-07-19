@@ -36,6 +36,13 @@ import { ChatbotSessionService } from './session.service';
       </a>
 
       @if (s.companies().length > 0) {
+        <a class="nav" routerLink="/knowledge" routerLinkActive="active">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-2z"/><path d="M8 7h8M8 11h6"/></svg>
+          Qué sabe tu bot
+        </a>
+      }
+
+      @if (s.companies().length > 0) {
         <a class="nav" routerLink="/handoff" routerLinkActive="active">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg>
           {{ 'AICHATBOT.HANDOFF.NAV' | translate }}

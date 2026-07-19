@@ -23,6 +23,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: 'Conocimiento por relevancia, horario de atención y seguridad',
     changes: [
       'Base de conocimiento por relevancia (RAG): tu información se indexa en fragmentos y el bot recupera solo lo relevante a cada pregunta. Responde mejor, admite documentos y catálogos mucho más grandes, y deja de "perder" información.',
+      'Nueva página "Qué sabe tu bot": mira exactamente qué información tiene indexada, agrupada por fuente (sitio web, documentos, inventario, FAQs…), búscala, y prueba una pregunta para ver qué fragmentos usaría el bot al responder.',
       'Horario de atención del handoff: define si estás disponible 24 h o en una ventana por días y horas, con un mensaje automático para cuando pidan un agente fuera de horario.',
       'Multi-agente en WhatsApp: varios números reciben los chats en vivo y cualquiera puede responder.',
       'Seguridad: verificamos la firma de los webhooks de Meta (WhatsApp, Messenger e Instagram) con tu App Secret, para rechazar mensajes falsos.',

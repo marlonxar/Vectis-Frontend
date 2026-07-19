@@ -13,6 +13,7 @@ export const AI_CHATBOT_ROUTES: Routes = [
   { path: 'plans', canActivate: [chatbotAuthGuard], loadComponent: () => import('./plans.component').then((m) => m.ChatbotPlansComponent) },
   { path: 'configure', canActivate: [chatbotAuthGuard], loadComponent: () => import('./configure.component').then((m) => m.ChatbotConfigureComponent) },
   { path: 'dashboard', canActivate: [chatbotAuthGuard], loadComponent: () => import('./dashboard.component').then((m) => m.ChatbotDashboardComponent) },
+  { path: 'knowledge', canActivate: [chatbotAuthGuard], loadComponent: () => import('./knowledge.component').then((m) => m.ChatbotKnowledgeComponent) },
   { path: 'handoff', canActivate: [chatbotAuthGuard], loadComponent: () => import('./handoff.component').then((m) => m.ChatbotHandoffComponent) },
   { path: 'channels/:channel', canActivate: [chatbotAuthGuard], loadComponent: () => import('./channels.component').then((m) => m.ChatbotChannelsComponent) },
   { path: 'support', canActivate: [chatbotAuthGuard], loadComponent: () => import('./support.component').then((m) => m.ChatbotSupportComponent) },
