@@ -54,6 +54,7 @@ interface Match { content: string; source: string; similarity: number; }
                 <button type="button" class="save" [disabled]="indexing()" (click)="reindex()">{{ indexing() ? 'Indexando…' : 'Reindexar ahora' }}</button>
               </div>
               @if (reindexMsg()) { <p class="ok">{{ reindexMsg() }}</p> }
+              @if (!indexing() && lastError()) { <p class="warn"><b>El último indexado no guardó nada.</b> Motivo: {{ lastError() }}</p> }
 
               <!-- Desglose por fuente -->
               @if (chunks().length) {
@@ -186,6 +187,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
   readonly showAll = signal(false);
   readonly indexing = signal(false);      // el worker está reindexando (bandera real en BD)
   readonly reindexMsg = signal('');
+  readonly lastError = signal('');
   private poll: any = null;
   private polls = 0;
   readonly query = signal('');
@@ -225,13 +227,14 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
     try {
       const [{ data: rows }, { data: bot }] = await Promise.all([
         this.sb.from('chatbot_kb_chunks').select('id,source,content').eq('chatbot_id', id).order('id').limit(500),
-        this.sb.from('chatbots').select('kb_indexed_at,kb_indexing').eq('id', id).single(),
+        this.sb.from('chatbots').select('kb_indexed_at,kb_indexing,kb_last_error').eq('id', id).single(),
       ]);
       this.chunks.set((rows as Chunk[]) ?? []);
       const b = (bot || {}) as Record<string, unknown>;
       const at = (b['kb_indexed_at'] as string) || '';
       this.indexedAt.set(at ? new Date(at).toLocaleString('es-CR') : '');
       // Si el worker está indexando (aunque se haya recargado la página), lo mostramos y esperamos solos.
+      this.lastError.set((b['kb_last_error'] as string) || '');
       if (b['kb_indexing'] === true) { this.indexing.set(true); this.startPolling(); }
       else this.indexing.set(false);
     } catch { /* noop */ }
@@ -271,7 +274,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
           this.stopPolling();
           await this.load();            // trae los fragmentos ya indexados
           const n = this.chunks().length;
-          this.reindexMsg.set(n ? `Listo: ${n} fragmentos indexados.` : 'Terminó, pero no se indexó nada. Revisa que tengas información en Configurar.');
+          this.reindexMsg.set(n ? `Listo: ${n} fragmentos indexados.` : '');
           setTimeout(() => this.reindexMsg.set(''), 6000);
         }
       } catch { /* reintenta en el siguiente ciclo */ }
