@@ -892,6 +892,7 @@ export class ChatbotConfigureComponent implements OnInit {
   instagramAccountId = '';
   instagramAccessToken = '';
   instagramVerifyToken = '';
+  metaAppSecret = '';
 
   // Apariencia
   widgetTitle = '';
@@ -1210,6 +1211,7 @@ export class ChatbotConfigureComponent implements OnInit {
       messengerAccessToken: this.messengerAccessToken, messengerVerifyToken: this.messengerVerifyToken,
       instagramChannelEnabled: this.instagramChannelEnabled, instagramAccountId: this.instagramAccountId,
       instagramAccessToken: this.instagramAccessToken, instagramVerifyToken: this.instagramVerifyToken,
+      metaAppSecret: this.metaAppSecret,
     };
   }
 
@@ -1238,6 +1240,7 @@ export class ChatbotConfigureComponent implements OnInit {
     this.messengerAccessToken = c.messengerAccessToken || ''; this.messengerVerifyToken = c.messengerVerifyToken || '';
     this.instagramChannelEnabled = !!c.instagramChannelEnabled; this.instagramAccountId = c.instagramAccountId || '';
     this.instagramAccessToken = c.instagramAccessToken || ''; this.instagramVerifyToken = c.instagramVerifyToken || '';
+    this.metaAppSecret = c.metaAppSecret || '';
   }
 
   /** Volver al formulario para configurar otro chatbot (genera un nuevo client_id). */
@@ -1259,6 +1262,7 @@ export class ChatbotConfigureComponent implements OnInit {
     this.whatsappChannelEnabled = false; this.whatsappPhoneNumberId = ''; this.whatsappAccessToken = ''; this.whatsappVerifyToken = '';
     this.messengerChannelEnabled = false; this.messengerPageId = ''; this.messengerAccessToken = ''; this.messengerVerifyToken = '';
     this.instagramChannelEnabled = false; this.instagramAccountId = ''; this.instagramAccessToken = ''; this.instagramVerifyToken = '';
+    this.metaAppSecret = '';
     this.openSection.set(0);
     this.tried.set([]);
     this.saved.set(false);

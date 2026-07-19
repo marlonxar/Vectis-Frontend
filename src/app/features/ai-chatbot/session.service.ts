@@ -68,6 +68,7 @@ export interface ChatbotConfig {
   instagramAccountId: string;        // ID de la cuenta de Instagram
   instagramAccessToken: string;      // Page Access Token de la página vinculada (secreto)
   instagramVerifyToken: string;      // token de verificación del webhook
+  metaAppSecret: string;             // App Secret de Meta (para verificar la firma de los webhooks)
 }
 
 /** Defaults para campos opcionales de apariencia/privacidad. */
@@ -138,6 +139,7 @@ export function rowToConfig(r: Record<string, any>): ChatbotConfig {
     instagramAccountId: r['instagram_account_id'] ?? '',
     instagramAccessToken: r['instagram_access_token'] ?? '',
     instagramVerifyToken: r['instagram_verify_token'] ?? '',
+    metaAppSecret: r['meta_app_secret'] ?? '',
   };
 }
 
@@ -362,6 +364,7 @@ export class ChatbotSessionService {
       whatsappChannelEnabled: false, whatsappPhoneNumberId: '', whatsappAccessToken: '', whatsappVerifyToken: '',
       messengerChannelEnabled: false, messengerPageId: '', messengerAccessToken: '', messengerVerifyToken: '',
       instagramChannelEnabled: false, instagramAccountId: '', instagramAccessToken: '', instagramVerifyToken: '',
+      metaAppSecret: '',
     };
   }
 

@@ -267,6 +267,11 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   <label for="wa-token">Token de acceso permanente</label>
                   <input id="wa-token" [ngModel]="waToken()" (ngModelChange)="waToken.set($event)" name="watoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" />
                 </div>
+                <div class="field">
+                  <label for="wa-secret">App Secret de Meta (recomendado)</label>
+                  <input id="wa-secret" [ngModel]="metaSecret()" (ngModelChange)="metaSecret.set($event)" name="wasecret" placeholder="App Secret de tu app de Meta" autocomplete="off" spellcheck="false" />
+                </div>
+                <p class="hint">Opcional pero recomendado: el <b>App Secret</b> de tu app de Meta. Lo usamos para verificar la firma de los webhooks y rechazar mensajes falsos (es el mismo para tus canales de Meta).</p>
               </section>
 
               <!-- Canal + agente + citas -->
@@ -328,6 +333,11 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   <label for="ms-token">Page Access Token</label>
                   <input id="ms-token" [ngModel]="msToken()" (ngModelChange)="msToken.set($event)" name="mstoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" />
                 </div>
+                <div class="field">
+                  <label for="ms-secret">App Secret de Meta (recomendado)</label>
+                  <input id="ms-secret" [ngModel]="metaSecret()" (ngModelChange)="metaSecret.set($event)" name="mssecret" placeholder="App Secret de tu app de Meta" autocomplete="off" spellcheck="false" />
+                </div>
+                <p class="hint">Opcional pero recomendado: el <b>App Secret</b> de tu app de Meta. Lo usamos para verificar la firma de los webhooks y rechazar mensajes falsos (es el mismo para tus canales de Meta).</p>
               </section>
               <section class="card">
                 <h3 class="ch">Activa el canal y las citas</h3>
@@ -378,6 +388,11 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   <label for="ig-token">Page Access Token</label>
                   <input id="ig-token" [ngModel]="igToken()" (ngModelChange)="igToken.set($event)" name="igtoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" />
                 </div>
+                <div class="field">
+                  <label for="ig-secret">App Secret de Meta (recomendado)</label>
+                  <input id="ig-secret" [ngModel]="metaSecret()" (ngModelChange)="metaSecret.set($event)" name="igsecret" placeholder="App Secret de tu app de Meta" autocomplete="off" spellcheck="false" />
+                </div>
+                <p class="hint">Opcional pero recomendado: el <b>App Secret</b> de tu app de Meta. Lo usamos para verificar la firma de los webhooks y rechazar mensajes falsos (es el mismo para tus canales de Meta).</p>
               </section>
               <section class="card">
                 <h3 class="ch">Activa el canal y las citas</h3>
@@ -573,6 +588,8 @@ export class ChatbotChannelsComponent {
   readonly igSaving = signal(false);
   readonly igOk = signal('');
   readonly igErr = signal('');
+  // App Secret de Meta (compartido por los canales de Meta; verifica la firma de los webhooks)
+  readonly metaSecret = signal('');
 
   private initialized = false;
   constructor() {
@@ -611,6 +628,7 @@ export class ChatbotChannelsComponent {
     this.igToken.set(c.instagramAccessToken || '');
     this.igVerifyTok.set(c.instagramVerifyToken || '');
     this.igOn.set(!!c.instagramChannelEnabled);
+    this.metaSecret.set(c.metaAppSecret || '');
   }
 
   readonly embed = computed(() => {
@@ -734,6 +752,7 @@ export class ChatbotChannelsComponent {
         whatsapp_phone_number_id: this.waPhoneId().trim() || null,
         whatsapp_access_token: this.waToken().trim() || null,
         whatsapp_verify_token: this.waVerifyTok().trim() || null,
+        meta_app_secret: this.metaSecret().trim() || null,
         cal_api_key: this.calKey().trim() || null,
         cal_event_type: this.calEvent().trim() || null,
       };
@@ -763,6 +782,7 @@ export class ChatbotChannelsComponent {
         messenger_page_id: this.msPageId().trim() || null,
         messenger_access_token: this.msToken().trim() || null,
         messenger_verify_token: this.msVerifyTok().trim() || null,
+        meta_app_secret: this.metaSecret().trim() || null,
         cal_api_key: this.calKey().trim() || null,
         cal_event_type: this.calEvent().trim() || null,
       };
@@ -786,6 +806,7 @@ export class ChatbotChannelsComponent {
         instagram_account_id: this.igId().trim() || null,
         instagram_access_token: this.igToken().trim() || null,
         instagram_verify_token: this.igVerifyTok().trim() || null,
+        meta_app_secret: this.metaSecret().trim() || null,
         cal_api_key: this.calKey().trim() || null,
         cal_event_type: this.calEvent().trim() || null,
       };
@@ -836,6 +857,7 @@ export class ChatbotChannelsComponent {
         whatsappPhoneNumberId: this.waPhoneId().trim(),
         whatsappAccessToken: this.waToken().trim(),
         whatsappVerifyToken: this.waVerifyTok().trim(),
+        metaAppSecret: this.metaSecret().trim(),
         messengerChannelEnabled: this.msOn(),
         messengerPageId: this.msPageId().trim(),
         messengerAccessToken: this.msToken().trim(),
