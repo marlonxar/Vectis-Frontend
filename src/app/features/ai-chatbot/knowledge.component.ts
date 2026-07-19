@@ -105,6 +105,7 @@ interface Match { content: string; source: string; similarity: number; }
                   <h3 class="ch">Fragmentos{{ filter() ? ' · ' + label(filter()) : '' }}</h3>
                   <input class="search" [ngModel]="search()" (ngModelChange)="search.set($event)" name="s" placeholder="Buscar en el contenido…" />
                 </div>
+                <p class="muted note">Los fragmentos <b>se solapan a propósito</b>: cada uno repite un poco del anterior para que ninguna idea se corte a la mitad. Por eso verás texto repetido entre fragmentos vecinos — es normal.</p>
                 @if (!visible().length) {
                   <p class="muted">Ningún fragmento coincide con la búsqueda.</p>
                 } @else {
@@ -137,6 +138,7 @@ interface Match { content: string; source: string; similarity: number; }
     .wrap .lead { margin-top: 14px; }
     .card { background: var(--ink-soft); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: 20px 22px; margin-top: 20px; }
     .ch { font-size: 16px; margin-bottom: 6px; }
+    .note { margin-top: 10px; font-size: 12.5px; }
     .muted { color: var(--text-inv-2); font-size: 14px; line-height: 1.55; } .muted a, .warn a { color: var(--gold-bright); font-weight: 600; }
     .st-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     .save { min-height: 44px; padding: 0 22px; border: none; border-radius: var(--radius-pill); cursor: pointer; font: inherit; font-weight: 700; color: var(--ink);
