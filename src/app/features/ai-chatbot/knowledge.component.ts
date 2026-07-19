@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
@@ -43,13 +43,15 @@ interface Match { content: string; source: string; similarity: number; }
                   <h3 class="ch">Estado del índice</h3>
                   @if (loading()) {
                     <p class="muted">Cargando…</p>
+                  } @else if (indexing()) {
+                    <p class="muted indexing"><span class="spin" aria-hidden="true"></span>Indexando tu información… esto suele tardar unos segundos. La página se actualiza sola.</p>
                   } @else if (!chunks().length) {
                     <p class="muted">Todavía no hay información indexada. Guarda tu configuración en <a routerLink="/configure">Configurar</a> (y estudia tu sitio web) para generar el índice.</p>
                   } @else {
                     <p class="muted"><b>{{ chunks().length }}</b> fragmentos indexados@if (indexedAt()) { · última actualización: {{ indexedAt() }} }</p>
                   }
                 </div>
-                <button type="button" class="save" [disabled]="reindexing()" (click)="reindex()">{{ reindexing() ? 'Reindexando…' : 'Reindexar ahora' }}</button>
+                <button type="button" class="save" [disabled]="indexing()" (click)="reindex()">{{ indexing() ? 'Indexando…' : 'Reindexar ahora' }}</button>
               </div>
               @if (reindexMsg()) { <p class="ok">{{ reindexMsg() }}</p> }
 
@@ -139,6 +141,9 @@ interface Match { content: string; source: string; similarity: number; }
     .save { min-height: 44px; padding: 0 22px; border: none; border-radius: var(--radius-pill); cursor: pointer; font: inherit; font-weight: 700; color: var(--ink);
       background: linear-gradient(135deg, var(--gold-soft), var(--gold-bright)); box-shadow: 0 10px 26px rgba(231,171,46,.28); flex-shrink: 0; }
     .save:disabled { opacity: .7; cursor: default; }
+    .indexing { display: flex; align-items: center; gap: 10px; }
+    .spin { width: 15px; height: 15px; border-radius: 50%; border: 2px solid rgba(231,171,46,.3); border-top-color: var(--gold-bright); animation: kspin .8s linear infinite; flex-shrink: 0; }
+    @keyframes kspin { to { transform: rotate(360deg); } }
     .ok { margin-top: 12px; font-size: 13px; color: var(--gold-soft); background: rgba(231,171,46,.1); padding: 10px 12px; border-radius: 10px; }
     .warn { margin-top: 12px; font-size: 13px; color: #ffd9a8; background: rgba(231,171,46,.1); border: 1px solid rgba(231,171,46,.3); padding: 10px 12px; border-radius: 10px; line-height: 1.5; }
     .srcs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
@@ -168,7 +173,7 @@ interface Match { content: string; source: string; similarity: number; }
     @media (max-width: 560px) { .wrap { padding: 30px 16px 32px; } .card { padding: 16px; } .save, .search { width: 100%; } .st-row { flex-direction: column; } }
   `],
 })
-export class ChatbotKnowledgeComponent implements OnInit {
+export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
   private readonly s = inject(ChatbotSessionService);
   private readonly sb = inject(SupabaseClientService).client;
   private readonly title = inject(Title);
@@ -179,8 +184,10 @@ export class ChatbotKnowledgeComponent implements OnInit {
   readonly filter = signal('');
   readonly search = signal('');
   readonly showAll = signal(false);
-  readonly reindexing = signal(false);
+  readonly indexing = signal(false);      // el worker está reindexando (bandera real en BD)
   readonly reindexMsg = signal('');
+  private poll: any = null;
+  private polls = 0;
   readonly query = signal('');
   readonly matches = signal<Match[]>([]);
   readonly tested = signal(false);
@@ -218,29 +225,67 @@ export class ChatbotKnowledgeComponent implements OnInit {
     try {
       const [{ data: rows }, { data: bot }] = await Promise.all([
         this.sb.from('chatbot_kb_chunks').select('id,source,content').eq('chatbot_id', id).order('id').limit(500),
-        this.sb.from('chatbots').select('kb_indexed_at').eq('id', id).single(),
+        this.sb.from('chatbots').select('kb_indexed_at,kb_indexing').eq('id', id).single(),
       ]);
       this.chunks.set((rows as Chunk[]) ?? []);
-      const at = bot ? (bot as Record<string, string>)['kb_indexed_at'] : '';
+      const b = (bot || {}) as Record<string, unknown>;
+      const at = (b['kb_indexed_at'] as string) || '';
       this.indexedAt.set(at ? new Date(at).toLocaleString('es-CR') : '');
+      // Si el worker está indexando (aunque se haya recargado la página), lo mostramos y esperamos solos.
+      if (b['kb_indexing'] === true) { this.indexing.set(true); this.startPolling(); }
+      else this.indexing.set(false);
     } catch { /* noop */ }
     this.loading.set(false);
   }
 
   async reindex(): Promise<void> {
     const id = this.s.currentClientId();
-    if (!id) return;
-    this.reindexing.set(true); this.reindexMsg.set('');
+    if (!id || this.indexing()) return;
+    this.reindexMsg.set('');
+    this.indexing.set(true);            // feedback inmediato
     try {
       const { data } = await this.sb.auth.getSession();
       await fetch(WORKER_URL, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'kb_reindex', client_id: id, access_token: data.session?.access_token || '' }),
       });
-      this.reindexMsg.set('Reindexando… puede tardar un momento. Vuelve a cargar la página en unos segundos para ver el resultado.');
-    } catch { this.reindexMsg.set('No pude iniciar el reindexado. Intenta de nuevo.'); }
-    this.reindexing.set(false);
+      this.startPolling();              // la UI se actualiza sola al terminar
+    } catch {
+      this.indexing.set(false);
+      this.reindexMsg.set('No pude iniciar el reindexado. Intenta de nuevo.');
+    }
   }
+
+  /** Consulta el estado cada 2 s hasta que el worker termina (máx. ~2 min) y recarga los fragmentos. */
+  private startPolling(): void {
+    this.stopPolling();
+    this.polls = 0;
+    this.poll = setInterval(async () => {
+      this.polls++;
+      const id = this.s.currentClientId();
+      if (!id) { this.stopPolling(); return; }
+      try {
+        const { data } = await this.sb.from('chatbots').select('kb_indexing,kb_chunks_count').eq('id', id).single();
+        const busy = data ? (data as Record<string, unknown>)['kb_indexing'] === true : false;
+        if (!busy) {
+          this.stopPolling();
+          await this.load();            // trae los fragmentos ya indexados
+          const n = this.chunks().length;
+          this.reindexMsg.set(n ? `Listo: ${n} fragmentos indexados.` : 'Terminó, pero no se indexó nada. Revisa que tengas información en Configurar.');
+          setTimeout(() => this.reindexMsg.set(''), 6000);
+        }
+      } catch { /* reintenta en el siguiente ciclo */ }
+      if (this.polls > 60) {            // ~2 min: evita quedarse girando para siempre
+        this.stopPolling();
+        this.indexing.set(false);
+        this.reindexMsg.set('El indexado está tardando más de lo normal. Recarga la página en un momento.');
+      }
+    }, 2000);
+  }
+
+  private stopPolling(): void { if (this.poll) { clearInterval(this.poll); this.poll = null; } }
+
+  ngOnDestroy(): void { this.stopPolling(); }
 
   async testQuery(): Promise<void> {
     const id = this.s.currentClientId();
