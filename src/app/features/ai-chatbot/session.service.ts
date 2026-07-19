@@ -50,6 +50,11 @@ export interface ChatbotConfig {
   handoffChannel: string;          // 'telegram' | 'whatsapp'
   handoffWhatsappOwner: string;    // teléfono del agente en WhatsApp
   handoffWhatsappTemplate: string; // nombre de la plantilla aprobada (avisa fuera de la ventana de 24h)
+  handoffAlwaysOpen: boolean;      // handoff disponible 24 h
+  handoffOpen: string;             // HH:MM
+  handoffClose: string;            // HH:MM
+  handoffDays: string;             // días activos: '1,2,3,4,5' (0=domingo)
+  handoffAwayMessage: string;      // mensaje cuando piden agente fuera de horario
   telegramBotToken: string;
   telegramBotUsername: string;
   telegramChatId: string;   // solo lectura (lo llena el worker al vincular)
@@ -121,6 +126,11 @@ export function rowToConfig(r: Record<string, any>): ChatbotConfig {
     handoffChannel: r['handoff_channel'] ?? 'telegram',
     handoffWhatsappOwner: r['handoff_whatsapp_owner'] ?? '',
     handoffWhatsappTemplate: r['handoff_whatsapp_template'] ?? '',
+    handoffAlwaysOpen: r['handoff_always_open'] === undefined || r['handoff_always_open'] === null ? true : !!r['handoff_always_open'],
+    handoffOpen: r['handoff_open'] ?? '09:00',
+    handoffClose: r['handoff_close'] ?? '18:00',
+    handoffDays: r['handoff_days'] ?? '1,2,3,4,5',
+    handoffAwayMessage: r['handoff_away_message'] ?? '',
     telegramBotToken: r['telegram_bot_token'] ?? '',
     telegramBotUsername: r['telegram_bot_username'] ?? '',
     telegramChatId: r['telegram_chat_id'] ?? '',
@@ -359,7 +369,7 @@ export class ChatbotSessionService {
       inventoryUrl: '', kbText: '', kbFileName: '', kbFileUrl: '', inventoryText: '', inventoryFileName: '', inventoryFileUrl: '',
       faqs: [], widgetTitle: '', widgetPosition: 'right', brandColor: '', secondBrandColor: '', brandLogoUrl: '', welcome: '',
       quickReplies: [], origins: [], extraRules: '', language: 'auto', privacyUrl: '', privacyText: '',
-      handoffEnabled: false, handoffChannel: 'telegram', handoffWhatsappOwner: '', handoffWhatsappTemplate: '', telegramBotToken: '', telegramBotUsername: '', telegramChatId: '',
+      handoffEnabled: false, handoffChannel: 'telegram', handoffWhatsappOwner: '', handoffWhatsappTemplate: '', handoffAlwaysOpen: true, handoffOpen: '09:00', handoffClose: '18:00', handoffDays: '1,2,3,4,5', handoffAwayMessage: '', telegramBotToken: '', telegramBotUsername: '', telegramChatId: '',
       telegramChannelEnabled: false, calApiKey: '', calEventType: '',
       whatsappChannelEnabled: false, whatsappPhoneNumberId: '', whatsappAccessToken: '', whatsappVerifyToken: '',
       messengerChannelEnabled: false, messengerPageId: '', messengerAccessToken: '', messengerVerifyToken: '',

@@ -55,7 +55,11 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                         <div class="field"><label for="ho-wa-verify">Token de verificación</label><input id="ho-wa-verify" [ngModel]="waVerify()" (ngModelChange)="waVerify.set($event)" name="howaverify" placeholder="mi-palabra-secreta" autocomplete="off" spellcheck="false" /></div>
                       </div>
                       <div class="field"><label for="ho-wa-token">Token de acceso permanente</label><input id="ho-wa-token" [ngModel]="waToken()" (ngModelChange)="waToken.set($event)" name="howatoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" /></div>
-                      <div class="field"><label for="ho-wa-owner">Número de WhatsApp del agente</label><input id="ho-wa-owner" [ngModel]="waOwner()" (ngModelChange)="waOwner.set($event)" name="howaowner" placeholder="50688887777" autocomplete="off" spellcheck="false" /></div>
+                      <div class="field">
+                        <label for="ho-wa-owner">Números de WhatsApp de los agentes</label>
+                        <input id="ho-wa-owner" [ngModel]="waOwner()" (ngModelChange)="waOwner.set($event)" name="howaowner" placeholder="50688887777, 50699998888" autocomplete="off" spellcheck="false" />
+                        <p class="hint">Multi-agente: separa varios números con coma. Todos reciben los chats en vivo y cualquiera puede responder.</p>
+                      </div>
                       <div class="field">
                         <label for="ho-wa-tpl">Plantilla de aviso (recomendado)</label>
                         <input id="ho-wa-tpl" [ngModel]="waTemplate()" (ngModelChange)="waTemplate.set($event)" name="howatpl" placeholder="nuevo_chat" autocomplete="off" spellcheck="false" />
@@ -105,6 +109,47 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 </section>
               }
             }
+
+            @if (active()) {
+              <!-- Horario de atención del handoff -->
+              <section class="card">
+                <div class="opt-head">
+                  <span class="opt-ic hrs"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+                  <div class="opt-tl"><b>Horario de atención</b><span>Cuándo hay alguien para atender los chats en vivo.</span></div>
+                </div>
+                <div class="opt-body">
+                  <div class="hrs-row">
+                    <div class="tg-tl"><b>Disponible 24 horas</b><span class="ch-sub">El botón de "hablar con una persona" está siempre activo.</span></div>
+                    <button type="button" class="tgl" [class.on]="hoAlwaysOpen()" (click)="hoAlwaysOpen.set(!hoAlwaysOpen())" [attr.aria-pressed]="hoAlwaysOpen()" aria-label="Disponible 24 horas"><span></span></button>
+                  </div>
+
+                  @if (!hoAlwaysOpen()) {
+                    <div class="two">
+                      <div class="field"><label for="ho-open">Abre</label><input id="ho-open" type="time" [ngModel]="hoOpen()" (ngModelChange)="hoOpen.set($event)" name="hoopen" /></div>
+                      <div class="field"><label for="ho-close">Cierra</label><input id="ho-close" type="time" [ngModel]="hoClose()" (ngModelChange)="hoClose.set($event)" name="hoclose" /></div>
+                    </div>
+                    <div class="field">
+                      <label>Días de atención</label>
+                      <div class="days" role="group" aria-label="Días de atención">
+                        @for (d of dayList; track d.n) {
+                          <button type="button" class="day" [class.on]="hasDay(d.n)" (click)="toggleDay(d.n)" [attr.aria-pressed]="hasDay(d.n)">{{ d.label }}</button>
+                        }
+                      </div>
+                    </div>
+                  }
+
+                  <div class="field">
+                    <label for="ho-away">Mensaje fuera de horario</label>
+                    <input id="ho-away" [ngModel]="hoAway()" (ngModelChange)="hoAway.set($event)" name="hoaway" placeholder="Estamos fuera de horario. Te respondemos mañana a partir de las 9:00." autocomplete="off" />
+                    <p class="hint">Si un cliente pide hablar con una persona fuera de horario, el bot le dice esto y sigue ayudándole. Horario en zona de Costa Rica.</p>
+                  </div>
+
+                  <button type="button" class="save" [disabled]="hoSaving()" (click)="saveHours()">{{ hoSaving() ? 'Guardando…' : 'Guardar horario' }}</button>
+                  @if (hoOk()) { <p class="ok">{{ hoOk() }}</p> }
+                  @if (hoErr()) { <p class="err">{{ hoErr() }}</p> }
+                </div>
+              </section>
+            }
           </div>
         </main>
       </div>
@@ -123,6 +168,13 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .opt-ic { display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; }
     .opt-ic.wa { color: #25D366; background: rgba(37,211,102,.12); border: 1px solid rgba(37,211,102,.3); }
     .opt-ic.tg { color: #229ED9; background: rgba(34,158,217,.12); border: 1px solid rgba(34,158,217,.3); }
+    .opt-ic.hrs { color: var(--gold-bright); background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.3); }
+    .hrs-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--line-light); }
+    .tg-tl { min-width: 0; } .tg-tl b { display: block; font-size: 14.5px; } .ch-sub { font-size: 12.5px; color: var(--text-inv-2); }
+    .days { display: flex; flex-wrap: wrap; gap: 8px; }
+    .day { min-width: 46px; padding: 9px 12px; border-radius: var(--radius-pill); border: 1px solid var(--line-light); background: rgba(255,255,255,.04);
+      color: var(--text-inv-2); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .day.on { background: var(--gold-bright); border-color: var(--gold-bright); color: var(--ink); }
     .opt-tl { min-width: 0; flex: 1; } .opt-tl b { display: block; font-size: 15.5px; } .opt-tl span { font-size: 12.5px; color: var(--text-inv-2); }
     .tgl { width: 46px; height: 26px; border-radius: 999px; border: 1px solid var(--line-light); background: rgba(255,255,255,.08); position: relative; cursor: pointer; flex-shrink: 0; }
     .tgl span { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s ease; }
@@ -167,6 +219,17 @@ export class ChatbotHandoffComponent implements OnInit {
   readonly waPhoneId = signal(''); readonly waToken = signal(''); readonly waVerify = signal(''); readonly waOwner = signal(''); readonly waTemplate = signal('');
   readonly waSaving = signal(false); readonly waOk = signal(''); readonly waErr = signal('');
   readonly copiedUrl = signal(false);
+  // Horario de atención del handoff
+  readonly hoAlwaysOpen = signal(true);
+  readonly hoOpen = signal('09:00');
+  readonly hoClose = signal('18:00');
+  readonly hoDays = signal<number[]>([1, 2, 3, 4, 5]);
+  readonly hoAway = signal('');
+  readonly hoSaving = signal(false); readonly hoOk = signal(''); readonly hoErr = signal('');
+  readonly dayList = [
+    { n: 1, label: 'Lun' }, { n: 2, label: 'Mar' }, { n: 3, label: 'Mié' }, { n: 4, label: 'Jue' },
+    { n: 5, label: 'Vie' }, { n: 6, label: 'Sáb' }, { n: 0, label: 'Dom' },
+  ];
 
   readonly tgConnected = computed(() => !!this.tgUsername() || !!this.tgChatId());
   readonly webhookUrl = computed(() => WORKER_URL + '/?c=' + (this.s.currentClientId() || 'TU-CLIENT-ID'));
@@ -182,6 +245,10 @@ export class ChatbotHandoffComponent implements OnInit {
       this.tgUsername.set(c.telegramBotUsername || ''); this.tgChatId.set(c.telegramChatId || '');
       this.waPhoneId.set(c.whatsappPhoneNumberId || ''); this.waToken.set(c.whatsappAccessToken || '');
       this.waVerify.set(c.whatsappVerifyToken || ''); this.waOwner.set(c.handoffWhatsappOwner || ''); this.waTemplate.set(c.handoffWhatsappTemplate || '');
+      this.hoAlwaysOpen.set(c.handoffAlwaysOpen !== false);
+      this.hoOpen.set(c.handoffOpen || '09:00'); this.hoClose.set(c.handoffClose || '18:00');
+      this.hoDays.set(String(c.handoffDays || '1,2,3,4,5').split(',').map((d) => parseInt(d, 10)).filter((d) => !isNaN(d)));
+      this.hoAway.set(c.handoffAwayMessage || '');
     }
   }
 
@@ -260,12 +327,38 @@ export class ChatbotHandoffComponent implements OnInit {
 
   copyUrl(): void { try { navigator.clipboard.writeText(this.webhookUrl()); } catch (e) { /* noop */ } this.copiedUrl.set(true); setTimeout(() => this.copiedUrl.set(false), 1800); }
 
+  hasDay(n: number): boolean { return this.hoDays().indexOf(n) !== -1; }
+  toggleDay(n: number): void {
+    const d = this.hoDays();
+    this.hoDays.set(this.hasDay(n) ? d.filter((x) => x !== n) : [...d, n].sort((a, b) => a - b));
+  }
+
+  async saveHours(): Promise<void> {
+    this.hoErr.set(''); this.hoOk.set('');
+    if (!this.clientId()) { this.hoErr.set('Primero crea y guarda tu chatbot.'); return; }
+    if (!this.hoAlwaysOpen() && !this.hoDays().length) { this.hoErr.set('Elige al menos un día de atención.'); return; }
+    this.hoSaving.set(true);
+    try {
+      const ok = await this.persist({
+        handoff_always_open: this.hoAlwaysOpen(),
+        handoff_open: this.hoOpen() || '09:00',
+        handoff_close: this.hoClose() || '18:00',
+        handoff_days: this.hoDays().join(',') || '1,2,3,4,5',
+        handoff_away_message: this.hoAway().trim() || null,
+      });
+      if (ok) { this.hoOk.set('Guardado ✓'); setTimeout(() => this.hoOk.set(''), 2500); }
+      else this.hoErr.set('No se pudo guardar. Intenta de nuevo.');
+    } finally { this.hoSaving.set(false); }
+  }
+
   private syncLocal(): void {
     const cfgs = [...this.s.configs()]; const i = this.s.current();
     if (cfgs[i]) {
       cfgs[i] = {
         ...cfgs[i],
         handoffEnabled: this.active() !== '', handoffChannel: this.active() || 'telegram', handoffWhatsappOwner: this.waOwner().trim(), handoffWhatsappTemplate: this.waTemplate().trim(),
+        handoffAlwaysOpen: this.hoAlwaysOpen(), handoffOpen: this.hoOpen(), handoffClose: this.hoClose(),
+        handoffDays: this.hoDays().join(','), handoffAwayMessage: this.hoAway().trim(),
         telegramBotToken: this.tgToken().trim(), telegramBotUsername: this.tgUsername(), telegramChatId: this.tgChatId(),
         whatsappPhoneNumberId: this.waPhoneId().trim(), whatsappAccessToken: this.waToken().trim(), whatsappVerifyToken: this.waVerify().trim(),
       };
