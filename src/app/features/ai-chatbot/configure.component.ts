@@ -1301,6 +1301,7 @@ export class ChatbotConfigureComponent implements OnInit {
         const { error } = await this.sb.from('chatbots').update(db).eq('id', this.dbId);
         if (error) throw error;
         await this.auth.reload();
+        this.reindexKnowledge(this.dbId);   // RAG: reindexa el conocimiento en segundo plano
         this.saving.set(false);
         this.saved.set(true);
         setTimeout(() => this.saved.set(false), 2500);
@@ -1313,6 +1314,7 @@ export class ChatbotConfigureComponent implements OnInit {
         try { await this.sb.from('chatbots').update(db).eq('id', this.dbId); } catch { /* noop */ }
         this.snippet = this.buildSnippet(this.clientId);
         await this.auth.reload();
+        this.reindexKnowledge(this.dbId);   // RAG: primer indexado del conocimiento
         this.saving.set(false);
         this.returning.set(false);
         this.step.set('done');
@@ -1321,6 +1323,22 @@ export class ChatbotConfigureComponent implements OnInit {
       this.saving.set(false);
       this.saveErr.set(e?.message || 'No se pudo guardar. Intenta de nuevo.');
     }
+  }
+
+  /**
+   * RAG — pide al worker reindexar la base de conocimiento (trocea + embeddings).
+   * Corre en segundo plano: el usuario no tiene que esperar.
+   */
+  private async reindexKnowledge(id: string): Promise<void> {
+    if (!id) return;
+    try {
+      const { data } = await this.sb.auth.getSession();
+      const token = data.session?.access_token || '';
+      await fetch(WORKER_URL, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'kb_reindex', client_id: id, access_token: token }),
+      });
+    } catch { /* el bot sigue funcionando con el modo anterior si esto falla */ }
   }
 
   async toggleActive(): Promise<void> {
