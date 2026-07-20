@@ -51,8 +51,15 @@ interface Match { content: string; source: string; similarity: number; }
                     <p class="muted"><b>{{ chunks().length }}</b> fragmentos indexados@if (indexedAt()) { · última actualización: {{ indexedAt() }} }</p>
                   }
                 </div>
-                <button type="button" class="save" [disabled]="indexing()" (click)="reindex()">{{ indexing() ? 'Indexando…' : 'Reindexar ahora' }}</button>
+                <div class="acts">
+                  <button type="button" class="ghost-btn" [disabled]="indexing() || studying()" (click)="studySite()">{{ studying() ? 'Estudiando el sitio…' : 'Volver a estudiar el sitio' }}</button>
+                  <button type="button" class="save" [disabled]="indexing() || studying()" (click)="reindex()">{{ indexing() ? 'Indexando…' : 'Reindexar ahora' }}</button>
+                </div>
               </div>
+              @if (studying()) {
+                <p class="muted indexing"><span class="spin" aria-hidden="true"></span>Leyendo tu sitio web… puede tardar hasta un minuto. Al terminar se reindexa solo.</p>
+              }
+              <p class="muted note"><b>Reindexar</b> vuelve a procesar la información ya guardada. <b>Estudiar el sitio</b> vuelve a leer tu página web para traer contenido nuevo — es lo que necesitas si la fuente "Sitio web" tiene pocos fragmentos.</p>
               @if (reindexMsg()) { <p class="ok">{{ reindexMsg() }}</p> }
               @if (!indexing() && lastError()) { <p class="warn"><b>El último indexado no guardó nada.</b> Motivo: {{ lastError() }}</p> }
 
@@ -154,6 +161,7 @@ interface Match { content: string; source: string; similarity: number; }
     .card { background: var(--ink-soft); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: 20px 22px; margin-top: 20px; }
     .ch { font-size: 16px; margin-bottom: 6px; }
     .note { margin-top: 10px; font-size: 12.5px; }
+    .acts { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
     .srcsw { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 10px; }
     .srcsw li { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 14px;
       background: rgba(255,255,255,.03); border: 1px solid var(--line-light); border-radius: var(--radius-md); }
@@ -214,6 +222,8 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
   readonly reindexMsg = signal('');
   readonly lastError = signal('');
   readonly sourcesOff = signal<string[]>([]);
+  readonly studying = signal(false);
+  private indexedAtRaw = '';
   readonly allSources = [
     { key: 'info', label: 'Info del negocio' }, { key: 'kb', label: 'Base de conocimiento' },
     { key: 'doc', label: 'Documento' }, { key: 'web', label: 'Sitio web' },
@@ -263,6 +273,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
       this.chunks.set((rows as Chunk[]) ?? []);
       const b = (bot || {}) as Record<string, unknown>;
       const at = (b['kb_indexed_at'] as string) || '';
+      this.indexedAtRaw = at;
       this.indexedAt.set(at ? new Date(at).toLocaleString('es-CR') : '');
       // Si el worker está indexando (aunque se haya recargado la página), lo mostramos y esperamos solos.
       this.lastError.set((b['kb_last_error'] as string) || '');
@@ -286,6 +297,41 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
       await this.sb.from('chatbots').update({ kb_sources_off: off.join(',') || null }).eq('id', id);
       await this.reindex();   // aplica el cambio de inmediato
     } catch { /* noop */ }
+  }
+
+  /** Vuelve a LEER el sitio web (no solo reprocesar). Al terminar, el worker reindexa solo. */
+  async studySite(): Promise<void> {
+    const id = this.s.currentClientId();
+    if (!id || this.studying() || this.indexing()) return;
+    this.studying.set(true); this.reindexMsg.set('');
+    const before = this.indexedAtRaw;
+    try {
+      const { data } = await this.sb.auth.getSession();
+      await fetch(WORKER_URL, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'study', client_id: id, access_token: data.session?.access_token || '' }),
+      });
+      // El estudio corre en segundo plano y al terminar reindexa: esperamos a que cambie la marca.
+      let tries = 0;
+      const t = setInterval(async () => {
+        tries++;
+        try {
+          const { data: row } = await this.sb.from('chatbots').select('kb_indexed_at').eq('id', id).single();
+          const now = row ? ((row as Record<string, string>)['kb_indexed_at'] || '') : '';
+          if (now && now !== before) {
+            clearInterval(t); this.studying.set(false);
+            await this.load();
+            const w = this.countOf('web');
+            this.reindexMsg.set(`Sitio estudiado: la fuente "Sitio web" quedó con ${w} fragmentos.`);
+            setTimeout(() => this.reindexMsg.set(''), 8000);
+          }
+        } catch { /* reintenta */ }
+        if (tries > 60) { clearInterval(t); this.studying.set(false); this.reindexMsg.set('El estudio está tardando. Recarga la página en un momento.'); }
+      }, 3000);
+    } catch {
+      this.studying.set(false);
+      this.reindexMsg.set('No pude iniciar el estudio del sitio. Intenta de nuevo.');
+    }
   }
 
   async reindex(): Promise<void> {
