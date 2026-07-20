@@ -71,6 +71,21 @@ interface Match { content: string; source: string; similarity: number; }
               }
             </section>
 
+            <!-- Fuentes que usa el bot -->
+            <section class="card">
+              <h3 class="ch">Fuentes que usa tu bot</h3>
+              <p class="muted">Apaga una fuente para que el bot <b>no la use ni la guarde</b>. Útil si tienes información interna que no debe llegar a tus clientes.</p>
+              <ul class="srcsw">
+                @for (s of allSources; track s.key) {
+                  <li>
+                    <div class="sw-tl"><b>{{ s.label }}</b><span>{{ countOf(s.key) }} fragmentos</span></div>
+                    <button type="button" class="tgl" [class.on]="isOn(s.key)" [disabled]="indexing()" (click)="toggleSource(s.key)"
+                            [attr.aria-pressed]="isOn(s.key)" [attr.aria-label]="'Usar ' + s.label"><span></span></button>
+                  </li>
+                }
+              </ul>
+            </section>
+
             <!-- Prueba de pregunta -->
             @if (chunks().length) {
               <section class="card">
@@ -139,6 +154,14 @@ interface Match { content: string; source: string; similarity: number; }
     .card { background: var(--ink-soft); border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: 20px 22px; margin-top: 20px; }
     .ch { font-size: 16px; margin-bottom: 6px; }
     .note { margin-top: 10px; font-size: 12.5px; }
+    .srcsw { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 10px; }
+    .srcsw li { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 14px;
+      background: rgba(255,255,255,.03); border: 1px solid var(--line-light); border-radius: var(--radius-md); }
+    .sw-tl b { display: block; font-size: 14px; } .sw-tl span { font-size: 12.5px; color: var(--text-inv-2); }
+    .tgl { width: 46px; height: 26px; border-radius: 999px; border: 1px solid var(--line-light); background: rgba(255,255,255,.08); position: relative; cursor: pointer; flex-shrink: 0; }
+    .tgl span { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s ease; }
+    .tgl.on { background: var(--gold-bright); border-color: var(--gold-bright); } .tgl.on span { transform: translateX(20px); }
+    .tgl:disabled { opacity: .6; cursor: default; }
     .muted { color: var(--text-inv-2); font-size: 14px; line-height: 1.55; } .muted a, .warn a { color: var(--gold-bright); font-weight: 600; }
     .st-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     .save { min-height: 44px; padding: 0 22px; border: none; border-radius: var(--radius-pill); cursor: pointer; font: inherit; font-weight: 700; color: var(--ink);
@@ -190,6 +213,12 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
   readonly indexing = signal(false);      // el worker está reindexando (bandera real en BD)
   readonly reindexMsg = signal('');
   readonly lastError = signal('');
+  readonly sourcesOff = signal<string[]>([]);
+  readonly allSources = [
+    { key: 'info', label: 'Info del negocio' }, { key: 'kb', label: 'Base de conocimiento' },
+    { key: 'doc', label: 'Documento' }, { key: 'web', label: 'Sitio web' },
+    { key: 'inventory', label: 'Inventario' }, { key: 'faq', label: 'FAQs' },
+  ];
   private poll: any = null;
   private polls = 0;
   readonly query = signal('');
@@ -229,7 +258,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
     try {
       const [{ data: rows }, { data: bot }] = await Promise.all([
         this.sb.from('chatbot_kb_chunks').select('id,source,content').eq('chatbot_id', id).order('id').limit(500),
-        this.sb.from('chatbots').select('kb_indexed_at,kb_indexing,kb_last_error').eq('id', id).single(),
+        this.sb.from('chatbots').select('kb_indexed_at,kb_indexing,kb_last_error,kb_sources_off').eq('id', id).single(),
       ]);
       this.chunks.set((rows as Chunk[]) ?? []);
       const b = (bot || {}) as Record<string, unknown>;
@@ -237,10 +266,26 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
       this.indexedAt.set(at ? new Date(at).toLocaleString('es-CR') : '');
       // Si el worker está indexando (aunque se haya recargado la página), lo mostramos y esperamos solos.
       this.lastError.set((b['kb_last_error'] as string) || '');
+      this.sourcesOff.set(String((b['kb_sources_off'] as string) || '').split(',').map((x) => x.trim()).filter(Boolean));
       if (b['kb_indexing'] === true) { this.indexing.set(true); this.startPolling(); }
       else this.indexing.set(false);
     } catch { /* noop */ }
     this.loading.set(false);
+  }
+
+  isOn(key: string): boolean { return this.sourcesOff().indexOf(key) === -1; }
+  countOf(key: string): number { return this.chunks().filter((c) => c.source === key).length; }
+
+  /** Enciende/apaga una fuente y reindexa: apagada, el bot deja de tener esa información. */
+  async toggleSource(key: string): Promise<void> {
+    const id = this.s.currentClientId();
+    if (!id || this.indexing()) return;
+    const off = this.isOn(key) ? [...this.sourcesOff(), key] : this.sourcesOff().filter((k) => k !== key);
+    this.sourcesOff.set(off);
+    try {
+      await this.sb.from('chatbots').update({ kb_sources_off: off.join(',') || null }).eq('id', id);
+      await this.reindex();   // aplica el cambio de inmediato
+    } catch { /* noop */ }
   }
 
   async reindex(): Promise<void> {
