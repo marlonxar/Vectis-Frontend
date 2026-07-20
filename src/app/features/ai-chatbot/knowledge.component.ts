@@ -362,6 +362,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
   private startPolling(): void {
     this.stopPolling();
     this.polls = 0;
+    // Damos un margen para que el worker marque kb_indexing y luego consultamos seguido.
     this.poll = setInterval(async () => {
       this.polls++;
       const id = this.s.currentClientId();
@@ -371,6 +372,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
         const busy = data ? (data as Record<string, unknown>)['kb_indexing'] === true : false;
         if (!busy) {
           this.stopPolling();
+          this.indexing.set(false);     // explícito: no dependemos de que load() lo apague
           await this.load();            // trae los fragmentos ya indexados
           const n = this.chunks().length;
           this.reindexMsg.set(n ? `Listo: ${n} fragmentos indexados.` : '');
