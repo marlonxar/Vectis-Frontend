@@ -326,7 +326,13 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
             setTimeout(() => this.reindexMsg.set(''), 8000);
           }
         } catch { /* reintenta */ }
-        if (tries > 60) { clearInterval(t); this.studying.set(false); this.reindexMsg.set('El estudio está tardando. Recarga la página en un momento.'); }
+        if (tries > 40) {   // ~2 min
+          clearInterval(t);
+          await this.clearStuckFlag();
+          this.studying.set(false);
+          await this.load();
+          this.reindexMsg.set('El estudio no terminó (probablemente se agotó el tiempo del servidor). Ya puedes reintentar.');
+        }
       }, 3000);
     } catch {
       this.studying.set(false);
@@ -371,12 +377,21 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
           setTimeout(() => this.reindexMsg.set(''), 6000);
         }
       } catch { /* reintenta en el siguiente ciclo */ }
-      if (this.polls > 60) {            // ~2 min: evita quedarse girando para siempre
+      if (this.polls > 40) {            // ~80 s: si no terminó, el proceso murió del lado del worker
         this.stopPolling();
+        await this.clearStuckFlag();     // destraba el estado para poder reintentar
         this.indexing.set(false);
-        this.reindexMsg.set('El indexado está tardando más de lo normal. Recarga la página en un momento.');
+        await this.load();
+        this.reindexMsg.set('El proceso no terminó (probablemente se agotó el tiempo del servidor). Ya puedes reintentar.');
       }
     }, 2000);
+  }
+
+  /** Si el worker murió a mitad, la bandera kb_indexing queda pegada: la limpiamos para poder reintentar. */
+  private async clearStuckFlag(): Promise<void> {
+    const id = this.s.currentClientId();
+    if (!id) return;
+    try { await this.sb.from('chatbots').update({ kb_indexing: false }).eq('id', id); } catch { /* noop */ }
   }
 
   private stopPolling(): void { if (this.poll) { clearInterval(this.poll); this.poll = null; } }
