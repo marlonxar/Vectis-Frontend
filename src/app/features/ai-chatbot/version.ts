@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.7.0';
+export const APP_VERSION = '1.8.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,16 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.8.0',
+    date: '2026-07-21',
+    title: 'Todo el producto en español e inglés',
+    changes: [
+      'Canales, Handoff a humano y "Qué sabe tu bot" ahora cambian de idioma con tu preferencia de cuenta. Con esto el producto completo está disponible en español e inglés.',
+      'Los "Temas trending" del panel siempre empiezan en mayúscula: se acabaron los temas en MAYÚSCULAS o en minúsculas mezclados.',
+      'Nuevo recorrido del producto en la página de inicio: muestra el panel con métricas y temas, la bandeja de conversaciones, los canales y la atención humana tal como se ven de verdad.',
+    ],
+  },
   {
     version: '1.7.0',
     date: '2026-07-21',

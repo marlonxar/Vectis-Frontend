@@ -5,7 +5,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ChatbotSessionService } from './session.service';
 
 /**
- * Menú lateral del área del chatbot (Dashboard / Configurar / Soporte Técnico).
+ * Menú lateral del área del chatbot (Dashboard, Conversaciones, Configurar, Qué sabe tu bot,
+ * Handoff, Canales y Soporte). Todo el texto viene de los archivos de idioma.
  * Solo se muestra cuando el usuario YA creó al menos un chatbot (los nuevos deben
  * crear su primer chat antes de ver el menú).
  */
@@ -15,13 +16,13 @@ import { ChatbotSessionService } from './session.service';
   imports: [CommonModule, RouterLink, RouterLinkActive, TranslateModule],
   template: `
     <aside class="side" [class.open]="menuOpen()">
-      <button type="button" class="burger" (click)="menuOpen.set(!menuOpen())" [attr.aria-expanded]="menuOpen()" aria-label="Abrir menú">
+      <button type="button" class="burger" (click)="menuOpen.set(!menuOpen())" [attr.aria-expanded]="menuOpen()" [attr.aria-label]="'AICHATBOT.DASH.NAV_MENU' | translate">
         @if (menuOpen()) {
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
         } @else {
           <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
         }
-        <span>Menú</span>
+        <span>{{ 'AICHATBOT.DASH.NAV_MENU' | translate }}</span>
       </button>
       <nav class="items" (click)="menuOpen.set(false)">
       @if (s.companies().length > 0) {
@@ -58,7 +59,7 @@ import { ChatbotSessionService } from './session.service';
 
       <!-- Canales donde opera el chatbot (disponible para todos) -->
       @if (s.companies().length > 0) {
-        <span class="group-title">Canales</span>
+        <span class="group-title">{{ 'AICHATBOT.CHANNELS.NAV' | translate }}</span>
         <a class="nav" routerLink="/channels/web" routerLinkActive="active">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg>
           Web
@@ -119,5 +120,4 @@ export class ChatbotSidebarComponent {
   readonly s = inject(ChatbotSessionService);
   // Menú colapsable en móvil (hamburger). En desktop siempre visible.
   readonly menuOpen = signal(false);
-  // Solo el admin ve la sección de Canales mientras está en pruebas de producción.
 }

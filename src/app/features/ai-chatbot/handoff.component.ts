@@ -2,6 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChatbotAppHeaderComponent } from './app-header.component';
 import { ChatbotVersionFooterComponent } from './version-footer.component';
 import { ChatbotSidebarComponent } from './sidebar.component';
@@ -18,7 +19,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
 @Component({
   selector: 'app-chatbot-handoff',
   standalone: true,
-  imports: [CommonModule, FormsModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       <app-chatbot-app-header></app-chatbot-app-header>
@@ -26,9 +27,9 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
         <app-chatbot-sidebar></app-chatbot-sidebar>
         <main class="content">
           <div class="wrap">
-            <span class="eyebrow on-dark">Atención humana</span>
-            <h1 class="ttl">Hablar con una persona</h1>
-            <p class="lead on-dark">Elige <b>un solo destino</b> donde tu equipo recibe y responde los chats en vivo de todos los canales (web, WhatsApp, Telegram, Messenger e Instagram). Solo puede haber uno activo a la vez.</p>
+            <span class="eyebrow on-dark">{{ 'AICHATBOT.HANDOFF.EYEBROW' | translate }}</span>
+            <h1 class="ttl">{{ 'AICHATBOT.HANDOFF.TITLE' | translate }}</h1>
+            <p class="lead on-dark" [innerHTML]="'AICHATBOT.HANDOFF.LEAD' | translate"></p>
 
             @for (opt of orderedOptions(); track opt) {
               @if (opt === 'whatsapp') {
@@ -36,36 +37,36 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 <section class="card">
                   <div class="opt-head">
                     <span class="opt-ic wa"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.13c-.24.68-1.42 1.3-1.95 1.34-.5.05-.98.24-3.3-.69-2.78-1.1-4.55-3.95-4.69-4.13-.14-.19-1.13-1.5-1.13-2.87s.72-2.03.97-2.31c.25-.28.55-.35.73-.35.18 0 .37 0 .53.01.17 0 .4-.06.62.48.24.55.8 1.92.87 2.06.07.14.12.3.02.49-.09.19-.14.3-.28.46-.14.16-.3.36-.42.48-.14.14-.29.29-.12.57.16.28.72 1.19 1.55 1.93 1.07.95 1.97 1.25 2.25 1.39.28.14.44.12.6-.07.16-.18.7-.81.88-1.09.18-.28.37-.23.62-.14.25.09 1.61.76 1.89.9.28.14.46.21.53.32.07.12.07.68-.17 1.36z"/></svg></span>
-                    <div class="opt-tl"><b>WhatsApp</b><span>Recibe los chats en vivo en tu WhatsApp y responde desde ahí.</span></div>
-                    <button type="button" class="tgl" [class.on]="active() === 'whatsapp'" (click)="toggle('whatsapp')" [attr.aria-pressed]="active() === 'whatsapp'" aria-label="Usar WhatsApp para el handoff"><span></span></button>
+                    <div class="opt-tl"><b>WhatsApp</b><span>{{ 'AICHATBOT.HANDOFF.WA_SUB' | translate }}</span></div>
+                    <button type="button" class="tgl" [class.on]="active() === 'whatsapp'" (click)="toggle('whatsapp')" [attr.aria-pressed]="active() === 'whatsapp'" [attr.aria-label]="'AICHATBOT.HANDOFF.WA_ARIA' | translate"><span></span></button>
                   </div>
                   @if (active() === 'whatsapp') {
                     <div class="opt-body">
                       <ol class="steps">
-                        <li>Usa la <b>WhatsApp Cloud API</b> de Meta (la misma configuración que el canal de WhatsApp). Consigue tu <b>Phone Number ID</b> y un <b>token de acceso permanente</b>.</li>
-                        <li>Define un <b>token de verificación</b> e ingrésalo abajo. En el <b>Webhook</b> de tu app de Meta, pega la URL de callback + ese token y suscríbete a <b>messages</b>.</li>
-                        <li>Ingresa el <b>número de WhatsApp del agente</b> (con código de país, solo dígitos): ahí llegan los chats en vivo. Desde ese WhatsApp respondes; escribe <code>/fin</code> para cerrar un chat.</li>
+                        <li [innerHTML]="'AICHATBOT.HANDOFF.WA_S1' | translate"></li>
+                        <li [innerHTML]="'AICHATBOT.HANDOFF.WA_S2' | translate"></li>
+                        <li [innerHTML]="'AICHATBOT.HANDOFF.WA_S3' | translate"></li>
                       </ol>
                       <div class="field">
-                        <label>URL de callback (webhook)</label>
-                        <div class="code"><pre>{{ webhookUrl() }}</pre><button type="button" class="copy" (click)="copyUrl()">{{ copiedUrl() ? '¡Copiado!' : 'Copiar' }}</button></div>
+                        <label>{{ 'AICHATBOT.HANDOFF.F_CALLBACK' | translate }}</label>
+                        <div class="code"><pre>{{ webhookUrl() }}</pre><button type="button" class="copy" (click)="copyUrl()">{{ (copiedUrl() ? 'AICHATBOT.HANDOFF.COPIED' : 'AICHATBOT.HANDOFF.COPY') | translate }}</button></div>
                       </div>
                       <div class="two">
-                        <div class="field"><label for="ho-wa-pnid">Phone Number ID</label><input id="ho-wa-pnid" [ngModel]="waPhoneId()" (ngModelChange)="waPhoneId.set($event)" name="howapnid" placeholder="123456789012345" autocomplete="off" spellcheck="false" /></div>
-                        <div class="field"><label for="ho-wa-verify">Token de verificación</label><input id="ho-wa-verify" [ngModel]="waVerify()" (ngModelChange)="waVerify.set($event)" name="howaverify" placeholder="mi-palabra-secreta" autocomplete="off" spellcheck="false" /></div>
+                        <div class="field"><label for="ho-wa-pnid">{{ 'AICHATBOT.HANDOFF.F_PNID' | translate }}</label><input id="ho-wa-pnid" [ngModel]="waPhoneId()" (ngModelChange)="waPhoneId.set($event)" name="howapnid" placeholder="123456789012345" autocomplete="off" spellcheck="false" /></div>
+                        <div class="field"><label for="ho-wa-verify">{{ 'AICHATBOT.HANDOFF.F_VERIFY' | translate }}</label><input id="ho-wa-verify" [ngModel]="waVerify()" (ngModelChange)="waVerify.set($event)" name="howaverify" [attr.placeholder]="'AICHATBOT.HANDOFF.F_VERIFY_PH' | translate" autocomplete="off" spellcheck="false" /></div>
                       </div>
-                      <div class="field"><label for="ho-wa-token">Token de acceso permanente</label><input id="ho-wa-token" [ngModel]="waToken()" (ngModelChange)="waToken.set($event)" name="howatoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" /></div>
+                      <div class="field"><label for="ho-wa-token">{{ 'AICHATBOT.HANDOFF.F_ACCESS' | translate }}</label><input id="ho-wa-token" [ngModel]="waToken()" (ngModelChange)="waToken.set($event)" name="howatoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" /></div>
                       <div class="field">
-                        <label for="ho-wa-owner">Números de WhatsApp de los agentes</label>
+                        <label for="ho-wa-owner">{{ 'AICHATBOT.HANDOFF.F_OWNERS' | translate }}</label>
                         <input id="ho-wa-owner" [ngModel]="waOwner()" (ngModelChange)="waOwner.set($event)" name="howaowner" placeholder="50688887777, 50699998888" autocomplete="off" spellcheck="false" />
-                        <p class="hint">Multi-agente: separa varios números con coma. Todos reciben los chats en vivo y cualquiera puede responder.</p>
+                        <p class="hint">{{ 'AICHATBOT.HANDOFF.F_OWNERS_HINT' | translate }}</p>
                       </div>
                       <div class="field">
-                        <label for="ho-wa-tpl">Plantilla de aviso (recomendado)</label>
+                        <label for="ho-wa-tpl">{{ 'AICHATBOT.HANDOFF.F_TPL' | translate }}</label>
                         <input id="ho-wa-tpl" [ngModel]="waTemplate()" (ngModelChange)="waTemplate.set($event)" name="howatpl" placeholder="nuevo_chat" autocomplete="off" spellcheck="false" />
                       </div>
-                      <p class="hint"><b>Recomendado:</b> crea en Meta una <b>plantilla de mensaje aprobada</b> con un cuerpo tipo <code>🔔 Nuevo chat en vivo: {{ '{{' }}1{{ '}}' }}</code> (un solo parámetro) y pon aquí su <b>nombre</b>. Así el aviso al agente llega <b>aunque hayan pasado más de 24 h</b>. Sin plantilla, el aviso solo funciona si el agente le escribió al WhatsApp del negocio en las últimas 24 h.</p>
-                      <button type="button" class="save" [disabled]="waSaving()" (click)="saveWhatsapp()">{{ waSaving() ? 'Guardando…' : 'Guardar' }}</button>
+                      <p class="hint" [innerHTML]="'AICHATBOT.HANDOFF.TPL_HINT' | translate"></p>
+                      <button type="button" class="save" [disabled]="waSaving()" (click)="saveWhatsapp()">{{ (waSaving() ? 'AICHATBOT.HANDOFF.BTN_SAVING' : 'AICHATBOT.HANDOFF.BTN_SAVE') | translate }}</button>
                       @if (waOk()) { <p class="ok">{{ waOk() }}</p> }
                       @if (waErr()) { <p class="err">{{ waErr() }}</p> }
                     </div>
@@ -76,30 +77,30 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 <section class="card">
                   <div class="opt-head">
                     <span class="opt-ic tg"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M21.9 4.3 18.7 19.4c-.24 1.06-.87 1.32-1.76.82l-4.87-3.59-2.35 2.26c-.26.26-.48.48-.98.48l.35-4.96 9.02-8.15c.39-.35-.09-.55-.6-.2L6.35 13.1l-4.8-1.5c-1.04-.33-1.06-1.04.22-1.54l18.77-7.23c.87-.32 1.63.2 1.36 1.47z"/></svg></span>
-                    <div class="opt-tl"><b>Telegram</b><span>Recibe los chats en vivo en un grupo de Telegram y responde desde ahí.</span></div>
-                    <button type="button" class="tgl" [class.on]="active() === 'telegram'" (click)="toggle('telegram')" [attr.aria-pressed]="active() === 'telegram'" aria-label="Usar Telegram para el handoff"><span></span></button>
+                    <div class="opt-tl"><b>Telegram</b><span>{{ 'AICHATBOT.HANDOFF.TG_SUB' | translate }}</span></div>
+                    <button type="button" class="tgl" [class.on]="active() === 'telegram'" (click)="toggle('telegram')" [attr.aria-pressed]="active() === 'telegram'" [attr.aria-label]="'AICHATBOT.HANDOFF.TG_ARIA' | translate"><span></span></button>
                   </div>
                   @if (active() === 'telegram') {
                     <div class="opt-body">
                       <ol class="steps">
-                        <li>Abre <b>&#64;BotFather</b> en Telegram, envía <code>/newbot</code> y copia el <b>token</b>.</li>
-                        <li>Pégalo aquí y presiona <b>Conectar bot</b>: registramos el webhook automáticamente.</li>
-                        <li>Crea un <b>grupo</b> en Telegram, agrega tu bot y envía <code>/start</code> dentro del grupo para vincularlo. Ahí llegan los chats en vivo; responde citando el mensaje del cliente. <code>/fin</code> para cerrar.</li>
+                        <li [innerHTML]="'AICHATBOT.HANDOFF.TG_S1' | translate"></li>
+                        <li [innerHTML]="'AICHATBOT.HANDOFF.TG_S2' | translate"></li>
+                        <li [innerHTML]="'AICHATBOT.HANDOFF.TG_S3' | translate"></li>
                       </ol>
                       @if (tgConnected() && !editToken()) {
                         <div class="tg-connected">
-                          <span class="status linked"><span class="sdot"></span>Bot conectado{{ tgUsername() ? ' — @' + tgUsername() : '' }}</span>
-                          <button type="button" class="ghost-btn" (click)="editToken.set(true)">Cambiar token</button>
+                          <span class="status linked"><span class="sdot"></span>{{ 'AICHATBOT.HANDOFF.TG_CONNECTED' | translate }}{{ tgUsername() ? ' — @' + tgUsername() : '' }}</span>
+                          <button type="button" class="ghost-btn" (click)="editToken.set(true)">{{ 'AICHATBOT.HANDOFF.TG_CHANGE_TOKEN' | translate }}</button>
                         </div>
                         @if (!tgChatId() && tgUsername()) {
-                          <p class="hint">Abre <a [href]="'https://t.me/' + tgUsername() + '?startgroup=true'" target="_blank" rel="noopener">&#64;{{ tgUsername() }}</a> y envía <code>/start</code> en tu grupo. Luego <button type="button" class="linkbtn" [disabled]="checking()" (click)="checkStatus()">{{ checking() ? 'comprobando…' : 'comprobar vinculación' }}</button>.</p>
+                          <p class="hint">{{ 'AICHATBOT.HANDOFF.TG_LINK_HINT_1' | translate }} <a [href]="'https://t.me/' + tgUsername() + '?startgroup=true'" target="_blank" rel="noopener">&#64;{{ tgUsername() }}</a> {{ 'AICHATBOT.HANDOFF.TG_LINK_HINT_2' | translate }} <code>/start</code> {{ 'AICHATBOT.HANDOFF.TG_LINK_HINT_3' | translate }} <button type="button" class="linkbtn" [disabled]="checking()" (click)="checkStatus()">{{ (checking() ? 'AICHATBOT.HANDOFF.TG_CHECKING' : 'AICHATBOT.HANDOFF.TG_CHECK') | translate }}</button>.</p>
                         }
                       } @else {
-                        <div class="field"><label for="ho-tg-token">Token del bot (BotFather)</label><input id="ho-tg-token" [ngModel]="tgToken()" (ngModelChange)="tgToken.set($event)" name="hotgtoken" placeholder="123456:ABC-DEF…" autocomplete="off" spellcheck="false" /></div>
-                        <div class="field"><label for="ho-tg-user">Usuario del bot (opcional)</label><div class="at"><span>&#64;</span><input id="ho-tg-user" [ngModel]="tgUser()" (ngModelChange)="tgUser.set($event)" name="hotguser" placeholder="mi_negocio_bot" autocomplete="off" spellcheck="false" /></div></div>
+                        <div class="field"><label for="ho-tg-token">{{ 'AICHATBOT.HANDOFF.TG_F_TOKEN' | translate }}</label><input id="ho-tg-token" [ngModel]="tgToken()" (ngModelChange)="tgToken.set($event)" name="hotgtoken" placeholder="123456:ABC-DEF…" autocomplete="off" spellcheck="false" /></div>
+                        <div class="field"><label for="ho-tg-user">{{ 'AICHATBOT.HANDOFF.TG_F_USER' | translate }}</label><div class="at"><span>&#64;</span><input id="ho-tg-user" [ngModel]="tgUser()" (ngModelChange)="tgUser.set($event)" name="hotguser" [attr.placeholder]="'AICHATBOT.HANDOFF.TG_F_USER_PH' | translate" autocomplete="off" spellcheck="false" /></div></div>
                         <div class="save-row">
-                          <button type="button" class="save" [disabled]="tgSaving()" (click)="connectTelegram()">{{ tgSaving() ? 'Conectando…' : 'Conectar bot' }}</button>
-                          @if (tgConnected()) { <button type="button" class="ghost-btn" (click)="editToken.set(false)">Cancelar</button> }
+                          <button type="button" class="save" [disabled]="tgSaving()" (click)="connectTelegram()">{{ (tgSaving() ? 'AICHATBOT.HANDOFF.TG_CONNECTING' : 'AICHATBOT.HANDOFF.TG_CONNECT') | translate }}</button>
+                          @if (tgConnected()) { <button type="button" class="ghost-btn" (click)="editToken.set(false)">{{ 'AICHATBOT.HANDOFF.CANCEL' | translate }}</button> }
                         </div>
                       }
                       @if (tgOk()) { <p class="ok">{{ tgOk() }}</p> }
@@ -119,43 +120,43 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 <button type="button" class="opt-head acc-head" (click)="hoOpenAcc.set(!hoOpenAcc())" [attr.aria-expanded]="hoOpenAcc()">
                   <span class="opt-ic hrs"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
                   <span class="opt-tl">
-                    <b>Horario de atención</b>
-                    <span>{{ hoursSet() ? hoursSummary() : 'Cuándo hay alguien para atender los chats en vivo.' }}</span>
+                    <b>{{ 'AICHATBOT.HANDOFF.HRS_TITLE' | translate }}</b>
+                    <span>{{ hoursSet() ? hoursSummary() : ('AICHATBOT.HANDOFF.HRS_SUB' | translate) }}</span>
                   </span>
-                  @if (hoursSet()) { <span class="status linked"><span class="sdot"></span>Configurado</span> }
+                  @if (hoursSet()) { <span class="status linked"><span class="sdot"></span>{{ 'AICHATBOT.HANDOFF.HRS_DONE' | translate }}</span> }
                   <svg class="chev" [class.up]="hoOpenAcc()" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                 </button>
                 @if (hoOpenAcc()) {
                 <div class="opt-body">
                   <div class="hrs-row">
-                    <div class="tg-tl"><b>Disponible 24 horas</b><span class="ch-sub">El botón de "hablar con una persona" está siempre activo.</span></div>
-                    <button type="button" class="tgl" [class.on]="hoAlwaysOpen()" (click)="hoAlwaysOpen.set(!hoAlwaysOpen())" [attr.aria-pressed]="hoAlwaysOpen()" aria-label="Disponible 24 horas"><span></span></button>
+                    <div class="tg-tl"><b>{{ 'AICHATBOT.HANDOFF.HRS_24_TITLE' | translate }}</b><span class="ch-sub">{{ 'AICHATBOT.HANDOFF.HRS_24_SUB' | translate }}</span></div>
+                    <button type="button" class="tgl" [class.on]="hoAlwaysOpen()" (click)="hoAlwaysOpen.set(!hoAlwaysOpen())" [attr.aria-pressed]="hoAlwaysOpen()" [attr.aria-label]="'AICHATBOT.HANDOFF.HRS_24_TITLE' | translate"><span></span></button>
                   </div>
 
                   @if (!hoAlwaysOpen()) {
                     <div class="two">
-                      <div class="field"><label for="ho-open">Abre</label><input id="ho-open" type="time" [ngModel]="hoOpen()" (ngModelChange)="hoOpen.set($event)" name="hoopen" /></div>
-                      <div class="field"><label for="ho-close">Cierra</label><input id="ho-close" type="time" [ngModel]="hoClose()" (ngModelChange)="hoClose.set($event)" name="hoclose" /></div>
+                      <div class="field"><label for="ho-open">{{ 'AICHATBOT.HANDOFF.HRS_OPEN' | translate }}</label><input id="ho-open" type="time" [ngModel]="hoOpen()" (ngModelChange)="hoOpen.set($event)" name="hoopen" /></div>
+                      <div class="field"><label for="ho-close">{{ 'AICHATBOT.HANDOFF.HRS_CLOSE' | translate }}</label><input id="ho-close" type="time" [ngModel]="hoClose()" (ngModelChange)="hoClose.set($event)" name="hoclose" /></div>
                     </div>
                     <div class="field">
-                      <label>Días de atención</label>
-                      <div class="days" role="group" aria-label="Días de atención">
+                      <label>{{ 'AICHATBOT.HANDOFF.HRS_DAYS' | translate }}</label>
+                      <div class="days" role="group" [attr.aria-label]="'AICHATBOT.HANDOFF.HRS_DAYS' | translate">
                         @for (d of dayList; track d.n) {
-                          <button type="button" class="day" [class.on]="hasDay(d.n)" (click)="toggleDay(d.n)" [attr.aria-pressed]="hasDay(d.n)">{{ d.label }}</button>
+                          <button type="button" class="day" [class.on]="hasDay(d.n)" (click)="toggleDay(d.n)" [attr.aria-pressed]="hasDay(d.n)">{{ d.label | translate }}</button>
                         }
                       </div>
                     </div>
                   }
 
                   <div class="field">
-                    <label for="ho-away">Mensaje fuera de horario</label>
-                    <input id="ho-away" [ngModel]="hoAway()" (ngModelChange)="hoAway.set($event)" name="hoaway" placeholder="Estamos fuera de horario. Te respondemos mañana a partir de las 9:00." autocomplete="off" />
-                    <p class="hint">Si un cliente pide hablar con una persona fuera de horario, el bot le dice esto y sigue ayudándole. Horario en zona de Costa Rica.</p>
+                    <label for="ho-away">{{ 'AICHATBOT.HANDOFF.HRS_AWAY' | translate }}</label>
+                    <input id="ho-away" [ngModel]="hoAway()" (ngModelChange)="hoAway.set($event)" name="hoaway" [attr.placeholder]="'AICHATBOT.HANDOFF.HRS_AWAY_PH' | translate" autocomplete="off" />
+                    <p class="hint">{{ 'AICHATBOT.HANDOFF.HRS_AWAY_HINT' | translate }}</p>
                   </div>
 
                   <div class="save-row">
-                    <button type="button" class="save" [disabled]="hoSaving()" (click)="saveHours()">{{ hoSaving() ? 'Guardando…' : 'Guardar horario' }}</button>
-                    @if (hoursSet()) { <button type="button" class="ghost-btn" (click)="hoOpenAcc.set(false)">Cerrar</button> }
+                    <button type="button" class="save" [disabled]="hoSaving()" (click)="saveHours()">{{ (hoSaving() ? 'AICHATBOT.HANDOFF.HRS_SAVING' : 'AICHATBOT.HANDOFF.HRS_SAVE') | translate }}</button>
+                    @if (hoursSet()) { <button type="button" class="ghost-btn" (click)="hoOpenAcc.set(false)">{{ 'AICHATBOT.HANDOFF.CLOSE' | translate }}</button> }
                   </div>
                   @if (hoOk()) { <p class="ok">{{ hoOk() }}</p> }
                   @if (hoErr()) { <p class="err">{{ hoErr() }}</p> }
@@ -229,6 +230,7 @@ export class ChatbotHandoffComponent implements OnInit {
   private readonly s = inject(ChatbotSessionService);
   private readonly sb = inject(SupabaseClientService).client;
   private readonly title = inject(Title);
+  private readonly i18n = inject(TranslateService);
 
   readonly active = signal<'' | 'telegram' | 'whatsapp'>('');
   // Telegram
@@ -249,8 +251,10 @@ export class ChatbotHandoffComponent implements OnInit {
   readonly hoursSet = signal(false);
   readonly hoOpenAcc = signal(true);
   readonly dayList = [
-    { n: 1, label: 'Lun' }, { n: 2, label: 'Mar' }, { n: 3, label: 'Mié' }, { n: 4, label: 'Jue' },
-    { n: 5, label: 'Vie' }, { n: 6, label: 'Sáb' }, { n: 0, label: 'Dom' },
+    { n: 1, label: 'AICHATBOT.HANDOFF.D_MON' }, { n: 2, label: 'AICHATBOT.HANDOFF.D_TUE' },
+    { n: 3, label: 'AICHATBOT.HANDOFF.D_WED' }, { n: 4, label: 'AICHATBOT.HANDOFF.D_THU' },
+    { n: 5, label: 'AICHATBOT.HANDOFF.D_FRI' }, { n: 6, label: 'AICHATBOT.HANDOFF.D_SAT' },
+    { n: 0, label: 'AICHATBOT.HANDOFF.D_SUN' },
   ];
 
   readonly tgConnected = computed(() => !!this.tgUsername() || !!this.tgChatId());
@@ -259,7 +263,8 @@ export class ChatbotHandoffComponent implements OnInit {
   readonly orderedOptions = computed<Array<'whatsapp' | 'telegram'>>(() => this.active() === 'telegram' ? ['telegram', 'whatsapp'] : ['whatsapp', 'telegram']);
 
   ngOnInit(): void {
-    this.title.setTitle('Atención humana · Vectis AI ChatBot');
+    this.i18n.get('AICHATBOT.HANDOFF.PAGE_TITLE').subscribe((t) => this.title.setTitle(t));
+    this.i18n.onLangChange.subscribe(() => this.title.setTitle(this.i18n.instant('AICHATBOT.HANDOFF.PAGE_TITLE')));
     const c = this.s.currentConfig();
     if (c) {
       this.active.set(c.handoffEnabled ? (c.handoffChannel === 'whatsapp' ? 'whatsapp' : 'telegram') : '');
@@ -278,10 +283,11 @@ export class ChatbotHandoffComponent implements OnInit {
 
   /** Resumen legible del horario, para mostrarlo con la sección cerrada. */
   hoursSummary(): string {
-    if (this.hoAlwaysOpen()) return 'Disponible 24 horas, todos los días.';
-    const names = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-    const days = [...this.hoDays()].sort((a, b) => a - b).map((d) => names[d]).join(', ');
-    return (days || 'Sin días') + ' · ' + this.hoOpen() + '–' + this.hoClose();
+    if (this.hoAlwaysOpen()) return this.i18n.instant('AICHATBOT.HANDOFF.HRS_ALWAYS_SUMMARY');
+    const keys = ['D_SUN', 'D_MON', 'D_TUE', 'D_WED', 'D_THU', 'D_FRI', 'D_SAT'];
+    const days = [...this.hoDays()].sort((a, b) => a - b)
+      .map((d) => this.i18n.instant('AICHATBOT.HANDOFF.' + keys[d])).join(', ');
+    return (days || this.i18n.instant('AICHATBOT.HANDOFF.HRS_NO_DAYS')) + ' · ' + this.hoOpen() + '–' + this.hoClose();
   }
 
   private clientId(): string { return this.s.currentClientId(); }
@@ -302,8 +308,8 @@ export class ChatbotHandoffComponent implements OnInit {
 
   async saveWhatsapp(): Promise<void> {
     this.waErr.set(''); this.waOk.set('');
-    if (!this.clientId()) { this.waErr.set('Primero crea y guarda tu chatbot.'); return; }
-    if (!this.waPhoneId().trim() || !this.waToken().trim() || !this.waOwner().trim()) { this.waErr.set('Completa Phone Number ID, token de acceso y número del agente.'); return; }
+    if (!this.clientId()) { this.waErr.set(this.i18n.instant('AICHATBOT.HANDOFF.E_SAVE_FIRST')); return; }
+    if (!this.waPhoneId().trim() || !this.waToken().trim() || !this.waOwner().trim()) { this.waErr.set(this.i18n.instant('AICHATBOT.HANDOFF.E_WA_FIELDS')); return; }
     this.waSaving.set(true);
     try {
       const ok = await this.persist({
@@ -314,16 +320,16 @@ export class ChatbotHandoffComponent implements OnInit {
         handoff_whatsapp_owner: this.waOwner().trim().replace(/\D/g, '') || null,
         handoff_whatsapp_template: this.waTemplate().trim() || null,
       });
-      if (ok) { this.waOk.set('Guardado ✓'); setTimeout(() => this.waOk.set(''), 2500); }
-      else this.waErr.set('No se pudo guardar. Intenta de nuevo.');
+      if (ok) { this.waOk.set(this.i18n.instant('AICHATBOT.HANDOFF.SAVED')); setTimeout(() => this.waOk.set(''), 2500); }
+      else this.waErr.set(this.i18n.instant('AICHATBOT.HANDOFF.E_SAVE_FAIL'));
     } finally { this.waSaving.set(false); }
   }
 
   async connectTelegram(): Promise<void> {
     this.tgErr.set(''); this.tgOk.set('');
     const id = this.clientId();
-    if (!id) { this.tgErr.set('Primero crea y guarda tu chatbot.'); return; }
-    if (!this.tgToken().trim()) { this.tgErr.set('Pega el token de tu bot de Telegram (BotFather).'); return; }
+    if (!id) { this.tgErr.set(this.i18n.instant('AICHATBOT.HANDOFF.E_SAVE_FIRST')); return; }
+    if (!this.tgToken().trim()) { this.tgErr.set(this.i18n.instant('AICHATBOT.HANDOFF.E_TG_TOKEN')); return; }
     this.tgSaving.set(true);
     try {
       await this.sb.from('chatbots').update({
@@ -337,10 +343,10 @@ export class ChatbotHandoffComponent implements OnInit {
       if (j && j.ok) {
         if (j.username) { this.tgUsername.set(j.username); this.tgUser.set(j.username); }
         this.tgChatId.set(''); this.editToken.set(false);
-        this.tgOk.set('Bot conectado. Ahora abre tu bot y envía /start en tu grupo para vincularlo.');
+        this.tgOk.set(this.i18n.instant('AICHATBOT.HANDOFF.OK_TG_CONNECTED'));
         this.syncLocal();
-      } else { this.tgErr.set('No pude conectar el bot: ' + ((j && j.error) || 'revisa el token')); }
-    } catch (e) { this.tgErr.set('No pude conectar el bot. Revisa el token e intenta de nuevo.'); }
+      } else { this.tgErr.set(this.i18n.instant('AICHATBOT.HANDOFF.E_TG_CONNECT') + ((j && j.error) || this.i18n.instant('AICHATBOT.HANDOFF.E_TG_CHECK_TOKEN'))); }
+    } catch (e) { this.tgErr.set(this.i18n.instant('AICHATBOT.HANDOFF.E_TG_CONNECT_GENERIC')); }
     finally { this.tgSaving.set(false); }
   }
 
@@ -367,8 +373,8 @@ export class ChatbotHandoffComponent implements OnInit {
 
   async saveHours(): Promise<void> {
     this.hoErr.set(''); this.hoOk.set('');
-    if (!this.clientId()) { this.hoErr.set('Primero crea y guarda tu chatbot.'); return; }
-    if (!this.hoAlwaysOpen() && !this.hoDays().length) { this.hoErr.set('Elige al menos un día de atención.'); return; }
+    if (!this.clientId()) { this.hoErr.set(this.i18n.instant('AICHATBOT.HANDOFF.E_SAVE_FIRST')); return; }
+    if (!this.hoAlwaysOpen() && !this.hoDays().length) { this.hoErr.set(this.i18n.instant('AICHATBOT.HANDOFF.E_PICK_DAY')); return; }
     this.hoSaving.set(true);
     try {
       const ok = await this.persist({
@@ -381,10 +387,10 @@ export class ChatbotHandoffComponent implements OnInit {
       });
       if (ok) {
         this.hoursSet.set(true);
-        this.hoOk.set('Guardado ✓');
+        this.hoOk.set(this.i18n.instant('AICHATBOT.HANDOFF.SAVED'));
         setTimeout(() => { this.hoOk.set(''); this.hoOpenAcc.set(false); }, 1500);
       }
-      else this.hoErr.set('No se pudo guardar. Intenta de nuevo.');
+      else this.hoErr.set(this.i18n.instant('AICHATBOT.HANDOFF.E_SAVE_FAIL'));
     } finally { this.hoSaving.set(false); }
   }
 

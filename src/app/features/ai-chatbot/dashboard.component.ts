@@ -21,6 +21,26 @@ const TYPE_COLOR: Record<string, string> = {
 };
 const TYPE_ORDER = ['interes_compra', 'pregunta', 'agendar', 'soporte', 'queja', 'sin_respuesta', 'otro'];
 
+/**
+ * Normaliza un tema para mostrarlo: siempre empieza en mayúscula y nunca sale
+ * TODO EN MAYÚSCULAS. Los temas los escribe la IA y llegan en formatos mezclados
+ * ("ENVÍOS", "precios", "Garantía"), lo que se ve desordenado en el panel.
+ *
+ * Reglas:
+ *  - Sin ninguna minúscula ("ENVÍOS Y DEVOLUCIONES") → todo a minúsculas y se
+ *    capitaliza la primera letra. Es la única forma de arreglar los gritos.
+ *  - Ya mezclado → solo tocamos la primera letra, para no dañar el resto.
+ *  - Empieza en minúscula seguida de mayúscula ("iPhone") → se deja tal cual:
+ *    capitalizarlo daría "IPhone", que está peor que el original.
+ */
+export function titleCase(raw: string): string {
+  const s = String(raw ?? '').trim().replace(/[_-]+/g, ' ').replace(/\s+/g, ' ');
+  if (!s) return '';
+  if (/^[a-záéíóúüñ][A-ZÁÉÍÓÚÜÑ]/.test(s)) return s;
+  const base = /[a-záéíóúüñ]/.test(s) ? s : s.toLocaleLowerCase('es');
+  return base.charAt(0).toLocaleUpperCase('es') + base.slice(1);
+}
+
 /** /dashboard — métricas del MES ACTUAL (Supabase), con refresco automático. */
 @Component({
   selector: 'app-chatbot-dashboard',
@@ -531,7 +551,7 @@ export class ChatbotDashboardComponent implements OnInit, OnDestroy {
   byTopic = computed(() => {
     const arr: Array<{ topic: string; n: number }> = this.stats()?.by_topic ?? [];
     const max = Math.max(1, ...arr.map((x) => x.n));
-    return arr.map((x) => ({ ...x, pct: Math.round((x.n / max) * 100) }));
+    return arr.map((x) => ({ ...x, topic: titleCase(x.topic), pct: Math.round((x.n / max) * 100) }));
   });
   usagePct = computed(() => Math.min(100, Math.round((this.messages() / Math.max(1, this.limit())) * 100)));
 

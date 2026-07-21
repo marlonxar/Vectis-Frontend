@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { ChatbotAppHeaderComponent } from './app-header.component';
@@ -15,13 +16,13 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
 /**
  * /channels/:channel — Canales donde puede operar el chatbot.
  * WEB: instrucciones de embed + apariencia + dominios + vista previa (guardado propio, no pisa el configure).
- * Otros (WhatsApp/Instagram/Messenger/Telegram): instrucciones / en preparación.
+ * Otros (WhatsApp/Instagram/Messenger/Telegram): conexión, activación y Cal.com.
  * Disponible para todos los usuarios (GA). El enlace vive en el sidebar.
  */
 @Component({
   selector: 'app-chatbot-channels',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       <app-chatbot-app-header></app-chatbot-app-header>
@@ -41,56 +42,53 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 @default { <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg> }
               }
             </span>
-            <span class="eyebrow on-dark">Canal</span>
+            <span class="eyebrow on-dark">{{ 'AICHATBOT.CHANNELS.PAGE_EYEBROW' | translate }}</span>
             </div>
-            <h1 class="ttl">{{ meta().title }}</h1>
-            <p class="lead on-dark">{{ meta().lead }}</p>
+            <h1 class="ttl">{{ meta().title | translate }}</h1>
+            <p class="lead on-dark">{{ meta().lead | translate }}</p>
 
             <div class="callout">
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-              <div>
-                <b>Antes de empezar:</b> el chatbot toma su información (negocio, documentos, inventario, sitio web, FAQs) desde
-                <a routerLink="/configure">Configurar</a>. Configúralo primero — este canal usa esa misma información.
-              </div>
+              <div [innerHTML]="'AICHATBOT.CHANNELS.CALLOUT' | translate"></div>
             </div>
 
             @if (channel() === 'web') {
               <!-- Instalación -->
               <section class="card">
-                <h3 class="ch">Instálalo en tu sitio web</h3>
-                <p class="muted">Copia esta línea y pégala antes de <code>&lt;/body&gt;</code> en tu página.</p>
+                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.W_INSTALL' | translate }}</h3>
+                <p class="muted" [innerHTML]="'AICHATBOT.CHANNELS.W_INSTALL_SUB' | translate"></p>
                 <div class="code">
                   <pre>{{ embed() }}</pre>
-                  <button type="button" class="copy" (click)="copy(embed())">{{ copied() ? '¡Copiado!' : 'Copiar' }}</button>
+                  <button type="button" class="copy" (click)="copy(embed())">{{ (copied() ? 'AICHATBOT.CHANNELS.COPIED' : 'AICHATBOT.CHANNELS.COPY') | translate }}</button>
                 </div>
-                <p class="hint">Agrega tu dominio en <b>Dominios autorizados</b> (abajo); si no, el widget no carga por seguridad.</p>
+                <p class="hint" [innerHTML]="'AICHATBOT.CHANNELS.W_INSTALL_HINT' | translate"></p>
               </section>
 
               <div class="cfg-grid">
                 <div class="col-form">
                   <!-- Apariencia -->
                   <section class="card">
-                    <h3 class="ch">Apariencia</h3>
+                    <h3 class="ch">{{ 'AICHATBOT.CHANNELS.W_APPEARANCE' | translate }}</h3>
                     <div class="two">
                       <div class="field">
-                        <label for="w-title">Título del widget</label>
-                        <input id="w-title" [ngModel]="widgetTitle()" (ngModelChange)="widgetTitle.set($event)" name="wtitle" placeholder="Asistente Virtual" />
+                        <label for="w-title">{{ 'AICHATBOT.CHANNELS.W_TITLE' | translate }}</label>
+                        <input id="w-title" [ngModel]="widgetTitle()" (ngModelChange)="widgetTitle.set($event)" name="wtitle" [attr.placeholder]="'AICHATBOT.CHANNELS.W_TITLE_PH' | translate" />
                       </div>
                       <div class="field">
-                        <label for="w-logo">Logo (URL)</label>
+                        <label for="w-logo">{{ 'AICHATBOT.CHANNELS.W_LOGO' | translate }}</label>
                         <input id="w-logo" [ngModel]="brandLogoUrl()" (ngModelChange)="brandLogoUrl.set($event)" name="logo" placeholder="https://tutienda.com/logo.png" />
                       </div>
                     </div>
                     <div class="two">
                       <div class="field">
-                        <label>Color principal</label>
+                        <label>{{ 'AICHATBOT.CHANNELS.W_COLOR' | translate }}</label>
                         <div class="color">
                           <input [ngModel]="brandColor()" (ngModelChange)="brandColor.set($event)" name="color" placeholder="#E7AB2E" />
                           <input type="color" [ngModel]="brandColor() || '#E7AB2E'" (ngModelChange)="brandColor.set($event)" name="colorpick" aria-label="Color" />
                         </div>
                       </div>
                       <div class="field">
-                        <label>Color secundario</label>
+                        <label>{{ 'AICHATBOT.CHANNELS.W_COLOR2' | translate }}</label>
                         <div class="color">
                           <input [ngModel]="secondBrandColor()" (ngModelChange)="secondBrandColor.set($event)" name="color2" placeholder="#0A0A0A" />
                           <input type="color" [ngModel]="secondBrandColor() || '#0A0A0A'" (ngModelChange)="secondBrandColor.set($event)" name="colorpick2" aria-label="Color 2" />
@@ -98,52 +96,52 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                       </div>
                     </div>
                     <div class="field">
-                      <label>Posición de la burbuja</label>
-                      <div class="pos-seg" role="group" aria-label="Posición">
-                        <button type="button" [class.on]="widgetPosition() === 'left'" (click)="widgetPosition.set('left')">Izquierda</button>
-                        <button type="button" [class.on]="widgetPosition() === 'right'" (click)="widgetPosition.set('right')">Derecha</button>
+                      <label>{{ 'AICHATBOT.CHANNELS.W_POSITION' | translate }}</label>
+                      <div class="pos-seg" role="group" [attr.aria-label]="'AICHATBOT.CHANNELS.W_POSITION' | translate">
+                        <button type="button" [class.on]="widgetPosition() === 'left'" (click)="widgetPosition.set('left')">{{ 'AICHATBOT.CHANNELS.W_LEFT' | translate }}</button>
+                        <button type="button" [class.on]="widgetPosition() === 'right'" (click)="widgetPosition.set('right')">{{ 'AICHATBOT.CHANNELS.W_RIGHT' | translate }}</button>
                       </div>
                     </div>
                     <div class="field">
-                      <label for="w-welcome">Mensaje de bienvenida</label>
-                      <input id="w-welcome" [ngModel]="welcome()" (ngModelChange)="welcome.set($event)" name="welcome" placeholder="¡Hola! ¿En qué puedo ayudarte hoy?" />
+                      <label for="w-welcome">{{ 'AICHATBOT.CHANNELS.W_WELCOME' | translate }}</label>
+                      <input id="w-welcome" [ngModel]="welcome()" (ngModelChange)="welcome.set($event)" name="welcome" [attr.placeholder]="'AICHATBOT.CHANNELS.W_WELCOME_PH' | translate" />
                     </div>
                     <div class="field">
-                      <label>Botones de respuesta rápida</label>
+                      <label>{{ 'AICHATBOT.CHANNELS.W_QUICK' | translate }}</label>
                       @for (q of quickReplies(); track $index) {
                         <div class="qr">
-                          <input [ngModel]="q" (ngModelChange)="setQuick($index, $event)" [ngModelOptions]="{ standalone: true }" placeholder="Ej. Ver precios" />
-                          <button type="button" class="x" (click)="removeQuick($index)" aria-label="Quitar"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                          <input [ngModel]="q" (ngModelChange)="setQuick($index, $event)" [ngModelOptions]="{ standalone: true }" [attr.placeholder]="'AICHATBOT.CHANNELS.W_QUICK_PH' | translate" />
+                          <button type="button" class="x" (click)="removeQuick($index)" [attr.aria-label]="'AICHATBOT.CHANNELS.W_REMOVE' | translate"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
                         </div>
                       }
                       @if (quickReplies().length < quickLimit()) {
-                        <button type="button" class="ghost-btn" (click)="addQuick()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Agregar botón</button>
+                        <button type="button" class="ghost-btn" (click)="addQuick()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>{{ 'AICHATBOT.CHANNELS.W_ADD_QUICK' | translate }}</button>
                       } @else if (s.plan() === 'basic') {
-                        <p class="hint">El plan Basic permite hasta 3 botones. Sube de plan para más.</p>
+                        <p class="hint">{{ 'AICHATBOT.CHANNELS.W_QUICK_LIMIT' | translate }}</p>
                       }
                     </div>
                   </section>
 
                   <!-- Dominios autorizados -->
                   <section class="card">
-                    <h3 class="ch">Dominios autorizados</h3>
-                    <p class="muted">Solo estos dominios podrán cargar tu widget (seguridad). Deja vacío para permitir cualquiera (no recomendado).</p>
+                    <h3 class="ch">{{ 'AICHATBOT.CHANNELS.W_DOMAINS' | translate }}</h3>
+                    <p class="muted">{{ 'AICHATBOT.CHANNELS.W_DOMAINS_SUB' | translate }}</p>
                     @for (o of origins(); track $index) {
                       <div class="qr">
                         <input [ngModel]="o" (ngModelChange)="setOrigin($index, $event)" [ngModelOptions]="{ standalone: true }" placeholder="https://tutienda.com" />
                         @if (origins().length > 1) {
-                          <button type="button" class="x" (click)="removeOrigin($index)" aria-label="Quitar dominio"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+                          <button type="button" class="x" (click)="removeOrigin($index)" [attr.aria-label]="'AICHATBOT.CHANNELS.W_REMOVE_DOMAIN' | translate"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
                         }
                       </div>
                     }
                     @if (origins().length < originLimit()) {
-                      <button type="button" class="ghost-btn" (click)="addOrigin()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Agregar dominio</button>
+                      <button type="button" class="ghost-btn" (click)="addOrigin()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>{{ 'AICHATBOT.CHANNELS.W_ADD_DOMAIN' | translate }}</button>
                     }
-                    <p class="hint">{{ s.plan() === 'business' ? 'Tu plan permite hasta 3 dominios.' : 'Tu plan permite 1 dominio.' }}</p>
+                    <p class="hint">{{ (s.plan() === 'business' ? 'AICHATBOT.CHANNELS.W_DOMAIN_LIMIT_3' : 'AICHATBOT.CHANNELS.W_DOMAIN_LIMIT_1') | translate }}</p>
                   </section>
 
                   <div class="save-row">
-                    <button type="button" class="save" [disabled]="saving()" (click)="save()">{{ saving() ? 'Guardando…' : 'Guardar apariencia y dominios' }}</button>
+                    <button type="button" class="save" [disabled]="saving()" (click)="save()">{{ (saving() ? 'AICHATBOT.CHANNELS.SAVING' : 'AICHATBOT.CHANNELS.W_SAVE') | translate }}</button>
                     @if (savedMsg()) { <span class="ok-msg">{{ savedMsg() }}</span> }
                     @if (err()) { <span class="err-msg">{{ err() }}</span> }
                   </div>
@@ -152,12 +150,12 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 <!-- Vista previa en vivo -->
                 <div class="col-preview">
                   <div class="preview-sticky">
-                    <p class="pv-label">Vista previa</p>
+                    <p class="pv-label">{{ 'AICHATBOT.CHANNELS.W_PREVIEW' | translate }}</p>
                     <div class="pv-win" [class.left]="widgetPosition() === 'left'">
                       <div class="pv-head" [style.background]="previewBar()">
                         @if (brandLogoUrl().trim()) { <img class="pv-ava" [src]="brandLogoUrl().trim()" alt="" /> }
                         @else { <span class="pv-ava" [style.color]="previewColor()">{{ previewInitial() }}</span> }
-                        <div class="pv-meta"><b>{{ previewTitle() }}</b><span>En línea</span></div>
+                        <div class="pv-meta"><b>{{ previewTitle() }}</b><span>{{ 'AICHATBOT.CHANNELS.W_ONLINE' | translate }}</span></div>
                       </div>
                       <div class="pv-body">
                         <div class="pv-bot">{{ previewWelcome() }}</div>
@@ -175,31 +173,31 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
             } @else if (channel() === 'telegram') {
               <!-- Conexión del bot (una sola vez; sirve para el canal y para el handoff) -->
               <section class="card">
-                <h3 class="ch">Conecta tu bot</h3>
-                <p class="muted">Una sola conexión: el mismo bot responde a tus clientes en Telegram y también sirve para “hablar con un agente”.</p>
+                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.T_CONNECT_TITLE' | translate }}</h3>
+                <p class="muted">{{ 'AICHATBOT.CHANNELS.T_CONNECT_SUB' | translate }}</p>
 
                 @if (botConnected() && !editToken()) {
                   <div class="tg-connected">
-                    <span class="status linked"><span class="sdot"></span>Bot conectado — &#64;{{ tgUsername() }}</span>
-                    <button type="button" class="ghost-btn" (click)="editToken.set(true)">Cambiar token</button>
+                    <span class="status linked"><span class="sdot"></span>{{ 'AICHATBOT.CHANNELS.T_CONNECTED' | translate }} — &#64;{{ tgUsername() }}</span>
+                    <button type="button" class="ghost-btn" (click)="editToken.set(true)">{{ 'AICHATBOT.CHANNELS.T_CHANGE_TOKEN' | translate }}</button>
                   </div>
-                  <p class="hint">Tus clientes le escriben a <a [href]="'https://t.me/' + tgUsername()" target="_blank" rel="noopener">&#64;{{ tgUsername() }}</a> en Telegram y el bot responde solo. Activa el canal abajo para encenderlo.</p>
+                  <p class="hint">{{ 'AICHATBOT.CHANNELS.T_CONNECTED_HINT_1' | translate }} <a [href]="'https://t.me/' + tgUsername()" target="_blank" rel="noopener">&#64;{{ tgUsername() }}</a> {{ 'AICHATBOT.CHANNELS.T_CONNECTED_HINT_2' | translate }}</p>
                 } @else {
                   <ol class="tg-steps">
-                    <li>Abre <b>&#64;BotFather</b> en Telegram, envía <code>/newbot</code> y copia el <b>token</b> que te da.</li>
-                    <li>Pégalo aquí y presiona <b>Conectar bot</b>: registramos el webhook automáticamente.</li>
+                    <li [innerHTML]="'AICHATBOT.CHANNELS.T_S1' | translate"></li>
+                    <li [innerHTML]="'AICHATBOT.CHANNELS.T_S2' | translate"></li>
                   </ol>
                   <div class="field">
-                    <label for="tg-token">Token del bot (BotFather)</label>
+                    <label for="tg-token">{{ 'AICHATBOT.CHANNELS.T_F_TOKEN' | translate }}</label>
                     <input id="tg-token" [ngModel]="tgToken()" (ngModelChange)="tgToken.set($event)" name="tgtoken" placeholder="123456:ABC-DEF…" autocomplete="off" spellcheck="false" />
                   </div>
                   <div class="field">
-                    <label for="tg-user">Usuario del bot (opcional)</label>
-                    <div class="at"><span>&#64;</span><input id="tg-user" [ngModel]="tgUser()" (ngModelChange)="tgUser.set($event)" name="tguser" placeholder="mi_negocio_bot" autocomplete="off" spellcheck="false" /></div>
+                    <label for="tg-user">{{ 'AICHATBOT.CHANNELS.T_F_USER' | translate }}</label>
+                    <div class="at"><span>&#64;</span><input id="tg-user" [ngModel]="tgUser()" (ngModelChange)="tgUser.set($event)" name="tguser" [attr.placeholder]="'AICHATBOT.CHANNELS.T_F_USER_PH' | translate" autocomplete="off" spellcheck="false" /></div>
                   </div>
                   <div class="save-row">
-                    <button type="button" class="save" [disabled]="tgSaving()" (click)="connectBot()">{{ tgSaving() ? 'Conectando…' : 'Conectar bot' }}</button>
-                    @if (botConnected()) { <button type="button" class="ghost-btn" (click)="editToken.set(false)">Cancelar</button> }
+                    <button type="button" class="save" [disabled]="tgSaving()" (click)="connectBot()">{{ (tgSaving() ? 'AICHATBOT.CHANNELS.T_CONNECTING' : 'AICHATBOT.CHANNELS.T_CONNECT') | translate }}</button>
+                    @if (botConnected()) { <button type="button" class="ghost-btn" (click)="editToken.set(false)">{{ 'AICHATBOT.CHANNELS.CANCEL' | translate }}</button> }
                   </div>
                 }
                 @if (tgOk()) { <p class="ok-line">{{ tgOk() }}</p> }
@@ -208,15 +206,15 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
 
               <!-- Canal + agente + citas -->
               <section class="card">
-                <h3 class="ch">Activa el canal</h3>
+                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</h3>
                 <div class="tg-toggle only">
-                  <div class="tg-tl"><b>El bot responde en Telegram</b><span class="ch-sub">Tus clientes le escriben al bot en un chat privado y contesta con la información de tu negocio.</span></div>
-                  <button type="button" class="tgl" [class.on]="channelOn()" (click)="channelOn.set(!channelOn())" [attr.aria-pressed]="channelOn()" aria-label="Activar el bot en Telegram"><span></span></button>
+                  <div class="tg-tl"><b>{{ 'AICHATBOT.CHANNELS.T_TOGGLE' | translate }}</b><span class="ch-sub">{{ 'AICHATBOT.CHANNELS.T_TOGGLE_SUB' | translate }}</span></div>
+                  <button type="button" class="tgl" [class.on]="channelOn()" (click)="channelOn.set(!channelOn())" [attr.aria-pressed]="channelOn()" [attr.aria-label]="'AICHATBOT.CHANNELS.T_TOGGLE_ARIA' | translate"><span></span></button>
                 </div>
-                <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b> en Telegram? Eso se activa en <a routerLink="/handoff">Handoff a Humano</a> — usa este mismo bot.</p>
+                <p class="hint" [innerHTML]="'AICHATBOT.CHANNELS.HANDOFF_HINT' | translate"></p>
 
                 <div class="save-row">
-                  <button type="button" class="save" [disabled]="tgSaving()" (click)="saveTelegram()">{{ tgSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
+                  <button type="button" class="save" [disabled]="tgSaving()" (click)="saveTelegram()">{{ (tgSaving() ? 'AICHATBOT.CHANNELS.SAVING' : 'AICHATBOT.CHANNELS.SAVE_CHANNEL') | translate }}</button>
                   @if (tgOk()) { <span class="ok-msg">{{ tgOk() }}</span> }
                   @if (tgErr()) { <span class="err-msg">{{ tgErr() }}</span> }
                 </div>
@@ -225,54 +223,54 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
             } @else if (channel() === 'whatsapp') {
               <!-- Conexión con Meta WhatsApp Cloud API -->
               <section class="card">
-                <h3 class="ch">Conecta tu WhatsApp</h3>
-                <p class="muted">Usa la <b>WhatsApp Cloud API</b> de Meta (oficial y gratuita hasta cierto volumen). Conecta el número de WhatsApp Business de tu negocio.</p>
+                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.WA_CONNECT_TITLE' | translate }}</h3>
+                <p class="muted" [innerHTML]="'AICHATBOT.CHANNELS.WA_CONNECT_SUB' | translate"></p>
                 <ol class="tg-steps">
-                  <li>En <b>developers.facebook.com</b> crea una app y agrega el producto <b>WhatsApp</b>. Consigue un número y verifícalo.</li>
-                  <li>Copia el <b>Phone Number ID</b> y genera un <b>token de acceso permanente</b>; pégalos aquí abajo.</li>
-                  <li>Inventa un <b>token de verificación</b> (una palabra secreta tuya) y escríbelo abajo.</li>
-                  <li>En la configuración del <b>Webhook</b> de tu app de Meta, pega la URL de callback de abajo y ese mismo token de verificación, y suscríbete al campo <b>messages</b>.</li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.WA_S1' | translate"></li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.WA_S2' | translate"></li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.WA_S3' | translate"></li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.WA_S4' | translate"></li>
                 </ol>
 
                 <div class="field">
-                  <label>URL de callback (webhook)</label>
+                  <label>{{ 'AICHATBOT.CHANNELS.F_CALLBACK' | translate }}</label>
                   <div class="code">
                     <pre>{{ waWebhookUrl() }}</pre>
-                    <button type="button" class="copy" (click)="waCopy()">{{ waCopied() ? '¡Copiado!' : 'Copiar' }}</button>
+                    <button type="button" class="copy" (click)="waCopy()">{{ (waCopied() ? 'AICHATBOT.CHANNELS.COPIED' : 'AICHATBOT.CHANNELS.COPY') | translate }}</button>
                   </div>
                 </div>
                 <div class="two">
                   <div class="field">
-                    <label for="wa-pnid">Phone Number ID</label>
+                    <label for="wa-pnid">{{ 'AICHATBOT.CHANNELS.F_PNID' | translate }}</label>
                     <input id="wa-pnid" [ngModel]="waPhoneId()" (ngModelChange)="waPhoneId.set($event)" name="wapnid" placeholder="123456789012345" autocomplete="off" spellcheck="false" />
                   </div>
                   <div class="field">
-                    <label for="wa-verify">Token de verificación</label>
-                    <input id="wa-verify" [ngModel]="waVerifyTok()" (ngModelChange)="waVerifyTok.set($event)" name="waverify" placeholder="mi-palabra-secreta" autocomplete="off" spellcheck="false" />
+                    <label for="wa-verify">{{ 'AICHATBOT.CHANNELS.F_VERIFY' | translate }}</label>
+                    <input id="wa-verify" [ngModel]="waVerifyTok()" (ngModelChange)="waVerifyTok.set($event)" name="waverify" [attr.placeholder]="'AICHATBOT.CHANNELS.F_VERIFY_PH' | translate" autocomplete="off" spellcheck="false" />
                   </div>
                 </div>
                 <div class="field">
-                  <label for="wa-token">Token de acceso permanente</label>
+                  <label for="wa-token">{{ 'AICHATBOT.CHANNELS.F_ACCESS' | translate }}</label>
                   <input id="wa-token" [ngModel]="waToken()" (ngModelChange)="waToken.set($event)" name="watoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" />
                 </div>
                 <div class="field">
-                  <label for="wa-secret">App Secret de Meta (recomendado)</label>
-                  <input id="wa-secret" [ngModel]="metaSecret()" (ngModelChange)="metaSecret.set($event)" name="wasecret" placeholder="App Secret de tu app de Meta" autocomplete="off" spellcheck="false" />
+                  <label for="wa-secret">{{ 'AICHATBOT.CHANNELS.F_SECRET' | translate }}</label>
+                  <input id="wa-secret" [ngModel]="metaSecret()" (ngModelChange)="metaSecret.set($event)" name="wasecret" [attr.placeholder]="'AICHATBOT.CHANNELS.F_SECRET_PH' | translate" autocomplete="off" spellcheck="false" />
                 </div>
-                <p class="hint">Opcional pero recomendado: el <b>App Secret</b> de tu app de Meta. Lo usamos para verificar la firma de los webhooks y rechazar mensajes falsos (es el mismo para tus canales de Meta).</p>
+                <p class="hint" [innerHTML]="'AICHATBOT.CHANNELS.SECRET_HINT' | translate"></p>
               </section>
 
               <!-- Canal + agente + citas -->
               <section class="card">
-                <h3 class="ch">Activa el canal</h3>
+                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</h3>
                 <div class="tg-toggle only">
-                  <div class="tg-tl"><b>El bot responde en WhatsApp</b><span class="ch-sub">Tus clientes le escriben a tu número de WhatsApp Business y el bot contesta con la información de tu negocio.</span></div>
-                  <button type="button" class="tgl" [class.on]="waChannelOn()" (click)="waChannelOn.set(!waChannelOn())" [attr.aria-pressed]="waChannelOn()" aria-label="Activar el bot en WhatsApp"><span></span></button>
+                  <div class="tg-tl"><b>{{ 'AICHATBOT.CHANNELS.WA_TOGGLE' | translate }}</b><span class="ch-sub">{{ 'AICHATBOT.CHANNELS.WA_TOGGLE_SUB' | translate }}</span></div>
+                  <button type="button" class="tgl" [class.on]="waChannelOn()" (click)="waChannelOn.set(!waChannelOn())" [attr.aria-pressed]="waChannelOn()" [attr.aria-label]="'AICHATBOT.CHANNELS.WA_TOGGLE_ARIA' | translate"><span></span></button>
                 </div>
-                <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b> en WhatsApp? Eso se activa en <a routerLink="/handoff">Handoff a Humano</a> — los chats en vivo te llegan a tu Telegram.</p>
+                <p class="hint" [innerHTML]="'AICHATBOT.CHANNELS.HANDOFF_HINT' | translate"></p>
 
                 <div class="save-row">
-                  <button type="button" class="save" [disabled]="waSaving()" (click)="saveWhatsApp()">{{ waSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
+                  <button type="button" class="save" [disabled]="waSaving()" (click)="saveWhatsApp()">{{ (waSaving() ? 'AICHATBOT.CHANNELS.SAVING' : 'AICHATBOT.CHANNELS.SAVE_CHANNEL') | translate }}</button>
                   @if (waOk()) { <span class="ok-msg">{{ waOk() }}</span> }
                   @if (waErr()) { <span class="err-msg">{{ waErr() }}</span> }
                 </div>
@@ -281,47 +279,47 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
             } @else if (channel() === 'messenger') {
               <!-- Conexión con Facebook Messenger -->
               <section class="card">
-                <h3 class="ch">Conecta tu Messenger</h3>
-                <p class="muted">Conecta la <b>página de Facebook</b> de tu negocio (Messenger Platform de Meta).</p>
+                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.MS_CONNECT_TITLE' | translate }}</h3>
+                <p class="muted" [innerHTML]="'AICHATBOT.CHANNELS.MS_CONNECT_SUB' | translate"></p>
                 <ol class="tg-steps">
-                  <li>En <b>developers.facebook.com</b> crea una app y agrega el producto <b>Messenger</b>. Vincula tu <b>página de Facebook</b>.</li>
-                  <li>Genera un <b>Page Access Token</b> y copia el <b>ID de la página</b>; pégalos aquí abajo.</li>
-                  <li>Inventa un <b>token de verificación</b> (una palabra secreta tuya) y escríbelo abajo.</li>
-                  <li>En el <b>Webhook</b> de tu app, pega la URL de callback de abajo y ese token, y suscríbete a <b>messages</b> (para la página).</li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.MS_S1' | translate"></li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.MS_S2' | translate"></li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.WA_S3' | translate"></li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.MS_S4' | translate"></li>
                 </ol>
                 <div class="field">
-                  <label>URL de callback (webhook)</label>
-                  <div class="code"><pre>{{ waWebhookUrl() }}</pre><button type="button" class="copy" (click)="waCopy()">{{ waCopied() ? '¡Copiado!' : 'Copiar' }}</button></div>
+                  <label>{{ 'AICHATBOT.CHANNELS.F_CALLBACK' | translate }}</label>
+                  <div class="code"><pre>{{ waWebhookUrl() }}</pre><button type="button" class="copy" (click)="waCopy()">{{ (waCopied() ? 'AICHATBOT.CHANNELS.COPIED' : 'AICHATBOT.CHANNELS.COPY') | translate }}</button></div>
                 </div>
                 <div class="two">
                   <div class="field">
-                    <label for="ms-pid">ID de la página</label>
+                    <label for="ms-pid">{{ 'AICHATBOT.CHANNELS.MS_F_PAGE' | translate }}</label>
                     <input id="ms-pid" [ngModel]="msPageId()" (ngModelChange)="msPageId.set($event)" name="mspid" placeholder="1234567890" autocomplete="off" spellcheck="false" />
                   </div>
                   <div class="field">
-                    <label for="ms-verify">Token de verificación</label>
-                    <input id="ms-verify" [ngModel]="msVerifyTok()" (ngModelChange)="msVerifyTok.set($event)" name="msverify" placeholder="mi-palabra-secreta" autocomplete="off" spellcheck="false" />
+                    <label for="ms-verify">{{ 'AICHATBOT.CHANNELS.F_VERIFY' | translate }}</label>
+                    <input id="ms-verify" [ngModel]="msVerifyTok()" (ngModelChange)="msVerifyTok.set($event)" name="msverify" [attr.placeholder]="'AICHATBOT.CHANNELS.F_VERIFY_PH' | translate" autocomplete="off" spellcheck="false" />
                   </div>
                 </div>
                 <div class="field">
-                  <label for="ms-token">Page Access Token</label>
+                  <label for="ms-token">{{ 'AICHATBOT.CHANNELS.F_PAGE_TOKEN' | translate }}</label>
                   <input id="ms-token" [ngModel]="msToken()" (ngModelChange)="msToken.set($event)" name="mstoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" />
                 </div>
                 <div class="field">
-                  <label for="ms-secret">App Secret de Meta (recomendado)</label>
-                  <input id="ms-secret" [ngModel]="metaSecret()" (ngModelChange)="metaSecret.set($event)" name="mssecret" placeholder="App Secret de tu app de Meta" autocomplete="off" spellcheck="false" />
+                  <label for="ms-secret">{{ 'AICHATBOT.CHANNELS.F_SECRET' | translate }}</label>
+                  <input id="ms-secret" [ngModel]="metaSecret()" (ngModelChange)="metaSecret.set($event)" name="mssecret" [attr.placeholder]="'AICHATBOT.CHANNELS.F_SECRET_PH' | translate" autocomplete="off" spellcheck="false" />
                 </div>
-                <p class="hint">Opcional pero recomendado: el <b>App Secret</b> de tu app de Meta. Lo usamos para verificar la firma de los webhooks y rechazar mensajes falsos (es el mismo para tus canales de Meta).</p>
+                <p class="hint" [innerHTML]="'AICHATBOT.CHANNELS.SECRET_HINT' | translate"></p>
               </section>
               <section class="card">
-                <h3 class="ch">Activa el canal</h3>
+                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</h3>
                 <div class="tg-toggle only">
-                  <div class="tg-tl"><b>El bot responde en Messenger</b><span class="ch-sub">Quien escribe a tu página de Facebook recibe respuesta del bot con la info de tu negocio.</span></div>
-                  <button type="button" class="tgl" [class.on]="msOn()" (click)="msOn.set(!msOn())" [attr.aria-pressed]="msOn()" aria-label="Activar el bot en Messenger"><span></span></button>
+                  <div class="tg-tl"><b>{{ 'AICHATBOT.CHANNELS.MS_TOGGLE' | translate }}</b><span class="ch-sub">{{ 'AICHATBOT.CHANNELS.MS_TOGGLE_SUB' | translate }}</span></div>
+                  <button type="button" class="tgl" [class.on]="msOn()" (click)="msOn.set(!msOn())" [attr.aria-pressed]="msOn()" [attr.aria-label]="'AICHATBOT.CHANNELS.MS_TOGGLE_ARIA' | translate"><span></span></button>
                 </div>
-                <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b>? Se activa en <a routerLink="/handoff">Handoff a Humano</a> — los chats en vivo te llegan a tu Telegram.</p>
+                <p class="hint" [innerHTML]="'AICHATBOT.CHANNELS.HANDOFF_HINT' | translate"></p>
                 <div class="save-row">
-                  <button type="button" class="save" [disabled]="msSaving()" (click)="saveMessenger()">{{ msSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
+                  <button type="button" class="save" [disabled]="msSaving()" (click)="saveMessenger()">{{ (msSaving() ? 'AICHATBOT.CHANNELS.SAVING' : 'AICHATBOT.CHANNELS.SAVE_CHANNEL') | translate }}</button>
                   @if (msOk()) { <span class="ok-msg">{{ msOk() }}</span> }
                   @if (msErr()) { <span class="err-msg">{{ msErr() }}</span> }
                 </div>
@@ -330,62 +328,52 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
             } @else if (channel() === 'instagram') {
               <!-- Conexión con Instagram -->
               <section class="card">
-                <h3 class="ch">Conecta tu Instagram</h3>
-                <p class="muted">Conecta tu <b>cuenta profesional de Instagram</b> vinculada a una página de Facebook (Instagram Messaging de Meta).</p>
+                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.IG_CONNECT_TITLE' | translate }}</h3>
+                <p class="muted" [innerHTML]="'AICHATBOT.CHANNELS.IG_CONNECT_SUB' | translate"></p>
                 <ol class="tg-steps">
-                  <li>Tu cuenta de Instagram debe ser <b>profesional</b> y estar vinculada a una <b>página de Facebook</b>.</li>
-                  <li>En <b>developers.facebook.com</b> crea una app con <b>Instagram</b>. Genera un <b>Page Access Token</b> de la página vinculada y copia el <b>ID de tu cuenta de Instagram</b>.</li>
-                  <li>Inventa un <b>token de verificación</b> y escríbelo abajo.</li>
-                  <li>En el <b>Webhook</b>, pega la URL de callback de abajo y ese token, y suscríbete a <b>messages</b> de Instagram.</li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.IG_S1' | translate"></li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.IG_S2' | translate"></li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.IG_S3' | translate"></li>
+                  <li [innerHTML]="'AICHATBOT.CHANNELS.IG_S4' | translate"></li>
                 </ol>
                 <div class="field">
-                  <label>URL de callback (webhook)</label>
-                  <div class="code"><pre>{{ waWebhookUrl() }}</pre><button type="button" class="copy" (click)="waCopy()">{{ waCopied() ? '¡Copiado!' : 'Copiar' }}</button></div>
+                  <label>{{ 'AICHATBOT.CHANNELS.F_CALLBACK' | translate }}</label>
+                  <div class="code"><pre>{{ waWebhookUrl() }}</pre><button type="button" class="copy" (click)="waCopy()">{{ (waCopied() ? 'AICHATBOT.CHANNELS.COPIED' : 'AICHATBOT.CHANNELS.COPY') | translate }}</button></div>
                 </div>
                 <div class="two">
                   <div class="field">
-                    <label for="ig-id">ID de la cuenta de Instagram</label>
+                    <label for="ig-id">{{ 'AICHATBOT.CHANNELS.IG_F_ID' | translate }}</label>
                     <input id="ig-id" [ngModel]="igId()" (ngModelChange)="igId.set($event)" name="igid" placeholder="17841400000000000" autocomplete="off" spellcheck="false" />
                   </div>
                   <div class="field">
-                    <label for="ig-verify">Token de verificación</label>
-                    <input id="ig-verify" [ngModel]="igVerifyTok()" (ngModelChange)="igVerifyTok.set($event)" name="igverify" placeholder="mi-palabra-secreta" autocomplete="off" spellcheck="false" />
+                    <label for="ig-verify">{{ 'AICHATBOT.CHANNELS.F_VERIFY' | translate }}</label>
+                    <input id="ig-verify" [ngModel]="igVerifyTok()" (ngModelChange)="igVerifyTok.set($event)" name="igverify" [attr.placeholder]="'AICHATBOT.CHANNELS.F_VERIFY_PH' | translate" autocomplete="off" spellcheck="false" />
                   </div>
                 </div>
                 <div class="field">
-                  <label for="ig-token">Page Access Token</label>
+                  <label for="ig-token">{{ 'AICHATBOT.CHANNELS.F_PAGE_TOKEN' | translate }}</label>
                   <input id="ig-token" [ngModel]="igToken()" (ngModelChange)="igToken.set($event)" name="igtoken" placeholder="EAAG…" autocomplete="off" spellcheck="false" />
                 </div>
                 <div class="field">
-                  <label for="ig-secret">App Secret de Meta (recomendado)</label>
-                  <input id="ig-secret" [ngModel]="metaSecret()" (ngModelChange)="metaSecret.set($event)" name="igsecret" placeholder="App Secret de tu app de Meta" autocomplete="off" spellcheck="false" />
+                  <label for="ig-secret">{{ 'AICHATBOT.CHANNELS.F_SECRET' | translate }}</label>
+                  <input id="ig-secret" [ngModel]="metaSecret()" (ngModelChange)="metaSecret.set($event)" name="igsecret" [attr.placeholder]="'AICHATBOT.CHANNELS.F_SECRET_PH' | translate" autocomplete="off" spellcheck="false" />
                 </div>
-                <p class="hint">Opcional pero recomendado: el <b>App Secret</b> de tu app de Meta. Lo usamos para verificar la firma de los webhooks y rechazar mensajes falsos (es el mismo para tus canales de Meta).</p>
+                <p class="hint" [innerHTML]="'AICHATBOT.CHANNELS.SECRET_HINT' | translate"></p>
               </section>
               <section class="card">
-                <h3 class="ch">Activa el canal</h3>
+                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</h3>
                 <div class="tg-toggle only">
-                  <div class="tg-tl"><b>El bot responde en Instagram</b><span class="ch-sub">El bot contesta los mensajes directos (DM) de tu cuenta de Instagram con la info de tu negocio.</span></div>
-                  <button type="button" class="tgl" [class.on]="igOn()" (click)="igOn.set(!igOn())" [attr.aria-pressed]="igOn()" aria-label="Activar el bot en Instagram"><span></span></button>
+                  <div class="tg-tl"><b>{{ 'AICHATBOT.CHANNELS.IG_TOGGLE' | translate }}</b><span class="ch-sub">{{ 'AICHATBOT.CHANNELS.IG_TOGGLE_SUB' | translate }}</span></div>
+                  <button type="button" class="tgl" [class.on]="igOn()" (click)="igOn.set(!igOn())" [attr.aria-pressed]="igOn()" [attr.aria-label]="'AICHATBOT.CHANNELS.IG_TOGGLE_ARIA' | translate"><span></span></button>
                 </div>
-                <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b>? Se activa en <a routerLink="/handoff">Handoff a Humano</a> — los chats en vivo te llegan a tu Telegram.</p>
+                <p class="hint" [innerHTML]="'AICHATBOT.CHANNELS.HANDOFF_HINT' | translate"></p>
                 <div class="save-row">
-                  <button type="button" class="save" [disabled]="igSaving()" (click)="saveInstagram()">{{ igSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
+                  <button type="button" class="save" [disabled]="igSaving()" (click)="saveInstagram()">{{ (igSaving() ? 'AICHATBOT.CHANNELS.SAVING' : 'AICHATBOT.CHANNELS.SAVE_CHANNEL') | translate }}</button>
                   @if (igOk()) { <span class="ok-msg">{{ igOk() }}</span> }
                   @if (igErr()) { <span class="err-msg">{{ igErr() }}</span> }
                 </div>
               </section>
               <ng-container [ngTemplateOutlet]="calCard"></ng-container>
-            } @else {
-              <section class="card soon-card">
-                <span class="soon">En preparación</span>
-                <h3 class="ch">{{ meta().title }} para tu chatbot</h3>
-                <p class="muted">{{ meta().soon }}</p>
-                <ul class="bullets">
-                  @for (b of meta().points; track b) { <li><span class="dot"></span>{{ b }}</li> }
-                </ul>
-                <p class="hint">Recuerda: la información que responderá el bot en {{ meta().title }} es la misma que configuras en <a routerLink="/configure">Configurar</a>.</p>
-              </section>
             }
           </div>
         </main>
@@ -404,52 +392,52 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
             <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
           </span>
           <span class="acc-tl">
-            <b>Agendado automático de citas (Cal.com)</b>
-            <span>El bot consulta tu disponibilidad real, pregunta los datos y crea la reserva.</span>
+            <b>{{ 'AICHATBOT.CHANNELS.CAL_TITLE' | translate }}</b>
+            <span>{{ 'AICHATBOT.CHANNELS.CAL_SUB' | translate }}</span>
           </span>
           @if (calConfigured()) {
-            <span class="status linked"><span class="sdot"></span>Conectado</span>
+            <span class="status linked"><span class="sdot"></span>{{ 'AICHATBOT.CHANNELS.CAL_CONNECTED' | translate }}</span>
           } @else {
-            <span class="status pending">Sin configurar</span>
+            <span class="status pending">{{ 'AICHATBOT.CHANNELS.CAL_PENDING' | translate }}</span>
           }
           <svg class="chev" [class.up]="calOpen()" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
         </button>
 
         @if (calOpen()) {
           <div class="acc-body">
-            <p class="muted">Sin estos datos el bot solo comparte tu enlace de reservas (el de <a routerLink="/configure">Configurar</a>). Con ellos, agenda la cita él mismo.</p>
+            <p class="muted" [innerHTML]="'AICHATBOT.CHANNELS.CAL_INTRO' | translate"></p>
 
-            <h4 class="sub">Cómo conseguir tu API key</h4>
+            <h4 class="sub">{{ 'AICHATBOT.CHANNELS.CAL_H_KEY' | translate }}</h4>
             <ol class="tg-steps">
-              <li>Entra a <a href="https://app.cal.com/settings/developer/api-keys" target="_blank" rel="noopener">app.cal.com</a> e inicia sesión.</li>
-              <li>Ve a <b>Settings → Developer → API keys</b> (menú de tu perfil, arriba a la derecha).</li>
-              <li>Presiona <b>Add</b>, ponle un nombre (ej. <code>Vectis</code>) y elige <b>que nunca expire</b>.</li>
-              <li>Copia la clave (empieza con <code>cal_live_…</code>) y pégala abajo. <b>Solo se muestra una vez</b>: si la pierdes, genera otra.</li>
+              <li [innerHTML]="'AICHATBOT.CHANNELS.CAL_K1' | translate"></li>
+              <li [innerHTML]="'AICHATBOT.CHANNELS.CAL_K2' | translate"></li>
+              <li [innerHTML]="'AICHATBOT.CHANNELS.CAL_K3' | translate"></li>
+              <li [innerHTML]="'AICHATBOT.CHANNELS.CAL_K4' | translate"></li>
             </ol>
 
-            <h4 class="sub">Cómo conseguir la URL de tu evento</h4>
+            <h4 class="sub">{{ 'AICHATBOT.CHANNELS.CAL_H_EVENT' | translate }}</h4>
             <ol class="tg-steps">
-              <li>En Cal.com abre <b>Event Types</b>.</li>
-              <li>Elige el tipo de cita que quieres que el bot agende (ej. <i>30 min</i>). Si no tienes ninguno, créalo con <b>+ New</b>.</li>
-              <li>Presiona el botón de <b>copiar enlace</b> del evento (o ábrelo con <b>Preview</b> y copia la URL de la barra del navegador).</li>
-              <li>Queda algo así: <code>https://cal.com/tu-usuario/30min</code>. Pégala completa abajo; nosotros sacamos el resto.</li>
+              <li [innerHTML]="'AICHATBOT.CHANNELS.CAL_E1' | translate"></li>
+              <li [innerHTML]="'AICHATBOT.CHANNELS.CAL_E2' | translate"></li>
+              <li [innerHTML]="'AICHATBOT.CHANNELS.CAL_E3' | translate"></li>
+              <li [innerHTML]="'AICHATBOT.CHANNELS.CAL_E4' | translate"></li>
             </ol>
-            <p class="hint">También funciona con eventos de equipo (<code>cal.com/team/tu-equipo/30min</code>) o con el ID numérico del evento si ya lo tienes.</p>
+            <p class="hint" [innerHTML]="'AICHATBOT.CHANNELS.CAL_HINT' | translate"></p>
 
             <div class="two">
               <div class="field">
-                <label for="cal-key">Cal.com — API key</label>
+                <label for="cal-key">{{ 'AICHATBOT.CHANNELS.CAL_F_KEY' | translate }}</label>
                 <input id="cal-key" [ngModel]="calKey()" (ngModelChange)="calKey.set($event)" name="calkey" placeholder="cal_live_…" autocomplete="off" spellcheck="false" />
               </div>
               <div class="field">
-                <label for="cal-ev">Cal.com — URL de tu evento</label>
+                <label for="cal-ev">{{ 'AICHATBOT.CHANNELS.CAL_F_EVENT' | translate }}</label>
                 <input id="cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="calev" placeholder="https://cal.com/tu-usuario/30min" autocomplete="off" spellcheck="false" />
               </div>
             </div>
 
             <div class="save-row">
-              <button type="button" class="save" [disabled]="calTesting()" (click)="connectCal()">{{ calTesting() ? 'Conectando…' : 'Guardar y conectar' }}</button>
-              @if (calConfigured()) { <button type="button" class="ghost-btn" (click)="calOpen.set(false)">Cerrar</button> }
+              <button type="button" class="save" [disabled]="calTesting()" (click)="connectCal()">{{ (calTesting() ? 'AICHATBOT.CHANNELS.CAL_SAVING' : 'AICHATBOT.CHANNELS.CAL_SAVE') | translate }}</button>
+              @if (calConfigured()) { <button type="button" class="ghost-btn" (click)="calOpen.set(false)">{{ 'AICHATBOT.CHANNELS.CLOSE' | translate }}</button> }
             </div>
             @if (calTestMsg()) { <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p> }
           </div>
@@ -556,13 +544,6 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .sub { font-size: 13.5px; font-weight: 700; margin: 18px 0 8px; color: var(--text-inv); }
     .acc-body .two { margin-top: 18px; }
 
-    .soon { position: absolute; top: 16px; right: 16px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
-      color: var(--gold-bright); background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.3); border-radius: 999px; padding: 4px 10px; }
-    .soon-card { padding-top: 26px; }
-    .bullets { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 10px; }
-    .bullets li { display: flex; align-items: flex-start; gap: 11px; color: var(--text-inv-2); font-size: 14px; line-height: 1.5; }
-    .dot { width: 7px; height: 7px; margin-top: 6px; border-radius: 50%; background: var(--gold-bright); box-shadow: 0 0 10px var(--gold-bright); flex-shrink: 0; }
-
     @media (max-width: 980px) { .cfg-grid { grid-template-columns: 1fr; } .col-preview { order: -1; } .preview-sticky { position: static; } .pv-win { max-width: 360px; } }
     @media (max-width: 860px) { .layout { flex-direction: column; } }
     @media (max-width: 560px) { .wrap { padding: 30px 16px 40px; } .card { padding: 18px 16px; } .two { grid-template-columns: 1fr; } .save { width: 100%; } }
@@ -572,6 +553,7 @@ export class ChatbotChannelsComponent {
   private readonly route = inject(ActivatedRoute);
   readonly s = inject(ChatbotSessionService);
   private readonly sb = inject(SupabaseClientService).client;
+  private readonly i18n = inject(TranslateService);
 
   readonly channel = toSignal(this.route.paramMap.pipe(map((p) => (p.get('channel') || 'web').toLowerCase())), { initialValue: 'web' });
   readonly copied = signal(false);
@@ -693,9 +675,9 @@ export class ChatbotChannelsComponent {
   previewColor(): string { return this.brandColor().trim() || '#E7AB2E'; }
   previewColor2(): string { return this.secondBrandColor().trim() || '#0A0A0A'; }
   previewBar(): string { return `linear-gradient(135deg, ${this.previewColor()}, ${this.previewColor2()})`; }
-  previewTitle(): string { return this.widgetTitle().trim() || 'Asistente'; }
+  previewTitle(): string { return this.widgetTitle().trim() || this.i18n.instant('AICHATBOT.CHANNELS.W_ASSISTANT'); }
   previewInitial(): string { return (this.previewTitle().trim()[0] || 'A').toUpperCase(); }
-  previewWelcome(): string { return this.welcome().trim() || '¡Hola! ¿En qué puedo ayudarte hoy?'; }
+  previewWelcome(): string { return this.welcome().trim() || this.i18n.instant('AICHATBOT.CHANNELS.W_WELCOME_PH'); }
   previewQuick(): string[] { return this.quickReplies().filter((q) => q.trim()); }
 
   setQuick(i: number, v: string): void { const a = [...this.quickReplies()]; a[i] = v; this.quickReplies.set(a); }
@@ -708,9 +690,9 @@ export class ChatbotChannelsComponent {
   async save(): Promise<void> {
     this.err.set(''); this.savedMsg.set('');
     const id = this.s.currentClientId();
-    if (!id) { this.err.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    if (!id) { this.err.set(this.i18n.instant('AICHATBOT.CHANNELS.E_SAVE_FIRST')); return; }
     const base = this.s.currentConfig();
-    if (!base) { this.err.set('No pude cargar tu configuración. Recarga la página.'); return; }
+    if (!base) { this.err.set(this.i18n.instant('AICHATBOT.CHANNELS.E_NO_CONFIG')); return; }
     const merged: ChatbotConfig = {
       ...base,
       widgetTitle: this.widgetTitle().trim(),
@@ -729,7 +711,7 @@ export class ChatbotChannelsComponent {
     // Refleja el cambio en memoria para que no se pierda al navegar.
     const cfgs = [...this.s.configs()]; const i = this.s.current();
     if (cfgs[i]) { cfgs[i] = merged; this.s.configs.set(cfgs); }
-    this.savedMsg.set('Guardado ✓');
+    this.savedMsg.set(this.i18n.instant('AICHATBOT.CHANNELS.SAVED'));
     setTimeout(() => this.savedMsg.set(''), 2500);
   }
 
@@ -743,8 +725,8 @@ export class ChatbotChannelsComponent {
   async connectBot(): Promise<void> {
     this.tgErr.set(''); this.tgOk.set('');
     const id = this.s.currentClientId();
-    if (!id) { this.tgErr.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
-    if (!this.tgToken().trim()) { this.tgErr.set('Pega el token de tu bot de Telegram (BotFather).'); return; }
+    if (!id) { this.tgErr.set(this.i18n.instant('AICHATBOT.CHANNELS.E_SAVE_FIRST')); return; }
+    if (!this.tgToken().trim()) { this.tgErr.set(this.i18n.instant('AICHATBOT.CHANNELS.E_TG_TOKEN')); return; }
     this.tgSaving.set(true);
     try {
       const patch: Record<string, unknown> = {
@@ -763,13 +745,13 @@ export class ChatbotChannelsComponent {
         if (j.username) { this.tgUsername.set(j.username); this.tgUser.set(j.username); }
         this.tgChatId.set('');
         this.editToken.set(false);
-        this.tgOk.set('Bot conectado. Activa el canal abajo para que responda a tus clientes.');
+        this.tgOk.set(this.i18n.instant('AICHATBOT.CHANNELS.T_OK_CONNECTED'));
         this.syncLocal();
       } else {
-        this.tgErr.set('No pude conectar el bot: ' + ((j && j.error) || 'revisa el token'));
+        this.tgErr.set(this.i18n.instant('AICHATBOT.CHANNELS.E_TG_CONNECT') + ((j && j.error) || this.i18n.instant('AICHATBOT.CHANNELS.E_TG_CHECK_TOKEN')));
       }
     } catch (e) {
-      this.tgErr.set('No pude conectar el bot. Revisa el token e intenta de nuevo.');
+      this.tgErr.set(this.i18n.instant('AICHATBOT.CHANNELS.E_TG_CONNECT_GENERIC'));
     } finally { this.tgSaving.set(false); }
   }
 
@@ -777,7 +759,7 @@ export class ChatbotChannelsComponent {
   async saveTelegram(): Promise<void> {
     this.tgErr.set(''); this.tgOk.set('');
     const id = this.s.currentClientId();
-    if (!id) { this.tgErr.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    if (!id) { this.tgErr.set(this.i18n.instant('AICHATBOT.CHANNELS.E_SAVE_FIRST')); return; }
     this.tgSaving.set(true);
     try {
       const patch: Record<string, unknown> = {
@@ -788,7 +770,7 @@ export class ChatbotChannelsComponent {
       const { error } = await this.sb.from('chatbots').update(patch).eq('id', id);
       if (error) { this.tgErr.set(error.message); return; }
       this.syncLocal();
-      this.tgOk.set('Guardado ✓');
+      this.tgOk.set(this.i18n.instant('AICHATBOT.CHANNELS.SAVED'));
       setTimeout(() => this.tgOk.set(''), 2500);
     } finally { this.tgSaving.set(false); }
   }
@@ -797,7 +779,7 @@ export class ChatbotChannelsComponent {
   async saveWhatsApp(): Promise<void> {
     this.waErr.set(''); this.waOk.set('');
     const id = this.s.currentClientId();
-    if (!id) { this.waErr.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    if (!id) { this.waErr.set(this.i18n.instant('AICHATBOT.CHANNELS.E_SAVE_FIRST')); return; }
     this.waSaving.set(true);
     try {
       const patch: Record<string, unknown> = {
@@ -812,7 +794,7 @@ export class ChatbotChannelsComponent {
       const { error } = await this.sb.from('chatbots').update(patch).eq('id', id);
       if (error) { this.waErr.set(error.message); return; }
       this.syncLocal();
-      this.waOk.set('Guardado ✓');
+      this.waOk.set(this.i18n.instant('AICHATBOT.CHANNELS.SAVED'));
       setTimeout(() => this.waOk.set(''), 2500);
     } finally { this.waSaving.set(false); }
   }
@@ -827,7 +809,7 @@ export class ChatbotChannelsComponent {
   async saveMessenger(): Promise<void> {
     this.msErr.set(''); this.msOk.set('');
     const id = this.s.currentClientId();
-    if (!id) { this.msErr.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    if (!id) { this.msErr.set(this.i18n.instant('AICHATBOT.CHANNELS.E_SAVE_FIRST')); return; }
     this.msSaving.set(true);
     try {
       const patch: Record<string, unknown> = {
@@ -842,7 +824,7 @@ export class ChatbotChannelsComponent {
       const { error } = await this.sb.from('chatbots').update(patch).eq('id', id);
       if (error) { this.msErr.set(error.message); return; }
       this.syncLocal();
-      this.msOk.set('Guardado ✓');
+      this.msOk.set(this.i18n.instant('AICHATBOT.CHANNELS.SAVED'));
       setTimeout(() => this.msOk.set(''), 2500);
     } finally { this.msSaving.set(false); }
   }
@@ -851,7 +833,7 @@ export class ChatbotChannelsComponent {
   async saveInstagram(): Promise<void> {
     this.igErr.set(''); this.igOk.set('');
     const id = this.s.currentClientId();
-    if (!id) { this.igErr.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    if (!id) { this.igErr.set(this.i18n.instant('AICHATBOT.CHANNELS.E_SAVE_FIRST')); return; }
     this.igSaving.set(true);
     try {
       const patch: Record<string, unknown> = {
@@ -866,7 +848,7 @@ export class ChatbotChannelsComponent {
       const { error } = await this.sb.from('chatbots').update(patch).eq('id', id);
       if (error) { this.igErr.set(error.message); return; }
       this.syncLocal();
-      this.igOk.set('Guardado ✓');
+      this.igOk.set(this.i18n.instant('AICHATBOT.CHANNELS.SAVED'));
       setTimeout(() => this.igOk.set(''), 2500);
     } finally { this.igSaving.set(false); }
   }
@@ -878,7 +860,7 @@ export class ChatbotChannelsComponent {
    */
   async connectCal(): Promise<void> {
     const id = this.s.currentClientId();
-    if (!id) { this.calTestOk.set(false); this.calTestMsg.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
+    if (!id) { this.calTestOk.set(false); this.calTestMsg.set(this.i18n.instant('AICHATBOT.CHANNELS.E_SAVE_FIRST')); return; }
     this.calTesting.set(true); this.calTestMsg.set('');
     try {
       // Guarda exactamente lo que está en pantalla para probar eso.
@@ -890,16 +872,16 @@ export class ChatbotChannelsComponent {
         body: JSON.stringify({ action: 'cal_diag', client_id: id, access_token: at }),
       });
       const j = await res.json();
-      if (!j || j.error) { this.calTestOk.set(false); this.calTestMsg.set('No pude verificar la conexión (' + ((j && j.error) || res.status) + ').'); }
-      else if (!j.configured) { this.calTestOk.set(false); this.calTestMsg.set(j.hasApiKey ? 'Falta o es inválida la URL del evento.' : 'Falta la API key de Cal.com.'); }
-      else if (!j.slotCount) { this.calTestOk.set(false); this.calTestMsg.set('Conexión OK, pero no hay horarios disponibles en los próximos 10 días. Revisa la disponibilidad de tu evento en Cal.com.'); }
+      if (!j || j.error) { this.calTestOk.set(false); this.calTestMsg.set(this.i18n.instant('AICHATBOT.CHANNELS.CAL_E_NO_VERIFY', { code: (j && j.error) || res.status })); }
+      else if (!j.configured) { this.calTestOk.set(false); this.calTestMsg.set(this.i18n.instant(j.hasApiKey ? 'AICHATBOT.CHANNELS.CAL_E_NO_EVENT' : 'AICHATBOT.CHANNELS.CAL_E_NO_KEY')); }
+      else if (!j.slotCount) { this.calTestOk.set(false); this.calTestMsg.set(this.i18n.instant('AICHATBOT.CHANNELS.CAL_E_NO_SLOTS')); }
       else {
         this.calTestOk.set(true);
-        this.calTestMsg.set('✓ Conectado. ' + j.slotCount + ' horarios disponibles. Ej.: ' + (j.sample || []).join(' · '));
+        this.calTestMsg.set(this.i18n.instant('AICHATBOT.CHANNELS.CAL_OK', { n: j.slotCount, sample: (j.sample || []).join(' · ') }));
         setTimeout(() => this.calOpen.set(false), 1200);   // deja ver el mensaje y cierra
       }
     } catch (e) {
-      this.calTestOk.set(false); this.calTestMsg.set('No pude verificar la conexión. Intenta de nuevo.');
+      this.calTestOk.set(false); this.calTestMsg.set(this.i18n.instant('AICHATBOT.CHANNELS.CAL_E_GENERIC'));
     } finally { this.calTesting.set(false); }
   }
 
@@ -933,32 +915,17 @@ export class ChatbotChannelsComponent {
     }
   }
 
-  private readonly META: Record<string, { title: string; lead: string; soon: string; points: string[] }> = {
-    web: { title: 'Sitio web', lead: 'Pon el chatbot en tu página con una línea de código, y personaliza cómo se ve.', soon: '', points: [] },
-    whatsapp: {
-      title: 'WhatsApp',
-      lead: 'Conecta tu chatbot a WhatsApp para que responda a tus clientes desde su app favorita.',
-      soon: 'Estamos preparando la integración con WhatsApp (Cloud API). Pronto podrás vincular tu número y el bot contestará automáticamente con la información de tu negocio.',
-      points: ['El bot responde en los chats de WhatsApp de tu negocio.', 'Usa la misma información y reglas que ya configuraste.', 'Requiere una cuenta de WhatsApp Business y un paso de conexión guiado.'],
-    },
-    instagram: {
-      title: 'Instagram',
-      lead: 'Deja que el chatbot conteste los mensajes directos (DM) de tu cuenta de Instagram.',
-      soon: 'Estamos preparando la integración con los DM de Instagram. Pronto podrás vincular tu cuenta profesional y el bot responderá automáticamente.',
-      points: ['El bot responde los DM de tu cuenta de Instagram.', 'Usa la misma información y reglas que ya configuraste.', 'Requiere cuenta profesional vinculada a una página de Facebook.'],
-    },
-    messenger: {
-      title: 'Messenger',
-      lead: 'Conecta el chatbot a Facebook Messenger para atender a quienes escriben a tu página.',
-      soon: 'Estamos preparando la integración con Facebook Messenger. Pronto podrás vincular tu página y el bot contestará automáticamente.',
-      points: ['El bot responde los mensajes de tu página de Facebook.', 'Usa la misma información y reglas que ya configuraste.', 'Requiere una página de Facebook y un paso de conexión guiado.'],
-    },
-    telegram: {
-      title: 'Telegram',
-      lead: 'Pon a tu chatbot a responder en Telegram con el bot de tu negocio.',
-      soon: 'Estamos preparando que el bot conteste directamente en Telegram (hoy ya se usa para el handoff a un agente). Pronto podrás activarlo como canal de atención automática.',
-      points: ['El bot responde en el chat de Telegram de tu negocio.', 'Usa la misma información y reglas que ya configuraste.', 'Se conecta con el bot de Telegram de tu negocio (BotFather).'],
-    },
+  /**
+   * Título y descripción de cada canal. Guardamos CLAVES de idioma, no texto:
+   * la plantilla las pasa por | translate. Todos los canales están operativos,
+   * así que ya no hay textos de "en preparación".
+   */
+  private readonly META: Record<string, { title: string; lead: string }> = {
+    web: { title: 'AICHATBOT.CHANNELS.M_WEB_T', lead: 'AICHATBOT.CHANNELS.M_WEB_L' },
+    whatsapp: { title: 'AICHATBOT.CHANNELS.M_WA_T', lead: 'AICHATBOT.CHANNELS.M_WA_L' },
+    instagram: { title: 'AICHATBOT.CHANNELS.M_IG_T', lead: 'AICHATBOT.CHANNELS.M_IG_L' },
+    messenger: { title: 'AICHATBOT.CHANNELS.M_MS_T', lead: 'AICHATBOT.CHANNELS.M_MS_L' },
+    telegram: { title: 'AICHATBOT.CHANNELS.M_TG_T', lead: 'AICHATBOT.CHANNELS.M_TG_L' },
   };
   readonly meta = computed(() => this.META[this.channel()] || this.META['web']);
 }

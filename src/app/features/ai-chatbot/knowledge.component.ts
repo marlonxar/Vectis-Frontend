@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChatbotAppHeaderComponent } from './app-header.component';
 import { ChatbotSidebarComponent } from './sidebar.component';
 import { ChatbotVersionFooterComponent } from './version-footer.component';
@@ -24,7 +25,7 @@ interface Match { content: string; source: string; similarity: number; }
 @Component({
   selector: 'app-chatbot-knowledge',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       <app-chatbot-app-header></app-chatbot-app-header>
@@ -32,36 +33,36 @@ interface Match { content: string; source: string; similarity: number; }
         <app-chatbot-sidebar></app-chatbot-sidebar>
         <main class="content">
           <div class="wrap">
-            <span class="eyebrow on-dark">Conocimiento</span>
-            <h1 class="ttl">Qué sabe tu bot</h1>
-            <p class="lead on-dark">Esta es la información indexada que tu chatbot puede usar para responder. Si algo no aparece aquí, el bot <b>no lo sabe</b>.</p>
+            <span class="eyebrow on-dark">{{ 'AICHATBOT.KB.EYEBROW' | translate }}</span>
+            <h1 class="ttl">{{ 'AICHATBOT.KB.TITLE' | translate }}</h1>
+            <p class="lead on-dark" [innerHTML]="'AICHATBOT.KB.LEAD' | translate"></p>
 
             <!-- Estado del índice -->
             <section class="card">
               <div class="st-row">
                 <div>
-                  <h3 class="ch">Estado del índice</h3>
+                  <h3 class="ch">{{ 'AICHATBOT.KB.STATE_TITLE' | translate }}</h3>
                   @if (loading()) {
-                    <p class="muted">Cargando…</p>
+                    <p class="muted">{{ 'AICHATBOT.KB.LOADING' | translate }}</p>
                   } @else if (indexing()) {
-                    <p class="muted indexing"><span class="spin" aria-hidden="true"></span>Indexando tu información… esto suele tardar unos segundos. La página se actualiza sola.</p>
+                    <p class="muted indexing"><span class="spin" aria-hidden="true"></span>{{ 'AICHATBOT.KB.INDEXING' | translate }}</p>
                   } @else if (!chunks().length) {
-                    <p class="muted">Todavía no hay información indexada. Guarda tu configuración en <a routerLink="/configure">Configurar</a> (y estudia tu sitio web) para generar el índice.</p>
+                    <p class="muted" [innerHTML]="'AICHATBOT.KB.EMPTY' | translate"></p>
                   } @else {
-                    <p class="muted"><b>{{ chunks().length }}</b> fragmentos indexados@if (indexedAt()) { · última actualización: {{ indexedAt() }} }</p>
+                    <p class="muted"><span [innerHTML]="'AICHATBOT.KB.COUNT' | translate:{ n: chunks().length }"></span>@if (indexedAt()) { {{ 'AICHATBOT.KB.UPDATED' | translate:{ date: indexedAt() } }} }</p>
                   }
                 </div>
                 <div class="acts">
-                  <button type="button" class="ghost-btn" [disabled]="indexing() || studying()" (click)="studySite()">{{ studying() ? 'Estudiando el sitio…' : 'Volver a estudiar el sitio' }}</button>
-                  <button type="button" class="save" [disabled]="indexing() || studying()" (click)="reindex()">{{ indexing() ? 'Indexando…' : 'Reindexar ahora' }}</button>
+                  <button type="button" class="ghost-btn" [disabled]="indexing() || studying()" (click)="studySite()">{{ (studying() ? 'AICHATBOT.KB.STUDYING_BTN' : 'AICHATBOT.KB.STUDY') | translate }}</button>
+                  <button type="button" class="save" [disabled]="indexing() || studying()" (click)="reindex()">{{ (indexing() ? 'AICHATBOT.KB.REINDEXING' : 'AICHATBOT.KB.REINDEX') | translate }}</button>
                 </div>
               </div>
               @if (studying()) {
-                <p class="muted indexing"><span class="spin" aria-hidden="true"></span>Leyendo tu sitio web… puede tardar hasta un minuto. Al terminar se reindexa solo.</p>
+                <p class="muted indexing"><span class="spin" aria-hidden="true"></span>{{ 'AICHATBOT.KB.STUDYING' | translate }}</p>
               }
-              <p class="muted note"><b>Reindexar</b> vuelve a procesar la información ya guardada. <b>Estudiar el sitio</b> vuelve a leer tu página web para traer contenido nuevo — es lo que necesitas si la fuente "Sitio web" tiene pocos fragmentos.</p>
+              <p class="muted note" [innerHTML]="'AICHATBOT.KB.NOTE' | translate"></p>
               @if (reindexMsg()) { <p class="ok">{{ reindexMsg() }}</p> }
-              @if (!indexing() && lastError()) { <p class="warn"><b>El último indexado no guardó nada.</b> Motivo: {{ lastError() }}</p> }
+              @if (!indexing() && lastError()) { <p class="warn" [innerHTML]="'AICHATBOT.KB.LAST_ERROR' | translate:{ reason: lastError() }"></p> }
 
               <!-- Desglose por fuente -->
               @if (chunks().length) {
@@ -73,21 +74,21 @@ interface Match { content: string; source: string; similarity: number; }
                   }
                 </div>
                 @if (missingWeb()) {
-                  <p class="warn">Tu sitio web no aparece en el índice. Ve a <a routerLink="/configure">Configurar</a> → estudia tu sitio para que el bot lo aprenda.</p>
+                  <p class="warn">{{ 'AICHATBOT.KB.MISSING_WEB' | translate }}</p>
                 }
               }
             </section>
 
             <!-- Fuentes que usa el bot -->
             <section class="card">
-              <h3 class="ch">Fuentes que usa tu bot</h3>
-              <p class="muted">Apaga una fuente para que el bot <b>no la use ni la guarde</b>. Útil si tienes información interna que no debe llegar a tus clientes.</p>
+              <h3 class="ch">{{ 'AICHATBOT.KB.SOURCES_TITLE' | translate }}</h3>
+              <p class="muted" [innerHTML]="'AICHATBOT.KB.SOURCES_SUB' | translate"></p>
               <ul class="srcsw">
                 @for (s of allSources; track s.key) {
                   <li>
-                    <div class="sw-tl"><b>{{ s.label }}</b><span>{{ countOf(s.key) }} fragmentos</span></div>
+                    <div class="sw-tl"><b>{{ s.label | translate }}</b><span>{{ 'AICHATBOT.KB.FRAGMENTS' | translate:{ n: countOf(s.key) } }}</span></div>
                     <button type="button" class="tgl" [class.on]="isOn(s.key)" [disabled]="indexing()" (click)="toggleSource(s.key)"
-                            [attr.aria-pressed]="isOn(s.key)" [attr.aria-label]="'Usar ' + s.label"><span></span></button>
+                            [attr.aria-pressed]="isOn(s.key)" [attr.aria-label]="'AICHATBOT.KB.USE_SOURCE' | translate:{ name: (s.label | translate) }"><span></span></button>
                   </li>
                 }
               </ul>
@@ -96,21 +97,21 @@ interface Match { content: string; source: string; similarity: number; }
             <!-- Prueba de pregunta -->
             @if (chunks().length) {
               <section class="card">
-                <h3 class="ch">Probar una pregunta</h3>
-                <p class="muted">Escribe una pregunta como la haría un cliente y verás exactamente qué fragmentos usaría el bot para responderla.</p>
+                <h3 class="ch">{{ 'AICHATBOT.KB.TEST_TITLE' | translate }}</h3>
+                <p class="muted">{{ 'AICHATBOT.KB.TEST_SUB' | translate }}</p>
                 <div class="q-row">
-                  <input [ngModel]="query()" (ngModelChange)="query.set($event)" name="q" placeholder="Ej. ¿Cuánto cuesta el plan Pro?" (keyup.enter)="testQuery()" />
-                  <button type="button" class="save" [disabled]="testing()" (click)="testQuery()">{{ testing() ? 'Buscando…' : 'Probar' }}</button>
+                  <input [ngModel]="query()" (ngModelChange)="query.set($event)" name="q" [attr.placeholder]="'AICHATBOT.KB.TEST_PH' | translate" (keyup.enter)="testQuery()" />
+                  <button type="button" class="save" [disabled]="testing()" (click)="testQuery()">{{ (testing() ? 'AICHATBOT.KB.TEST_BUSY' : 'AICHATBOT.KB.TEST_BTN') | translate }}</button>
                 </div>
                 @if (testErr()) { <p class="warn">{{ testErr() }}</p> }
                 @if (tested()) {
                   @if (!matches().length) {
-                    <p class="warn">El bot no encontró información relevante para esa pregunta. Agrega ese contenido en <a routerLink="/configure">Configurar</a>.</p>
+                    <p class="warn" [innerHTML]="'AICHATBOT.KB.TEST_NONE' | translate"></p>
                   } @else {
                     <ol class="matches">
                       @for (m of matches(); track $index) {
                         <li>
-                          <div class="m-head"><span class="badge" [attr.data-s]="m.source">{{ label(m.source) }}</span><span class="sim">{{ pct(m.similarity) }}% de coincidencia</span></div>
+                          <div class="m-head"><span class="badge" [attr.data-s]="m.source">{{ label(m.source) | translate }}</span><span class="sim">{{ 'AICHATBOT.KB.MATCH' | translate:{ pct: pct(m.similarity) } }}</span></div>
                           <p class="m-txt">{{ m.content }}</p>
                         </li>
                       }
@@ -124,23 +125,23 @@ interface Match { content: string; source: string; similarity: number; }
             @if (chunks().length) {
               <section class="card">
                 <div class="st-row">
-                  <h3 class="ch">Fragmentos{{ filter() ? ' · ' + label(filter()) : '' }}</h3>
-                  <input class="search" [ngModel]="search()" (ngModelChange)="search.set($event)" name="s" placeholder="Buscar en el contenido…" />
+                  <h3 class="ch">{{ 'AICHATBOT.KB.CHUNKS_TITLE' | translate }}{{ filter() ? ' · ' + (label(filter()) | translate) : '' }}</h3>
+                  <input class="search" [ngModel]="search()" (ngModelChange)="search.set($event)" name="s" [attr.placeholder]="'AICHATBOT.KB.SEARCH_PH' | translate" />
                 </div>
-                <p class="muted note">Los fragmentos <b>se solapan a propósito</b>: cada uno repite un poco del anterior para que ninguna idea se corte a la mitad. Por eso verás texto repetido entre fragmentos vecinos — es normal.</p>
+                <p class="muted note" [innerHTML]="'AICHATBOT.KB.CHUNKS_NOTE' | translate"></p>
                 @if (!visible().length) {
-                  <p class="muted">Ningún fragmento coincide con la búsqueda.</p>
+                  <p class="muted">{{ 'AICHATBOT.KB.NO_MATCH' | translate }}</p>
                 } @else {
                   <ul class="chunks">
                     @for (c of visible(); track c.id) {
                       <li>
-                        <span class="badge" [attr.data-s]="c.source">{{ label(c.source) }}</span>
+                        <span class="badge" [attr.data-s]="c.source">{{ label(c.source) | translate }}</span>
                         <p class="c-txt">{{ c.content }}</p>
                       </li>
                     }
                   </ul>
                   @if (visible().length < filtered().length) {
-                    <button type="button" class="ghost-btn more" (click)="showAll.set(true)">Ver los {{ filtered().length }} fragmentos</button>
+                    <button type="button" class="ghost-btn more" (click)="showAll.set(true)">{{ 'AICHATBOT.KB.SHOW_ALL' | translate:{ n: filtered().length } }}</button>
                   }
                 }
               </section>
@@ -211,6 +212,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
   private readonly s = inject(ChatbotSessionService);
   private readonly sb = inject(SupabaseClientService).client;
   private readonly title = inject(Title);
+  private readonly i18n = inject(TranslateService);
 
   readonly chunks = signal<Chunk[]>([]);
   readonly loading = signal(true);
@@ -225,9 +227,9 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
   readonly studying = signal(false);
   private indexedAtRaw = '';
   readonly allSources = [
-    { key: 'info', label: 'Info del negocio' }, { key: 'kb', label: 'Base de conocimiento' },
-    { key: 'doc', label: 'Documento' }, { key: 'web', label: 'Sitio web' },
-    { key: 'inventory', label: 'Inventario' }, { key: 'faq', label: 'FAQs' },
+    { key: 'info', label: 'AICHATBOT.KB.S_INFO' }, { key: 'kb', label: 'AICHATBOT.KB.S_KB' },
+    { key: 'doc', label: 'AICHATBOT.KB.S_DOC' }, { key: 'web', label: 'AICHATBOT.KB.S_WEB' },
+    { key: 'inventory', label: 'AICHATBOT.KB.S_INVENTORY' }, { key: 'faq', label: 'AICHATBOT.KB.S_FAQ' },
   ];
   private poll: any = null;
   private polls = 0;
@@ -237,9 +239,10 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
   readonly testing = signal(false);
   readonly testErr = signal('');
 
+  /** Devuelve la CLAVE de idioma de la fuente; la plantilla la pasa por | translate. */
   private readonly LABELS: Record<string, string> = {
-    info: 'Info del negocio', kb: 'Base de conocimiento', doc: 'Documento',
-    web: 'Sitio web', inventory: 'Inventario', faq: 'FAQs',
+    info: 'AICHATBOT.KB.S_INFO', kb: 'AICHATBOT.KB.S_KB', doc: 'AICHATBOT.KB.S_DOC',
+    web: 'AICHATBOT.KB.S_WEB', inventory: 'AICHATBOT.KB.S_INVENTORY', faq: 'AICHATBOT.KB.S_FAQ',
   };
   label(k: string): string { return this.LABELS[k] || k; }
   pct(v: number): number { return Math.max(0, Math.round((Number(v) || 0) * 100)); }
@@ -247,7 +250,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
   readonly sourceStats = computed(() => {
     const counts: Record<string, number> = {};
     for (const c of this.chunks()) counts[c.source] = (counts[c.source] || 0) + 1;
-    return Object.keys(counts).sort().map((k) => ({ key: k, label: this.label(k), count: counts[k] }));
+    return Object.keys(counts).sort().map((k) => ({ key: k, label: this.i18n.instant(this.label(k)), count: counts[k] }));
   });
   readonly missingWeb = computed(() => this.chunks().length > 0 && !this.chunks().some((c) => c.source === 'web'));
   readonly filtered = computed(() => {
@@ -257,7 +260,8 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
   readonly visible = computed(() => this.showAll() ? this.filtered() : this.filtered().slice(0, 20));
 
   async ngOnInit(): Promise<void> {
-    this.title.setTitle('Qué sabe tu bot · Vectis AI ChatBot');
+    this.i18n.get('AICHATBOT.KB.PAGE_TITLE').subscribe((t) => this.title.setTitle(t));
+    this.i18n.onLangChange.subscribe(() => this.title.setTitle(this.i18n.instant('AICHATBOT.KB.PAGE_TITLE')));
     await this.load();
   }
 
@@ -274,7 +278,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
       const b = (bot || {}) as Record<string, unknown>;
       const at = (b['kb_indexed_at'] as string) || '';
       this.indexedAtRaw = at;
-      this.indexedAt.set(at ? new Date(at).toLocaleString('es-CR') : '');
+      this.indexedAt.set(at ? new Date(at).toLocaleString(this.i18n.currentLang === 'en' ? 'en-US' : 'es-CR') : '');
       // Si el worker está indexando (aunque se haya recargado la página), lo mostramos y esperamos solos.
       this.lastError.set((b['kb_last_error'] as string) || '');
       this.sourcesOff.set(String((b['kb_sources_off'] as string) || '').split(',').map((x) => x.trim()).filter(Boolean));
@@ -322,7 +326,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
             clearInterval(t); this.studying.set(false);
             await this.load();
             const w = this.countOf('web');
-            this.reindexMsg.set(`Sitio estudiado: la fuente "Sitio web" quedó con ${w} fragmentos.`);
+            this.reindexMsg.set(this.i18n.instant('AICHATBOT.KB.M_STUDIED', { n: w }));
             setTimeout(() => this.reindexMsg.set(''), 8000);
           }
         } catch { /* reintenta */ }
@@ -331,12 +335,12 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
           await this.clearStuckFlag();
           this.studying.set(false);
           await this.load();
-          this.reindexMsg.set('El estudio no terminó (probablemente se agotó el tiempo del servidor). Ya puedes reintentar.');
+          this.reindexMsg.set(this.i18n.instant('AICHATBOT.KB.M_STUDY_TIMEOUT'));
         }
       }, 3000);
     } catch {
       this.studying.set(false);
-      this.reindexMsg.set('No pude iniciar el estudio del sitio. Intenta de nuevo.');
+      this.reindexMsg.set(this.i18n.instant('AICHATBOT.KB.M_STUDY_FAIL'));
     }
   }
 
@@ -375,7 +379,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
           this.indexing.set(false);     // explícito: no dependemos de que load() lo apague
           await this.load();            // trae los fragmentos ya indexados
           const n = this.chunks().length;
-          this.reindexMsg.set(n ? `Listo: ${n} fragmentos indexados.` : '');
+          this.reindexMsg.set(n ? this.i18n.instant('AICHATBOT.KB.M_DONE', { n }) : '');
           setTimeout(() => this.reindexMsg.set(''), 6000);
         }
       } catch { /* reintenta en el siguiente ciclo */ }
@@ -384,7 +388,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
         await this.clearStuckFlag();     // destraba el estado para poder reintentar
         this.indexing.set(false);
         await this.load();
-        this.reindexMsg.set('El proceso no terminó (probablemente se agotó el tiempo del servidor). Ya puedes reintentar.');
+        this.reindexMsg.set(this.i18n.instant('AICHATBOT.KB.M_TIMEOUT'));
       }
     }, 2000);
   }
@@ -412,10 +416,10 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
         body: JSON.stringify({ action: 'kb_search', client_id: id, query: q, access_token: data.session?.access_token || '' }),
       });
       const j = await res.json();
-      if (j && j.error === 'embed_failed') this.testErr.set('No pude generar la búsqueda en este momento. Intenta de nuevo.');
+      if (j && j.error === 'embed_failed') this.testErr.set(this.i18n.instant('AICHATBOT.KB.E_EMBED'));
       this.matches.set(Array.isArray(j?.matches) ? j.matches : []);
       this.tested.set(true);
-    } catch { this.testErr.set('No pude probar la pregunta. Intenta de nuevo.'); }
+    } catch { this.testErr.set(this.i18n.instant('AICHATBOT.KB.E_TEST')); }
     this.testing.set(false);
   }
 }
