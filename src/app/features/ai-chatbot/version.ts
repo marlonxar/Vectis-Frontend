@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.5.0';
+export const APP_VERSION = '1.6.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,16 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.6.0',
+    date: '2026-07-21',
+    title: 'Bandeja de conversaciones',
+    changes: [
+      'Nueva pantalla "Conversaciones": lee lo que tu bot conversó con cada cliente, en todos los canales, con el hilo completo de la charla.',
+      'Buscador dentro de las conversaciones y filtro por canal (web, WhatsApp, Telegram, Instagram, Messenger).',
+      'Si el bot capturó un lead en la conversación, ves ahí mismo su nombre, correo, teléfono y la nota de interés.',
+    ],
+  },
   {
     version: '1.5.0',
     date: '2026-07-19',
