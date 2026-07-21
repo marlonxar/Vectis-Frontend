@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ChatbotAppHeaderComponent } from './app-header.component';
 import { ChatbotSidebarComponent } from './sidebar.component';
@@ -25,14 +25,14 @@ interface Match { content: string; source: string; similarity: number; }
 @Component({
   selector: 'app-chatbot-knowledge',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       <app-chatbot-app-header></app-chatbot-app-header>
       <div class="layout">
         <app-chatbot-sidebar></app-chatbot-sidebar>
         <main class="content">
-          <div class="wrap">
+          <div class="wrap" (click)="routeLink($event)">
             <span class="eyebrow on-dark">{{ 'AICHATBOT.KB.EYEBROW' | translate }}</span>
             <h1 class="ttl">{{ 'AICHATBOT.KB.TITLE' | translate }}</h1>
             <p class="lead on-dark" [innerHTML]="'AICHATBOT.KB.LEAD' | translate"></p>
@@ -212,6 +212,7 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
   private readonly s = inject(ChatbotSessionService);
   private readonly sb = inject(SupabaseClientService).client;
   private readonly title = inject(Title);
+  private readonly router = inject(Router);
   private readonly i18n = inject(TranslateService);
 
   readonly chunks = signal<Chunk[]>([]);
@@ -263,6 +264,20 @@ export class ChatbotKnowledgeComponent implements OnInit, OnDestroy {
     this.i18n.get('AICHATBOT.KB.PAGE_TITLE').subscribe((t) => this.title.setTitle(t));
     this.i18n.onLangChange.subscribe(() => this.title.setTitle(this.i18n.instant('AICHATBOT.KB.PAGE_TITLE')));
     await this.load();
+  }
+
+  /**
+   * Los enlaces internos ahora viven dentro de los textos traducidos, así que son
+   * <a href> normales y no routerLink. Sin esto recargarían toda la aplicación;
+   * aquí los interceptamos y los pasamos al router, que es lo que hacía routerLink.
+   */
+  routeLink(e: MouseEvent): void {
+    const a = (e.target as HTMLElement | null)?.closest?.('a');
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    if (!href.startsWith('/') || a.getAttribute('target') === '_blank') return;   // externos, tal cual
+    e.preventDefault();
+    this.router.navigateByUrl(href);
   }
 
   private async load(): Promise<void> {

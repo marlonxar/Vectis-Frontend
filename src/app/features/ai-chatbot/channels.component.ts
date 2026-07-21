@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
@@ -22,7 +22,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
 @Component({
   selector: 'app-chatbot-channels',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       <app-chatbot-app-header></app-chatbot-app-header>
@@ -30,7 +30,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
       <div class="layout">
         <app-chatbot-sidebar></app-chatbot-sidebar>
         <main class="content">
-          <div class="wrap">
+          <div class="wrap" (click)="routeLink($event)">
             <!-- El logo va EN LÍNEA con la palabra "Canal", no encima. -->
             <div class="ch-head">
             <span class="ch-logo" [attr.data-ch]="channel()" aria-hidden="true">
@@ -205,8 +205,16 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
               </section>
 
               <!-- Canal + agente + citas -->
-              <section class="card">
-                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</h3>
+              <section class="card acc" [class.done]="tgReady()">
+                <button type="button" class="acc-head plain" (click)="tgEnableOpen.set(!tgEnableOpen())" [attr.aria-expanded]="tgEnableOpen()">
+                  <span class="acc-ic tg" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21.9 4.3 18.7 19.4c-.24 1.06-.87 1.32-1.76.82l-4.87-3.59-2.35 2.26c-.26.26-.48.48-.98.48l.35-4.96 9.02-8.15c.39-.35-.09-.55-.6-.2L6.35 13.1l-4.8-1.5c-1.04-.33-1.06-1.04.22-1.54l18.77-7.23c.87-.32 1.63.2 1.36 1.47z"/></svg></span>
+                  <span class="acc-tl"><b>{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</b><span>{{ 'AICHATBOT.CHANNELS.T_TOGGLE_SUB' | translate }}</span></span>
+                  @if (tgReady()) { <span class="status linked"><span class="sdot"></span>{{ 'AICHATBOT.CHANNELS.ENABLE_ACTIVE' | translate }}</span> }
+                  @else { <span class="status pending">{{ 'AICHATBOT.CHANNELS.ENABLE_OFF' | translate }}</span> }
+                  <svg class="chev" [class.up]="tgEnableOpen()" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                @if (tgEnableOpen()) {
+                <div class="acc-body">
                 <div class="tg-toggle only">
                   <div class="tg-tl"><b>{{ 'AICHATBOT.CHANNELS.T_TOGGLE' | translate }}</b><span class="ch-sub">{{ 'AICHATBOT.CHANNELS.T_TOGGLE_SUB' | translate }}</span></div>
                   <button type="button" class="tgl" [class.on]="channelOn()" (click)="channelOn.set(!channelOn())" [attr.aria-pressed]="channelOn()" [attr.aria-label]="'AICHATBOT.CHANNELS.T_TOGGLE_ARIA' | translate"><span></span></button>
@@ -218,6 +226,8 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   @if (tgOk()) { <span class="ok-msg">{{ tgOk() }}</span> }
                   @if (tgErr()) { <span class="err-msg">{{ tgErr() }}</span> }
                 </div>
+                </div>
+                }
               </section>
               <ng-container [ngTemplateOutlet]="calCard"></ng-container>
             } @else if (channel() === 'whatsapp') {
@@ -261,8 +271,16 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
               </section>
 
               <!-- Canal + agente + citas -->
-              <section class="card">
-                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</h3>
+              <section class="card acc" [class.done]="waReady()">
+                <button type="button" class="acc-head plain" (click)="waEnableOpen.set(!waEnableOpen())" [attr.aria-expanded]="waEnableOpen()">
+                  <span class="acc-ic wa" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.13c-.24.68-1.42 1.3-1.95 1.34-.5.05-.98.24-3.3-.69-2.78-1.1-4.55-3.95-4.69-4.13-.14-.19-1.13-1.5-1.13-2.87s.72-2.03.97-2.31c.25-.28.55-.35.73-.35.18 0 .37 0 .53.01.17 0 .4-.06.62.48.24.55.8 1.92.87 2.06.07.14.12.3.02.49-.09.19-.14.3-.28.46-.14.16-.3.36-.42.48-.14.14-.29.29-.12.57.16.28.72 1.19 1.55 1.93 1.07.95 1.97 1.25 2.25 1.39.28.14.44.12.6-.07.16-.18.7-.81.88-1.09.18-.28.37-.23.62-.14.25.09 1.61.76 1.89.9.28.14.46.21.53.32.07.12.07.68-.17 1.36z"/></svg></span>
+                  <span class="acc-tl"><b>{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</b><span>{{ 'AICHATBOT.CHANNELS.WA_TOGGLE_SUB' | translate }}</span></span>
+                  @if (waReady()) { <span class="status linked"><span class="sdot"></span>{{ 'AICHATBOT.CHANNELS.ENABLE_ACTIVE' | translate }}</span> }
+                  @else { <span class="status pending">{{ 'AICHATBOT.CHANNELS.ENABLE_OFF' | translate }}</span> }
+                  <svg class="chev" [class.up]="waEnableOpen()" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                @if (waEnableOpen()) {
+                <div class="acc-body">
                 <div class="tg-toggle only">
                   <div class="tg-tl"><b>{{ 'AICHATBOT.CHANNELS.WA_TOGGLE' | translate }}</b><span class="ch-sub">{{ 'AICHATBOT.CHANNELS.WA_TOGGLE_SUB' | translate }}</span></div>
                   <button type="button" class="tgl" [class.on]="waChannelOn()" (click)="waChannelOn.set(!waChannelOn())" [attr.aria-pressed]="waChannelOn()" [attr.aria-label]="'AICHATBOT.CHANNELS.WA_TOGGLE_ARIA' | translate"><span></span></button>
@@ -274,6 +292,8 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   @if (waOk()) { <span class="ok-msg">{{ waOk() }}</span> }
                   @if (waErr()) { <span class="err-msg">{{ waErr() }}</span> }
                 </div>
+                </div>
+                }
               </section>
               <ng-container [ngTemplateOutlet]="calCard"></ng-container>
             } @else if (channel() === 'messenger') {
@@ -311,8 +331,16 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 </div>
                 <p class="hint" [innerHTML]="'AICHATBOT.CHANNELS.SECRET_HINT' | translate"></p>
               </section>
-              <section class="card">
-                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</h3>
+              <section class="card acc" [class.done]="msReady()">
+                <button type="button" class="acc-head plain" (click)="msEnableOpen.set(!msEnableOpen())" [attr.aria-expanded]="msEnableOpen()">
+                  <span class="acc-ic ms" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.19.16.14.26.35.27.57l.05 1.78c.02.57.6.94 1.12.71l1.99-.88c.17-.07.36-.09.54-.04 1.06.29 2.19.45 3.35.45 5.64 0 10-4.13 10-9.7S17.64 2 12 2zm6 7.46-2.93 4.65c-.47.74-1.47.93-2.17.4l-2.33-1.75a.6.6 0 0 0-.72 0l-3.15 2.39c-.42.32-.97-.18-.69-.63l2.93-4.65c.47-.74 1.47-.93 2.17-.4l2.33 1.75a.6.6 0 0 0 .72 0l3.15-2.39c.42-.32.97.18.69.63z"/></svg></span>
+                  <span class="acc-tl"><b>{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</b><span>{{ 'AICHATBOT.CHANNELS.MS_TOGGLE_SUB' | translate }}</span></span>
+                  @if (msReady()) { <span class="status linked"><span class="sdot"></span>{{ 'AICHATBOT.CHANNELS.ENABLE_ACTIVE' | translate }}</span> }
+                  @else { <span class="status pending">{{ 'AICHATBOT.CHANNELS.ENABLE_OFF' | translate }}</span> }
+                  <svg class="chev" [class.up]="msEnableOpen()" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                @if (msEnableOpen()) {
+                <div class="acc-body">
                 <div class="tg-toggle only">
                   <div class="tg-tl"><b>{{ 'AICHATBOT.CHANNELS.MS_TOGGLE' | translate }}</b><span class="ch-sub">{{ 'AICHATBOT.CHANNELS.MS_TOGGLE_SUB' | translate }}</span></div>
                   <button type="button" class="tgl" [class.on]="msOn()" (click)="msOn.set(!msOn())" [attr.aria-pressed]="msOn()" [attr.aria-label]="'AICHATBOT.CHANNELS.MS_TOGGLE_ARIA' | translate"><span></span></button>
@@ -323,6 +351,8 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   @if (msOk()) { <span class="ok-msg">{{ msOk() }}</span> }
                   @if (msErr()) { <span class="err-msg">{{ msErr() }}</span> }
                 </div>
+                </div>
+                }
               </section>
               <ng-container [ngTemplateOutlet]="calCard"></ng-container>
             } @else if (channel() === 'instagram') {
@@ -360,8 +390,16 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 </div>
                 <p class="hint" [innerHTML]="'AICHATBOT.CHANNELS.SECRET_HINT' | translate"></p>
               </section>
-              <section class="card">
-                <h3 class="ch">{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</h3>
+              <section class="card acc" [class.done]="igReady()">
+                <button type="button" class="acc-head plain" (click)="igEnableOpen.set(!igEnableOpen())" [attr.aria-expanded]="igEnableOpen()">
+                  <span class="acc-ic ig" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg></span>
+                  <span class="acc-tl"><b>{{ 'AICHATBOT.CHANNELS.ENABLE_TITLE' | translate }}</b><span>{{ 'AICHATBOT.CHANNELS.IG_TOGGLE_SUB' | translate }}</span></span>
+                  @if (igReady()) { <span class="status linked"><span class="sdot"></span>{{ 'AICHATBOT.CHANNELS.ENABLE_ACTIVE' | translate }}</span> }
+                  @else { <span class="status pending">{{ 'AICHATBOT.CHANNELS.ENABLE_OFF' | translate }}</span> }
+                  <svg class="chev" [class.up]="igEnableOpen()" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                @if (igEnableOpen()) {
+                <div class="acc-body">
                 <div class="tg-toggle only">
                   <div class="tg-tl"><b>{{ 'AICHATBOT.CHANNELS.IG_TOGGLE' | translate }}</b><span class="ch-sub">{{ 'AICHATBOT.CHANNELS.IG_TOGGLE_SUB' | translate }}</span></div>
                   <button type="button" class="tgl" [class.on]="igOn()" (click)="igOn.set(!igOn())" [attr.aria-pressed]="igOn()" [attr.aria-label]="'AICHATBOT.CHANNELS.IG_TOGGLE_ARIA' | translate"><span></span></button>
@@ -372,6 +410,8 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                   @if (igOk()) { <span class="ok-msg">{{ igOk() }}</span> }
                   @if (igErr()) { <span class="err-msg">{{ igErr() }}</span> }
                 </div>
+                </div>
+                }
               </section>
               <ng-container [ngTemplateOutlet]="calCard"></ng-container>
             }
@@ -536,6 +576,13 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .acc-ic { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0;
       color: var(--gold-bright); background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.3); }
     .acc.done .acc-ic { color: #34e0a1; background: rgba(52,224,161,.12); border-color: rgba(52,224,161,.3); }
+    .acc-ic.tg { color: #229ED9; background: rgba(34,158,217,.12); border-color: rgba(34,158,217,.3); }
+    .acc-ic.wa { color: #25D366; background: rgba(37,211,102,.12); border-color: rgba(37,211,102,.3); }
+    .acc-ic.ms { color: #0084FF; background: rgba(0,132,255,.12); border-color: rgba(0,132,255,.3); }
+    .acc-ic.ig { color: #E4405F; background: rgba(228,64,95,.12); border-color: rgba(228,64,95,.3); }
+    .acc.done .acc-ic.tg, .acc.done .acc-ic.wa, .acc.done .acc-ic.ms, .acc.done .acc-ic.ig {
+      color: #34e0a1; background: rgba(52,224,161,.12); border-color: rgba(52,224,161,.3); }
+    .acc-body .tg-toggle:first-child { padding-top: 0; }
     .acc-tl { flex: 1; min-width: 0; } .acc-tl b { display: block; font-size: 15px; } .acc-tl span { font-size: 12.5px; color: var(--text-inv-2); }
     .status.pending { font-size: 12.5px; font-weight: 600; color: var(--text-inv-2); }
     .chev { color: var(--text-inv-2); flex-shrink: 0; transition: transform .2s var(--ease, ease); }
@@ -551,6 +598,7 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
 })
 export class ChatbotChannelsComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   readonly s = inject(ChatbotSessionService);
   private readonly sb = inject(SupabaseClientService).client;
   private readonly i18n = inject(TranslateService);
@@ -596,6 +644,30 @@ export class ChatbotChannelsComponent {
     const c = this.s.currentConfig();
     return !!(c && (c.calApiKey || '').trim() && (c.calEventType || '').trim());
   });
+
+  /*
+   * "Activa el canal": un canal está listo cuando está encendido Y tiene las
+   * credenciales que necesita para funcionar. Solo encenderlo no basta —
+   * sin token el bot no responde, y mostrarlo como activo sería mentirle
+   * al usuario. Los valores salen de la config GUARDADA, no de lo tecleado.
+   */
+  private cfg(): Record<string, string | boolean | undefined> {
+    return (this.s.currentConfig() || {}) as unknown as Record<string, string | boolean | undefined>;
+  }
+  private has(...keys: string[]): boolean {
+    const c = this.cfg();
+    return keys.every((k) => String(c[k] ?? '').trim() !== '');
+  }
+  readonly tgReady = computed(() => !!this.cfg()['telegramChannelEnabled'] && this.has('telegramBotToken'));
+  readonly waReady = computed(() => !!this.cfg()['whatsappChannelEnabled'] && this.has('whatsappPhoneNumberId', 'whatsappAccessToken'));
+  readonly msReady = computed(() => !!this.cfg()['messengerChannelEnabled'] && this.has('messengerPageId', 'messengerAccessToken'));
+  readonly igReady = computed(() => !!this.cfg()['instagramChannelEnabled'] && this.has('instagramAccountId', 'instagramAccessToken'));
+
+  // Acordeones de "Activa el canal": cerrados si el canal ya quedó funcionando.
+  readonly tgEnableOpen = signal(true);
+  readonly waEnableOpen = signal(true);
+  readonly msEnableOpen = signal(true);
+  readonly igEnableOpen = signal(true);
   // WhatsApp (Meta Cloud API)
   readonly waPhoneId = signal('');
   readonly waToken = signal('');
@@ -634,6 +706,20 @@ export class ChatbotChannelsComponent {
     });
   }
 
+  /**
+   * Los enlaces internos ahora viven dentro de los textos traducidos, así que son
+   * <a href> normales y no routerLink. Sin esto recargarían toda la aplicación;
+   * aquí los interceptamos y los pasamos al router, que es lo que hacía routerLink.
+   */
+  routeLink(e: MouseEvent): void {
+    const a = (e.target as HTMLElement | null)?.closest?.('a');
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    if (!href.startsWith('/') || a.getAttribute('target') === '_blank') return;   // externos, tal cual
+    e.preventDefault();
+    this.router.navigateByUrl(href);
+  }
+
   private loadFrom(c: ChatbotConfig): void {
     this.widgetTitle.set(c.widgetTitle || '');
     this.brandColor.set(c.brandColor || '');
@@ -651,6 +737,11 @@ export class ChatbotChannelsComponent {
     this.calKey.set(c.calApiKey || '');
     this.calEvent.set(c.calEventType || '');
     this.calOpen.set(!((c.calApiKey || '').trim() && (c.calEventType || '').trim()));
+    // Estado inicial de los acordeones "Activa el canal": cerrados si ya funciona.
+    this.tgEnableOpen.set(!this.tgReady());
+    this.waEnableOpen.set(!this.waReady());
+    this.msEnableOpen.set(!this.msReady());
+    this.igEnableOpen.set(!this.igReady());
     this.waPhoneId.set(c.whatsappPhoneNumberId || '');
     this.waToken.set(c.whatsappAccessToken || '');
     this.waVerifyTok.set(c.whatsappVerifyToken || '');
@@ -771,7 +862,7 @@ export class ChatbotChannelsComponent {
       if (error) { this.tgErr.set(error.message); return; }
       this.syncLocal();
       this.tgOk.set(this.i18n.instant('AICHATBOT.CHANNELS.SAVED'));
-      setTimeout(() => this.tgOk.set(''), 2500);
+      setTimeout(() => { this.tgOk.set(''); if (this.tgReady()) this.tgEnableOpen.set(false); }, 1800);
     } finally { this.tgSaving.set(false); }
   }
 
@@ -795,7 +886,7 @@ export class ChatbotChannelsComponent {
       if (error) { this.waErr.set(error.message); return; }
       this.syncLocal();
       this.waOk.set(this.i18n.instant('AICHATBOT.CHANNELS.SAVED'));
-      setTimeout(() => this.waOk.set(''), 2500);
+      setTimeout(() => { this.waOk.set(''); if (this.waReady()) this.waEnableOpen.set(false); }, 1800);
     } finally { this.waSaving.set(false); }
   }
 
@@ -825,7 +916,7 @@ export class ChatbotChannelsComponent {
       if (error) { this.msErr.set(error.message); return; }
       this.syncLocal();
       this.msOk.set(this.i18n.instant('AICHATBOT.CHANNELS.SAVED'));
-      setTimeout(() => this.msOk.set(''), 2500);
+      setTimeout(() => { this.msOk.set(''); if (this.msReady()) this.msEnableOpen.set(false); }, 1800);
     } finally { this.msSaving.set(false); }
   }
 
@@ -849,7 +940,7 @@ export class ChatbotChannelsComponent {
       if (error) { this.igErr.set(error.message); return; }
       this.syncLocal();
       this.igOk.set(this.i18n.instant('AICHATBOT.CHANNELS.SAVED'));
-      setTimeout(() => this.igOk.set(''), 2500);
+      setTimeout(() => { this.igOk.set(''); if (this.igReady()) this.igEnableOpen.set(false); }, 1800);
     } finally { this.igSaving.set(false); }
   }
 

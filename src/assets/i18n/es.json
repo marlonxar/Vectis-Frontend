@@ -967,7 +967,28 @@
       "HO_RESP_BOT_HINT": "Promedio del asistente (mes)",
       "HO_PEAK": "Hora pico de atención",
       "HO_PEAK_HINT": "Cuándo escriben más",
-      "NAV_MENU": "Menú"
+      "NAV_MENU": "Menú",
+      "TIP_CONVERSATIONS": "Chats distintos que tuvo tu bot este mes. Una conversación puede tener muchos mensajes.",
+      "TIP_MESSAGES": "Preguntas que tu bot le mandó a la IA para responder. Es lo que consume tu plan.",
+      "TIP_LEADS": "Clientes que dejaron su nombre, correo o teléfono durante la conversación.",
+      "TIP_HANDOFF_CHATS": "Chats que pasaron del bot a una persona de tu equipo.",
+      "TIP_HO_RESP": "Cuánto tardó tu equipo, en promedio, en contestar el primer mensaje de un chat en vivo.",
+      "TIP_HO_PEAK": "La hora en que más te piden hablar con una persona. Útil para cubrir ese turno.",
+      "TIP_INSIGHTS": "Resúmenes que la IA sacó de las conversaciones: qué pidieron, qué se quejaron, qué quisieron comprar.",
+      "TIP_AVG_MSGS": "Cuántos mensajes toma en promedio una conversación. Si sube mucho, el bot está dando vueltas.",
+      "TIP_LEAD_RATE": "De cada 100 conversaciones, cuántas terminaron con un lead capturado.",
+      "TIP_PEAK_HOUR": "La hora del día en que más te escriben tus clientes.",
+      "TIP_PEAK_DAY": "El día de la semana con más conversaciones.",
+      "TIP_CSAT": "De los clientes que votaron al terminar el chat, cuántos quedaron satisfechos.",
+      "TIP_RESOLUTION": "Conversaciones que el bot resolvió solo, sin que el cliente pidiera un agente.",
+      "TIP_TRENDING": "Los temas por los que más te escriben. Salen de lo que la IA entendió en cada conversación.",
+      "TIP_BY_TYPE": "Cómo se reparten las conversaciones según su intención: pregunta, queja, interés de compra…",
+      "TIP_BY_DAY": "Cuántos mensajes procesó la IA cada día del mes.",
+      "TIP_BY_CHANNEL_CONV": "Por dónde te escriben tus clientes: web, WhatsApp, Telegram, Instagram o Messenger.",
+      "TIP_BY_CHANNEL_MSG": "Cuánto consume cada canal de tu plan de mensajes.",
+      "TIP_LABEL": "Qué significa esta métrica",
+      "BY_CHANNEL_CONV": "Conversaciones por canal",
+      "BY_CHANNEL_MSG": "Mensajes a la IA por canal"
     },
     "SUPPORT": {
       "NAV": "Soporte",
@@ -1306,7 +1327,11 @@
       "M_MS_T": "Messenger",
       "M_MS_L": "Conecta el chatbot a Facebook Messenger para atender a quienes escriben a tu página.",
       "M_TG_T": "Telegram",
-      "M_TG_L": "Pon a tu chatbot a responder en Telegram con el bot de tu negocio."
+      "M_TG_L": "Pon a tu chatbot a responder en Telegram con el bot de tu negocio.",
+      "ENABLE_ACTIVE": "Activo",
+      "ENABLE_OFF": "Sin activar",
+      "CONNECT_DONE": "Credenciales guardadas",
+      "CONNECT_PENDING": "Faltan credenciales"
     },
     "GUIDE": {
       "HOW_EYEBROW": "Self-serve",
@@ -1500,7 +1525,10 @@
       "LEAD_BADGE": "Lead",
       "LEAD_CAPTURED": "Lead capturado",
       "MSG_ONE": "1 mensaje",
-      "MSG_MANY": "{{count}} mensajes"
+      "MSG_MANY": "{{count}} mensajes",
+      "CLEAR": "Limpiar la búsqueda",
+      "RESULT_ONE": "1 conversación encontrada",
+      "RESULT_MANY": "{{count}} conversaciones encontradas"
     },
     "KB": {
       "NAV": "Qué sabe tu bot",

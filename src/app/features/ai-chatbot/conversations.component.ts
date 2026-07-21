@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
@@ -15,6 +15,23 @@ interface Lead { session_id: string; name: string; email: string; phone: string;
 interface Convo {
   sessionId: string; channel: string; lastAt: string; firstAt: string;
   turns: Turn[]; preview: string; lead: Lead | null;
+  /** Todo el texto buscable de la conversación, ya normalizado (ver norm). */
+  haystack: string;
+}
+
+/**
+ * Normaliza texto para buscar: minúsculas y sin tildes ni diéresis.
+ * En español la gente escribe "envio", "garantia" o "telefono" sin tilde,
+ * y sin esto la búsqueda no encontraba nada aunque el texto estuviera ahí.
+ * La ñ se conserva: "año" y "ano" no son lo mismo.
+ */
+export function norm(s: string): string {
+  return String(s ?? '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u0302\u0304-\u036f]/g, '')   // quita acentos; conserva U+0303, la tilde de la ñ
+    .normalize('NFC')
+    .trim();
 }
 
 /**
@@ -38,7 +55,14 @@ interface Convo {
             <p class="lead on-dark">{{ 'AICHATBOT.CONV.LEAD' | translate }}</p>
 
             <div class="tools">
-              <input class="search" [ngModel]="search()" (ngModelChange)="search.set($event)" name="q" [attr.placeholder]="'AICHATBOT.CONV.SEARCH_PH' | translate" [attr.aria-label]="'AICHATBOT.CONV.SEARCH_PH' | translate" />
+              <div class="s-wrap">
+                <input class="search" [ngModel]="search()" (ngModelChange)="search.set($event)" name="q" [attr.placeholder]="'AICHATBOT.CONV.SEARCH_PH' | translate" [attr.aria-label]="'AICHATBOT.CONV.SEARCH_PH' | translate" />
+                @if (search()) {
+                  <button type="button" class="s-x" (click)="search.set('')" [attr.aria-label]="'AICHATBOT.CONV.CLEAR' | translate">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                  </button>
+                }
+              </div>
               <div class="chips">
                 <button type="button" class="chip" [class.on]="channel() === ''" (click)="channel.set('')">{{ 'AICHATBOT.CONV.ALL' | translate }}</button>
                 @for (c of channelsPresent(); track c) {
@@ -52,6 +76,9 @@ interface Convo {
             } @else if (!convos().length) {
               <section class="card"><p class="muted">{{ 'AICHATBOT.CONV.EMPTY' | translate }}</p></section>
             } @else {
+              @if (search() || channel()) {
+                <p class="results" role="status" aria-live="polite">{{ resultText() }}</p>
+              }
               <div class="inbox">
                 <!-- Lista -->
                 <ul class="list" [class.hide-mobile]="!!selected()">
@@ -126,7 +153,12 @@ interface Convo {
     .tools { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 22px; }
     input { padding: 11px 13px; border-radius: var(--radius-md); border: 1px solid var(--line-light); background: rgba(255,255,255,.04); color: var(--text-inv); font: inherit; outline: none; }
     input:focus { border-color: var(--gold-bright); box-shadow: 0 0 0 3px rgba(231,171,46,.2); }
-    .search { min-width: 260px; flex: 1; }
+    .s-wrap { position: relative; flex: 1; min-width: 260px; display: flex; }
+    .search { width: 100%; padding-right: 38px; }
+    .s-x { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); display: grid; place-items: center;
+      width: 24px; height: 24px; border: none; border-radius: 50%; background: rgba(255,255,255,.08); color: var(--text-inv-2); cursor: pointer; }
+    .s-x:hover { color: var(--text-inv); background: rgba(255,255,255,.16); }
+    .results { margin-top: 14px; font-size: 13px; color: var(--text-inv-2); }
     .chips { display: flex; gap: 8px; flex-wrap: wrap; }
     .chip { padding: 9px 14px; border-radius: var(--radius-pill); border: 1px solid var(--line-light); background: rgba(255,255,255,.04);
       color: var(--text-inv-2); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
@@ -203,19 +235,43 @@ export class ChatbotConversationsComponent implements OnInit {
   chLabel(c: string): string { return this.CH[c] || c || 'Web'; }
 
   readonly channelsPresent = computed(() => Array.from(new Set(this.convos().map((c) => c.channel))).sort());
+
+  /**
+   * Filtra por canal y por texto. La búsqueda usa el "haystack" que armamos al
+   * cargar (mensajes + datos del lead + canal), ya normalizado: así "envio"
+   * encuentra "envío" y "ANA" encuentra "Ana". Buscar con tildes exactas era
+   * justo lo que hacía que el buscador pareciera roto.
+   */
   readonly filtered = computed(() => {
-    const q = this.search().trim().toLowerCase(); const ch = this.channel();
+    const q = norm(this.search()); const ch = this.channel();
     return this.convos().filter((c) => {
       if (ch && c.channel !== ch) return false;
       if (!q) return true;
-      return c.turns.some((t) => (t.user_message || '').toLowerCase().includes(q) || (t.bot_reply || '').toLowerCase().includes(q));
+      return c.haystack.includes(q);
     });
   });
+
+  constructor() {
+    // Si la conversación abierta deja de estar en la lista filtrada, se cierra:
+    // antes quedaba en pantalla un chat que ya no aparecía en los resultados.
+    effect(() => {
+      const sel = this.selected();
+      if (sel && !this.filtered().some((c) => c.sessionId === sel.sessionId)) this.selected.set(null);
+    });
+  }
 
   async ngOnInit(): Promise<void> {
     this.i18n.get('AICHATBOT.CONV.PAGE_TITLE').subscribe((t) => this.title.setTitle(t));
     this.i18n.onLangChange.subscribe(() => this.title.setTitle(this.i18n.instant('AICHATBOT.CONV.PAGE_TITLE')));
     await this.load();
+  }
+
+  /** "3 conversaciones encontradas" — confirma al usuario que el filtro sí corrió. */
+  resultText(): string {
+    this.lang();
+    const n = this.filtered().length;
+    return n === 1 ? this.i18n.instant('AICHATBOT.CONV.RESULT_ONE')
+                   : this.i18n.instant('AICHATBOT.CONV.RESULT_MANY', { count: n });
   }
 
   /** "1 mensaje" / "12 mensajes" — el plural lo decide el archivo de idioma. */
@@ -252,14 +308,25 @@ export class ChatbotConversationsComponent implements OnInit {
       bySession.forEach((turns, sessionId) => {
         turns.sort((a, b) => a.created_at.localeCompare(b.created_at));   // orden cronológico dentro del chat
         const first = turns[0], last = turns[turns.length - 1];
+        const channel = first.channel || 'web';
+        const lead = leadBySession.get(sessionId) || null;
+        // El texto buscable se arma UNA vez al cargar, no en cada tecla.
+        // Incluye los mensajes, el canal y los datos del lead: así se puede
+        // buscar por el correo o el nombre de un cliente, no solo por lo dicho.
+        const haystack = norm([
+          ...turns.map((t) => (t.user_message || '') + ' ' + (t.bot_reply || '')),
+          this.chLabel(channel),
+          lead ? [lead.name, lead.email, lead.phone, lead.note].filter(Boolean).join(' ') : '',
+        ].join(' '));
         out.push({
           sessionId,
-          channel: first.channel || 'web',
+          channel,
           firstAt: first.created_at,
           lastAt: last.created_at,
           turns,
           preview: (first.user_message || first.bot_reply || '').slice(0, 160),
-          lead: leadBySession.get(sessionId) || null,
+          lead,
+          haystack,
         });
       });
       out.sort((a, b) => b.lastAt.localeCompare(a.lastAt));   // conversaciones más recientes arriba

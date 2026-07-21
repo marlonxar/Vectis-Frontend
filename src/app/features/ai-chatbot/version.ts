@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.8.1';
+export const APP_VERSION = '1.9.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,17 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.9.0',
+    date: '2026-07-21',
+    title: 'Buscador arreglado, ayuda en cada métrica y canales que se cierran solos',
+    changes: [
+      'El buscador de conversaciones ahora ignora las tildes: buscar "envio" encuentra "envíos" y "garantia" encuentra "GARANTÍA". Además busca en los datos del lead (nombre, correo, teléfono y nota) y en el nombre del canal.',
+      'El buscador muestra cuántas conversaciones encontró y trae un botón para limpiar la búsqueda.',
+      'Cada métrica del panel tiene un icono de ayuda que explica en una línea qué significa y de dónde sale.',
+      'En cada canal, la sección "Activa el canal" aparece cerrada y con el distintivo verde de "Activo" cuando el canal ya está encendido y con sus credenciales completas.',
+    ],
+  },
   {
     version: '1.8.1',
     date: '2026-07-21',

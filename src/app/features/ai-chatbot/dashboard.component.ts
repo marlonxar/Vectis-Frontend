@@ -107,7 +107,7 @@ export function titleCase(raw: string): string {
             <!-- TARJETAS -->
             <div class="stats">
               <div class="stat">
-                <div class="cap">{{ 'AICHATBOT.DASH.CONVERSATIONS' | translate }}</div>
+                <div class="cap">{{ 'AICHATBOT.DASH.CONVERSATIONS' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_CONVERSATIONS' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_CONVERSATIONS' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                 <div class="n">{{ conversations() }}</div>
                 @if (activeNow() > 0 && isCurrentMonth()) {
                   <div class="live"><span class="pulse"></span>{{ activeNow() }} {{ 'AICHATBOT.DASH.ACTIVE_NOW' | translate }}</div>
@@ -118,7 +118,7 @@ export function titleCase(raw: string): string {
                 }
               </div>
               <div class="stat">
-                <div class="cap">{{ 'AICHATBOT.DASH.MESSAGES' | translate }}</div>
+                <div class="cap">{{ 'AICHATBOT.DASH.MESSAGES' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_MESSAGES' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_MESSAGES' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                 <div class="n">{{ messages() }}<span class="lim"> / {{ limit() }}</span></div>
                 <div class="ubar"><span [style.width.%]="usagePct()"></span></div>
                 @if (canInsights() && deltaMsg(); as dt) {
@@ -126,7 +126,7 @@ export function titleCase(raw: string): string {
                 }
               </div>
               <div class="stat">
-                <div class="cap">{{ 'AICHATBOT.DASH.LEADS' | translate }}</div>
+                <div class="cap">{{ 'AICHATBOT.DASH.LEADS' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_LEADS' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_LEADS' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                 <div class="n">{{ leads() }}</div>
                 @if (canInsights() && deltaLeads(); as dt) {
                   <div class="delta" [class.up]="dt.up" [class.down]="dt.down" [title]="'AICHATBOT.DASH.VS_PREV' | translate">{{ dt.up ? '▲' : (dt.down ? '▼' : '–') }} {{ dt.d > 0 ? '+' : '' }}{{ dt.d }}</div>
@@ -136,7 +136,7 @@ export function titleCase(raw: string): string {
               </div>
               @if (handoffOn()) {
                 <div class="stat">
-                  <div class="cap">{{ 'AICHATBOT.DASH.HANDOFF_CHATS' | translate }}</div>
+                  <div class="cap">{{ 'AICHATBOT.DASH.HANDOFF_CHATS' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_HANDOFF_CHATS' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_HANDOFF_CHATS' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                   <div class="n">{{ handoffChats() }}</div>
                   @if (handoffLive() > 0 && isCurrentMonth()) {
                     <div class="live"><span class="pulse"></span>{{ handoffLive() }} {{ 'AICHATBOT.DASH.AGENT_LIVE' | translate }}</div>
@@ -146,12 +146,12 @@ export function titleCase(raw: string): string {
                 </div>
                 @if (canInsights()) {
                   <div class="stat">
-                    <div class="cap">{{ 'AICHATBOT.DASH.HO_RESP' | translate }}</div>
+                    <div class="cap">{{ 'AICHATBOT.DASH.HO_RESP' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_HO_RESP' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_HO_RESP' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                     <div class="n">{{ hoRespText() }}</div>
                     <div class="sub">{{ (respIsAgent() ? 'AICHATBOT.DASH.HO_RESP_HINT' : 'AICHATBOT.DASH.HO_RESP_BOT_HINT') | translate }}</div>
                   </div>
                   <div class="stat">
-                    <div class="cap">{{ 'AICHATBOT.DASH.HO_PEAK' | translate }}</div>
+                    <div class="cap">{{ 'AICHATBOT.DASH.HO_PEAK' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_HO_PEAK' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_HO_PEAK' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                     <div class="n">{{ hoPeakDisplay() || '—' }}</div>
                     <div class="sub">{{ 'AICHATBOT.DASH.HO_PEAK_HINT' | translate }}</div>
                   </div>
@@ -159,7 +159,7 @@ export function titleCase(raw: string): string {
               }
               @if (canInsights()) {
                 <div class="stat">
-                  <div class="cap">{{ 'AICHATBOT.DASH.INSIGHTS' | translate }}</div>
+                  <div class="cap">{{ 'AICHATBOT.DASH.INSIGHTS' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_INSIGHTS' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_INSIGHTS' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                   <div class="n">{{ insights() }}</div>
                   @if (deltaInsights(); as dt) {
                     <div class="delta" [class.up]="dt.up" [class.down]="dt.down" [title]="'AICHATBOT.DASH.VS_PREV' | translate">{{ dt.up ? '▲' : (dt.down ? '▼' : '–') }} {{ dt.d > 0 ? '+' : '' }}{{ dt.d }}</div>
@@ -168,35 +168,35 @@ export function titleCase(raw: string): string {
                   }
                 </div>
                 <div class="stat">
-                  <div class="cap">{{ 'AICHATBOT.DASH.AVG_MSGS' | translate }}</div>
+                  <div class="cap">{{ 'AICHATBOT.DASH.AVG_MSGS' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_AVG_MSGS' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_AVG_MSGS' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                   @if (avgMsgs() !== null) {
                     <div class="n">{{ avgMsgs() }}</div>
                     <div class="sub">{{ 'AICHATBOT.DASH.AVG_MSGS_HINT' | translate }}</div>
                   } @else { <div class="n muted-n">—</div><div class="sub">{{ 'AICHATBOT.DASH.NO_DATA' | translate }}</div> }
                 </div>
                 <div class="stat">
-                  <div class="cap">{{ 'AICHATBOT.DASH.LEAD_RATE' | translate }}</div>
+                  <div class="cap">{{ 'AICHATBOT.DASH.LEAD_RATE' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_LEAD_RATE' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_LEAD_RATE' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                   @if (leadRate() !== null) {
                     <div class="n">{{ leadRate() }}<span class="lim">%</span></div>
                     <div class="sub">{{ 'AICHATBOT.DASH.LEAD_RATE_HINT' | translate }}</div>
                   } @else { <div class="n muted-n">—</div><div class="sub">{{ 'AICHATBOT.DASH.NO_DATA' | translate }}</div> }
                 </div>
                 <div class="stat">
-                  <div class="cap">{{ 'AICHATBOT.DASH.PEAK_HOUR' | translate }}</div>
+                  <div class="cap">{{ 'AICHATBOT.DASH.PEAK_HOUR' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_PEAK_HOUR' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_PEAK_HOUR' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                   @if (peakHour() !== null) {
                     <div class="n">{{ peakHour() }}<span class="lim">:00</span></div>
                     <div class="sub">{{ 'AICHATBOT.DASH.PEAK_HOUR_HINT' | translate }}</div>
                   } @else { <div class="n muted-n">—</div><div class="sub">{{ 'AICHATBOT.DASH.NO_DATA' | translate }}</div> }
                 </div>
                 <div class="stat">
-                  <div class="cap">{{ 'AICHATBOT.DASH.PEAK_DAY' | translate }}</div>
+                  <div class="cap">{{ 'AICHATBOT.DASH.PEAK_DAY' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_PEAK_DAY' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_PEAK_DAY' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                   @if (peakDayName() !== null) {
                     <div class="n n-day">{{ peakDayName() }}</div>
                     <div class="sub">{{ 'AICHATBOT.DASH.PEAK_DAY_HINT' | translate }}</div>
                   } @else { <div class="n muted-n">—</div><div class="sub">{{ 'AICHATBOT.DASH.NO_DATA' | translate }}</div> }
                 </div>
                 <div class="stat">
-                  <div class="cap">{{ 'AICHATBOT.DASH.CSAT' | translate }}</div>
+                  <div class="cap">{{ 'AICHATBOT.DASH.CSAT' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_CSAT' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_CSAT' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                   @if (csatTotal() > 0) {
                     <div class="n">{{ csatPct() }}<span class="lim">%</span></div>
                     <div class="sub">{{ csatTotal() }} {{ 'AICHATBOT.DASH.CSAT_VOTES' | translate }}</div>
@@ -206,7 +206,7 @@ export function titleCase(raw: string): string {
                   }
                 </div>
                 <div class="stat">
-                  <div class="cap">{{ 'AICHATBOT.DASH.RESOLUTION' | translate }}</div>
+                  <div class="cap">{{ 'AICHATBOT.DASH.RESOLUTION' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_RESOLUTION' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_RESOLUTION' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></div>
                   @if (resolution() !== null) {
                     <div class="n">{{ resolution() }}<span class="lim">%</span></div>
                     <div class="sub">{{ 'AICHATBOT.DASH.RESOLUTION_HINT' | translate }}</div>
@@ -222,7 +222,7 @@ export function titleCase(raw: string): string {
             <div class="charts">
               @if (canInsights()) {
                 <div class="card pad">
-                  <h3>{{ 'AICHATBOT.DASH.BY_TYPE' | translate }}</h3>
+                  <h3>{{ 'AICHATBOT.DASH.BY_TYPE' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_BY_TYPE' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_BY_TYPE' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></h3>
                   @if (byType().length) {
                     <div class="bars">
                       @for (t of byType(); track t.type) {
@@ -237,7 +237,7 @@ export function titleCase(raw: string): string {
                 </div>
 
                 <div class="card pad">
-                  <h3>{{ 'AICHATBOT.DASH.TRENDING' | translate }}</h3>
+                  <h3>{{ 'AICHATBOT.DASH.TRENDING' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_TRENDING' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_TRENDING' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></h3>
                   @if (byTopic().length) {
                     <div class="bars">
                       @for (t of byTopic(); track t.topic) {
@@ -253,7 +253,7 @@ export function titleCase(raw: string): string {
               }
 
               <div class="card pad">
-                <h3>{{ 'AICHATBOT.DASH.BY_DAY' | translate }} <span class="h3sub">{{ 'AICHATBOT.DASH.DAY_AXIS' | translate }}</span></h3>
+                <h3>{{ 'AICHATBOT.DASH.BY_DAY' | translate }} <span class="h3sub">{{ 'AICHATBOT.DASH.DAY_AXIS' | translate }}</span><span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_BY_DAY' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_BY_DAY' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></h3>
                 @if (daily().length) {
                   <div class="cols-scroll">
                     <div class="cols" [attr.aria-label]="'AICHATBOT.DASH.BY_DAY' | translate">
@@ -272,7 +272,7 @@ export function titleCase(raw: string): string {
 
               <!-- Conversaciones por canal -->
               <div class="card pad">
-                <h3>Conversaciones por canal</h3>
+                <h3>{{ 'AICHATBOT.DASH.BY_CHANNEL_CONV' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_BY_CHANNEL_CONV' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_BY_CHANNEL_CONV' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></h3>
                 @if (byChannelConvs().length) {
                   <div class="bars">
                     @for (c of byChannelConvs(); track c.channel) {
@@ -288,7 +288,7 @@ export function titleCase(raw: string): string {
 
               <!-- Mensajes a la IA por canal -->
               <div class="card pad">
-                <h3>Mensajes a la IA por canal</h3>
+                <h3>{{ 'AICHATBOT.DASH.BY_CHANNEL_MSG' | translate }}<span class="tip" tabindex="0" role="note" [attr.data-tip]="'AICHATBOT.DASH.TIP_BY_CHANNEL_MSG' | translate" [attr.aria-label]="('AICHATBOT.DASH.TIP_LABEL' | translate) + ': ' + ('AICHATBOT.DASH.TIP_BY_CHANNEL_MSG' | translate)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg></span></h3>
                 @if (byChannelMsgs().length) {
                   <div class="bars">
                     @for (c of byChannelMsgs(); track c.channel) {
@@ -408,7 +408,36 @@ export function titleCase(raw: string): string {
     .setup-cta:hover { text-decoration: underline; }
     .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 16px; }
     .stat { background: var(--ink-card); border: 1px solid var(--line-light); border-radius: var(--radius-md); padding: 18px; }
-    .cap { font-size: 12.5px; color: var(--text-inv-2); }
+    .cap { font-size: 12.5px; color: var(--text-inv-2); display: flex; align-items: center; gap: 6px; }
+
+    /*
+      Ayuda de cada métrica. Es un globito en CSS puro (sin librería) que sale
+      al pasar el mouse y también al llegar con el teclado (:focus), por
+      eso el icono es enfocable y lleva aria-label: quien usa lector de pantalla
+      escucha la explicación completa sin depender del hover.
+    */
+    .tip { position: relative; display: inline-grid; place-items: center; width: 15px; height: 15px; flex-shrink: 0;
+      border-radius: 50%; color: var(--text-inv-2); opacity: .65; cursor: help; }
+    .tip:hover, .tip:focus { opacity: 1; color: var(--gold-bright); outline: none; }
+    .tip::after {
+      content: attr(data-tip); position: absolute; bottom: calc(100% + 9px); left: 50%; transform: translateX(-50%) translateY(4px);
+      width: max-content; max-width: 250px; padding: 9px 11px; border-radius: 10px; z-index: 30;
+      background: #14120f; border: 1px solid var(--line-light); box-shadow: 0 12px 30px rgba(0,0,0,.5);
+      color: var(--text-inv); font-size: 12px; font-weight: 400; line-height: 1.45; white-space: normal; text-align: left;
+      opacity: 0; visibility: hidden; transition: opacity .16s ease, transform .16s ease;
+    }
+    .tip::before {
+      content: ''; position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%) translateY(4px);
+      border: 5px solid transparent; border-top-color: var(--line-light); z-index: 31;
+      opacity: 0; visibility: hidden; transition: opacity .16s ease, transform .16s ease;
+    }
+    .tip:hover::after, .tip:focus::after,
+    .tip:hover::before, .tip:focus::before { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    /* Cerca del borde derecho el globito se sale de la pantalla: lo anclamos a la derecha. */
+    .stat:last-child .tip::after, .charts .card:nth-child(even) .tip::after { left: auto; right: -8px; transform: translateY(4px); }
+    .stat:last-child .tip:hover::after, .stat:last-child .tip:focus::after,
+    .charts .card:nth-child(even) .tip:hover::after, .charts .card:nth-child(even) .tip:focus::after { transform: translateY(0); }
+    .card h3 .tip { vertical-align: middle; margin-left: 6px; }
     .stat .n { font-size: 30px; font-weight: 800; margin-top: 6px; line-height: 1.1; }
     .stat .n .lim { font-size: 16px; font-weight: 600; color: var(--text-inv-2); }
     .stat .sub { margin-top: 8px; font-size: 11.5px; color: var(--text-inv-2); }
