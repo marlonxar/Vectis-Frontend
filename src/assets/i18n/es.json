@@ -852,12 +852,7 @@
       "LOCKED_BY_URL": "Hay una URL; bórrala para poder subir un archivo.",
       "WEBSITE": "Sitio web del negocio (URL)",
       "TIP_WEBSITE": "El bot estudia el contenido de esta página para responder con más contexto.",
-      "WEBSITE_HINT": "Ej. la home o la página de \"nosotros\". Se lee y guarda en caché; cambios pueden tardar hasta 1 hora en reflejarse.",
-      "STUDY_SITE": "Estudiar sitio ahora",
-      "STUDYING": "Estudiando el sitio…",
-      "STUDY_OK": "¡Listo! El bot ya estudió tu sitio.",
-      "STUDY_ERR": "No se pudo estudiar el sitio. Revisa la URL.",
-      "STUDY_SAVE_FIRST": "Guarda el chatbot primero para poder estudiar el sitio.",
+      "WEBSITE_HINT": "Al guardar, estudiamos tu sitio automáticamente y actualizamos lo que sabe el bot. Puedes revisar el resultado en \"Qué sabe tu bot\".",
       "CONTACT": "Datos de contacto",
       "TIP_CONTACT": "El bot los comparte cuando el cliente pida cómo contactar al negocio.",
       "CONTACT_PHONE": "Teléfono",
@@ -1101,7 +1096,21 @@
       "PHONE_CODE_PH": "Código",
       "PHONE_CODE_REQ": "Selecciona el código de país para guardar el teléfono.",
       "SAVE_FAIL": "No se pudo guardar. Intenta de nuevo.",
-      "SAVED": "Cambios guardados."
+      "SAVED": "Cambios guardados.",
+      "SURVEY_TITLE": "Antes de irte, ¿nos cuentas por qué?",
+      "SURVEY_SUB": "Es opcional y no cambia tu cancelación. Nos ayuda a mejorar.",
+      "SURVEY_R_PRICE": "Es muy caro para lo que necesito",
+      "SURVEY_R_MISSING": "Le faltan funciones que necesito",
+      "SURVEY_R_HARD": "Me costó configurarlo o usarlo",
+      "SURVEY_R_QUALITY": "El bot no respondía bien",
+      "SURVEY_R_NOTUSING": "No lo estoy usando lo suficiente",
+      "SURVEY_R_OTHER_SVC": "Me cambio a otra herramienta",
+      "SURVEY_R_TEMP": "Es una pausa, pienso volver",
+      "SURVEY_R_OTHER": "Otro motivo",
+      "SURVEY_COMMENT": "¿Algo más que quieras contarnos? (opcional)",
+      "SURVEY_COMMENT_PH": "Lo que nos digas lo lee el equipo.",
+      "SURVEY_SKIP": "Prefiero no responder",
+      "SURVEY_SEND": "Enviar y cancelar"
     },
     "PRICING": {
       "EYEBROW": "Precios",
@@ -1294,6 +1303,27 @@
       "G5": "Pega el token aquí abajo y guarda: registramos tu bot automáticamente.",
       "G6": "En el GRUPO (no en el chat privado del bot) envía /start para vincularlo. Si ya habías hecho /start en el privado, hazlo de nuevo dentro del grupo para cambiar el destino. Cada conversación caerá en su propio Tema.",
       "TOGGLE_DETAILS": "Mostrar u ocultar la configuración"
+    },
+    "CONV": {
+      "NAV": "Conversaciones",
+      "EYEBROW": "Conversaciones",
+      "TITLE": "Bandeja de conversaciones",
+      "LEAD": "Lee lo que tu bot conversó con cada cliente, en todos los canales.",
+      "PAGE_TITLE": "Conversaciones · Vectis AI ChatBot",
+      "SEARCH_PH": "Buscar en las conversaciones…",
+      "ALL": "Todos",
+      "LOADING": "Cargando conversaciones…",
+      "EMPTY": "Todavía no hay conversaciones registradas. Aparecerán aquí en cuanto tus clientes escriban al bot.",
+      "NO_MATCH": "Ninguna conversación coincide.",
+      "PICK": "Elige una conversación de la lista para leerla.",
+      "BACK": "Volver a la lista",
+      "LEAD_BADGE": "Lead",
+      "LEAD_CAPTURED": "Lead capturado",
+      "MSG_ONE": "1 mensaje",
+      "MSG_MANY": "{{count}} mensajes"
+    },
+    "KB": {
+      "NAV": "Qué sabe tu bot"
     }
   },
   "REFUNDS": {

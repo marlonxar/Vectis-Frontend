@@ -33,7 +33,7 @@ import { ChatbotSessionService } from './session.service';
       @if (s.companies().length > 0) {
         <a class="nav" routerLink="/conversations" routerLinkActive="active">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          Conversaciones
+          {{ 'AICHATBOT.CONV.NAV' | translate }}
         </a>
       }
 
@@ -45,7 +45,7 @@ import { ChatbotSessionService } from './session.service';
       @if (s.companies().length > 0) {
         <a class="nav" routerLink="/knowledge" routerLinkActive="active">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-2z"/><path d="M8 7h8M8 11h6"/></svg>
-          Qué sabe tu bot
+          {{ 'AICHATBOT.KB.NAV' | translate }}
         </a>
       }
 

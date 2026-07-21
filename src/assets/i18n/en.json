@@ -852,12 +852,7 @@
       "LOCKED_BY_URL": "A URL is set; clear it to upload a file.",
       "WEBSITE": "Business website (URL)",
       "TIP_WEBSITE": "The bot studies this page content to answer with more context.",
-      "WEBSITE_HINT": "E.g. your home or \"about\" page. It is read and cached; changes may take up to 1 hour to reflect.",
-      "STUDY_SITE": "Study site now",
-      "STUDYING": "Studying the site…",
-      "STUDY_OK": "Done! The bot studied your site.",
-      "STUDY_ERR": "Could not study the site. Check the URL.",
-      "STUDY_SAVE_FIRST": "Save the chatbot first to study the site.",
+      "WEBSITE_HINT": "When you save, we study your site automatically and refresh what the bot knows. You can review the result in \"What your bot knows\".",
       "CONTACT": "Contact details",
       "TIP_CONTACT": "The bot shares these when a customer asks how to reach the business.",
       "CONTACT_PHONE": "Phone",
@@ -1101,7 +1096,21 @@
       "PHONE_CODE_PH": "Code",
       "PHONE_CODE_REQ": "Select a country code to save the phone.",
       "SAVE_FAIL": "Could not save. Please try again.",
-      "SAVED": "Changes saved."
+      "SAVED": "Changes saved.",
+      "SURVEY_TITLE": "Before you go, may we ask why?",
+      "SURVEY_SUB": "It is optional and does not change your cancellation. It helps us improve.",
+      "SURVEY_R_PRICE": "Too expensive for what I need",
+      "SURVEY_R_MISSING": "It is missing features I need",
+      "SURVEY_R_HARD": "It was hard to set up or use",
+      "SURVEY_R_QUALITY": "The bot did not answer well",
+      "SURVEY_R_NOTUSING": "I am not using it enough",
+      "SURVEY_R_OTHER_SVC": "Moving to another tool",
+      "SURVEY_R_TEMP": "Just a pause, I plan to come back",
+      "SURVEY_R_OTHER": "Another reason",
+      "SURVEY_COMMENT": "Anything else you would like to tell us? (optional)",
+      "SURVEY_COMMENT_PH": "The team reads every answer.",
+      "SURVEY_SKIP": "I would rather not answer",
+      "SURVEY_SEND": "Send and cancel"
     },
     "PRICING": {
       "EYEBROW": "Pricing",
@@ -1294,6 +1303,27 @@
       "G5": "Paste the token below and save: we register your bot automatically.",
       "G6": "In the GROUP (not the bot private chat) send /start to link it. If you already did /start in the private chat, do it again inside the group to switch the destination. Each conversation lands in its own Topic.",
       "TOGGLE_DETAILS": "Show or hide the setup"
+    },
+    "CONV": {
+      "NAV": "Conversations",
+      "EYEBROW": "Conversations",
+      "TITLE": "Conversation inbox",
+      "LEAD": "Read what your bot discussed with each customer, across every channel.",
+      "PAGE_TITLE": "Conversations · Vectis AI ChatBot",
+      "SEARCH_PH": "Search the conversations…",
+      "ALL": "All",
+      "LOADING": "Loading conversations…",
+      "EMPTY": "No conversations yet. They will show up here as soon as your customers message the bot.",
+      "NO_MATCH": "No conversation matches your search.",
+      "PICK": "Pick a conversation from the list to read it.",
+      "BACK": "Back to the list",
+      "LEAD_BADGE": "Lead",
+      "LEAD_CAPTURED": "Lead captured",
+      "MSG_ONE": "1 message",
+      "MSG_MANY": "{{count}} messages"
+    },
+    "KB": {
+      "NAV": "What your bot knows"
     }
   },
   "REFUNDS": {

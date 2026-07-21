@@ -30,7 +30,9 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
         <app-chatbot-sidebar></app-chatbot-sidebar>
         <main class="content">
           <div class="wrap">
-            <div class="ch-logo" [attr.data-ch]="channel()" aria-hidden="true">
+            <!-- El logo va EN LÍNEA con la palabra "Canal", no encima. -->
+            <div class="ch-head">
+            <span class="ch-logo" [attr.data-ch]="channel()" aria-hidden="true">
               @switch (channel()) {
                 @case ('telegram') { <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M21.9 4.3 18.7 19.4c-.24 1.06-.87 1.32-1.76.82l-4.87-3.59-2.35 2.26c-.26.26-.48.48-.98.48l.35-4.96 9.02-8.15c.39-.35-.09-.55-.6-.2L6.35 13.1l-4.8-1.5c-1.04-.33-1.06-1.04.22-1.54l18.77-7.23c.87-.32 1.63.2 1.36 1.47z"/></svg> }
                 @case ('whatsapp') { <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.8 14.13c-.24.68-1.42 1.3-1.95 1.34-.5.05-.98.24-3.3-.69-2.78-1.1-4.55-3.95-4.69-4.13-.14-.19-1.13-1.5-1.13-2.87s.72-2.03.97-2.31c.25-.28.55-.35.73-.35.18 0 .37 0 .53.01.17 0 .4-.06.62.48.24.55.8 1.92.87 2.06.07.14.12.3.02.49-.09.19-.14.3-.28.46-.14.16-.3.36-.42.48-.14.14-.29.29-.12.57.16.28.72 1.19 1.55 1.93 1.07.95 1.97 1.25 2.25 1.39.28.14.44.12.6-.07.16-.18.7-.81.88-1.09.18-.28.37-.23.62-.14.25.09 1.61.76 1.89.9.28.14.46.21.53.32.07.12.07.68-.17 1.36z"/></svg> }
@@ -38,8 +40,9 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 @case ('messenger') { <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.19.16.14.26.35.27.57l.05 1.78c.02.57.6.94 1.12.71l1.99-.88c.17-.07.36-.09.54-.04 1.06.29 2.19.45 3.35.45 5.64 0 10-4.13 10-9.7S17.64 2 12 2zm6 7.46-2.93 4.65c-.47.74-1.47.93-2.17.4l-2.33-1.75a.6.6 0 0 0-.72 0l-3.15 2.39c-.42.32-.97-.18-.69-.63l2.93-4.65c.47-.74 1.47-.93 2.17-.4l2.33 1.75a.6.6 0 0 0 .72 0l3.15-2.39c.42-.32.97.18.69.63z"/></svg> }
                 @default { <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg> }
               }
-            </div>
+            </span>
             <span class="eyebrow on-dark">Canal</span>
+            </div>
             <h1 class="ttl">{{ meta().title }}</h1>
             <p class="lead on-dark">{{ meta().lead }}</p>
 
@@ -205,35 +208,20 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
 
               <!-- Canal + agente + citas -->
               <section class="card">
-                <h3 class="ch">Activa el canal y las citas</h3>
+                <h3 class="ch">Activa el canal</h3>
                 <div class="tg-toggle only">
                   <div class="tg-tl"><b>El bot responde en Telegram</b><span class="ch-sub">Tus clientes le escriben al bot en un chat privado y contesta con la información de tu negocio.</span></div>
                   <button type="button" class="tgl" [class.on]="channelOn()" (click)="channelOn.set(!channelOn())" [attr.aria-pressed]="channelOn()" aria-label="Activar el bot en Telegram"><span></span></button>
                 </div>
                 <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b> en Telegram? Eso se activa en <a routerLink="/handoff">Handoff a Humano</a> — usa este mismo bot.</p>
 
-                <p class="hint mt">Citas por Cal.com: con estos datos el bot pregunta día y hora según tu disponibilidad real y <b>agenda la cita solo</b>. Sin ellos, solo comparte tu enlace de reservas (el de <a routerLink="/configure">Configurar</a>).</p>
-                <div class="two">
-                  <div class="field">
-                    <label for="cal-key">Cal.com — API key</label>
-                    <input id="cal-key" [ngModel]="calKey()" (ngModelChange)="calKey.set($event)" name="calkey" placeholder="cal_live_…" autocomplete="off" spellcheck="false" />
-                  </div>
-                  <div class="field">
-                    <label for="cal-ev">Cal.com — URL de tu evento</label>
-                    <input id="cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="calev" placeholder="https://cal.com/tu-usuario/30min" autocomplete="off" spellcheck="false" />
-                  </div>
-                </div>
-                <p class="hint">Pega la URL pública de tu evento (la que compartes para reservar); nosotros sacamos el resto. También sirve el ID numérico si lo tienes.</p>
                 <div class="save-row">
                   <button type="button" class="save" [disabled]="tgSaving()" (click)="saveTelegram()">{{ tgSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
-                  <button type="button" class="ghost-btn" [disabled]="calTesting()" (click)="testCal()">{{ calTesting() ? 'Probando…' : 'Probar conexión con Cal.com' }}</button>
                   @if (tgOk()) { <span class="ok-msg">{{ tgOk() }}</span> }
                   @if (tgErr()) { <span class="err-msg">{{ tgErr() }}</span> }
                 </div>
-                @if (calTestMsg()) {
-                  <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p>
-                }
               </section>
+              <ng-container [ngTemplateOutlet]="calCard"></ng-container>
             } @else if (channel() === 'whatsapp') {
               <!-- Conexión con Meta WhatsApp Cloud API -->
               <section class="card">
@@ -276,34 +264,20 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
 
               <!-- Canal + agente + citas -->
               <section class="card">
-                <h3 class="ch">Activa el canal y las citas</h3>
+                <h3 class="ch">Activa el canal</h3>
                 <div class="tg-toggle only">
                   <div class="tg-tl"><b>El bot responde en WhatsApp</b><span class="ch-sub">Tus clientes le escriben a tu número de WhatsApp Business y el bot contesta con la información de tu negocio.</span></div>
                   <button type="button" class="tgl" [class.on]="waChannelOn()" (click)="waChannelOn.set(!waChannelOn())" [attr.aria-pressed]="waChannelOn()" aria-label="Activar el bot en WhatsApp"><span></span></button>
                 </div>
                 <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b> en WhatsApp? Eso se activa en <a routerLink="/handoff">Handoff a Humano</a> — los chats en vivo te llegan a tu Telegram.</p>
 
-                <p class="hint mt">Citas por Cal.com: con estos datos el bot pregunta día y hora según tu disponibilidad real y <b>agenda la cita solo</b>. Sin ellos, solo comparte tu enlace de reservas (el de <a routerLink="/configure">Configurar</a>).</p>
-                <div class="two">
-                  <div class="field">
-                    <label for="wa-cal-key">Cal.com — API key</label>
-                    <input id="wa-cal-key" [ngModel]="calKey()" (ngModelChange)="calKey.set($event)" name="wacalkey" placeholder="cal_live_…" autocomplete="off" spellcheck="false" />
-                  </div>
-                  <div class="field">
-                    <label for="wa-cal-ev">Cal.com — URL de tu evento</label>
-                    <input id="wa-cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="wacalev" placeholder="https://cal.com/tu-usuario/30min" autocomplete="off" spellcheck="false" />
-                  </div>
-                </div>
                 <div class="save-row">
                   <button type="button" class="save" [disabled]="waSaving()" (click)="saveWhatsApp()">{{ waSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
-                  <button type="button" class="ghost-btn" [disabled]="calTesting()" (click)="testCal()">{{ calTesting() ? 'Probando…' : 'Probar conexión con Cal.com' }}</button>
                   @if (waOk()) { <span class="ok-msg">{{ waOk() }}</span> }
                   @if (waErr()) { <span class="err-msg">{{ waErr() }}</span> }
                 </div>
-                @if (calTestMsg()) {
-                  <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p>
-                }
               </section>
+              <ng-container [ngTemplateOutlet]="calCard"></ng-container>
             } @else if (channel() === 'messenger') {
               <!-- Conexión con Facebook Messenger -->
               <section class="card">
@@ -340,25 +314,19 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 <p class="hint">Opcional pero recomendado: el <b>App Secret</b> de tu app de Meta. Lo usamos para verificar la firma de los webhooks y rechazar mensajes falsos (es el mismo para tus canales de Meta).</p>
               </section>
               <section class="card">
-                <h3 class="ch">Activa el canal y las citas</h3>
+                <h3 class="ch">Activa el canal</h3>
                 <div class="tg-toggle only">
                   <div class="tg-tl"><b>El bot responde en Messenger</b><span class="ch-sub">Quien escribe a tu página de Facebook recibe respuesta del bot con la info de tu negocio.</span></div>
                   <button type="button" class="tgl" [class.on]="msOn()" (click)="msOn.set(!msOn())" [attr.aria-pressed]="msOn()" aria-label="Activar el bot en Messenger"><span></span></button>
                 </div>
                 <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b>? Se activa en <a routerLink="/handoff">Handoff a Humano</a> — los chats en vivo te llegan a tu Telegram.</p>
-                <p class="hint mt">Citas por Cal.com: con estos datos el bot pregunta día y hora según tu disponibilidad y <b>agenda la cita solo</b>.</p>
-                <div class="two">
-                  <div class="field"><label for="ms-cal-key">Cal.com — API key</label><input id="ms-cal-key" [ngModel]="calKey()" (ngModelChange)="calKey.set($event)" name="mscalkey" placeholder="cal_live_…" autocomplete="off" spellcheck="false" /></div>
-                  <div class="field"><label for="ms-cal-ev">Cal.com — URL de tu evento</label><input id="ms-cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="mscalev" placeholder="https://cal.com/tu-usuario/30min" autocomplete="off" spellcheck="false" /></div>
-                </div>
                 <div class="save-row">
                   <button type="button" class="save" [disabled]="msSaving()" (click)="saveMessenger()">{{ msSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
-                  <button type="button" class="ghost-btn" [disabled]="calTesting()" (click)="testCal()">{{ calTesting() ? 'Probando…' : 'Probar conexión con Cal.com' }}</button>
                   @if (msOk()) { <span class="ok-msg">{{ msOk() }}</span> }
                   @if (msErr()) { <span class="err-msg">{{ msErr() }}</span> }
                 </div>
-                @if (calTestMsg()) { <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p> }
               </section>
+              <ng-container [ngTemplateOutlet]="calCard"></ng-container>
             } @else if (channel() === 'instagram') {
               <!-- Conexión con Instagram -->
               <section class="card">
@@ -395,25 +363,19 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 <p class="hint">Opcional pero recomendado: el <b>App Secret</b> de tu app de Meta. Lo usamos para verificar la firma de los webhooks y rechazar mensajes falsos (es el mismo para tus canales de Meta).</p>
               </section>
               <section class="card">
-                <h3 class="ch">Activa el canal y las citas</h3>
+                <h3 class="ch">Activa el canal</h3>
                 <div class="tg-toggle only">
                   <div class="tg-tl"><b>El bot responde en Instagram</b><span class="ch-sub">El bot contesta los mensajes directos (DM) de tu cuenta de Instagram con la info de tu negocio.</span></div>
                   <button type="button" class="tgl" [class.on]="igOn()" (click)="igOn.set(!igOn())" [attr.aria-pressed]="igOn()" aria-label="Activar el bot en Instagram"><span></span></button>
                 </div>
                 <p class="hint">¿Quieres que el cliente pueda <b>hablar con una persona</b>? Se activa en <a routerLink="/handoff">Handoff a Humano</a> — los chats en vivo te llegan a tu Telegram.</p>
-                <p class="hint mt">Citas por Cal.com: con estos datos el bot pregunta día y hora según tu disponibilidad y <b>agenda la cita solo</b>.</p>
-                <div class="two">
-                  <div class="field"><label for="ig-cal-key">Cal.com — API key</label><input id="ig-cal-key" [ngModel]="calKey()" (ngModelChange)="calKey.set($event)" name="igcalkey" placeholder="cal_live_…" autocomplete="off" spellcheck="false" /></div>
-                  <div class="field"><label for="ig-cal-ev">Cal.com — URL de tu evento</label><input id="ig-cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="igcalev" placeholder="https://cal.com/tu-usuario/30min" autocomplete="off" spellcheck="false" /></div>
-                </div>
                 <div class="save-row">
                   <button type="button" class="save" [disabled]="igSaving()" (click)="saveInstagram()">{{ igSaving() ? 'Guardando…' : 'Guardar canal' }}</button>
-                  <button type="button" class="ghost-btn" [disabled]="calTesting()" (click)="testCal()">{{ calTesting() ? 'Probando…' : 'Probar conexión con Cal.com' }}</button>
                   @if (igOk()) { <span class="ok-msg">{{ igOk() }}</span> }
                   @if (igErr()) { <span class="err-msg">{{ igErr() }}</span> }
                 </div>
-                @if (calTestMsg()) { <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p> }
               </section>
+              <ng-container [ngTemplateOutlet]="calCard"></ng-container>
             } @else {
               <section class="card soon-card">
                 <span class="soon">En preparación</span>
@@ -429,14 +391,81 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
         </main>
       </div>
     </div>
+
+    <!--
+      Tarjeta de Cal.com, compartida por todos los canales (los datos son los mismos).
+      Si ya está configurada arranca CERRADA y con el distintivo verde de "Conectado";
+      si falta algo, arranca abierta para que el usuario la complete.
+    -->
+    <ng-template #calCard>
+      <section class="card acc" [class.done]="calConfigured()">
+        <button type="button" class="acc-head" (click)="calOpen.set(!calOpen())" [attr.aria-expanded]="calOpen()">
+          <span class="acc-ic cal" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          </span>
+          <span class="acc-tl">
+            <b>Agendado automático de citas (Cal.com)</b>
+            <span>El bot consulta tu disponibilidad real, pregunta los datos y crea la reserva.</span>
+          </span>
+          @if (calConfigured()) {
+            <span class="status linked"><span class="sdot"></span>Conectado</span>
+          } @else {
+            <span class="status pending">Sin configurar</span>
+          }
+          <svg class="chev" [class.up]="calOpen()" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+
+        @if (calOpen()) {
+          <div class="acc-body">
+            <p class="muted">Sin estos datos el bot solo comparte tu enlace de reservas (el de <a routerLink="/configure">Configurar</a>). Con ellos, agenda la cita él mismo.</p>
+
+            <h4 class="sub">Cómo conseguir tu API key</h4>
+            <ol class="tg-steps">
+              <li>Entra a <a href="https://app.cal.com/settings/developer/api-keys" target="_blank" rel="noopener">app.cal.com</a> e inicia sesión.</li>
+              <li>Ve a <b>Settings → Developer → API keys</b> (menú de tu perfil, arriba a la derecha).</li>
+              <li>Presiona <b>Add</b>, ponle un nombre (ej. <code>Vectis</code>) y elige <b>que nunca expire</b>.</li>
+              <li>Copia la clave (empieza con <code>cal_live_…</code>) y pégala abajo. <b>Solo se muestra una vez</b>: si la pierdes, genera otra.</li>
+            </ol>
+
+            <h4 class="sub">Cómo conseguir la URL de tu evento</h4>
+            <ol class="tg-steps">
+              <li>En Cal.com abre <b>Event Types</b>.</li>
+              <li>Elige el tipo de cita que quieres que el bot agende (ej. <i>30 min</i>). Si no tienes ninguno, créalo con <b>+ New</b>.</li>
+              <li>Presiona el botón de <b>copiar enlace</b> del evento (o ábrelo con <b>Preview</b> y copia la URL de la barra del navegador).</li>
+              <li>Queda algo así: <code>https://cal.com/tu-usuario/30min</code>. Pégala completa abajo; nosotros sacamos el resto.</li>
+            </ol>
+            <p class="hint">También funciona con eventos de equipo (<code>cal.com/team/tu-equipo/30min</code>) o con el ID numérico del evento si ya lo tienes.</p>
+
+            <div class="two">
+              <div class="field">
+                <label for="cal-key">Cal.com — API key</label>
+                <input id="cal-key" [ngModel]="calKey()" (ngModelChange)="calKey.set($event)" name="calkey" placeholder="cal_live_…" autocomplete="off" spellcheck="false" />
+              </div>
+              <div class="field">
+                <label for="cal-ev">Cal.com — URL de tu evento</label>
+                <input id="cal-ev" [ngModel]="calEvent()" (ngModelChange)="calEvent.set($event)" name="calev" placeholder="https://cal.com/tu-usuario/30min" autocomplete="off" spellcheck="false" />
+              </div>
+            </div>
+
+            <div class="save-row">
+              <button type="button" class="save" [disabled]="calTesting()" (click)="connectCal()">{{ calTesting() ? 'Conectando…' : 'Guardar y conectar' }}</button>
+              @if (calConfigured()) { <button type="button" class="ghost-btn" (click)="calOpen.set(false)">Cerrar</button> }
+            </div>
+            @if (calTestMsg()) { <p [class.ok-line]="calTestOk()" [class.err-line]="!calTestOk()">{{ calTestMsg() }}</p> }
+          </div>
+        }
+      </section>
+    </ng-template>
   `,
   styles: [`
     .app-screen { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; overflow: hidden; background: var(--ink); color: var(--text-inv); }
     .layout { flex: 1; display: flex; min-height: 0; }
     .content { flex: 1; min-width: 0; overflow-y: auto; }
     .wrap { padding: 44px clamp(20px, 4vw, 48px) 60px; max-width: 1120px; }
-    .ch-logo { display: block; color: var(--text-inv); margin-bottom: 18px; opacity: .92; }
-    .ch-logo svg { width: 30px; height: 30px; }
+    .ch-head { display: flex; align-items: center; gap: 12px; }
+    .ch-logo { display: inline-flex; color: var(--text-inv); opacity: .92; }
+    .ch-logo svg { width: 26px; height: 26px; }
+    .ch-head .eyebrow { margin: 0; }
     .ttl { font-size: clamp(28px, 4vw, 44px); margin-top: 12px; }
     .wrap .lead { margin-top: 14px; }
     .callout { display: flex; align-items: flex-start; gap: 12px; margin: 22px 0 0; padding: 14px 16px; border-radius: var(--radius-md);
@@ -510,6 +539,23 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .sdot { width: 9px; height: 9px; border-radius: 50%; background: #34e0a1; box-shadow: 0 0 8px #34e0a1; }
     .ok-line { margin-top: 12px; font-size: 13px; color: var(--gold-soft); background: rgba(231,171,46,.1); padding: 10px 12px; border-radius: 10px; }
     .err-line { margin-top: 12px; font-size: 13px; color: #ff8a8a; background: rgba(214,69,69,.1); padding: 10px 12px; border-radius: 10px; }
+    /* Acordeón (Cal.com): cabecera clicable + cuerpo desplegable */
+    .acc { padding: 0; overflow: hidden; }
+    .acc.done { border-color: rgba(52,224,161,.28); }
+    .acc-head { display: flex; align-items: center; gap: 13px; width: 100%; text-align: left; background: transparent; border: none;
+      color: inherit; font: inherit; padding: 18px 22px; cursor: pointer; }
+    .acc-head:hover { background: rgba(255,255,255,.02); }
+    .acc-ic { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0;
+      color: var(--gold-bright); background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.3); }
+    .acc.done .acc-ic { color: #34e0a1; background: rgba(52,224,161,.12); border-color: rgba(52,224,161,.3); }
+    .acc-tl { flex: 1; min-width: 0; } .acc-tl b { display: block; font-size: 15px; } .acc-tl span { font-size: 12.5px; color: var(--text-inv-2); }
+    .status.pending { font-size: 12.5px; font-weight: 600; color: var(--text-inv-2); }
+    .chev { color: var(--text-inv-2); flex-shrink: 0; transition: transform .2s var(--ease, ease); }
+    .chev.up { transform: rotate(180deg); }
+    .acc-body { padding: 0 22px 22px; border-top: 1px solid var(--line-light); padding-top: 18px; }
+    .sub { font-size: 13.5px; font-weight: 700; margin: 18px 0 8px; color: var(--text-inv); }
+    .acc-body .two { margin-top: 18px; }
+
     .soon { position: absolute; top: 16px; right: 16px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
       color: var(--gold-bright); background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.3); border-radius: 999px; padding: 4px 10px; }
     .soon-card { padding-top: 26px; }
@@ -562,6 +608,12 @@ export class ChatbotChannelsComponent {
   readonly calTesting = signal(false);
   readonly calTestMsg = signal('');
   readonly calTestOk = signal(false);
+  /** Acordeón de Cal.com: cerrado cuando ya está configurado, abierto cuando falta algo. */
+  readonly calOpen = signal(false);
+  readonly calConfigured = computed(() => {
+    const c = this.s.currentConfig();
+    return !!(c && (c.calApiKey || '').trim() && (c.calEventType || '').trim());
+  });
   // WhatsApp (Meta Cloud API)
   readonly waPhoneId = signal('');
   readonly waToken = signal('');
@@ -616,6 +668,7 @@ export class ChatbotChannelsComponent {
     this.channelOn.set(!!c.telegramChannelEnabled);
     this.calKey.set(c.calApiKey || '');
     this.calEvent.set(c.calEventType || '');
+    this.calOpen.set(!((c.calApiKey || '').trim() && (c.calEventType || '').trim()));
     this.waPhoneId.set(c.whatsappPhoneNumberId || '');
     this.waToken.set(c.whatsappAccessToken || '');
     this.waVerifyTok.set(c.whatsappVerifyToken || '');
@@ -818,14 +871,19 @@ export class ChatbotChannelsComponent {
     } finally { this.igSaving.set(false); }
   }
 
-  /** Prueba la conexión con Cal.com: guarda lo tecleado y pide disponibilidad al worker. */
-  async testCal(): Promise<void> {
+  /**
+   * Guarda las credenciales de Cal.com y comprueba la conexión de una vez.
+   * Si la conexión queda bien, cierra el acordeón: el usuario ve el distintivo verde
+   * y no tiene que volver a tocar esta sección.
+   */
+  async connectCal(): Promise<void> {
     const id = this.s.currentClientId();
     if (!id) { this.calTestOk.set(false); this.calTestMsg.set('Primero crea y guarda tu chatbot en Configurar.'); return; }
     this.calTesting.set(true); this.calTestMsg.set('');
     try {
       // Guarda exactamente lo que está en pantalla para probar eso.
       await this.sb.from('chatbots').update({ cal_api_key: this.calKey().trim() || null, cal_event_type: this.calEvent().trim() || null }).eq('id', id);
+      this.syncLocal();
       const at = (await this.sb.auth.getSession()).data.session?.access_token;
       const res = await fetch(WORKER_URL, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -835,7 +893,11 @@ export class ChatbotChannelsComponent {
       if (!j || j.error) { this.calTestOk.set(false); this.calTestMsg.set('No pude verificar la conexión (' + ((j && j.error) || res.status) + ').'); }
       else if (!j.configured) { this.calTestOk.set(false); this.calTestMsg.set(j.hasApiKey ? 'Falta o es inválida la URL del evento.' : 'Falta la API key de Cal.com.'); }
       else if (!j.slotCount) { this.calTestOk.set(false); this.calTestMsg.set('Conexión OK, pero no hay horarios disponibles en los próximos 10 días. Revisa la disponibilidad de tu evento en Cal.com.'); }
-      else { this.calTestOk.set(true); this.calTestMsg.set('✓ Conectado. ' + j.slotCount + ' horarios disponibles. Ej.: ' + (j.sample || []).join(' · ')); }
+      else {
+        this.calTestOk.set(true);
+        this.calTestMsg.set('✓ Conectado. ' + j.slotCount + ' horarios disponibles. Ej.: ' + (j.sample || []).join(' · '));
+        setTimeout(() => this.calOpen.set(false), 1200);   // deja ver el mensaje y cierra
+      }
     } catch (e) {
       this.calTestOk.set(false); this.calTestMsg.set('No pude verificar la conexión. Intenta de nuevo.');
     } finally { this.calTesting.set(false); }

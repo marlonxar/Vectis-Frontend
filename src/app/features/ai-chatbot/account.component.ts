@@ -208,6 +208,40 @@ import { FocusTrapDirective } from './focus-trap.directive';
           </div>
         </div>
       }
+
+      <!--
+        Encuesta de salida. Aparece DESPUÉS de confirmar la cancelación, nunca antes:
+        cancelar no puede depender de responder. Todo es opcional y se puede omitir.
+      -->
+      @if (surveyOpen()) {
+        <div class="modal-bg" (click)="closeSurvey()">
+          <div class="modal survey" role="dialog" aria-modal="true" appFocusTrap (dismiss)="closeSurvey()" (click)="$event.stopPropagation()">
+            <h3>{{ 'AICHATBOT.ACCOUNT.SURVEY_TITLE' | translate }}</h3>
+            <p class="sub">{{ 'AICHATBOT.ACCOUNT.SURVEY_SUB' | translate }}</p>
+
+            <div class="reasons" role="radiogroup" [attr.aria-label]="'AICHATBOT.ACCOUNT.SURVEY_TITLE' | translate">
+              @for (r of cancelReasons; track r) {
+                <button type="button" class="reason" role="radio" [attr.aria-checked]="surveyReason() === r"
+                        [class.on]="surveyReason() === r" (click)="surveyReason.set(surveyReason() === r ? '' : r)">
+                  <span class="tick" aria-hidden="true"></span>
+                  {{ ('AICHATBOT.ACCOUNT.SURVEY_R_' + r) | translate }}
+                </button>
+              }
+            </div>
+
+            <div class="field">
+              <label for="cx-comment">{{ 'AICHATBOT.ACCOUNT.SURVEY_COMMENT' | translate }}</label>
+              <textarea id="cx-comment" rows="3" name="cxcomment" [ngModel]="surveyComment()" (ngModelChange)="surveyComment.set($event)"
+                        [attr.placeholder]="'AICHATBOT.ACCOUNT.SURVEY_COMMENT_PH' | translate"></textarea>
+            </div>
+
+            <div class="form-actions center">
+              <button type="button" class="btn-ghost sm" (click)="closeSurvey()">{{ 'AICHATBOT.ACCOUNT.SURVEY_SKIP' | translate }}</button>
+              <button type="button" class="btn-gold sm" [disabled]="surveyBusy()" (click)="sendSurvey()">{{ 'AICHATBOT.ACCOUNT.SURVEY_SEND' | translate }}</button>
+            </div>
+          </div>
+        </div>
+      }
     </div>
   `,
   styles: [`
@@ -280,6 +314,23 @@ import { FocusTrapDirective } from './focus-trap.directive';
     .warn-ic { width: 54px; height: 54px; margin: 0 auto; border-radius: 50%; display: grid; place-items: center; color: #ff8a8a; background: rgba(214,69,69,.12); border: 1px solid rgba(214,69,69,.4); }
     .form-actions.center { justify-content: center; margin-top: 22px; }
 
+    /* Encuesta de salida */
+    .modal.survey { max-width: 520px; text-align: left; }
+    .modal.survey h3 { font-size: 19px; }
+    .modal.survey .sub { font-size: 13.5px; color: var(--text-inv-2); margin-top: 6px; }
+    .reasons { display: grid; gap: 8px; margin: 20px 0 4px; }
+    .reason { display: flex; align-items: center; gap: 10px; text-align: left; width: 100%; padding: 11px 14px; border-radius: var(--radius-md);
+      border: 1px solid var(--line-light); background: rgba(255,255,255,.04); color: var(--text-inv); font: inherit; font-size: 13.5px; cursor: pointer; }
+    .reason:hover { border-color: rgba(231,171,46,.4); }
+    .reason.on { border-color: var(--gold-bright); background: rgba(231,171,46,.09); }
+    .tick { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line-light); flex-shrink: 0; }
+    .reason.on .tick { border-color: var(--gold-bright); background: var(--gold-bright); box-shadow: inset 0 0 0 3px var(--ink-soft); }
+    .modal.survey .field { margin-top: 18px; }
+    .modal.survey textarea { width: 100%; padding: 11px 13px; border-radius: var(--radius-md); border: 1px solid var(--line-light);
+      background: rgba(255,255,255,.04); color: var(--text-inv); font: inherit; outline: none; resize: vertical; }
+    .modal.survey textarea:focus { border-color: var(--gold-bright); box-shadow: 0 0 0 3px rgba(231,171,46,.2); }
+    @media (max-width: 560px) { .modal.survey { padding: 22px 18px; } }
+
     @media (max-width: 860px) { .layout { flex-direction: column; } }
     @media (max-width: 600px) { .two { grid-template-columns: 1fr; } }
   `],
@@ -301,6 +352,12 @@ export class ChatbotAccountComponent implements OnInit {
   pwdOk = signal(false);
   pwdBusy = signal(false);
   confirmKind = signal<'delete' | 'cancel' | null>(null);
+  // Encuesta de salida (opcional). Los códigos viajan a la BD; el texto vive en los idiomas.
+  readonly cancelReasons = ['PRICE', 'MISSING', 'HARD', 'QUALITY', 'NOTUSING', 'OTHER_SVC', 'TEMP', 'OTHER'];
+  surveyOpen = signal(false);
+  surveyReason = signal('');
+  surveyComment = signal('');
+  surveyBusy = signal(false);
   confirmBusy = signal(false);
   confirmErr = signal('');
   showPwd = signal(false);
@@ -436,11 +493,35 @@ export class ChatbotAccountComponent implements OnInit {
         this.s.cancelAtPeriodEnd.set(true);
         this.confirmBusy.set(false);
         this.confirmKind.set(null);
+        this.surveyOpen.set(true);   // ya está cancelado; ahora preguntamos el motivo (opcional)
       } else {
         this.confirmBusy.set(false);
         this.confirmErr.set(this.i18n.instant('AICHATBOT.ACCOUNT.CANCEL_FAIL'));
       }
     }
+  }
+
+  /** Cierra la encuesta sin guardar nada. La cancelación ya ocurrió: esto nunca la revierte. */
+  closeSurvey(): void {
+    this.surveyOpen.set(false);
+    this.surveyReason.set(''); this.surveyComment.set('');
+  }
+
+  /** Guarda el motivo de cancelación. Si falla, no molestamos al usuario: ya canceló. */
+  async sendSurvey(): Promise<void> {
+    const uid = this.auth.user()?.id;
+    if (!uid || (!this.surveyReason() && !this.surveyComment().trim())) { this.closeSurvey(); return; }
+    this.surveyBusy.set(true);
+    try {
+      await this.sb.from('cancellation_feedback').insert({
+        user_id: uid,
+        reason: this.surveyReason() || null,
+        comment: this.surveyComment().trim() || null,
+        plan: this.s.plan() || null,
+      });
+    } catch { /* el feedback es un extra: nunca puede romperle nada al usuario */ }
+    this.surveyBusy.set(false);
+    this.closeSurvey();
   }
 
   /** Cancelado local: marca cancel_at_period_end (acceso hasta el vencimiento). Devuelve si tuvo éxito. */

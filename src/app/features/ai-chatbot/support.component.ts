@@ -7,19 +7,18 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ChatbotAppHeaderComponent } from './app-header.component';
 import { ChatbotVersionFooterComponent } from './version-footer.component';
 import { ChatbotSidebarComponent } from './sidebar.component';
-import { ContactComponent } from '../contact/contact.component';
 import { ChatbotSessionService, SupportTicket } from './session.service';
 import { SupabaseClientService } from './supabase.client';
 import { FocusTrapDirective } from './focus-trap.directive';
 
 /**
- * /support — Soporte Técnico: leyenda, tickets de soporte (crear + seguimiento)
- * y contacto de Vectis (desplegable).
+ * /support — Soporte Técnico: leyenda y tickets de soporte (crear + seguimiento).
+ * El canal de contacto es el ticket: no ofrecemos correo directo desde aquí.
  */
 @Component({
   selector: 'app-chatbot-support',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ContactComponent, FocusTrapDirective, ChatbotVersionFooterComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, FocusTrapDirective, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       <app-chatbot-app-header></app-chatbot-app-header>
@@ -100,14 +99,6 @@ import { FocusTrapDirective } from './focus-trap.directive';
               }
             </section>
 
-            <!-- CONTACTO VECTIS (desplegable) -->
-            <section class="card">
-              <button type="button" class="contact-toggle" (click)="contactOpen.set(!contactOpen())" [attr.aria-expanded]="contactOpen()">
-                {{ 'AICHATBOT.SUPPORT.CONTACT_TOGGLE' | translate }}
-                <svg [class.up]="contactOpen()" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-              </button>
-            </section>
-
             <p class="legal-links">
               {{ 'AICHATBOT.SUPPORT.LEGAL_INTRO' | translate }}
               <a routerLink="/privacy">{{ 'AICHATBOT.SUPPORT.PRIVACY_LINK' | translate }}</a>
@@ -118,7 +109,6 @@ import { FocusTrapDirective } from './focus-trap.directive';
             </p>
           </div>
 
-          @if (contactOpen()) { <app-contact></app-contact> }
         </main>
       </div>
 
@@ -224,9 +214,6 @@ import { FocusTrapDirective } from './focus-trap.directive';
     .muted { color: var(--text-inv-2); }
     .m-actions { display: flex; justify-content: flex-end; margin-top: 24px; }
 
-    .contact-toggle { display: flex; align-items: center; gap: 8px; width: 100%; justify-content: space-between; background: transparent; border: none; color: var(--text-inv); font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
-    .contact-toggle svg { color: var(--gold-bright); transition: transform .2s var(--ease); }
-    .contact-toggle svg.up { transform: rotate(180deg); }
 
     .legal-links { margin: 22px 0 4px; font-size: 13px; color: var(--text-inv-2); }
     .legal-links a { color: var(--gold-bright); font-weight: 600; }
@@ -251,7 +238,6 @@ export class ChatbotSupportComponent implements OnInit {
   readonly s = inject(ChatbotSessionService);
 
   ticketFormOpen = signal(false);
-  contactOpen = signal(false);
   err = signal(false);
   saving = signal(false);
   loading = signal(true);

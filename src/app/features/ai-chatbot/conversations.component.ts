@@ -2,6 +2,8 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ChatbotAppHeaderComponent } from './app-header.component';
 import { ChatbotSidebarComponent } from './sidebar.component';
 import { ChatbotVersionFooterComponent } from './version-footer.component';
@@ -23,7 +25,7 @@ interface Convo {
 @Component({
   selector: 'app-chatbot-conversations',
   standalone: true,
-  imports: [CommonModule, FormsModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
+  imports: [CommonModule, FormsModule, TranslateModule, ChatbotAppHeaderComponent, ChatbotSidebarComponent, ChatbotVersionFooterComponent],
   template: `
     <div class="app-screen">
       <app-chatbot-app-header></app-chatbot-app-header>
@@ -31,14 +33,14 @@ interface Convo {
         <app-chatbot-sidebar></app-chatbot-sidebar>
         <main class="content">
           <div class="wrap">
-            <span class="eyebrow on-dark">Conversaciones</span>
-            <h1 class="ttl">Bandeja de conversaciones</h1>
-            <p class="lead on-dark">Lee lo que tu bot conversó con cada cliente, en todos los canales.</p>
+            <span class="eyebrow on-dark">{{ 'AICHATBOT.CONV.EYEBROW' | translate }}</span>
+            <h1 class="ttl">{{ 'AICHATBOT.CONV.TITLE' | translate }}</h1>
+            <p class="lead on-dark">{{ 'AICHATBOT.CONV.LEAD' | translate }}</p>
 
             <div class="tools">
-              <input class="search" [ngModel]="search()" (ngModelChange)="search.set($event)" name="q" placeholder="Buscar en las conversaciones…" />
+              <input class="search" [ngModel]="search()" (ngModelChange)="search.set($event)" name="q" [attr.placeholder]="'AICHATBOT.CONV.SEARCH_PH' | translate" [attr.aria-label]="'AICHATBOT.CONV.SEARCH_PH' | translate" />
               <div class="chips">
-                <button type="button" class="chip" [class.on]="channel() === ''" (click)="channel.set('')">Todos</button>
+                <button type="button" class="chip" [class.on]="channel() === ''" (click)="channel.set('')">{{ 'AICHATBOT.CONV.ALL' | translate }}</button>
                 @for (c of channelsPresent(); track c) {
                   <button type="button" class="chip" [class.on]="channel() === c" (click)="channel.set(c)">{{ chLabel(c) }}</button>
                 }
@@ -46,9 +48,9 @@ interface Convo {
             </div>
 
             @if (loading()) {
-              <p class="muted">Cargando conversaciones…</p>
+              <p class="muted">{{ 'AICHATBOT.CONV.LOADING' | translate }}</p>
             } @else if (!convos().length) {
-              <section class="card"><p class="muted">Todavía no hay conversaciones registradas. Aparecerán aquí en cuanto tus clientes escriban al bot.</p></section>
+              <section class="card"><p class="muted">{{ 'AICHATBOT.CONV.EMPTY' | translate }}</p></section>
             } @else {
               <div class="inbox">
                 <!-- Lista -->
@@ -58,33 +60,33 @@ interface Convo {
                       <button type="button" class="item" [class.on]="selected()?.sessionId === c.sessionId" (click)="select(c)">
                         <div class="i-top">
                           <span class="badge" [attr.data-c]="c.channel">{{ chLabel(c.channel) }}</span>
-                          @if (c.lead) { <span class="badge lead">Lead</span> }
+                          @if (c.lead) { <span class="badge lead">{{ 'AICHATBOT.CONV.LEAD_BADGE' | translate }}</span> }
                           <span class="when">{{ shortDate(c.lastAt) }}</span>
                         </div>
                         <p class="i-prev">{{ c.preview }}</p>
-                        <span class="i-meta">{{ c.turns.length }} mensaje{{ c.turns.length === 1 ? '' : 's' }}</span>
+                        <span class="i-meta">{{ msgCount(c.turns.length) }}</span>
                       </button>
                     </li>
                   }
-                  @if (!filtered().length) { <li><p class="muted pad">Ninguna conversación coincide.</p></li> }
+                  @if (!filtered().length) { <li><p class="muted pad">{{ 'AICHATBOT.CONV.NO_MATCH' | translate }}</p></li> }
                 </ul>
 
                 <!-- Detalle -->
                 <section class="detail" [class.hide-mobile]="!selected()">
                   @if (selected(); as c) {
                     <div class="d-head">
-                      <button type="button" class="back" (click)="selected.set(null)" aria-label="Volver a la lista">
+                      <button type="button" class="back" (click)="selected.set(null)" [attr.aria-label]="'AICHATBOT.CONV.BACK' | translate">
                         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                       </button>
                       <div>
                         <b>{{ chLabel(c.channel) }}</b>
-                        <span class="d-sub">{{ fullDate(c.firstAt) }} · {{ c.turns.length }} mensajes</span>
+                        <span class="d-sub">{{ fullDate(c.firstAt) }} · {{ msgCount(c.turns.length) }}</span>
                       </div>
                     </div>
 
                     @if (c.lead) {
                       <div class="leadbox">
-                        <b>Lead capturado</b>
+                        <b>{{ 'AICHATBOT.CONV.LEAD_CAPTURED' | translate }}</b>
                         <p>
                           @if (c.lead.name) { {{ c.lead.name }} }
                           @if (c.lead.email) { · <a [href]="'mailto:' + c.lead.email">{{ c.lead.email }}</a> }
@@ -101,7 +103,7 @@ interface Convo {
                       }
                     </div>
                   } @else {
-                    <p class="muted pad">Elige una conversación de la lista para leerla.</p>
+                    <p class="muted pad">{{ 'AICHATBOT.CONV.PICK' | translate }}</p>
                   }
                 </section>
               </div>
@@ -176,6 +178,18 @@ export class ChatbotConversationsComponent implements OnInit {
   private readonly s = inject(ChatbotSessionService);
   private readonly sb = inject(SupabaseClientService).client;
   private readonly title = inject(Title);
+  private readonly i18n = inject(TranslateService);
+
+  /**
+   * Idioma vivo. Lo guardamos en una señal (y no leemos translate.currentLang directo)
+   * para que las fechas y los textos que armamos en TypeScript se recalculen cuando
+   * el usuario cambia el idioma desde su cuenta, sin recargar la página.
+   */
+  readonly lang = toSignal(this.i18n.onLangChange, { initialValue: null });
+  private locale(): string {
+    const l = (this.lang()?.lang || this.i18n.currentLang || this.i18n.defaultLang || 'es');
+    return l === 'en' ? 'en-US' : 'es-CR';
+  }
 
   readonly convos = signal<Convo[]>([]);
   readonly loading = signal(true);
@@ -199,8 +213,16 @@ export class ChatbotConversationsComponent implements OnInit {
   });
 
   async ngOnInit(): Promise<void> {
-    this.title.setTitle('Conversaciones · Vectis AI ChatBot');
+    this.i18n.get('AICHATBOT.CONV.PAGE_TITLE').subscribe((t) => this.title.setTitle(t));
+    this.i18n.onLangChange.subscribe(() => this.title.setTitle(this.i18n.instant('AICHATBOT.CONV.PAGE_TITLE')));
     await this.load();
+  }
+
+  /** "1 mensaje" / "12 mensajes" — el plural lo decide el archivo de idioma. */
+  msgCount(n: number): string {
+    this.lang();   // dependencia explícita: re-evalúa al cambiar de idioma
+    return n === 1 ? this.i18n.instant('AICHATBOT.CONV.MSG_ONE')
+                   : this.i18n.instant('AICHATBOT.CONV.MSG_MANY', { count: n });
   }
 
   private async load(): Promise<void> {
@@ -252,14 +274,14 @@ export class ChatbotConversationsComponent implements OnInit {
     try {
       const d = new Date(iso), now = new Date();
       const sameDay = d.toDateString() === now.toDateString();
-      return sameDay ? d.toLocaleTimeString('es-CR', { hour: 'numeric', minute: '2-digit' })
-                     : d.toLocaleDateString('es-CR', { day: 'numeric', month: 'short' });
+      return sameDay ? d.toLocaleTimeString(this.locale(), { hour: 'numeric', minute: '2-digit' })
+                     : d.toLocaleDateString(this.locale(), { day: 'numeric', month: 'short' });
     } catch { return ''; }
   }
   fullDate(iso: string): string {
-    try { return new Date(iso).toLocaleString('es-CR', { day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }); } catch { return ''; }
+    try { return new Date(iso).toLocaleString(this.locale(), { day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }); } catch { return ''; }
   }
   time(iso: string): string {
-    try { return new Date(iso).toLocaleTimeString('es-CR', { hour: 'numeric', minute: '2-digit' }); } catch { return ''; }
+    try { return new Date(iso).toLocaleTimeString(this.locale(), { hour: 'numeric', minute: '2-digit' }); } catch { return ''; }
   }
 }

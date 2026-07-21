@@ -247,18 +247,6 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                       <ng-container [ngTemplateOutlet]="tip" [ngTemplateOutletContext]="{ k: 'AICHATBOT.ONBOARD.TIP_WEBSITE' }"></ng-container>
                     </label>
                     <input id="ob-web" name="web" [(ngModel)]="websiteUrl" placeholder="https://tunegocio.com" />
-                    @if (websiteUrl.trim()) {
-                      <div class="uprow">
-                        <button type="button" class="ghost-btn" [disabled]="studyBusy() || !s.currentClientId()" (click)="studySite()">
-                          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
-                          {{ 'AICHATBOT.ONBOARD.STUDY_SITE' | translate }}
-                        </button>
-                        @if (studyBusy()) { <span class="upstate">{{ 'AICHATBOT.ONBOARD.STUDYING' | translate }}</span> }
-                        @else if (studyMsg() === 'ok') { <span class="upstate">{{ 'AICHATBOT.ONBOARD.STUDY_OK' | translate }}</span> }
-                        @else if (studyMsg() === 'err') { <span class="ferr">{{ 'AICHATBOT.ONBOARD.STUDY_ERR' | translate }}</span> }
-                      </div>
-                      @if (!s.currentClientId()) { <p class="hintline">{{ 'AICHATBOT.ONBOARD.STUDY_SAVE_FIRST' | translate }}</p> }
-                    }
                     <p class="hintline">{{ 'AICHATBOT.ONBOARD.WEBSITE_HINT' | translate }}</p>
                   </div>
 
@@ -753,7 +741,6 @@ export class ChatbotConfigureComponent implements OnInit {
   inventoryText = ''; inventoryFileName = ''; inventoryFileUrl = '';
   kbBusy = signal(false); kbErr = signal('');
   invBusy = signal(false); invErr = signal('');
-  studyBusy = signal(false); studyMsg = signal<'' | 'ok' | 'err'>('');
   faqs = signal<Faq[]>([{ q: '', a: '' }, { q: '', a: '' }, { q: '', a: '' }]);
   // Handoff a humano (se gestiona en su propia página; aquí solo se preservan)
   handoffEnabled = false;
@@ -765,6 +752,7 @@ export class ChatbotConfigureComponent implements OnInit {
   handoffClose = '18:00';
   handoffDays = '1,2,3,4,5';
   handoffAwayMessage = '';
+  handoffHoursSet = false;
   telegramChatId = '';
   telegramBotUsernameKeep = '';
   telegramChannelEnabled = false;
@@ -1001,24 +989,6 @@ export class ChatbotConfigureComponent implements OnInit {
   removeKb(): void { this.kbText = ''; this.kbFileName = ''; this.kbFileUrl = ''; this.kbErr.set(''); }
   removeInv(): void { this.inventoryText = ''; this.inventoryFileName = ''; this.inventoryFileUrl = ''; this.invErr.set(''); }
 
-  /** Pide al Worker que "estudie" el sitio: rastrea varias páginas y guarda un resumen. */
-  async studySite(): Promise<void> {
-    const id = this.s.currentClientId();
-    if (!id || !this.websiteUrl.trim()) return;
-    this.studyBusy.set(true); this.studyMsg.set('');
-    try {
-      // Guarda la URL actual antes de estudiar (por si la editó sin guardar el formulario).
-      await this.sb.from('chatbots').update({ website_url: this.websiteUrl.trim() }).eq('id', id);
-      const { data } = await this.sb.auth.getSession();
-      const token = data.session?.access_token || '';
-      const res = await fetch(WORKER_URL, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'study', client_id: id, access_token: token }),
-      });
-      this.studyMsg.set(res.ok ? 'ok' : 'err');
-    } catch { this.studyMsg.set('err'); }
-    this.studyBusy.set(false);
-  }
 
   // --- Preview en vivo ---
   previewColor(): string { return this.brandColor?.trim() || '#E7AB2E'; }
@@ -1092,7 +1062,7 @@ export class ChatbotConfigureComponent implements OnInit {
       privacyUrl: this.privacyUrl.trim() || CONFIG_DEFAULTS.privacyUrl,
       privacyText: this.privacyText.trim() || CONFIG_DEFAULTS.privacyText,
       // Handoff/canal se gestionan en sus propias páginas; aquí solo se preservan (no se guardan).
-      handoffEnabled: this.handoffEnabled, handoffChannel: this.handoffChannel, handoffWhatsappOwner: this.handoffWhatsappOwner, handoffWhatsappTemplate: this.handoffWhatsappTemplate, handoffAlwaysOpen: this.handoffAlwaysOpen, handoffOpen: this.handoffOpen, handoffClose: this.handoffClose, handoffDays: this.handoffDays, handoffAwayMessage: this.handoffAwayMessage, telegramChatId: this.telegramChatId,
+      handoffEnabled: this.handoffEnabled, handoffChannel: this.handoffChannel, handoffWhatsappOwner: this.handoffWhatsappOwner, handoffWhatsappTemplate: this.handoffWhatsappTemplate, handoffAlwaysOpen: this.handoffAlwaysOpen, handoffOpen: this.handoffOpen, handoffClose: this.handoffClose, handoffDays: this.handoffDays, handoffAwayMessage: this.handoffAwayMessage, handoffHoursSet: this.handoffHoursSet, telegramChatId: this.telegramChatId,
       telegramBotToken: '', telegramBotUsername: this.telegramBotUsernameKeep,
       telegramChannelEnabled: this.telegramChannelEnabled, calApiKey: this.calApiKey, calEventType: this.calEventType,
       whatsappChannelEnabled: this.whatsappChannelEnabled, whatsappPhoneNumberId: this.whatsappPhoneNumberId,
@@ -1122,7 +1092,7 @@ export class ChatbotConfigureComponent implements OnInit {
     this.origins.set(c.origins.length ? [...c.origins].slice(0, this.originLimit()) : (this.s.plan() === 'business' ? ['', ''] : ['']));
     this.extraRules = c.extraRules; this.language = c.language || 'auto'; this.privacyUrl = c.privacyUrl; this.privacyText = c.privacyText;
     this.handoffEnabled = !!c.handoffEnabled; this.handoffChannel = c.handoffChannel || 'telegram'; this.handoffWhatsappOwner = c.handoffWhatsappOwner || ''; this.handoffWhatsappTemplate = c.handoffWhatsappTemplate || '';
-    this.handoffAlwaysOpen = c.handoffAlwaysOpen !== false; this.handoffOpen = c.handoffOpen || '09:00'; this.handoffClose = c.handoffClose || '18:00'; this.handoffDays = c.handoffDays || '1,2,3,4,5'; this.handoffAwayMessage = c.handoffAwayMessage || ''; this.telegramChatId = c.telegramChatId || '';
+    this.handoffAlwaysOpen = c.handoffAlwaysOpen !== false; this.handoffOpen = c.handoffOpen || '09:00'; this.handoffClose = c.handoffClose || '18:00'; this.handoffDays = c.handoffDays || '1,2,3,4,5'; this.handoffAwayMessage = c.handoffAwayMessage || ''; this.handoffHoursSet = !!c.handoffHoursSet; this.telegramChatId = c.telegramChatId || '';
     this.telegramBotUsernameKeep = c.telegramBotUsername || '';
     this.telegramChannelEnabled = !!c.telegramChannelEnabled; this.calApiKey = c.calApiKey || ''; this.calEventType = c.calEventType || '';
     this.whatsappChannelEnabled = !!c.whatsappChannelEnabled; this.whatsappPhoneNumberId = c.whatsappPhoneNumberId || '';
@@ -1149,7 +1119,7 @@ export class ChatbotConfigureComponent implements OnInit {
     this.origins.set(this.s.plan() === 'business' ? ['', ''] : ['']);
     this.extraRules = ''; this.language = 'auto'; this.privacyUrl = ''; this.privacyText = '';
     this.handoffEnabled = false; this.handoffChannel = 'telegram'; this.handoffWhatsappOwner = ''; this.handoffWhatsappTemplate = ''; this.telegramChatId = '';
-    this.handoffAlwaysOpen = true; this.handoffOpen = '09:00'; this.handoffClose = '18:00'; this.handoffDays = '1,2,3,4,5'; this.handoffAwayMessage = '';
+    this.handoffAlwaysOpen = true; this.handoffOpen = '09:00'; this.handoffClose = '18:00'; this.handoffDays = '1,2,3,4,5'; this.handoffAwayMessage = ''; this.handoffHoursSet = false;
     this.telegramBotUsernameKeep = ''; this.telegramChannelEnabled = false; this.calApiKey = ''; this.calEventType = '';
     this.whatsappChannelEnabled = false; this.whatsappPhoneNumberId = ''; this.whatsappAccessToken = ''; this.whatsappVerifyToken = '';
     this.messengerChannelEnabled = false; this.messengerPageId = ''; this.messengerAccessToken = ''; this.messengerVerifyToken = '';
@@ -1212,19 +1182,24 @@ export class ChatbotConfigureComponent implements OnInit {
   }
 
   /**
-   * RAG — pide al worker reindexar la base de conocimiento (trocea + embeddings).
-   * Corre en segundo plano: el usuario no tiene que esperar.
+   * Al guardar, el conocimiento del bot se actualiza SOLO. No hay botón manual:
+   *  - si el negocio tiene sitio web → 'study' (rastrea el sitio y, al terminar,
+   *    el worker encadena el reindexado con el resumen ya actualizado);
+   *  - si no tiene sitio → 'kb_reindex' directo (documentos, inventario, FAQs).
+   * Corre en segundo plano: el usuario no espera. Si falla, el bot sigue
+   * respondiendo con el índice anterior y el error queda en "Qué sabe tu bot".
    */
   private async reindexKnowledge(id: string): Promise<void> {
     if (!id) return;
     try {
       const { data } = await this.sb.auth.getSession();
       const token = data.session?.access_token || '';
+      const action = this.websiteUrl.trim() ? 'study' : 'kb_reindex';
       await fetch(WORKER_URL, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'kb_reindex', client_id: id, access_token: token }),
+        body: JSON.stringify({ action, client_id: id, access_token: token }),
       });
-    } catch { /* el bot sigue funcionando con el modo anterior si esto falla */ }
+    } catch { /* el bot sigue funcionando con el índice anterior si esto falla */ }
   }
 
   async toggleActive(): Promise<void> {

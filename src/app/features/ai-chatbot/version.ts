@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.6.0';
+export const APP_VERSION = '1.7.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,21 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.7.0',
+    date: '2026-07-21',
+    title: 'Guía de Cal.com, secciones que se cierran solas y menos pasos manuales',
+    changes: [
+      'La bandeja de conversaciones ahora cambia de idioma con tu preferencia de cuenta (español e inglés), incluidas las fechas.',
+      'Guía paso a paso dentro de los canales para conseguir tu API key y la URL de tu evento de Cal.com, sin salir a buscar en la documentación.',
+      'El agendado con Cal.com ahora es una sola sección compartida por todos los canales: al conectarlo se cierra y queda con el distintivo verde de "Conectado".',
+      'El horario de atención del handoff también se cierra una vez configurado y muestra un resumen (por ejemplo "Lun, Mar, Mié · 09:00–18:00").',
+      'Se quitó el botón de "Estudiar sitio web": al guardar tu configuración estudiamos tu sitio y reindexamos el conocimiento automáticamente.',
+      'Al cancelar tu suscripción te preguntamos el motivo. Es opcional, se puede omitir y nunca bloquea la cancelación.',
+      'El logo de cada canal ahora aparece en línea con la palabra "Canal", no encima.',
+      'En Soporte Técnico se quitó el contacto directo: el canal de atención es el ticket.',
+    ],
+  },
   {
     version: '1.6.0',
     date: '2026-07-21',

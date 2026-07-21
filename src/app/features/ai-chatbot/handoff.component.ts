@@ -111,12 +111,21 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
             }
 
             @if (active()) {
-              <!-- Horario de atención del handoff -->
-              <section class="card">
-                <div class="opt-head">
+              <!--
+                Horario de atención del handoff. Si el usuario ya lo guardó alguna vez,
+                la sección arranca cerrada y con el distintivo verde + el resumen del horario.
+              -->
+              <section class="card acc" [class.done]="hoursSet()">
+                <button type="button" class="opt-head acc-head" (click)="hoOpenAcc.set(!hoOpenAcc())" [attr.aria-expanded]="hoOpenAcc()">
                   <span class="opt-ic hrs"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
-                  <div class="opt-tl"><b>Horario de atención</b><span>Cuándo hay alguien para atender los chats en vivo.</span></div>
-                </div>
+                  <span class="opt-tl">
+                    <b>Horario de atención</b>
+                    <span>{{ hoursSet() ? hoursSummary() : 'Cuándo hay alguien para atender los chats en vivo.' }}</span>
+                  </span>
+                  @if (hoursSet()) { <span class="status linked"><span class="sdot"></span>Configurado</span> }
+                  <svg class="chev" [class.up]="hoOpenAcc()" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                @if (hoOpenAcc()) {
                 <div class="opt-body">
                   <div class="hrs-row">
                     <div class="tg-tl"><b>Disponible 24 horas</b><span class="ch-sub">El botón de "hablar con una persona" está siempre activo.</span></div>
@@ -144,10 +153,14 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                     <p class="hint">Si un cliente pide hablar con una persona fuera de horario, el bot le dice esto y sigue ayudándole. Horario en zona de Costa Rica.</p>
                   </div>
 
-                  <button type="button" class="save" [disabled]="hoSaving()" (click)="saveHours()">{{ hoSaving() ? 'Guardando…' : 'Guardar horario' }}</button>
+                  <div class="save-row">
+                    <button type="button" class="save" [disabled]="hoSaving()" (click)="saveHours()">{{ hoSaving() ? 'Guardando…' : 'Guardar horario' }}</button>
+                    @if (hoursSet()) { <button type="button" class="ghost-btn" (click)="hoOpenAcc.set(false)">Cerrar</button> }
+                  </div>
                   @if (hoOk()) { <p class="ok">{{ hoOk() }}</p> }
                   @if (hoErr()) { <p class="err">{{ hoErr() }}</p> }
                 </div>
+                }
               </section>
             }
           </div>
@@ -180,6 +193,12 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
     .tgl span { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .2s ease; }
     .tgl.on { background: var(--gold-bright); border-color: var(--gold-bright); } .tgl.on span { transform: translateX(20px); }
     .opt-body { margin-top: 18px; border-top: 1px solid var(--line-light); padding-top: 18px; }
+    /* Acordeón del horario */
+    .acc.done { border-color: rgba(52,224,161,.28); }
+    .acc-head { width: 100%; text-align: left; background: transparent; border: none; color: inherit; font: inherit; cursor: pointer; padding: 0; }
+    .acc.done .opt-ic { color: #34e0a1; background: rgba(52,224,161,.12); border-color: rgba(52,224,161,.3); }
+    .chev { color: var(--text-inv-2); flex-shrink: 0; transition: transform .2s var(--ease, ease); }
+    .chev.up { transform: rotate(180deg); }
     .steps { margin: 0 0 4px; padding-left: 20px; display: grid; gap: 8px; } .steps li { font-size: 14px; line-height: 1.55; color: var(--text-inv-2); } .steps b { color: var(--text-inv); }
     .field { margin-top: 14px; } .two .field { margin-top: 0; }
     .two { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
@@ -226,6 +245,9 @@ export class ChatbotHandoffComponent implements OnInit {
   readonly hoDays = signal<number[]>([1, 2, 3, 4, 5]);
   readonly hoAway = signal('');
   readonly hoSaving = signal(false); readonly hoOk = signal(''); readonly hoErr = signal('');
+  /** ¿El usuario ya guardó su horario alguna vez? Marca explícita en BD (los valores por defecto no bastan). */
+  readonly hoursSet = signal(false);
+  readonly hoOpenAcc = signal(true);
   readonly dayList = [
     { n: 1, label: 'Lun' }, { n: 2, label: 'Mar' }, { n: 3, label: 'Mié' }, { n: 4, label: 'Jue' },
     { n: 5, label: 'Vie' }, { n: 6, label: 'Sáb' }, { n: 0, label: 'Dom' },
@@ -249,7 +271,17 @@ export class ChatbotHandoffComponent implements OnInit {
       this.hoOpen.set(c.handoffOpen || '09:00'); this.hoClose.set(c.handoffClose || '18:00');
       this.hoDays.set(String(c.handoffDays || '1,2,3,4,5').split(',').map((d) => parseInt(d, 10)).filter((d) => !isNaN(d)));
       this.hoAway.set(c.handoffAwayMessage || '');
+      this.hoursSet.set(!!c.handoffHoursSet);
+      this.hoOpenAcc.set(!c.handoffHoursSet);   // ya configurado → arranca cerrado
     }
+  }
+
+  /** Resumen legible del horario, para mostrarlo con la sección cerrada. */
+  hoursSummary(): string {
+    if (this.hoAlwaysOpen()) return 'Disponible 24 horas, todos los días.';
+    const names = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const days = [...this.hoDays()].sort((a, b) => a - b).map((d) => names[d]).join(', ');
+    return (days || 'Sin días') + ' · ' + this.hoOpen() + '–' + this.hoClose();
   }
 
   private clientId(): string { return this.s.currentClientId(); }
@@ -345,8 +377,13 @@ export class ChatbotHandoffComponent implements OnInit {
         handoff_close: this.hoClose() || '18:00',
         handoff_days: this.hoDays().join(',') || '1,2,3,4,5',
         handoff_away_message: this.hoAway().trim() || null,
+        handoff_hours_set: true,
       });
-      if (ok) { this.hoOk.set('Guardado ✓'); setTimeout(() => this.hoOk.set(''), 2500); }
+      if (ok) {
+        this.hoursSet.set(true);
+        this.hoOk.set('Guardado ✓');
+        setTimeout(() => { this.hoOk.set(''); this.hoOpenAcc.set(false); }, 1500);
+      }
       else this.hoErr.set('No se pudo guardar. Intenta de nuevo.');
     } finally { this.hoSaving.set(false); }
   }
@@ -358,7 +395,7 @@ export class ChatbotHandoffComponent implements OnInit {
         ...cfgs[i],
         handoffEnabled: this.active() !== '', handoffChannel: this.active() || 'telegram', handoffWhatsappOwner: this.waOwner().trim(), handoffWhatsappTemplate: this.waTemplate().trim(),
         handoffAlwaysOpen: this.hoAlwaysOpen(), handoffOpen: this.hoOpen(), handoffClose: this.hoClose(),
-        handoffDays: this.hoDays().join(','), handoffAwayMessage: this.hoAway().trim(),
+        handoffDays: this.hoDays().join(','), handoffAwayMessage: this.hoAway().trim(), handoffHoursSet: this.hoursSet(),
         telegramBotToken: this.tgToken().trim(), telegramBotUsername: this.tgUsername(), telegramChatId: this.tgChatId(),
         whatsappPhoneNumberId: this.waPhoneId().trim(), whatsappAccessToken: this.waToken().trim(), whatsappVerifyToken: this.waVerify().trim(),
       };

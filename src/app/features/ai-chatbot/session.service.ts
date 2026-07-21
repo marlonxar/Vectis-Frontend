@@ -55,6 +55,7 @@ export interface ChatbotConfig {
   handoffClose: string;            // HH:MM
   handoffDays: string;             // días activos: '1,2,3,4,5' (0=domingo)
   handoffAwayMessage: string;      // mensaje cuando piden agente fuera de horario
+  handoffHoursSet: boolean;        // el usuario ya guardó su horario al menos una vez
   telegramBotToken: string;
   telegramBotUsername: string;
   telegramChatId: string;   // solo lectura (lo llena el worker al vincular)
@@ -131,6 +132,7 @@ export function rowToConfig(r: Record<string, any>): ChatbotConfig {
     handoffClose: r['handoff_close'] ?? '18:00',
     handoffDays: r['handoff_days'] ?? '1,2,3,4,5',
     handoffAwayMessage: r['handoff_away_message'] ?? '',
+    handoffHoursSet: r['handoff_hours_set'] === true,
     telegramBotToken: r['telegram_bot_token'] ?? '',
     telegramBotUsername: r['telegram_bot_username'] ?? '',
     telegramChatId: r['telegram_chat_id'] ?? '',
@@ -369,7 +371,7 @@ export class ChatbotSessionService {
       inventoryUrl: '', kbText: '', kbFileName: '', kbFileUrl: '', inventoryText: '', inventoryFileName: '', inventoryFileUrl: '',
       faqs: [], widgetTitle: '', widgetPosition: 'right', brandColor: '', secondBrandColor: '', brandLogoUrl: '', welcome: '',
       quickReplies: [], origins: [], extraRules: '', language: 'auto', privacyUrl: '', privacyText: '',
-      handoffEnabled: false, handoffChannel: 'telegram', handoffWhatsappOwner: '', handoffWhatsappTemplate: '', handoffAlwaysOpen: true, handoffOpen: '09:00', handoffClose: '18:00', handoffDays: '1,2,3,4,5', handoffAwayMessage: '', telegramBotToken: '', telegramBotUsername: '', telegramChatId: '',
+      handoffEnabled: false, handoffChannel: 'telegram', handoffWhatsappOwner: '', handoffWhatsappTemplate: '', handoffAlwaysOpen: true, handoffOpen: '09:00', handoffClose: '18:00', handoffDays: '1,2,3,4,5', handoffAwayMessage: '', handoffHoursSet: false, telegramBotToken: '', telegramBotUsername: '', telegramChatId: '',
       telegramChannelEnabled: false, calApiKey: '', calEventType: '',
       whatsappChannelEnabled: false, whatsappPhoneNumberId: '', whatsappAccessToken: '', whatsappVerifyToken: '',
       messengerChannelEnabled: false, messengerPageId: '', messengerAccessToken: '', messengerVerifyToken: '',
