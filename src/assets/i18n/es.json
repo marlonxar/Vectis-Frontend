@@ -1098,8 +1098,8 @@
       "PHONE_CODE_REQ": "Selecciona el código de país para guardar el teléfono.",
       "SAVE_FAIL": "No se pudo guardar. Intenta de nuevo.",
       "SAVED": "Cambios guardados.",
-      "SURVEY_TITLE": "Antes de irte, ¿nos cuentas por qué?",
-      "SURVEY_SUB": "Es opcional y no cambia tu cancelación. Nos ayuda a mejorar.",
+      "SURVEY_TITLE": "¿Nos cuentas por qué? (opcional)",
+      "SURVEY_SUB": "No cambia nada de lo anterior. Nos ayuda a mejorar.",
       "SURVEY_R_PRICE": "Es muy caro para lo que necesito",
       "SURVEY_R_MISSING": "Le faltan funciones que necesito",
       "SURVEY_R_HARD": "Me costó configurarlo o usarlo",
@@ -1110,8 +1110,7 @@
       "SURVEY_R_OTHER": "Otro motivo",
       "SURVEY_COMMENT": "¿Algo más que quieras contarnos? (opcional)",
       "SURVEY_COMMENT_PH": "Lo que nos digas lo lee el equipo.",
-      "SURVEY_SKIP": "Prefiero no responder",
-      "SURVEY_SEND": "Enviar y cancelar"
+      "SURVEY_TITLE_DELETE": "¿Nos cuentas por qué te vas? (opcional)"
     },
     "PRICING": {
       "EYEBROW": "Precios",

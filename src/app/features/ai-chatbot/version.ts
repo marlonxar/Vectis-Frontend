@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.8.0';
+export const APP_VERSION = '1.8.1';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,15 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.8.1',
+    date: '2026-07-21',
+    title: 'Encuesta dentro del aviso y recorrido fiel al producto',
+    changes: [
+      'La pregunta de "¿por qué te vas?" ahora aparece dentro del mismo aviso de cancelar, y también al eliminar la cuenta. Sigue siendo opcional y nunca bloquea la acción.',
+      'El recorrido de la página de inicio ahora reproduce la aplicación completa: header con tu empresa y tu usuario, menú con los cinco canales y Soporte Técnico, el panel con todas sus métricas, la bandeja de conversaciones, el canal Web con su vista previa del widget y la atención humana.',
+    ],
+  },
   {
     version: '1.8.0',
     date: '2026-07-21',

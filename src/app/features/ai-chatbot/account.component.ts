@@ -193,51 +193,47 @@ import { FocusTrapDirective } from './focus-trap.directive';
         </main>
       </div>
 
-      <!-- Confirmación destructiva -->
+      <!--
+        Confirmación destructiva (cancelar o eliminar) CON la encuesta de salida dentro.
+        El motivo se pregunta aquí, en el mismo momento de decidir: es cuando el cliente
+        tiene la razón fresca y cuando de verdad la contesta. Todo es opcional — el botón
+        de confirmar funciona igual sin tocar nada, así que preguntar no le agrega
+        fricción a quien solo quiere irse.
+      -->
       @if (confirmKind(); as kind) {
-        <div class="modal-bg" (click)="confirmKind.set(null)">
-          <div class="modal" role="alertdialog" aria-modal="true" appFocusTrap (dismiss)="confirmKind.set(null)" (click)="$event.stopPropagation()">
+        <div class="modal-bg" (click)="closeConfirm()">
+          <div class="modal survey" role="alertdialog" aria-modal="true" appFocusTrap (dismiss)="closeConfirm()" (click)="$event.stopPropagation()">
             <div class="warn-ic" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 22h20L12 2z"/><path d="M12 9v5M12 18h.01"/></svg></div>
             <h3>{{ (kind === 'delete' ? 'AICHATBOT.ACCOUNT.CONFIRM_DELETE_TITLE' : 'AICHATBOT.ACCOUNT.CONFIRM_CANCEL_TITLE') | translate }}</h3>
-            <p>{{ (kind === 'delete' ? 'AICHATBOT.ACCOUNT.CONFIRM_DELETE_BODY' : 'AICHATBOT.ACCOUNT.CONFIRM_CANCEL_BODY') | translate }}</p>
-            @if (confirmErr()) { <p class="err">{{ confirmErr() }}</p> }
-            <div class="form-actions center">
-              <button type="button" class="btn-ghost sm" (click)="confirmKind.set(null)">{{ 'AICHATBOT.ACCOUNT.CONFIRM_NO' | translate }}</button>
-              <button type="button" class="btn-danger sm" [disabled]="confirmBusy()" (click)="confirmYes(kind)">{{ (kind === 'delete' ? 'AICHATBOT.ACCOUNT.CONFIRM_DELETE_YES' : 'AICHATBOT.ACCOUNT.CONFIRM_CANCEL_YES') | translate }}</button>
-            </div>
-          </div>
-        </div>
-      }
+            <p class="cbody">{{ (kind === 'delete' ? 'AICHATBOT.ACCOUNT.CONFIRM_DELETE_BODY' : 'AICHATBOT.ACCOUNT.CONFIRM_CANCEL_BODY') | translate }}</p>
 
-      <!--
-        Encuesta de salida. Aparece DESPUÉS de confirmar la cancelación, nunca antes:
-        cancelar no puede depender de responder. Todo es opcional y se puede omitir.
-      -->
-      @if (surveyOpen()) {
-        <div class="modal-bg" (click)="closeSurvey()">
-          <div class="modal survey" role="dialog" aria-modal="true" appFocusTrap (dismiss)="closeSurvey()" (click)="$event.stopPropagation()">
-            <h3>{{ 'AICHATBOT.ACCOUNT.SURVEY_TITLE' | translate }}</h3>
-            <p class="sub">{{ 'AICHATBOT.ACCOUNT.SURVEY_SUB' | translate }}</p>
+            <div class="survey-block">
+              <p class="s-ttl">{{ (kind === 'delete' ? 'AICHATBOT.ACCOUNT.SURVEY_TITLE_DELETE' : 'AICHATBOT.ACCOUNT.SURVEY_TITLE') | translate }}</p>
+              <p class="s-sub">{{ 'AICHATBOT.ACCOUNT.SURVEY_SUB' | translate }}</p>
 
-            <div class="reasons" role="radiogroup" [attr.aria-label]="'AICHATBOT.ACCOUNT.SURVEY_TITLE' | translate">
-              @for (r of cancelReasons; track r) {
-                <button type="button" class="reason" role="radio" [attr.aria-checked]="surveyReason() === r"
-                        [class.on]="surveyReason() === r" (click)="surveyReason.set(surveyReason() === r ? '' : r)">
-                  <span class="tick" aria-hidden="true"></span>
-                  {{ ('AICHATBOT.ACCOUNT.SURVEY_R_' + r) | translate }}
-                </button>
+              <div class="reasons" role="radiogroup" [attr.aria-label]="'AICHATBOT.ACCOUNT.SURVEY_TITLE' | translate">
+                @for (r of cancelReasons; track r) {
+                  <button type="button" class="reason" role="radio" [attr.aria-checked]="surveyReason() === r"
+                          [class.on]="surveyReason() === r" (click)="surveyReason.set(surveyReason() === r ? '' : r)">
+                    <span class="tick" aria-hidden="true"></span>
+                    {{ ('AICHATBOT.ACCOUNT.SURVEY_R_' + r) | translate }}
+                  </button>
+                }
+              </div>
+
+              @if (surveyReason()) {
+                <div class="field">
+                  <label for="cx-comment">{{ 'AICHATBOT.ACCOUNT.SURVEY_COMMENT' | translate }}</label>
+                  <textarea id="cx-comment" rows="2" name="cxcomment" [ngModel]="surveyComment()" (ngModelChange)="surveyComment.set($event)"
+                            [attr.placeholder]="'AICHATBOT.ACCOUNT.SURVEY_COMMENT_PH' | translate"></textarea>
+                </div>
               }
             </div>
 
-            <div class="field">
-              <label for="cx-comment">{{ 'AICHATBOT.ACCOUNT.SURVEY_COMMENT' | translate }}</label>
-              <textarea id="cx-comment" rows="3" name="cxcomment" [ngModel]="surveyComment()" (ngModelChange)="surveyComment.set($event)"
-                        [attr.placeholder]="'AICHATBOT.ACCOUNT.SURVEY_COMMENT_PH' | translate"></textarea>
-            </div>
-
+            @if (confirmErr()) { <p class="err">{{ confirmErr() }}</p> }
             <div class="form-actions center">
-              <button type="button" class="btn-ghost sm" (click)="closeSurvey()">{{ 'AICHATBOT.ACCOUNT.SURVEY_SKIP' | translate }}</button>
-              <button type="button" class="btn-gold sm" [disabled]="surveyBusy()" (click)="sendSurvey()">{{ 'AICHATBOT.ACCOUNT.SURVEY_SEND' | translate }}</button>
+              <button type="button" class="btn-ghost sm" (click)="closeConfirm()">{{ 'AICHATBOT.ACCOUNT.CONFIRM_NO' | translate }}</button>
+              <button type="button" class="btn-danger sm" [disabled]="confirmBusy()" (click)="confirmYes(kind)">{{ (kind === 'delete' ? 'AICHATBOT.ACCOUNT.CONFIRM_DELETE_YES' : 'AICHATBOT.ACCOUNT.CONFIRM_CANCEL_YES') | translate }}</button>
             </div>
           </div>
         </div>
@@ -315,12 +311,15 @@ import { FocusTrapDirective } from './focus-trap.directive';
     .form-actions.center { justify-content: center; margin-top: 22px; }
 
     /* Encuesta de salida */
-    .modal.survey { max-width: 520px; text-align: left; }
+    .modal.survey { max-width: 520px; }
     .modal.survey h3 { font-size: 19px; }
-    .modal.survey .sub { font-size: 13.5px; color: var(--text-inv-2); margin-top: 6px; }
-    .reasons { display: grid; gap: 8px; margin: 20px 0 4px; }
-    .reason { display: flex; align-items: center; gap: 10px; text-align: left; width: 100%; padding: 11px 14px; border-radius: var(--radius-md);
-      border: 1px solid var(--line-light); background: rgba(255,255,255,.04); color: var(--text-inv); font: inherit; font-size: 13.5px; cursor: pointer; }
+    .modal.survey .cbody { font-size: 14px; }
+    .survey-block { text-align: left; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line-light); }
+    .s-ttl { font-size: 14px; font-weight: 700; }
+    .s-sub { font-size: 12.5px; color: var(--text-inv-2); margin-top: 4px; }
+    .reasons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0 4px; }
+    .reason { display: flex; align-items: center; gap: 9px; text-align: left; width: 100%; padding: 10px 12px; border-radius: var(--radius-md);
+      border: 1px solid var(--line-light); background: rgba(255,255,255,.04); color: var(--text-inv); font: inherit; font-size: 12.5px; line-height: 1.3; cursor: pointer; }
     .reason:hover { border-color: rgba(231,171,46,.4); }
     .reason.on { border-color: var(--gold-bright); background: rgba(231,171,46,.09); }
     .tick { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line-light); flex-shrink: 0; }
@@ -329,7 +328,7 @@ import { FocusTrapDirective } from './focus-trap.directive';
     .modal.survey textarea { width: 100%; padding: 11px 13px; border-radius: var(--radius-md); border: 1px solid var(--line-light);
       background: rgba(255,255,255,.04); color: var(--text-inv); font: inherit; outline: none; resize: vertical; }
     .modal.survey textarea:focus { border-color: var(--gold-bright); box-shadow: 0 0 0 3px rgba(231,171,46,.2); }
-    @media (max-width: 560px) { .modal.survey { padding: 22px 18px; } }
+    @media (max-width: 560px) { .modal.survey { padding: 22px 18px; } .reasons { grid-template-columns: 1fr; } }
 
     @media (max-width: 860px) { .layout { flex-direction: column; } }
     @media (max-width: 600px) { .two { grid-template-columns: 1fr; } }
@@ -354,10 +353,8 @@ export class ChatbotAccountComponent implements OnInit {
   confirmKind = signal<'delete' | 'cancel' | null>(null);
   // Encuesta de salida (opcional). Los códigos viajan a la BD; el texto vive en los idiomas.
   readonly cancelReasons = ['PRICE', 'MISSING', 'HARD', 'QUALITY', 'NOTUSING', 'OTHER_SVC', 'TEMP', 'OTHER'];
-  surveyOpen = signal(false);
   surveyReason = signal('');
   surveyComment = signal('');
-  surveyBusy = signal(false);
   confirmBusy = signal(false);
   confirmErr = signal('');
   showPwd = signal(false);
@@ -461,6 +458,7 @@ export class ChatbotAccountComponent implements OnInit {
       // Elimina la cuenta de verdad (datos + auth), luego cierra sesión.
       this.confirmBusy.set(true);
       this.confirmErr.set('');
+      await this.saveFeedback('delete');   // ANTES de borrar: después ya no hay sesión
       const { error } = await this.sb.rpc('delete_my_account');
       if (error) {
         this.confirmBusy.set(false);
@@ -490,10 +488,10 @@ export class ChatbotAccountComponent implements OnInit {
         ok = await this.localCancel();
       }
       if (ok) {
+        await this.saveFeedback('cancel');   // solo si la cancelación de verdad ocurrió
         this.s.cancelAtPeriodEnd.set(true);
         this.confirmBusy.set(false);
-        this.confirmKind.set(null);
-        this.surveyOpen.set(true);   // ya está cancelado; ahora preguntamos el motivo (opcional)
+        this.closeConfirm();
       } else {
         this.confirmBusy.set(false);
         this.confirmErr.set(this.i18n.instant('AICHATBOT.ACCOUNT.CANCEL_FAIL'));
@@ -501,27 +499,28 @@ export class ChatbotAccountComponent implements OnInit {
     }
   }
 
-  /** Cierra la encuesta sin guardar nada. La cancelación ya ocurrió: esto nunca la revierte. */
-  closeSurvey(): void {
-    this.surveyOpen.set(false);
+  /** Cierra el diálogo y limpia la encuesta. */
+  closeConfirm(): void {
+    this.confirmKind.set(null); this.confirmErr.set('');
     this.surveyReason.set(''); this.surveyComment.set('');
   }
 
-  /** Guarda el motivo de cancelación. Si falla, no molestamos al usuario: ya canceló. */
-  async sendSurvey(): Promise<void> {
+  /**
+   * Guarda el motivo, si el usuario respondió algo. Es un extra: si falla o si
+   * dejó todo en blanco, la cancelación o el borrado siguen su curso igual.
+   */
+  private async saveFeedback(kind: 'cancel' | 'delete'): Promise<void> {
     const uid = this.auth.user()?.id;
-    if (!uid || (!this.surveyReason() && !this.surveyComment().trim())) { this.closeSurvey(); return; }
-    this.surveyBusy.set(true);
+    if (!uid || (!this.surveyReason() && !this.surveyComment().trim())) return;
     try {
       await this.sb.from('cancellation_feedback').insert({
         user_id: uid,
+        kind,
         reason: this.surveyReason() || null,
         comment: this.surveyComment().trim() || null,
         plan: this.s.plan() || null,
       });
-    } catch { /* el feedback es un extra: nunca puede romperle nada al usuario */ }
-    this.surveyBusy.set(false);
-    this.closeSurvey();
+    } catch { /* el feedback nunca puede romperle nada al usuario */ }
   }
 
   /** Cancelado local: marca cancel_at_period_end (acceso hasta el vencimiento). Devuelve si tuvo éxito. */
