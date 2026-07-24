@@ -14,10 +14,10 @@
   "NAV": {
     "HOME": "Home",
     "SERVICES": "Services",
-    "PORTFOLIO": "Portfolio",
+    "PORTFOLIO": "What We Build",
     "ABOUT": "About",
     "CONTACT": "Contact",
-    "CTA": "Book now",
+    "CTA": "Get your free audit",
     "FAQ": "FAQ",
     "AICHATBOT": "AI ChatBot",
     "SERVICES_PRODUCTS": "Services & Products",
@@ -27,9 +27,9 @@
     "EYEBROW": "AUTOMATION GROUP",
     "TITLE_1": "We build the software",
     "TITLE_2": "that moves your business.",
-    "SUBTITLE": "We automate the repetitive work that steals your hours and money. Custom software, automation and AI — from San José, Costa Rica, for clients all over the world.",
-    "CTA_PRIMARY": "Book a call",
-    "CTA_SECONDARY": "View capabilities",
+    "SUBTITLE": "Your team spends hours every day on the same tasks. We build systems that do those tasks automatically — custom software, automation and AI. So your business grows without hiring more people.",
+    "CTA_PRIMARY": "Get your free audit",
+    "CTA_SECONDARY": "See what we build",
     "TRUST_1": "Projects",
     "TRUST_2": "Satisfaction",
     "TRUST_3": "Average ROI",
@@ -37,32 +37,32 @@
     "TAGLINE": "Diagnosis before prescription."
   },
   "SERVICES": {
-    "EYEBROW": "CAPABILITIES",
-    "TITLE": "Our capabilities",
-    "SUBTITLE": "Senior team across every major digital discipline. We cover the full cycle: strategy, design, engineering and operation.",
+    "EYEBROW": "WHAT WE DO",
+    "TITLE": "What we do",
+    "SUBTITLE": "Six ways we take work off your team's plate. Senior engineers, full cycle: we design it, build it and keep it running.",
     "WEB": {
       "TITLE": "Web Development",
-      "DESC": "Fast, accessible and scalable websites and web apps built with the best technologies available."
+      "DESC": "Fast, beautiful websites and web apps that turn visitors into customers."
     },
     "AUTOMATION": {
       "TITLE": "Automations",
-      "DESC": "We eliminate repetitive tasks by connecting your tools and orchestrating intelligent workflows."
+      "DESC": "Tasks that happen on their own: reminders, follow-ups, reports. We connect your tools and the work just runs."
     },
     "AI": {
       "TITLE": "Artificial Intelligence",
-      "DESC": "Agents, assistants and AI models integrated into your processes for faster decisions."
+      "DESC": "AI that reads, answers and decides — so your team doesn't have to do it by hand."
     },
     "CUSTOM": {
       "TITLE": "Custom Software",
-      "DESC": "Platforms and systems designed to the exact measure of your operation and business."
+      "DESC": "Software built exactly for how your business works. Nothing extra. Nothing missing."
     },
     "API": {
       "TITLE": "Integrations & APIs",
-      "DESC": "We connect your systems, platforms and third-party services securely and reliably."
+      "DESC": "We make your systems talk to each other. No more copying data from one app to another."
     },
     "DATA": {
       "TITLE": "Data & Analytics",
-      "DESC": "We turn your data into dashboards and actionable metrics for your team."
+      "DESC": "All your numbers in one clear dashboard — so you always know how the business is doing."
     },
     "TITLE_A": "What we build",
     "TITLE_B": "for you"
@@ -73,10 +73,17 @@
     "ROI": "From first meeting to a live system",
     "SUPPORT": "Continuous support",
     "GUARANTEE_VAL": "Guarantee",
-    "WEEKS_VAL": "2 wks"
+    "WEEKS_VAL": "2 wks",
+    "HRS_VAL": "15+ h",
+    "HRS_LABEL": "Repetitive work removed from your team each week — guaranteed",
+    "WEEKS_LABEL": "From first call to a live system",
+    "ALWAYS_VAL": "24/7",
+    "ALWAYS_LABEL": "Your system never stops working",
+    "FREE_VAL": "Free",
+    "FREE_LABEL": "Workflow audit before you spend a dollar"
   },
   "PORTFOLIO": {
-    "EYEBROW": "PORTFOLIO & CLIENTS",
+    "EYEBROW": "WHAT WE BUILD",
     "TITLE": "Work that drives impact",
     "CLIENTS_LABEL": "Trusted by leading companies",
     "TESTIMONIALS_TITLE": "Clients love working with us",
@@ -87,36 +94,36 @@
     },
     "SERVICES": {
       "AI_AGENTS": {
-        "TITLE": "Autonomous AI Agents",
-        "DESCRIPTION": "Development of multi-tasking agents that execute complex business processes, make data-driven decisions, and integrate into your daily tools without human intervention."
+        "TITLE": "AI employees that get work done",
+        "DESCRIPTION": "An AI that reads requests, makes decisions and completes tasks inside your tools — without a person touching it."
       },
       "DOC_PROCESSING": {
-        "TITLE": "Intelligent Document Processing",
-        "DESCRIPTION": "Automated data extraction and structuring from invoices, contracts, and PDFs using AI. Eliminate manual data entry and reduce operational errors to zero."
+        "TITLE": "Paperwork that reads itself",
+        "DESCRIPTION": "Invoices, contracts and PDFs read by AI. The data goes where it belongs. Nobody types it in by hand."
       },
       "LEAD_SCRAPING": {
-        "TITLE": "Automated Lead Scraping",
-        "DESCRIPTION": "Advanced large-scale web scraping and automated cold outreach. Periodically capture key market data and deliver prospective leads directly into your database."
+        "TITLE": "Client lists, built automatically",
+        "DESCRIPTION": "We find your ideal prospects online and deliver them to your database, ready to contact."
       },
       "CRM_SYNC": {
-        "TITLE": "CRM & Systems Synchronization",
-        "DESCRIPTION": "Seamless connection and integration of your platforms (CRMs, ERPs, payment gateways). Real-time bi-directional data pipelines to keep your team completely aligned."
+        "TITLE": "Your systems, finally talking",
+        "DESCRIPTION": "CRM, billing, spreadsheets — all connected. Change something once, it updates everywhere."
       },
       "CUSTOMER_SUPPORT": {
-        "TITLE": "Automated Support & Response Systems",
-        "DESCRIPTION": "Next-generation customer service workflows. Immediate resolution of FAQs and scalable multi-language replies with a consistent brand voice."
+        "TITLE": "Customer questions, answered instantly",
+        "DESCRIPTION": "Every question gets a fast, correct answer — in any language, at any hour, in your brand's voice."
       },
       "FINANCIAL_REPORTING": {
-        "TITLE": "Automated Financial Reporting",
-        "DESCRIPTION": "Automatic consolidation of revenue, expenses, and operational metrics. Instant generation of visual financial dashboards without compiling spreadsheets manually."
+        "TITLE": "Reports that build themselves",
+        "DESCRIPTION": "Income, expenses and metrics compiled and sent automatically. No more spreadsheet nights."
       },
       "SEO_AIO_AUDIT": {
-        "TITLE": "SEO, AIO & Positioning Audit",
-        "DESCRIPTION": "Advanced optimization audits for traditional search engines and AI engine optimization (AIO). Ensure your business is the top recommendation when users ask AI platforms."
+        "TITLE": "Get found on Google — and by AI",
+        "DESCRIPTION": "When people ask Google or ChatGPT for what you sell, your business is the answer."
       },
       "WEB_DEV": {
-        "TITLE": "Web App & Website Development",
-        "DESCRIPTION": "Design and development of interactive web platforms, premium portfolios, and custom applications. Fast, responsive UIs fully optimized for high client conversion."
+        "TITLE": "Websites that sell",
+        "DESCRIPTION": "Fast, beautiful sites built to turn visitors into customers."
       }
     },
     "FINTECH": {
@@ -220,7 +227,7 @@
     "TITLE": "Intelligent automation, made in Costa Rica",
     "P1": "We are Vectis: an engineering team in San José, Costa Rica, building software, automation and AI for clients all over the world. “Vectis” means lever in Latin — and that is what we do: with a well-built system, a small company performs like a big one.",
     "P2": "We build the “invisible employee”: custom systems that connect to the tools you already use and handle repetitive work on their own, tirelessly, around the clock. We don’t sell off-the-shelf software — we build it for you and leave it running.",
-    "P3": "Our philosophy: diagnosis before prescription. First we understand your real problem, then we build. Reliable, measurable technology designed to give back your most expensive resource: time.",
+    "P3": "Most automation projects fail for one reason: someone builds before understanding the work. We do the opposite — diagnosis before prescription. First we map your real problem. Then we build. That's why our systems don't break.",
     "PRECISION": {
       "TITLE": "Precision",
       "DESC": "Every line of code has a clear purpose."
@@ -266,8 +273,8 @@
   },
   "CONTACT": {
     "EYEBROW": "CONTACT",
-    "TITLE": "Let's build something worth talking about.",
-    "SUBTITLE": "Tell us about your project. We reply in under 24 hours.",
+    "TITLE": "Find out how many hours your team is losing.",
+    "SUBTITLE": "Tell us about your business. We reply within 24 hours — and the audit is free.",
     "WHATSAPP": "Message us on WhatsApp",
     "MODE_LABEL": "Contact type",
     "MODE_MESSAGE": "Send message",
@@ -321,11 +328,11 @@
     "PHONE_PH": "+506 8888 8888"
   },
   "FOOTER": {
-    "TAGLINE": "Intelligent automation. Software development. The future is already running.",
+    "TAGLINE": "We build systems that do your team's repetitive work. Grow without hiring.",
     "SOCIAL": "Social media",
     "SERVICES_TITLE": "Services",
     "NEWSLETTER_TITLE": "Updates",
-    "NEWSLETTER_SUB": "Get news about automation, AI and development.",
+    "NEWSLETTER_SUB": "One useful automation idea per month. No spam.",
     "EMAIL_LABEL": "Email address",
     "EMAIL_PLACEHOLDER": "you@email.com",
     "EMAIL_ERROR": "Enter a valid email.",
@@ -345,28 +352,28 @@
     "SHOW_ALL": "View all FAQs",
     "SHOW_LESS": "Show less",
     "Q1": {
-      "Q": "What services does Vectis offer?",
-      "A": "We build custom software, websites and web apps, mobile apps, automations and artificial intelligence, plus integrations, APIs and data & analytics solutions. With particular strength in automating repetitive administrative processes."
+      "Q": "What does Vectis do?",
+      "A": "We build systems that do your team's repetitive work: custom software, websites and apps, automations, AI, integrations and dashboards. If your team does it every day by hand, we can probably make it automatic."
     },
     "Q2": {
-      "Q": "Which technologies do you specialize in?",
-      "A": "We work with Angular, React, Next.js and Node across frontend and backend; Python and LLMs (OpenAI, Claude) for AI; and cloud such as AWS. We pick the stack based on each project's goal."
+      "Q": "What does it cost?",
+      "A": "It depends on how much we automate. It's always less than hiring someone to do the work by hand — and it starts with a free audit, so you know exactly what you'd get before spending a dollar."
     },
     "Q3": {
-      "Q": "Do you work with clients outside Costa Rica?",
-      "A": "Yes. We're based in San José, Costa Rica, but we work with clients all over the world, remotely and across time zones."
+      "Q": "What if it doesn't work?",
+      "A": "Simple: if the system doesn't save your team at least 15 hours a week in the first 30 days, you don't pay the setup fee."
     },
     "Q4": {
-      "Q": "How long does a project take?",
-      "A": "Our automation systems are up and running in about 2 weeks: days 1–3 diagnosis, 4–10 build and integration, and 11–14 testing with real data and go-live. Larger projects ship in phases."
+      "Q": "How long does it take?",
+      "A": "Automation systems go live in about 2 weeks: first we map your work, then we build, then we test with real data and launch. Bigger projects ship in phases."
     },
     "Q5": {
-      "Q": "What is your process?",
-      "A": "Diagnosis → Design → Build → Ongoing support. We start by understanding your real problem before proposing a solution, with iterative delivery and frequent demos so you see real progress."
+      "Q": "Do you work outside Costa Rica?",
+      "A": "Yes. We're based in San José, Costa Rica, and we work with clients all over the world — in English and Spanish, across time zones."
     },
     "Q6": {
-      "Q": "How much does it cost and how do you charge?",
-      "A": "We offer fixed-scope projects or dedicated monthly teams (staff augmentation). After an intro call we send a proposal with pricing and timeline."
+      "Q": "Which technologies do you use?",
+      "A": "We work with Angular, React, Next.js and Node across frontend and backend; Python and LLMs (OpenAI, Claude) for AI; and cloud infrastructure. We pick the right tool for each job — you don't have to."
     },
     "Q7": {
       "Q": "Do you offer support and maintenance?",
@@ -617,7 +624,8 @@
       "C6_T": "Always on",
       "C6_D": "Works day and night, seven days a week.",
       "CTA_TITLE": "Create your chatbot today and start turning more visits into customers.",
-      "CTA_BTN": "Get started"
+      "CTA_BTN": "Get started",
+      "PRICELINE": "From $19/month. No code. Cancel anytime."
     },
     "LOGIN": {
       "TITLE": "Sign in",
@@ -655,7 +663,7 @@
       "NOTE": "Cancel your subscription anytime.",
       "BASIC": {
         "NAME": "Basic",
-        "TAG": "To get started with the essentials.",
+        "TAG": "The essentials, to get started.",
         "F1": "1 chatbot",
         "F2": "1,000 messages/mo",
         "F3": "1 authorized domain",
@@ -1622,5 +1630,16 @@
     },
     "CONTACT_LINE": "If you have questions about refunds or your subscription, email us at",
     "BACK": "Back to home"
+  },
+  "HOWITWORKS": {
+    "EYEBROW": "HOW IT WORKS",
+    "TITLE": "How it works — 3 steps",
+    "S1_T": "We map your work",
+    "S1_D": "We find where the hours leak. This is the free audit.",
+    "S2_T": "We build your system",
+    "S2_D": "On top of the tools you already use. Your team changes nothing.",
+    "S3_T": "It runs. You grow",
+    "S3_D": "Guaranteed: 15+ hours a week saved, or you don't pay the setup fee.",
+    "CTA": "Get your free audit"
   }
 }

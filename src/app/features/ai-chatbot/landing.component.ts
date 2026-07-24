@@ -47,6 +47,7 @@ interface Plan {
         <div class="hero">
           <span class="eyebrow on-dark">{{ 'AICHATBOT.HERO.EYEBROW' | translate }}</span>
           <h1 class="title">{{ 'AICHATBOT.HERO.TITLE' | translate }}</h1>
+          <p class="priceline">{{ 'AICHATBOT.HERO.PRICELINE' | translate }}</p>
           <p class="lead on-dark">{{ 'AICHATBOT.HERO.SUBTITLE' | translate }}</p>
           <p class="sub2 on-dark">{{ 'AICHATBOT.HERO.SUBTITLE2' | translate }}</p>
           <ul class="feats">
@@ -363,7 +364,7 @@ interface Plan {
         </div>
         <p class="pnote">
           {{ 'AICHATBOT.PRICING.NOTE' | translate }}
-          <a routerLink="/refounds">{{ 'AICHATBOT.PRICING.REFUNDS_LINK' | translate }}</a>
+          <a routerLink="/refunds">{{ 'AICHATBOT.PRICING.REFUNDS_LINK' | translate }}</a>
           <span aria-hidden="true"> · </span>
           <a routerLink="/terms">{{ 'AICHATBOT.PRICING.TERMS_LINK' | translate }}</a>
           <span aria-hidden="true"> · </span>
@@ -494,6 +495,8 @@ interface Plan {
     .glow { position: absolute; top: -160px; right: -120px; width: 620px; height: 620px; pointer-events: none; background: radial-gradient(closest-side, rgba(231,171,46,.22), transparent 70%); filter: blur(6px); }
     .inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; width: 100%; }
     .title { font-size: clamp(38px, 5.4vw, 72px); line-height: .98; margin-top: 14px; }
+    /* Línea de precio justo bajo el H1: los hechos más fuertes, arriba del pliegue. */
+    .priceline { margin-top: 16px; font-size: clamp(15px, 2vw, 18px); font-weight: 700; color: var(--gold-bright); letter-spacing: .01em; }
     .hero .lead { margin-top: 20px; }
     .feats { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 12px; }
     .feats li { display: flex; align-items: center; gap: 12px; color: var(--text-inv-2); font-size: 15.5px; }

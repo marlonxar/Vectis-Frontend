@@ -12,7 +12,7 @@ import { RevealDirective } from '../../core/directives/reveal.directive';
 })
 export class FaqComponent {
   readonly keys = ['Q1','Q2','Q3','Q4','Q5','Q6','Q7','Q8','Q9','Q10'];
-  readonly preview = 4;
+  readonly preview = 5;   // las 5 preguntas de comprador (qué, precio, garantía, plazo, dónde)
   readonly showAll = signal(false);
   readonly open = signal<number | null>(0);
 

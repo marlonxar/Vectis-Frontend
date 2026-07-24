@@ -27,7 +27,9 @@ declare global { interface Window { turnstile?: TurnstileApi; } }
 export class ContactComponent implements AfterViewInit, OnDestroy {
   private readonly translate = inject(TranslateService);
   private readonly platformId = inject(PLATFORM_ID);
-  readonly mode = signal<Mode>('message');
+  // El CTA único del sitio es el diagnóstico gratis (una cita), así que la
+  // pestaña de agendar es la que abre por defecto.
+  readonly mode = signal<Mode>('appointment');
   privacyPath(): string { return this.translate.currentLang === 'en' ? '/privacy' : '/privacidad'; }
   termsPath(): string { return this.translate.currentLang === 'en' ? '/terms' : '/terminos'; }
 

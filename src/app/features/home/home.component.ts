@@ -3,6 +3,7 @@ import { HeroComponent } from '../hero/hero.component';
 import { ServicesSectionComponent } from '../services-section/services-section.component';
 import { StatsComponent } from '../stats/stats.component';
 import { PortfolioComponent } from '../portfolio/portfolio.component';
+import { HowItWorksComponent } from '../how-it-works/how-it-works.component';
 import { AboutComponent } from '../about/about.component';
 import { ContactComponent } from '../contact/contact.component';
 import { FaqComponent } from '../faq/faq.component';
@@ -12,7 +13,7 @@ import { FaqComponent } from '../faq/faq.component';
   standalone: true,
   imports: [
     HeroComponent, ServicesSectionComponent, StatsComponent,
-    PortfolioComponent, AboutComponent, ContactComponent, FaqComponent,
+    PortfolioComponent, HowItWorksComponent, AboutComponent, ContactComponent, FaqComponent,
   ],
   template: `
     <main id="main-content">
@@ -20,6 +21,7 @@ import { FaqComponent } from '../faq/faq.component';
       <app-services-section></app-services-section>
       <app-stats></app-stats>
       <app-portfolio></app-portfolio>
+      <app-how-it-works></app-how-it-works>
       <app-about></app-about>
       <app-contact></app-contact>
       <app-faq></app-faq>

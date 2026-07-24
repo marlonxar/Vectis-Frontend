@@ -70,7 +70,7 @@ interface Plan {
           <p class="note">{{ 'AICHATBOT.PLANS.NOTE' | translate }}</p>
           <p class="note legal">
             {{ 'AICHATBOT.PLANS.REFUNDS_NOTE' | translate }}
-            <a routerLink="/refounds">{{ 'AICHATBOT.PLANS.REFUNDS_LINK' | translate }}</a>
+            <a routerLink="/refunds">{{ 'AICHATBOT.PLANS.REFUNDS_LINK' | translate }}</a>
             <span aria-hidden="true"> · </span>
             <a routerLink="/terms">{{ 'AICHATBOT.PLANS.TERMS_LINK' | translate }}</a>
             <span aria-hidden="true"> · </span>

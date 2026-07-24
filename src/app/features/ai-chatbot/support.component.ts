@@ -105,7 +105,7 @@ import { FocusTrapDirective } from './focus-trap.directive';
               <span aria-hidden="true"> · </span>
               <a routerLink="/terms">{{ 'AICHATBOT.SUPPORT.TERMS_LINK' | translate }}</a>
               <span aria-hidden="true"> · </span>
-              <a routerLink="/refounds">{{ 'AICHATBOT.SUPPORT.REFUNDS_LINK' | translate }}</a>
+              <a routerLink="/refunds">{{ 'AICHATBOT.SUPPORT.REFUNDS_LINK' | translate }}</a>
             </p>
           </div>
 

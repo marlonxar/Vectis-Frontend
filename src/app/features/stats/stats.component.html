@@ -1,20 +1,25 @@
+<!--
+  Banda de resultados. Antes usaba un contador animado que en SSR / sin JS se
+  quedaba en "0+ h" (los crawlers y el primer render veían un cero). Ahora son
+  valores estáticos: siempre correctos, sin depender de JavaScript.
+-->
 <section class="stats sec-dark" aria-label="stats">
   <div class="container stats-grid">
     <div class="stat">
-      <span class="num" [appCountUp]="30" countSuffix="+ h"></span>
-      <span class="label">{{ 'STATS.PROJECTS' | translate }}</span>
+      <span class="num">{{ 'STATS.HRS_VAL' | translate }}</span>
+      <span class="label">{{ 'STATS.HRS_LABEL' | translate }}</span>
     </div>
     <div class="stat">
-      <span class="num txt">{{ 'STATS.GUARANTEE_VAL' | translate }}</span>
-      <span class="label">{{ 'STATS.SATISFACTION' | translate }}</span>
+      <span class="num">{{ 'STATS.WEEKS_VAL' | translate }}</span>
+      <span class="label">{{ 'STATS.WEEKS_LABEL' | translate }}</span>
     </div>
     <div class="stat">
-      <span class="num txt">{{ 'STATS.WEEKS_VAL' | translate }}</span>
-      <span class="label">{{ 'STATS.ROI' | translate }}</span>
+      <span class="num">{{ 'STATS.ALWAYS_VAL' | translate }}</span>
+      <span class="label">{{ 'STATS.ALWAYS_LABEL' | translate }}</span>
     </div>
     <div class="stat">
-      <span class="num">24/7</span>
-      <span class="label">{{ 'STATS.SUPPORT' | translate }}</span>
+      <span class="num">{{ 'STATS.FREE_VAL' | translate }}</span>
+      <span class="label">{{ 'STATS.FREE_LABEL' | translate }}</span>
     </div>
   </div>
 </section>

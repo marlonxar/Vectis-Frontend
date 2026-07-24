@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.9.0';
+export const APP_VERSION = '1.10.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,18 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.10.0',
+    date: '2026-07-21',
+    title: 'Nuevo copy del sitio y ajustes de la página del ChatBot',
+    changes: [
+      'Reescritura completa del sitio de Vectis (inicio): mensaje más claro y directo en español e inglés — hero, "Qué hacemos", "Qué construimos", nueva sección "Cómo funciona", nosotros, contacto, FAQ y pie de página.',
+      'Un solo llamado a la acción en todo el sitio: "Diagnóstico gratis".',
+      'Banda de resultados arreglada: ya no muestra "0+ h"; ahora son cifras fijas (15+ h, 2 semanas, 24/7, gratis).',
+      'Metadatos en inglés como idioma maestro para buscadores e IA, y color de tema corregido.',
+      'Página del ChatBot: línea de precio bajo el título ("Desde $19/mes. Sin código. Cancele cuando quiera."), enlace de reembolsos corregido y textos afinados.',
+    ],
+  },
   {
     version: '1.9.0',
     date: '2026-07-21',

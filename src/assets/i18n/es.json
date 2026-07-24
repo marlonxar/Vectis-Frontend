@@ -14,10 +14,10 @@
   "NAV": {
     "HOME": "Inicio",
     "SERVICES": "Servicios",
-    "PORTFOLIO": "Portafolio",
+    "PORTFOLIO": "Qué construimos",
     "ABOUT": "Nosotros",
     "CONTACT": "Contacto",
-    "CTA": "Reserva ahora",
+    "CTA": "Diagnóstico gratis",
     "FAQ": "FAQ",
     "AICHATBOT": "AI ChatBot",
     "SERVICES_PRODUCTS": "Servicios & Productos",
@@ -27,9 +27,9 @@
     "EYEBROW": "AUTOMATION GROUP",
     "TITLE_1": "Construimos el software",
     "TITLE_2": "que mueve tu negocio.",
-    "SUBTITLE": "Automatizamos el trabajo repetitivo que te roba horas y dinero. Software a medida, automatización e IA — desde San José, Costa Rica, para clientes en todo el mundo.",
-    "CTA_PRIMARY": "Agenda una llamada",
-    "CTA_SECONDARY": "Ver capacidades",
+    "SUBTITLE": "Su equipo pasa horas cada día en las mismas tareas. Construimos sistemas que las hacen solos — software a medida, automatización e IA. Así su empresa crece sin contratar más gente.",
+    "CTA_PRIMARY": "Diagnóstico gratis",
+    "CTA_SECONDARY": "Vea qué construimos",
     "TRUST_1": "Proyectos",
     "TRUST_2": "Satisfacción",
     "TRUST_3": "ROI promedio",
@@ -37,32 +37,32 @@
     "TAGLINE": "Diagnóstico antes que prescripción."
   },
   "SERVICES": {
-    "EYEBROW": "CAPACIDADES",
-    "TITLE": "Nuestras capacidades",
-    "SUBTITLE": "Equipo senior en cada disciplina digital. Cubrimos todo el ciclo: estrategia, diseño, ingeniería y operación.",
+    "EYEBROW": "QUÉ HACEMOS",
+    "TITLE": "Qué hacemos",
+    "SUBTITLE": "Seis formas de quitarle trabajo a su equipo. Ingenieros senior, ciclo completo: lo diseñamos, lo construimos y lo mantenemos funcionando.",
     "WEB": {
       "TITLE": "Desarrollo Web",
-      "DESC": "Sitios y aplicaciones web rápidas, accesibles y escalables con las mejores tecnologías del mercado."
+      "DESC": "Sitios y aplicaciones web rápidos y atractivos que convierten visitantes en clientes."
     },
     "AUTOMATION": {
       "TITLE": "Automatizaciones",
-      "DESC": "Eliminamos tareas repetitivas conectando tus herramientas y orquestando flujos de trabajo inteligentes."
+      "DESC": "Tareas que ocurren solas: recordatorios, seguimientos, reportes. Conectamos sus herramientas y el trabajo simplemente corre."
     },
     "AI": {
       "TITLE": "Inteligencia Artificial",
-      "DESC": "Agentes, asistentes y modelos de IA integrados a tus procesos para decisiones más rápidas."
+      "DESC": "IA que lee, responde y decide — para que su equipo no lo haga a mano."
     },
     "CUSTOM": {
       "TITLE": "Software a Medida",
-      "DESC": "Plataformas y sistemas diseñados a la medida exacta de tu operación y tu negocio."
+      "DESC": "Software hecho exactamente para cómo funciona su negocio. Nada de más. Nada de menos."
     },
     "API": {
       "TITLE": "Integraciones & APIs",
-      "DESC": "Conectamos tus sistemas, plataformas y servicios de terceros de forma segura y confiable."
+      "DESC": "Hacemos que sus sistemas se hablen entre sí. Se acabó copiar datos de una app a otra."
     },
     "DATA": {
       "TITLE": "Data & Analytics",
-      "DESC": "Transformamos tus datos en dashboards y métricas accionables para tu equipo."
+      "DESC": "Todos sus números en un panel claro — para que siempre sepa cómo va el negocio."
     },
     "TITLE_A": "Lo que construimos",
     "TITLE_B": "para ti"
@@ -73,10 +73,17 @@
     "ROI": "De la primera reunión al sistema funcionando",
     "SUPPORT": "Soporte continuo",
     "GUARANTEE_VAL": "Garantía",
-    "WEEKS_VAL": "2 sem"
+    "WEEKS_VAL": "2 sem",
+    "HRS_VAL": "15+ h",
+    "HRS_LABEL": "Trabajo repetitivo que le quitamos a su equipo cada semana — garantizado",
+    "WEEKS_LABEL": "De la primera llamada a un sistema funcionando",
+    "ALWAYS_VAL": "24/7",
+    "ALWAYS_LABEL": "Su sistema nunca deja de trabajar",
+    "FREE_VAL": "Gratis",
+    "FREE_LABEL": "Diagnóstico de procesos antes de gastar un dólar"
   },
   "PORTFOLIO": {
-    "EYEBROW": "PORTAFOLIO & CLIENTES",
+    "EYEBROW": "QUÉ CONSTRUIMOS",
     "TITLE": "Proyectos que generan impacto",
     "CLIENTS_LABEL": "Empresas que confían en nosotros",
     "TESTIMONIALS_TITLE": "Lo que dicen nuestros clientes",
@@ -87,36 +94,36 @@
     },
     "SERVICES": {
       "AI_AGENTS": {
-        "TITLE": "Agentes de IA Autónomos",
-        "DESCRIPTION": "Desarrollo de agentes multi-tarea que ejecutan procesos de negocio complejos, toman decisiones basadas en datos y se integran con tus herramientas diarias sin intervención humana."
+        "TITLE": "Empleados de IA que hacen el trabajo",
+        "DESCRIPTION": "Una IA que lee solicitudes, toma decisiones y completa tareas dentro de sus herramientas — sin que una persona la toque."
       },
       "DOC_PROCESSING": {
-        "TITLE": "Procesamiento Inteligente de Documentos",
-        "DESCRIPTION": "Extracción y estructuración automática de datos desde facturas, contratos y PDFs utilizando IA. Elimina la digitación manual y reduce los errores operativos a cero."
+        "TITLE": "Papeleo que se lee solo",
+        "DESCRIPTION": "Facturas, contratos y PDF leídos por IA. Los datos van a donde corresponden. Nadie los digita a mano."
       },
       "LEAD_SCRAPING": {
-        "TITLE": "Extracción Automatizada de Prospectos",
-        "DESCRIPTION": "Scraping avanzado de datos a gran escala y prospección en frío automatizada. Captura información clave de mercados específicos de forma recurrente y directa a tu base de datos."
+        "TITLE": "Listas de clientes, armadas automáticamente",
+        "DESCRIPTION": "Encontramos a sus prospectos ideales en internet y los entregamos en su base de datos, listos para contactar."
       },
       "CRM_SYNC": {
-        "TITLE": "Sincronización de CRM y Sistemas",
-        "DESCRIPTION": "Conexión e integración total de tus plataformas (CRMs, ERPs, pasarelas de pago). Flujos de datos bidireccionales en tiempo real para mantener a tu equipo siempre alineado."
+        "TITLE": "Sus sistemas, por fin hablándose",
+        "DESCRIPTION": "CRM, facturación, hojas de cálculo — todo conectado. Cambia algo una vez y se actualiza en todas partes."
       },
       "CUSTOMER_SUPPORT": {
-        "TITLE": "Soporte y Respuestas Automatizadas",
-        "DESCRIPTION": "Sistemas de atención al cliente de última generación. Resolución inmediata de consultas frecuentes y escalabilidad de respuestas multi-idioma con tono de marca consistente."
+        "TITLE": "Preguntas de clientes, respondidas al instante",
+        "DESCRIPTION": "Cada pregunta recibe una respuesta rápida y correcta — en cualquier idioma, a cualquier hora, con la voz de su marca."
       },
       "FINANCIAL_REPORTING": {
-        "TITLE": "Automatización de Reportes Financieros",
-        "DESCRIPTION": "Consolidación automática de ingresos, gastos y métricas operativas. Generación de dashboards visuales de finanzas sin necesidad de compilar hojas de cálculo manualmente."
+        "TITLE": "Reportes que se construyen solos",
+        "DESCRIPTION": "Ingresos, gastos y métricas recopilados y enviados automáticamente. Se acabaron las noches de hoja de cálculo."
       },
       "SEO_AIO_AUDIT": {
-        "TITLE": "Auditoría SEO, AIO y Posicionamiento",
-        "DESCRIPTION": "Auditorías de optimización avanzada para motores de búsqueda tradicionales y optimización para motores de IA (AIO). Asegura que tu negocio sea la primera opción recomendada por las inteligencias artificiales."
+        "TITLE": "Que lo encuentren en Google — y en la IA",
+        "DESCRIPTION": "Cuando alguien le pregunta a Google o ChatGPT por lo que usted vende, su negocio es la respuesta."
       },
       "WEB_DEV": {
-        "TITLE": "Desarrollo de Apps y Páginas Web",
-        "DESCRIPTION": "Diseño y desarrollo de plataformas web interactivas, portafolios premium y aplicaciones a la medida. Interfaces rápidas, responsivas y optimizadas para la conversión de clientes."
+        "TITLE": "Sitios web que venden",
+        "DESCRIPTION": "Sitios rápidos y atractivos, hechos para convertir visitantes en clientes."
       }
     },
     "FINTECH": {
@@ -220,7 +227,7 @@
     "TITLE": "Automatización inteligente, hecha en Costa Rica",
     "P1": "Somos Vectis: un equipo de ingeniería en San José, Costa Rica, que construye software, automatización e IA para clientes en todo el mundo. «Vectis» significa palanca en latín — y eso hacemos: con un sistema bien construido, una empresa pequeña rinde como una grande.",
     "P2": "Construimos el «empleado invisible»: sistemas a la medida que se conectan con las herramientas que ya usas y hacen solos el trabajo repetitivo, sin cansarse, las 24 horas. No vendemos un programa enlatado — lo construimos para ti y lo dejamos funcionando.",
-    "P3": "Nuestra filosofía: diagnóstico antes que prescripción. Primero entendemos tu problema real, después construimos. Tecnología confiable, medible y diseñada para devolverte tu recurso más caro: el tiempo.",
+    "P3": "La mayoría de los proyectos de automatización fallan por una razón: alguien construye antes de entender el trabajo. Nosotros hacemos lo contrario — diagnóstico antes que prescripción. Primero mapeamos su problema real. Después construimos. Por eso nuestros sistemas no se rompen.",
     "PRECISION": {
       "TITLE": "Precisión",
       "DESC": "Cada línea de código tiene un propósito claro."
@@ -266,8 +273,8 @@
   },
   "CONTACT": {
     "EYEBROW": "CONTACTO",
-    "TITLE": "Construyamos algo que valga la pena.",
-    "SUBTITLE": "Cuéntanos sobre tu proyecto. Te respondemos en menos de 24 horas.",
+    "TITLE": "Descubra cuántas horas está perdiendo su equipo.",
+    "SUBTITLE": "Cuéntenos sobre su negocio. Respondemos en menos de 24 horas — y el diagnóstico es gratis.",
     "WHATSAPP": "Escríbenos por WhatsApp",
     "MODE_LABEL": "Tipo de contacto",
     "MODE_MESSAGE": "Enviar mensaje",
@@ -321,11 +328,11 @@
     "PHONE_PH": "+506 8888 8888"
   },
   "FOOTER": {
-    "TAGLINE": "Automatización inteligente. Desarrollo de software. El futuro ya opera.",
+    "TAGLINE": "Construimos sistemas que hacen el trabajo repetitivo de su equipo. Crezca sin contratar.",
     "SOCIAL": "Redes sociales",
     "SERVICES_TITLE": "Servicios",
     "NEWSLETTER_TITLE": "Actualizaciones",
-    "NEWSLETTER_SUB": "Recibe novedades sobre automatización, IA y desarrollo.",
+    "NEWSLETTER_SUB": "Una idea útil de automatización al mes. Sin spam.",
     "EMAIL_LABEL": "Correo electrónico",
     "EMAIL_PLACEHOLDER": "tu@email.com",
     "EMAIL_ERROR": "Ingresa un email válido.",
@@ -345,28 +352,28 @@
     "SHOW_ALL": "Ver todas las preguntas frecuentes",
     "SHOW_LESS": "Ver menos",
     "Q1": {
-      "Q": "¿Qué servicios ofrece Vectis?",
-      "A": "Desarrollamos software a la medida, sitios y aplicaciones web, apps móviles, automatizaciones e inteligencia artificial, además de integraciones, APIs y soluciones de datos y analítica. Con especial fortaleza en la automatización de procesos administrativos repetitivos."
+      "Q": "¿Qué hace Vectis?",
+      "A": "Construimos sistemas que hacen el trabajo repetitivo de su equipo: software a medida, sitios y aplicaciones, automatizaciones, IA, integraciones y paneles. Si su equipo lo hace todos los días a mano, probablemente podamos volverlo automático."
     },
     "Q2": {
-      "Q": "¿En qué tecnologías se especializan?",
-      "A": "Trabajamos con Angular, React, Next.js y Node en el frontend y backend; Python y LLMs (OpenAI, Claude) para IA; y nube como AWS. Elegimos el stack según el objetivo de cada proyecto."
+      "Q": "¿Cuánto cuesta?",
+      "A": "Depende de cuánto automaticemos. Siempre es menos que contratar a alguien para hacer el trabajo a mano — y empieza con un diagnóstico gratis, así usted sabe exactamente qué recibiría antes de gastar un dólar."
     },
     "Q3": {
-      "Q": "¿Trabajan con clientes fuera de Costa Rica?",
-      "A": "Sí. Estamos basados en San José, Costa Rica, pero trabajamos con clientes en todo el mundo, de forma remota y en distintas zonas horarias."
+      "Q": "¿Y si no funciona?",
+      "A": "Simple: si el sistema no le ahorra a su equipo al menos 15 horas a la semana en los primeros 30 días, usted no paga la instalación."
     },
     "Q4": {
-      "Q": "¿Cuánto tarda un proyecto?",
-      "A": "Nuestros sistemas de automatización quedan funcionando en ~2 semanas: días 1–3 diagnóstico, 4–10 construcción e integración, y 11–14 pruebas con datos reales y puesta en marcha. Los proyectos más grandes se entregan por fases."
+      "Q": "¿Cuánto tarda?",
+      "A": "Los sistemas de automatización entran en funcionamiento en unas 2 semanas: primero mapeamos su trabajo, luego construimos, luego probamos con datos reales y lanzamos. Los proyectos más grandes se entregan por fases."
     },
     "Q5": {
-      "Q": "¿Cómo es su proceso de trabajo?",
-      "A": "Diagnóstico → Diseño → Construcción → Soporte continuo. Empezamos entendiendo tu problema real antes de proponer una solución, con entregas iterativas y demos frecuentes para que veas avances reales."
+      "Q": "¿Trabajan fuera de Costa Rica?",
+      "A": "Sí. Estamos en San José, Costa Rica, y trabajamos con clientes de todo el mundo — en inglés y español, en distintas zonas horarias."
     },
     "Q6": {
-      "Q": "¿Cuánto cuesta y cómo cobran?",
-      "A": "Ofrecemos proyectos por alcance cerrado o equipos dedicados por mes (staff augmentation). Tras una llamada inicial te enviamos una propuesta con precio y cronograma."
+      "Q": "¿Qué tecnologías usan?",
+      "A": "Trabajamos con Angular, React, Next.js y Node en frontend y backend; Python y modelos de IA (OpenAI, Claude) para inteligencia artificial; e infraestructura en la nube. Elegimos la herramienta correcta para cada caso — usted no tiene que preocuparse por eso."
     },
     "Q7": {
       "Q": "¿Ofrecen soporte y mantenimiento?",
@@ -617,7 +624,8 @@
       "C6_T": "Siempre disponible",
       "C6_D": "Funciona de día y de noche, los siete días de la semana.",
       "CTA_TITLE": "Crea tu chatbot hoy y empieza a convertir más visitas en clientes.",
-      "CTA_BTN": "Empezar ahora"
+      "CTA_BTN": "Empezar ahora",
+      "PRICELINE": "Desde $19/mes. Sin código. Cancele cuando quiera."
     },
     "LOGIN": {
       "TITLE": "Inicia sesión",
@@ -655,7 +663,7 @@
       "NOTE": "Puedes cancelar tu suscripción cuando quieras.",
       "BASIC": {
         "NAME": "Basic",
-        "TAG": "Para empezar con lo esencial.",
+        "TAG": "Lo esencial, para empezar.",
         "F1": "1 chatbot",
         "F2": "1.000 mensajes/mes",
         "F3": "1 dominio autorizado",
@@ -1622,5 +1630,16 @@
     },
     "CONTACT_LINE": "Si tienes dudas sobre reembolsos o sobre tu suscripción, escríbenos a",
     "BACK": "Volver al inicio"
+  },
+  "HOWITWORKS": {
+    "EYEBROW": "CÓMO FUNCIONA",
+    "TITLE": "Cómo funciona — 3 pasos",
+    "S1_T": "Mapeamos su trabajo",
+    "S1_D": "Encontramos por dónde se fugan las horas. Este es el diagnóstico gratis.",
+    "S2_T": "Construimos su sistema",
+    "S2_D": "Sobre las herramientas que ya usa. Su equipo no cambia nada.",
+    "S3_T": "Funciona. Usted crece",
+    "S3_D": "Garantizado: 15+ horas a la semana ahorradas, o no paga la instalación.",
+    "CTA": "Diagnóstico gratis"
   }
 }
