@@ -9,7 +9,7 @@
   background: none; border: none; cursor: pointer; text-align: left;
   padding: clamp(18px, 2.4vw, 26px) 4px; font-family: var(--font-sans); font-size: clamp(16px, 2vw, 20px);
   font-weight: 600; color: var(--text); transition: color var(--dur) var(--ease); }
-.faq-q:hover { color: var(--gold); }
+.faq-q:hover { color: var(--gold-ink); }
 .faq-item.open .faq-q { color: var(--text); }
 .faq-item.open .faq-ico { color: var(--gold); }
 
