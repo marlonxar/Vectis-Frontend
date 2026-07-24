@@ -1,8 +1,9 @@
-import { ApplicationConfig, inject, provideAppInitializer } from '@angular/core';
+import { ApplicationConfig, PLATFORM_ID, inject, provideAppInitializer } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
+import { PlatformLocation, isPlatformBrowser } from '@angular/common';
 import { routes, chatbotRoutes } from './app.routes';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideHttpClient, HttpClient } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideHttpClient, withFetch, HttpClient } from '@angular/common/http';
 import { TranslateLoader, TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { firstValueFrom } from 'rxjs';
@@ -13,16 +14,23 @@ export function httpLoaderFactory(http: HttpClient): TranslateHttpLoader {
   return new TranslateHttpLoader(http, 'assets/i18n/', '.json?v=' + Date.now());
 }
 
-/** Idioma inicial: /en > ?lang= > preferencia guardada > 'es'. */
-function detectInitialLang(): 'es' | 'en' {
+/**
+ * Idioma inicial: /en > ?lang= > preferencia guardada > 'es'.
+ * Lee la ruta con PlatformLocation (no con el global `location`), para que
+ * FUNCIONE también durante el prerender: así /en genera HTML en inglés y / en
+ * español, en vez de quedarse siempre en 'es'.
+ */
+function detectInitialLang(pl: PlatformLocation, isBrowser: boolean): 'es' | 'en' {
   try {
-    const path = location.pathname.toLowerCase();
+    const path = (pl.pathname || '/').toLowerCase();
     if (path === '/en' || path.startsWith('/en/')) return 'en';
-    const q = new URLSearchParams(location.search).get('lang');
+    const q = new URLSearchParams(pl.search || '').get('lang');
     if (q === 'en' || q === 'es') return q;
-    const stored = localStorage.getItem('vectis-lang');
-    if (stored === 'en' || stored === 'es') return stored;
-  } catch { /* SSR / privacidad */ }
+    if (isBrowser) {
+      const stored = localStorage.getItem('vectis-lang');
+      if (stored === 'en' || stored === 'es') return stored;
+    }
+  } catch { /* privacidad / entorno sin DOM */ }
   return 'es';
 }
 
@@ -35,18 +43,26 @@ export const appConfig: ApplicationConfig = {
   providers: [
     // anchorScrolling: al llegar a wearevectis.com/#seccion (p. ej. desde el subdominio), baja a la sección.
     provideRouter(isChatbotHost() ? chatbotRoutes : routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
-    provideAnimations(),
-    provideHttpClient(),
+    // Async: carga el módulo de animaciones en el navegador de forma diferida y
+    // no rompe el prerender en servidor (la versión eager sí lo hacía — NG0401).
+    provideAnimationsAsync(),
+    // withFetch: necesario para que HttpClient (y con él la carga de traducciones)
+    // funcione durante el prerender en Node, no solo en el navegador.
+    provideHttpClient(withFetch()),
     provideTranslateService({
       defaultLanguage: 'es',
       loader: { provide: TranslateLoader, useFactory: httpLoaderFactory, deps: [HttpClient] },
     }),
     // Precarga las traducciones ANTES de renderizar la app para evitar que se vean
     // las claves crudas (p. ej. AICHATBOT.GUIDE.HOW_TITLE) mientras baja el JSON.
+    // En prerender esto además garantiza que el HTML salga con el texto ya traducido.
     provideAppInitializer(() => {
       const translate = inject(TranslateService);
+      const pl = inject(PlatformLocation);
+      const isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+      const lang = detectInitialLang(pl, isBrowser);
       // Si el JSON falla, no bloqueamos el arranque (la app carga igual).
-      return firstValueFrom(translate.use(detectInitialLang())).catch(() => undefined);
+      return firstValueFrom(translate.use(lang)).catch(() => undefined);
     }),
   ],
 };

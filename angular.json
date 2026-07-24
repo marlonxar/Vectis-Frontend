@@ -32,7 +32,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "server": "src/main.server.ts",
+            "outputMode": "static"
           },
           "configurations": {
             "production": {
@@ -49,7 +51,12 @@
                 }
               ],
               "outputHashing": "all",
-              "sourceMap": { "scripts": true, "styles": false, "hidden": false, "vendor": false },
+              "sourceMap": {
+                "scripts": true,
+                "styles": false,
+                "hidden": false,
+                "vendor": false
+              },
               "optimization": {
                 "scripts": true,
                 "styles": true,

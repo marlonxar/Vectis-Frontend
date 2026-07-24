@@ -124,7 +124,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.running = false;
-    cancelAnimationFrame(this.raf);
+    if (typeof cancelAnimationFrame !== 'undefined') cancelAnimationFrame(this.raf);
     if (this.video) { try { this.video.pause(); } catch { /* noop */ } }
     if (isPlatformBrowser(this.platformId)) {
       window.removeEventListener('resize', this.onResize);
@@ -566,7 +566,7 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
 
   private exitIntro(): void {
     this.running = false;
-    cancelAnimationFrame(this.raf);
+    if (typeof cancelAnimationFrame !== 'undefined') cancelAnimationFrame(this.raf);
     const el = this.introContainer.nativeElement;
     if (this.reduced) {
       el.style.transition = 'opacity 0.5s ease';

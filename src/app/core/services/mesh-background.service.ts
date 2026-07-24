@@ -48,7 +48,7 @@ export class MeshBackgroundService {
     this.running = true;
     this.zone.runOutsideAngular(() => { this.raf = requestAnimationFrame(this.tick); });
   }
-  pause(): void { this.running = false; cancelAnimationFrame(this.raf); }
+  pause(): void { this.running = false; if (typeof cancelAnimationFrame !== 'undefined') cancelAnimationFrame(this.raf); }
   resume(): void { if (this.canvas && !this.reduced) this.startLoop(); }
 
   destroy(): void {

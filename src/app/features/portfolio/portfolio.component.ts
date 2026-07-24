@@ -55,14 +55,19 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
   private spiralIO?: IntersectionObserver;
 
   constructor() {
+    // Estos effects controlan la reproducción de video. Corren también durante el
+    // prerender en servidor, donde requestAnimationFrame no existe: por eso solo
+    // programamos el trabajo de video en el navegador.
     // Play/pause the spiral videos when the view mode changes (e.g. mobile forces 'list')
     effect(() => {
       this.viewMode();
+      if (!isPlatformBrowser(this.platformId)) return;
       requestAnimationFrame(() => this.updateSpiralPlayback());
     });
 
     effect(() => {
       const expandedIdx = this.expandedIndex();
+      if (!isPlatformBrowser(this.platformId)) return;
       // Ensure we query and control videos after the DOM updates
       requestAnimationFrame(() => {
         const videos = this.listVideos?.toArray();
@@ -250,7 +255,7 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       window.removeEventListener("intro-finished", this.onIntroFinished);
       if (this.animationFrameId) {
-        cancelAnimationFrame(this.animationFrameId);
+        if (typeof cancelAnimationFrame !== 'undefined') cancelAnimationFrame(this.animationFrameId);
       }
       this.spiralIO?.disconnect();
       this.eventCleanup.forEach((clean) => clean());

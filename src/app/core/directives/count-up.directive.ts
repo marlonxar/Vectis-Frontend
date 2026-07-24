@@ -53,6 +53,6 @@ export class CountUpDirective implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.observer?.disconnect();
-    cancelAnimationFrame(this.raf);
+    if (typeof cancelAnimationFrame !== 'undefined') cancelAnimationFrame(this.raf);
   }
 }

@@ -4,6 +4,12 @@
     "outDir": "./out-tsc/app",
     "types": []
   },
-  "files": ["src/main.ts"],
-  "include": ["src/**/*.d.ts", "chatbot/**/*.ts"]
+  "files": [
+    "src/main.ts",
+    "src/main.server.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts",
+    "chatbot/**/*.ts"
+  ]
 }

@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.10.0';
+export const APP_VERSION = '1.11.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,16 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.11.0',
+    date: '2026-07-21',
+    title: 'Sitio pre-renderizado (SEO e IA)',
+    changes: [
+      'El sitio de Vectis ahora se genera como HTML estático en cada compilación (prerender/SSG). Google, ChatGPT, Perplexity y demás ven el contenido completo sin ejecutar JavaScript — antes veían una página casi vacía.',
+      'Cada página (español en /, inglés en /en, y las páginas legales) se entrega ya renderizada y en su idioma correcto.',
+      'La página carga mostrando el contenido de inmediato, en vez de una pantalla en blanco mientras arranca la aplicación.',
+    ],
+  },
   {
     version: '1.10.0',
     date: '2026-07-21',
