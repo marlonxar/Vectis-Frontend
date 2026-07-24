@@ -1,49 +1,71 @@
 # Vectis Automation Group
 
-> Software a medida, automatización con IA y agentes inteligentes que eliminan el trabajo repetitivo. Desde San José, Costa Rica, para clientes en todo el mundo. Filosofía: diagnóstico antes que prescripción.
+> We build systems that do your team's repetitive work — custom software, automation and AI. Grow without hiring. Start with a free workflow audit. Based in San José, Costa Rica; clients worldwide. Philosophy: diagnosis before prescription.
 
-Vectis Automation Group es una empresa de tecnología con sede en San José, Costa Rica, que construye software a medida, automatizaciones e inteligencia artificial. Atiende clientes de forma remota en todo el mundo, en español e inglés. Contacto: contact@wearevectis.com · +506 7020 1149.
+Vectis Automation Group is a technology company based in San José, Costa Rica, that builds custom software, automation and artificial intelligence. It serves clients all over the world, remotely, in English and Spanish. The website is English by default; a Spanish version lives at /es. Contact: contact@wearevectis.com · +506 7020 1149.
 
-## Páginas
+## Pages
 
-- [Inicio (ES)](https://wearevectis.com/): Servicios, capacidades, portafolio y contacto de Vectis.
-- [Home (EN)](https://wearevectis.com/en): English version of the Vectis site.
-- [AI ChatBot (producto)](https://www.aichatbot.wearevectis.com/): Chatbot con IA self-serve para negocios; incluye guía de funcionamiento, características y precios.
-- [Política de privacidad](https://wearevectis.com/privacidad) · [Privacy (EN)](https://wearevectis.com/privacy): Cómo recopilamos y usamos los datos.
-- [Términos y condiciones](https://wearevectis.com/terminos) · [Terms (EN)](https://wearevectis.com/terms): Términos de uso del sitio y los servicios.
-- [Política de reembolsos](https://wearevectis.com/reembolsos) · [Refunds (EN)](https://wearevectis.com/refunds): Condiciones de reembolso de la suscripción.
+- [Home (EN)](https://www.wearevectis.com/): What Vectis does, what we build, how it works, about and contact.
+- [Home (ES)](https://www.wearevectis.com/es): Spanish version of the Vectis site.
+- [AI ChatBot (product)](https://www.aichatbot.wearevectis.com/): Self-serve AI chatbot for businesses; includes how it works, features and pricing.
+- [Privacy Policy](https://www.wearevectis.com/privacy) · [Privacidad (ES)](https://www.wearevectis.com/privacidad): How we collect and use data.
+- [Terms & Conditions](https://www.wearevectis.com/terms) · [Términos (ES)](https://www.wearevectis.com/terminos): Terms of use for the site and services.
+- [Refunds Policy](https://www.wearevectis.com/refunds) · [Reembolsos (ES)](https://www.wearevectis.com/reembolsos): Subscription refund conditions.
 
-## Servicios
+## What we do
 
-- [Desarrollo Web](https://wearevectis.com/#servicios): Sitios y aplicaciones web rápidas, accesibles y escalables.
-- [Automatizaciones](https://wearevectis.com/#servicios): Eliminamos tareas repetitivas conectando tus herramientas y orquestando flujos.
-- [Inteligencia Artificial](https://wearevectis.com/#servicios): Agentes, asistentes y modelos de IA integrados a tus procesos.
-- [Software a Medida](https://wearevectis.com/#servicios): Plataformas y sistemas diseñados a la medida de tu operación.
-- [Integraciones & APIs](https://wearevectis.com/#servicios): Conectamos tus sistemas, plataformas y servicios de terceros.
-- [Data & Analytics](https://wearevectis.com/#servicios): Tus datos convertidos en dashboards y métricas accionables.
+Six ways we take work off your team's plate. Senior engineers, full cycle: we design it, build it and keep it running.
 
-## Producto: Vectis AI ChatBot
+- Artificial Intelligence: AI that reads, answers and decides — so your team doesn't have to do it by hand.
+- Web Development: fast, beautiful websites and web apps that turn visitors into customers.
+- Automations: tasks that happen on their own — reminders, follow-ups, reports. We connect your tools and the work just runs.
+- Custom Software: software built exactly for how your business works. Nothing extra. Nothing missing.
+- Integrations & APIs: we make your systems talk to each other. No more copying data from one app to another.
+- Data & Analytics: all your numbers in one clear dashboard — so you always know how the business is doing.
 
-Chatbot con IA self-serve para negocios. El dueño lo configura desde un panel sin código y lo instala en su web con una línea de código.
+## What we build
 
-- Funciona self-serve: crear cuenta, alimentar el negocio (horario, contacto, FAQs, documentos, inventario, sitio web), personalizar el diseño, probar en vivo y publicar.
-- Puede manejar: documentos y base de conocimiento (PDF, Google Doc), inventario en vivo (CSV, Google Sheets, Excel), estudio del sitio web, agenda con Cal.com, preguntas frecuentes, captura de leads, métricas e insights, y multi-idioma (español/inglés).
-- Responde solo con la información del negocio; no inventa datos.
-- Confidencialidad: datos aislados por negocio, conexiones cifradas (HTTPS), no se usa para entrenar IA de terceros; el dueño controla y puede borrar sus datos.
-- Planes: Básico, Pro y Business, con suscripción mensual, sin permanencia y cancelación cuando se quiera. Detalles y precios en https://www.aichatbot.wearevectis.com/
+- AI employees that get work done: an AI that reads requests, makes decisions and completes tasks inside your tools — without a person touching it.
+- Paperwork that reads itself: invoices, contracts and PDFs read by AI; the data goes where it belongs.
+- Client lists, built automatically: we find your ideal prospects online and deliver them ready to contact.
+- Your systems, finally talking: CRM, billing and spreadsheets connected — change something once, it updates everywhere.
+- Customer questions, answered instantly: fast, correct answers in any language, at any hour, in your brand's voice.
+- Reports that build themselves: income, expenses and metrics compiled and sent automatically.
+- Get found on Google — and by AI: when people ask Google or ChatGPT for what you sell, your business is the answer.
+- Websites that sell: fast, beautiful sites built to turn visitors into customers.
 
-## Preguntas frecuentes
+## How it works — 3 steps
 
-- ¿Trabajan con clientes fuera de Costa Rica? Sí, en todo el mundo y de forma remota.
-- ¿En qué tecnologías se especializan? Angular, React, Next.js y Node; Python y LLMs (OpenAI, Claude) para IA; nube como AWS.
-- ¿Cuánto tarda un proyecto? Un MVP puede estar listo en 4–8 semanas; proyectos grandes por fases.
-- ¿Ofrecen soporte y mantenimiento? Sí, soporte continuo, monitoreo y mantenimiento evolutivo.
-- ¿El AI ChatBot necesita programación? No, se configura sin código y se instala con una línea.
+1. We map your work. We find where the hours leak. This is the free audit.
+2. We build your system. On top of the tools you already use. Your team changes nothing.
+3. It runs. You grow. Guaranteed: 15+ hours a week saved, or you don't pay the setup fee.
 
-## Contacto
+## Product: Vectis AI ChatBot
 
-- [Sección de contacto](https://wearevectis.com/#contacto): Agenda una llamada o envíanos un mensaje.
+A self-serve AI chatbot for businesses. The owner configures it from a no-code dashboard and installs it on their site with one line of code.
+
+- Self-serve: create an account, feed the business info (hours, contact, FAQs, documents, inventory, website), customize the look, test live and publish.
+- Handles: documents and knowledge base (PDF, Google Doc), live inventory (CSV, Google Sheets, Excel), website study, appointment booking with Cal.com, FAQs, lead capture, metrics and insights, and multiple languages (English/Spanish).
+- Channels: website widget, WhatsApp, Telegram, Instagram and Facebook Messenger — the same bot everywhere.
+- Human handoff: live chats can be routed to a person on WhatsApp or Telegram, with business hours and multiple agents.
+- Answers only with the business's information; it does not make up data.
+- Privacy: data isolated per business, encrypted connections (HTTPS), not used to train third-party AI; the owner controls and can delete their data.
+- Plans: Free, Starter, Growth and Business, monthly subscription, no lock-in, cancel anytime. Details and pricing at https://www.aichatbot.wearevectis.com/
+
+## Frequently asked questions
+
+- What does Vectis do? We build systems that do your team's repetitive work: custom software, websites and apps, automations, AI, integrations and dashboards. If your team does it every day by hand, we can probably make it automatic.
+- What does it cost? It depends on how much we automate. It's always less than hiring someone to do the work by hand — and it starts with a free audit.
+- What if it doesn't work? If the system doesn't save your team at least 15 hours a week in the first 30 days, you don't pay the setup fee.
+- How long does it take? Automation systems go live in about 2 weeks: first we map your work, then we build, then we test with real data and launch. Bigger projects ship in phases.
+- Do you work outside Costa Rica? Yes. We're based in San José, Costa Rica, and we work with clients all over the world — in English and Spanish, across time zones.
+- Does the AI ChatBot need coding? No. It is configured without code and installed with a single line.
+
+## Contact
+
+- [Contact section](https://www.wearevectis.com/#contacto): Book a call or send us a message. One CTA across the site: get your free audit.
 - Email: contact@wearevectis.com
-- WhatsApp / Tel: +506 7020 1149
-- Ubicación: San José, Costa Rica (clientes en todo el mundo)
-- Idiomas: español, inglés
+- WhatsApp / Phone: +506 7020 1149
+- Location: San José, Costa Rica (clients worldwide)
+- Languages: English, Spanish
