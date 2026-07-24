@@ -12,14 +12,18 @@ sin ejecutar JavaScript.
 
   ```
   browser/
-    index.html            → /            (home en español)
-    en/index.html         → /en          (home en inglés)
+    index.html            → /            (home en INGLÉS — idioma por defecto)
+    es/index.html         → /es          (home en español)
+    en/index.html         → /en          (alias en inglés; canónica → /)
     privacy/index.html    → /privacy
     privacidad/index.html → /privacidad
     terms/  terminos/  refunds/  refounds/  reembolsos/  404/
     index.csr.html        → fallback para rutas dinámicas (discovery-assistant/:id)
     assets/ …             → igual que antes
   ```
+
+  El sitio abre en **inglés por defecto**. El español está en `/es`. `/en` se
+  conserva para enlaces viejos y apunta canónicamente a `/`.
 
 ## Lo único que hay que revisar en el hosting
 

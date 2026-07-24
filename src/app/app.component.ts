@@ -74,7 +74,7 @@ export class AppComponent implements OnInit {
     // Show the intro loader only when the site is opened on the home page (not on
     // privacy, terms, 404, etc.).
     const path = (this.doc.defaultView?.location.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
-    this.showIntro.set(path === '/' || path === '/en');
+    this.showIntro.set(path === '/' || path === '/en' || path === '/es');
 
     this.applyLangForUrl(this.router.url);
     this.updateCanonical(this.router.url);
@@ -92,20 +92,27 @@ export class AppComponent implements OnInit {
     });
   }
 
-  /** Ajusta el idioma según la ruta: rutas legales imponen su idioma; el resto usa la preferencia. */
+  /**
+   * Ajusta el idioma según la ruta: las rutas legales imponen su idioma; el resto
+   * usa la preferencia (por defecto inglés). Aplica SIEMPRE (aunque el idioma no
+   * cambie), para que el título y la meta description queden en el idioma del
+   * cuerpo — antes, en la raíz, el cuerpo salía en un idioma y el título en otro.
+   */
   private applyLangForUrl(url: string): void {
-    const forced = this.routeLang(url);
-    if (forced) { if (this.currentLang() !== forced) this.useLang(forced, false); }
-    else { const pref = this.detectLang(); if (this.currentLang() !== pref) this.useLang(pref, false); }
+    this.useLang(this.routeLang(url) ?? this.detectLang(), false);
   }
 
   private updateCanonical(url: string): void {
     const clean = url.split('?')[0].split('#')[0];
-    // Auto-referencial al dominio servido (www.wearevectis.com o el subdominio del chatbot).
-    // Evita el desajuste www/no-www que causaba "redirect error" en Search Console.
-    const win = this.doc.defaultView;
-    const base = (win && win.location && win.location.origin) || 'https://www.wearevectis.com';
-    const href = clean === '/' || clean === '' ? base + '/' : base + clean;
+    // Dominio FIJO de producción (siempre www). Antes usábamos location.origin, pero
+    // durante el prerender el origen es el del render (ng-localhost) y quedaba horneado
+    // en el HTML: un crawler sin JS veía una canónica falsa. Este sitio siempre vive en
+    // www.wearevectis.com, así que fijarlo también resuelve el desajuste www/no-www.
+    const base = 'https://www.wearevectis.com';
+    // /en es un alias en inglés de la raíz: su canónica apunta a / para no duplicar contenido.
+    const cleanLower = clean.toLowerCase().replace(/\/+$/, '');
+    const path = (cleanLower === '/en') ? '/' : clean;
+    const href = path === '/' || path === '' ? base + '/' : base + path;
     let link = this.doc.querySelector("link[rel='canonical']") as HTMLLinkElement | null;
     if (!link) { link = this.doc.createElement('link'); link.setAttribute('rel', 'canonical'); this.doc.head.appendChild(link); }
     link.setAttribute('href', href);
@@ -127,16 +134,20 @@ export class AppComponent implements OnInit {
     return null;
   }
 
-  /** Priority: /en path > ?lang= query > saved preference > 'es'. */
+  /**
+   * Prioridad: ruta /es o /en > ?lang= > preferencia guardada > inglés (por defecto).
+   * El sitio es inglés por defecto: la raíz (/) es inglés y el español vive en /es.
+   */
   private detectLang(): 'es' | 'en' {
     const win = this.doc.defaultView;
-    if (!win) return 'es';
+    if (!win) return 'en';
     const path = win.location.pathname.toLowerCase();
+    if (path === '/es' || path.startsWith('/es/')) return 'es';
     if (path === '/en' || path.startsWith('/en/')) return 'en';
     const q = new URLSearchParams(win.location.search).get('lang');
     if (q === 'en' || q === 'es') return q;
     const stored = this.safeGetLang();
-    return stored === 'en' ? 'en' : stored === 'es' ? 'es' : 'es';
+    return stored === 'es' ? 'es' : 'en';
   }
 
   private updateMeta(lang: 'es' | 'en'): void {

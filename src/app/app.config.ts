@@ -15,14 +15,16 @@ export function httpLoaderFactory(http: HttpClient): TranslateHttpLoader {
 }
 
 /**
- * Idioma inicial: /en > ?lang= > preferencia guardada > 'es'.
+ * Idioma inicial: ruta /es o /en > ?lang= > preferencia guardada > inglés.
+ * El sitio es INGLÉS por defecto: la raíz (/) es inglés y el español vive en /es.
  * Lee la ruta con PlatformLocation (no con el global `location`), para que
- * FUNCIONE también durante el prerender: así /en genera HTML en inglés y / en
- * español, en vez de quedarse siempre en 'es'.
+ * FUNCIONE también durante el prerender: así / genera HTML en inglés y /es en
+ * español, en vez de quedarse siempre en el mismo idioma.
  */
 function detectInitialLang(pl: PlatformLocation, isBrowser: boolean): 'es' | 'en' {
   try {
     const path = (pl.pathname || '/').toLowerCase();
+    if (path === '/es' || path.startsWith('/es/')) return 'es';
     if (path === '/en' || path.startsWith('/en/')) return 'en';
     const q = new URLSearchParams(pl.search || '').get('lang');
     if (q === 'en' || q === 'es') return q;
@@ -31,7 +33,7 @@ function detectInitialLang(pl: PlatformLocation, isBrowser: boolean): 'es' | 'en
       if (stored === 'en' || stored === 'es') return stored;
     }
   } catch { /* privacidad / entorno sin DOM */ }
-  return 'es';
+  return 'en';
 }
 
 /** The AI ChatBot product is served from the aichatbot.wearevectis.com subdomain. */

@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.11.0';
+export const APP_VERSION = '1.12.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,16 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.12.0',
+    date: '2026-07-21',
+    title: 'Sitio en inglés por defecto',
+    changes: [
+      'El sitio de Vectis ahora abre en inglés por defecto (la raíz /). El español vive en /es, y /en sigue funcionando como enlace en inglés.',
+      'Se corrigió una inconsistencia: en la página de inicio el cuerpo salía en un idioma y el título/descripción en otro. Ahora cada idioma tiene su título y descripción correctos.',
+      'hreflang y URLs canónicas actualizados para el nuevo esquema (inglés en /, español en /es).',
+    ],
+  },
   {
     version: '1.11.0',
     date: '2026-07-21',

@@ -19,7 +19,10 @@ const legalRoutes: Routes = [
 
 /** Marketing site — wearevectis.com. The AI ChatBot now lives on its own subdomain. */
 export const routes: Routes = [
+  // Inglés por defecto: la raíz es inglés y el español vive en /es.
+  // /en se conserva como alias en inglés (enlaces viejos), con canónica → /.
   { path: '', component: HomeComponent, pathMatch: 'full' },
+  { path: 'es', component: HomeComponent, pathMatch: 'full' },
   { path: 'en', component: HomeComponent, pathMatch: 'full' },
   ...legalRoutes,
   // Discovery Assistant — full-page, lazy-loaded (widget JS only loads on these paths)
