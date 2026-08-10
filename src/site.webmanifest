@@ -1,8 +1,8 @@
 {
   "name": "Vectis Automation Group",
   "short_name": "Vectis",
-  "description": "Construimos sistemas que hacen el trabajo repetitivo de su equipo — software a medida, automatización e IA. Crezca sin contratar.",
-  "lang": "es",
+  "description": "We build systems that do your team's repetitive work — custom software, automation and AI. Grow without hiring.",
+  "lang": "en",
   "dir": "ltr",
   "categories": ["business", "productivity", "technology"],
   "start_url": "/",

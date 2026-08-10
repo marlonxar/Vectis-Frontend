@@ -112,9 +112,9 @@ export class AppComponent implements OnInit {
     // en el HTML: un crawler sin JS veía una canónica falsa. Este sitio siempre vive en
     // www.wearevectis.com, así que fijarlo también resuelve el desajuste www/no-www.
     const base = 'https://www.wearevectis.com';
-    // /es es un alias en español de la raíz (que ya es español): su canónica apunta a / para no duplicar.
+    // /en es un alias en inglés de la raíz (que ya es inglés): su canónica apunta a / para no duplicar.
     const cleanLower = clean.toLowerCase().replace(/\/+$/, '');
-    const path = (cleanLower === '/es') ? '/' : clean;
+    const path = (cleanLower === '/en') ? '/' : clean;
     const href = path === '/' || path === '' ? base + '/' : base + path;
     let link = this.doc.querySelector("link[rel='canonical']") as HTMLLinkElement | null;
     if (!link) { link = this.doc.createElement('link'); link.setAttribute('rel', 'canonical'); this.doc.head.appendChild(link); }
@@ -138,19 +138,19 @@ export class AppComponent implements OnInit {
   }
 
   /**
-   * Prioridad: ruta /en o /es > ?lang= > preferencia guardada > español (por defecto).
-   * El sitio es español por defecto: la raíz (/) es español y el inglés vive en /en.
+   * Prioridad: ruta /es o /en > ?lang= > preferencia guardada > inglés (por defecto).
+   * El sitio es inglés por defecto (master): la raíz (/) es inglés y el español vive en /es.
    */
   private detectLang(): 'es' | 'en' {
     const win = this.doc.defaultView;
-    if (!win) return 'es';
+    if (!win) return 'en';
     const path = win.location.pathname.toLowerCase();
-    if (path === '/en' || path.startsWith('/en/')) return 'en';
     if (path === '/es' || path.startsWith('/es/')) return 'es';
+    if (path === '/en' || path.startsWith('/en/')) return 'en';
     const q = new URLSearchParams(win.location.search).get('lang');
     if (q === 'en' || q === 'es') return q;
     const stored = this.safeGetLang();
-    return stored === 'en' ? 'en' : 'es';
+    return stored === 'es' ? 'es' : 'en';
   }
 
   private updateMeta(lang: 'es' | 'en'): void {

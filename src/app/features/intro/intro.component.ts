@@ -73,6 +73,12 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
     try { sessionStorage.setItem('vectisIntroSeen', '1'); } catch { /* noop */ }
     this.lockScroll();   // no scrolling while the intro is on screen → hero is seen first
     this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // Frase según el idioma de la ruta (inglés por defecto). Se fija aquí para que
+    // aplique tanto en la animación normal como en el modo de movimiento reducido.
+    if (this.lang() === 'en') {
+      this.phrase1 = 'Get your time back.';
+      this.phrase2 = 'Repetitive work, automated.';
+    }
     const go = () => { if (this.started) return; this.started = true; this.reduced ? this.runReduced() : this.run(); };
     // Make sure the exact Outfit weights are decoded before frame 1 (correct wordmark).
     const fonts = (document as unknown as { fonts?: { ready: Promise<unknown>; load?: (f: string) => Promise<unknown> } }).fonts;
@@ -146,9 +152,10 @@ export class IntroComponent implements AfterViewInit, OnDestroy {
   };
   private readonly onPointer = (): void => { this.skip(); };
 
+  // Inglés por defecto (master): la raíz (/) es inglés; el español vive en /es.
   private lang(): 'es' | 'en' {
     const p = window.location.pathname.toLowerCase();
-    return (p === '/en' || p.startsWith('/en/')) ? 'en' : 'es';
+    return (p === '/es' || p.startsWith('/es/')) ? 'es' : 'en';
   }
 
   private run(): void {
