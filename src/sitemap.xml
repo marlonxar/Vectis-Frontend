@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  <!-- Home — inglés por defecto en la raíz; español en /es -->
+  <!-- Home — español por defecto en la raíz; inglés en /en (/es es alias con canónica a /) -->
   <url>
     <loc>https://www.wearevectis.com/</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.wearevectis.com/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.wearevectis.com/es"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.wearevectis.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.wearevectis.com/en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/"/>
     <lastmod>2026-07-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://www.wearevectis.com/es</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://www.wearevectis.com/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://www.wearevectis.com/es"/>
+    <loc>https://www.wearevectis.com/en</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://www.wearevectis.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.wearevectis.com/en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/"/>
     <lastmod>2026-07-24</lastmod>
     <changefreq>weekly</changefreq>
@@ -41,7 +41,7 @@
     <loc>https://www.wearevectis.com/privacy</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.wearevectis.com/privacy"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://www.wearevectis.com/privacidad"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/privacidad"/>
     <lastmod>2026-07-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
@@ -50,7 +50,7 @@
     <loc>https://www.wearevectis.com/privacidad</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.wearevectis.com/privacy"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://www.wearevectis.com/privacidad"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/privacy"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/privacidad"/>
     <lastmod>2026-07-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
@@ -61,7 +61,7 @@
     <loc>https://www.wearevectis.com/terms</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.wearevectis.com/terms"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://www.wearevectis.com/terminos"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/terminos"/>
     <lastmod>2026-07-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
@@ -70,7 +70,7 @@
     <loc>https://www.wearevectis.com/terminos</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.wearevectis.com/terms"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://www.wearevectis.com/terminos"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/terms"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/terminos"/>
     <lastmod>2026-07-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
@@ -81,7 +81,7 @@
     <loc>https://www.wearevectis.com/refunds</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.wearevectis.com/refunds"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://www.wearevectis.com/reembolsos"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/refunds"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/reembolsos"/>
     <lastmod>2026-07-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
@@ -90,7 +90,7 @@
     <loc>https://www.wearevectis.com/reembolsos</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://www.wearevectis.com/refunds"/>
     <xhtml:link rel="alternate" hreflang="es" href="https://www.wearevectis.com/reembolsos"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/refunds"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.wearevectis.com/reembolsos"/>
     <lastmod>2026-07-24</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>

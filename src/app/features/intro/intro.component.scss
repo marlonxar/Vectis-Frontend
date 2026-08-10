@@ -1,92 +1,92 @@
-// Intro de 3 tiempos. Colores del change order: dorado #EDB347 sobre navy #0F1225.
-// Cero gradientes, cero sombras.
-
-.intro {
+.intro-container {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #0b0b0d;
   z-index: 9999;
-  display: grid;
-  place-items: center;
-  background: #0F1225;
-  cursor: pointer;
-  opacity: 1;
-  transition: opacity 300ms ease;
-
-  &.leaving {
-    opacity: 0;
-    pointer-events: none;
-  }
+  overflow: hidden;
 }
 
-.beats {
-  position: relative;
-  display: grid;
-  place-items: center;
-  padding: 0 24px;
-  text-align: center;
-}
-
-// Los beats se apilan en la misma celda; solo el activo es visible.
-.beat {
-  grid-area: 1 / 1;
-  margin: 0;
-  font-family: 'Outfit', Arial, sans-serif;
-  font-weight: 700;
-  color: #EDB347;
-  font-size: clamp(26px, 5vw, 52px);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 260ms ease, transform 260ms ease;
-  pointer-events: none;
-
-  &.on {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.beat.brand {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-
-  .mark {
-    font-size: clamp(40px, 8vw, 88px);
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    color: #EDB347;
-  }
-  .tag {
-    font-size: clamp(14px, 2.4vw, 22px);
-    font-weight: 600;
-    color: #FFFFFF;
-  }
+.intro-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .skip-hint {
   position: absolute;
-  bottom: 28px;
-  left: 0;
-  right: 0;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 38px);
+  transform: translateX(-50%);
   display: flex;
-  justify-content: center;
+  align-items: center;
   gap: 8px;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 12.5px;
-  letter-spacing: 0.02em;
+  color: rgba(170, 174, 182, 0.62);
+  font-family: 'Outfit', Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  animation: skipHintIn 0.8s ease forwards 1.2s;
+  transition: color 0.18s ease;
 }
-.skip-mobile { display: none; }
 
-@media (hover: none) {
-  .skip-desktop { display: none; }
-  .skip-mobile { display: inline; }
+.skip-hint .kc { transition: border-color 0.18s ease, background-color 0.18s ease; }
+
+/* while the background flashes white, darken the hint so it stays legible */
+.intro-container.switch-light .skip-hint { color: rgba(36, 38, 44, 0.9); }
+.intro-container.switch-light .skip-hint .kc {
+  border-color: rgba(36, 38, 44, 0.45);
+  background: rgba(0, 0, 0, 0.06);
 }
 
-// Sin animación: los beats no se deslizan; el que está activo aparece de una.
+@keyframes skipHintIn {
+  to { opacity: 1; }
+}
+
+.skip-hint .keys {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.skip-hint .kc {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(170, 174, 182, 0.32);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.skip-hint .kc.kc-wide { width: 34px; }
+
+.skip-hint .kc svg {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+.skip-hint .kc.kc-wide svg { width: 26px; }
+
+.skip-hint .skip-mobile { display: none; }
+
+/* Touch / small screens: only a short text, no key icons */
+@media (hover: none), (max-width: 640px) {
+  .skip-hint .keys,
+  .skip-hint .skip-desktop { display: none; }
+  .skip-hint .skip-mobile { display: inline; }
+  .skip-hint { font-size: 12px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .intro { transition: opacity 300ms ease; }
-  .beat { transition: opacity 200ms ease; transform: none; }
+  .skip-hint { animation: none; opacity: 1; }
 }

@@ -15,17 +15,17 @@ export function httpLoaderFactory(http: HttpClient): TranslateHttpLoader {
 }
 
 /**
- * Idioma inicial: ruta /es o /en > ?lang= > preferencia guardada > inglés.
- * El sitio es INGLÉS por defecto: la raíz (/) es inglés y el español vive en /es.
+ * Idioma inicial: ruta /en o /es > ?lang= > preferencia guardada > español.
+ * El sitio es ESPAÑOL por defecto: la raíz (/) es español y el inglés vive en /en.
  * Lee la ruta con PlatformLocation (no con el global `location`), para que
- * FUNCIONE también durante el prerender: así / genera HTML en inglés y /es en
- * español, en vez de quedarse siempre en el mismo idioma.
+ * FUNCIONE también durante el prerender: así / genera HTML en español y /en en
+ * inglés, en vez de quedarse siempre en el mismo idioma.
  */
 function detectInitialLang(pl: PlatformLocation, isBrowser: boolean): 'es' | 'en' {
   try {
     const path = (pl.pathname || '/').toLowerCase();
-    if (path === '/es' || path.startsWith('/es/')) return 'es';
     if (path === '/en' || path.startsWith('/en/')) return 'en';
+    if (path === '/es' || path.startsWith('/es/')) return 'es';
     const q = new URLSearchParams(pl.search || '').get('lang');
     if (q === 'en' || q === 'es') return q;
     if (isBrowser) {
@@ -33,7 +33,7 @@ function detectInitialLang(pl: PlatformLocation, isBrowser: boolean): 'es' | 'en
       if (stored === 'en' || stored === 'es') return stored;
     }
   } catch { /* privacidad / entorno sin DOM */ }
-  return 'en';
+  return 'es';
 }
 
 /** The AI ChatBot product is served from the aichatbot.wearevectis.com subdomain. */

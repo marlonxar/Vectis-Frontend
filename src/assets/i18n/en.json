@@ -573,11 +573,7 @@
   "INTRO": {
     "LOADING": "Loading experience",
     "SKIP": "to skip intro",
-    "SKIP_MOBILE": "Press to skip intro",
-    "BEAT1": "The same work. Every single day.",
-    "BEAT2": "Now it runs without you.",
-    "BRAND": "VECTIS",
-    "TAGLINE": "The software that moves your business."
+    "SKIP_MOBILE": "Press to skip intro"
   },
   "PHILOSOPHY": {
     "EYEBROW": "Our philosophy",
