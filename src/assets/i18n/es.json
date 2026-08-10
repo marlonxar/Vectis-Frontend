@@ -349,11 +349,11 @@
     "EYEBROW": "FAQ",
     "TITLE": "Preguntas frecuentes",
     "SUBTITLE": "Todo lo que necesitas saber antes de trabajar con nosotros.",
-    "SHOW_ALL": "Ver todas las preguntas frecuentes",
+    "SHOW_ALL": "Ver todas las preguntas",
     "SHOW_LESS": "Ver menos",
     "Q1": {
-      "Q": "¿Qué hace Vectis?",
-      "A": "Construimos sistemas que hacen el trabajo repetitivo de su equipo: software a medida, sitios y aplicaciones, automatizaciones, IA, integraciones y paneles. Si su equipo lo hace todos los días a mano, probablemente podamos volverlo automático."
+      "Q": "¿Qué construyen exactamente?",
+      "A": "Sistemas que hacen el trabajo repetitivo de su equipo. Cotizaciones, seguimientos, recordatorios, reportes, datos que pasan de una herramienta a otra, responder a clientes. Primero mapeamos cómo trabaja y luego construimos solo las partes que se pagan solas."
     },
     "Q2": {
       "Q": "¿Cuánto cuesta?",
@@ -361,36 +361,62 @@
     },
     "Q3": {
       "Q": "¿Y si no funciona?",
-      "A": "Simple: si el sistema no le ahorra a su equipo al menos 15 horas a la semana en los primeros 30 días, usted no paga la instalación."
+      "A": "Si el sistema no le quita al menos 15 horas a la semana a su equipo en los primeros 30 días después del lanzamiento, no paga la instalación. Y si no queda conforme en los primeros 14 días, le devolvemos su dinero. Sin preguntas."
     },
     "Q4": {
-      "Q": "¿Cuánto tarda?",
-      "A": "Los sistemas de automatización entran en funcionamiento en unas 2 semanas: primero mapeamos su trabajo, luego construimos, luego probamos con datos reales y lanzamos. Los proyectos más grandes se entregan por fases."
+      "Q": "¿En cuánto tiempo queda funcionando?",
+      "A": "La mayoría de los sistemas quedan funcionando en semanas, no en meses. Primero mapeamos su trabajo. Luego construimos. Luego lo probamos con sus datos reales y lo lanzamos. Los proyectos más grandes se entregan por partes, así usted recibe valor antes de que todo esté terminado."
     },
     "Q5": {
-      "Q": "¿Trabajan fuera de Costa Rica?",
-      "A": "Sí. Estamos en San José, Costa Rica, y trabajamos con clientes de todo el mundo — en inglés y español, en distintas zonas horarias."
+      "Q": "¿Tenemos que cambiar las herramientas que ya usamos?",
+      "A": "No. Construimos sobre lo que ya tiene. Su equipo sigue trabajando igual — el sistema le quita de encima la parte repetitiva."
     },
     "Q6": {
-      "Q": "¿Qué tecnologías usan?",
-      "A": "Trabajamos con Angular, React, Next.js y Node en frontend y backend; Python y modelos de IA (OpenAI, Claude) para inteligencia artificial; e infraestructura en la nube. Elegimos la herramienta correcta para cada caso — usted no tiene que preocuparse por eso."
+      "Q": "¿En qué se diferencia de Zapier, Make o una herramienta de agentes de IA que podríamos comprar?",
+      "A": "Eso son herramientas. Usted todavía tiene que construirlo, conectarlo y arreglarlo cada vez que se rompe. Nosotros le entregamos un sistema que funciona y lo mantenemos funcionando. Usted nunca se convierte en la persona de automatización de su propio equipo."
     },
     "Q7": {
-      "Q": "¿Ofrecen soporte y mantenimiento?",
-      "A": "Sí. Damos soporte continuo, monitoreo y mantenimiento evolutivo para que tu producto siga funcionando y mejorando después del lanzamiento."
+      "Q": "Ya intentamos automatizar antes y se rompió. ¿Por qué sería distinto?",
+      "A": "Casi todos estos proyectos fallan por una razón: alguien empezó a construir antes de que nadie mapeara el trabajo. La tecnología rara vez es el problema. Nosotros mapeamos primero y construimos después. Por eso los nuestros sobreviven a las excepciones que rompen las plantillas."
     },
     "Q8": {
-      "Q": "¿Pueden integrarse con nuestras herramientas actuales?",
-      "A": "Claro. Construimos integraciones y pipelines con tus sistemas, CRMs, ERPs y servicios de terceros mediante APIs y webhooks."
+      "Q": "¿De verdad lo va a usar mi equipo?",
+      "A": "La mayor parte no la tocan — corre en segundo plano. Para las partes que sí tocan, los capacitamos en vivo en el lanzamiento y nos quedamos con usted 30 días después. Si no lo adoptan, la garantía igual lo cubre."
     },
     "Q9": {
       "Q": "¿Trabajan con startups y también con empresas grandes?",
       "A": "Ambas. Acompañamos a startups desde el MVP y a empresas consolidadas en productos a escala, adaptando el equipo y el proceso a cada caso."
     },
     "Q10": {
-      "Q": "¿Cómo empezamos a trabajar juntos?",
-      "A": "Muy fácil: agenda una llamada o escríbenos desde la sección de Contacto. Conversamos sobre tu idea y te proponemos los siguientes pasos."
-    }
+      "Q": "¿De quién es el sistema?",
+      "A": "Suyo. El sistema, las cuentas y los datos son suyos. Si deja de trabajar con nosotros, sigue funcionando y le entregamos la documentación."
+    },
+    "Q11": {
+      "Q": "¿Están seguros nuestros datos?",
+      "A": "Trabajamos dentro de sus propias cuentas y herramientas siempre que se pueda. El acceso se limita a lo que el sistema necesita para hacer su trabajo. Firmamos un NDA cuando lo pida, y nunca usamos sus datos para entrenar modelos públicos."
+    },
+    "Q12": {
+      "Q": "¿Cuánto de mi tiempo requiere esto?",
+      "A": "Unas dos a tres horas la primera semana: un recorrido de cómo trabaja su equipo, más acceso a sus herramientas. Después nosotros construimos y usted revisa."
+    },
+    "Q13": {
+      "Q": "¿Y si no sabemos qué automatizar?",
+      "A": "Ese es el punto de partida normal. Es exactamente para lo que sirve la auditoría gratis. Mapeamos su flujo de trabajo más pesado, le mostramos lo que le está costando y le decimos qué vale la pena automatizar y qué no."
+    },
+    "Q14": {
+      "Q": "¿Trabajan con clientes en otros países?",
+      "A": "Sí. Trabajamos en inglés y español, en las zonas horarias de EE.UU. y Latinoamérica, y hacemos todo de forma remota: llamadas, entrega y soporte."
+    },
+    "Q15": {
+      "Q": "¿Trabajan con empresas de nuestro tamaño?",
+      "A": "Trabajamos con equipos pequeños y medianos — lo bastante grandes para estar ahogados en trabajo repetitivo, lo bastante pequeños para que contratar a otra persona duela. Si no calza, se lo decimos en la llamada de auditoría en vez de venderle algo."
+    },
+    "Q16": {
+      "Q": "¿Qué tecnologías usan?",
+      "A": "Las que pida el trabajo. Normalmente Python y Node en el backend, Next.js o Angular en el frontend, Postgres para datos, n8n para orquestación, y modelos de IA donde de verdad aportan algo. Elegimos el stack después del diagnóstico, nunca antes."
+    },
+    "CLOSE_LINE": "¿Todavía no sabe qué automatizar? Para eso es la auditoría.",
+    "CLOSE_CTA": "Pida su auditoría gratis"
   },
   "NOTFOUND": {
     "META_TITLE": "Página no encontrada (404) — Vectis",

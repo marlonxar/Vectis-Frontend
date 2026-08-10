@@ -10,6 +10,11 @@
   padding: clamp(18px, 2.4vw, 26px) 4px; font-family: var(--font-sans); font-size: clamp(16px, 2vw, 20px);
   font-weight: 600; color: var(--text); transition: color var(--dur) var(--ease); }
 .faq-q:hover { color: var(--gold-ink); }
+
+/* Cierre de la sección FAQ */
+.faq-close { margin-top: 34px; text-align: center; }
+.faq-close-line { font-size: clamp(16px, 2.2vw, 20px); font-weight: 600; color: var(--text); margin-bottom: 16px; }
+.faq-close-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 .faq-item.open .faq-q { color: var(--text); }
 .faq-item.open .faq-ico { color: var(--gold); }
 

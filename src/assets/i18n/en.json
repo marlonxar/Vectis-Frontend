@@ -349,11 +349,11 @@
     "EYEBROW": "FAQ",
     "TITLE": "Frequently asked questions",
     "SUBTITLE": "Everything you need to know before working with us.",
-    "SHOW_ALL": "View all FAQs",
-    "SHOW_LESS": "Show less",
+    "SHOW_ALL": "Read all questions",
+    "SHOW_LESS": "Show fewer",
     "Q1": {
-      "Q": "What does Vectis do?",
-      "A": "We build systems that do your team's repetitive work: custom software, websites and apps, automations, AI, integrations and dashboards. If your team does it every day by hand, we can probably make it automatic."
+      "Q": "What do you actually build?",
+      "A": "Systems that do your team's repetitive work. Quotes, follow-ups, reminders, reports, data moving between tools, answering customers. We map how you work first, then build only the parts that pay for themselves."
     },
     "Q2": {
       "Q": "What does it cost?",
@@ -361,36 +361,62 @@
     },
     "Q3": {
       "Q": "What if it doesn't work?",
-      "A": "Simple: if the system doesn't save your team at least 15 hours a week in the first 30 days, you don't pay the setup fee."
+      "A": "If the system doesn't take at least 15 hours a week off your team in the first 30 days after launch, you don't pay the setup fee. And if you're not happy in the first 14 days after launch, you get your money back. No questions."
     },
     "Q4": {
-      "Q": "How long does it take?",
-      "A": "Automation systems go live in about 2 weeks: first we map your work, then we build, then we test with real data and launch. Bigger projects ship in phases."
+      "Q": "How long until it's running?",
+      "A": "Most systems go live in weeks, not months. First we map your work. Then we build. Then we test it with your real data and launch it. Bigger builds ship in pieces, so you get value before the whole thing is finished."
     },
     "Q5": {
-      "Q": "Do you work outside Costa Rica?",
-      "A": "Yes. We're based in San José, Costa Rica, and we work with clients all over the world — in English and Spanish, across time zones."
+      "Q": "Do we have to change the tools we already use?",
+      "A": "No. We build on top of what you already have. Your team keeps working the same way — the system takes the repetitive part off their hands."
     },
     "Q6": {
-      "Q": "Which technologies do you use?",
-      "A": "We work with Angular, React, Next.js and Node across frontend and backend; Python and LLMs (OpenAI, Claude) for AI; and cloud infrastructure. We pick the right tool for each job — you don't have to."
+      "Q": "How is this different from Zapier, Make, or an AI agent tool we could buy?",
+      "A": "Those are tools. You still have to build it, connect it, and fix it every time it breaks. We hand you a working system and we keep it working. You never become the automation person on your own team."
     },
     "Q7": {
-      "Q": "Do you offer support and maintenance?",
-      "A": "Yes. We provide ongoing support, monitoring and evolutive maintenance so your product keeps running and improving after launch."
+      "Q": "We tried automation before and it broke. Why would this be different?",
+      "A": "Almost all of these projects fail for one reason: someone started building before anyone mapped the work. The technology is rarely the problem. We map first and build second. That's why ours survive the exceptions that break templates."
     },
     "Q8": {
-      "Q": "Can you integrate with our current tools?",
-      "A": "Absolutely. We build integrations and pipelines with your systems, CRMs, ERPs and third-party services via APIs and webhooks."
+      "Q": "Will my team actually use it?",
+      "A": "Most of it they never touch — it runs in the background. For the parts they do touch, we train them live at launch and stay with you for 30 days after. If they don't adopt it, the guarantee still covers you."
     },
     "Q9": {
       "Q": "Do you work with startups and large companies?",
       "A": "Both. We support startups from MVP and established companies on products at scale, adapting the team and process to each case."
     },
     "Q10": {
-      "Q": "How do we start working together?",
-      "A": "Easy: book a call or message us from the Contact section. We'll talk through your idea and propose the next steps."
-    }
+      "Q": "Who owns the system?",
+      "A": "You do. The system, the accounts and the data are yours. If you stop working with us, it keeps running and we hand over the documentation."
+    },
+    "Q11": {
+      "Q": "Is our data safe?",
+      "A": "We work inside your own accounts and tools whenever possible. Access is limited to what the system needs to do its job. We sign an NDA on request, and we never use your data to train public models."
+    },
+    "Q12": {
+      "Q": "How much of my time does this take?",
+      "A": "About two to three hours in the first week: one walkthrough of how your team works, plus access to your tools. After that we build and you review."
+    },
+    "Q13": {
+      "Q": "What if we don't know what to automate?",
+      "A": "That's the normal starting point. It's exactly what the free audit is for. We map your busiest workflow, show you what it's costing you, and tell you what's worth automating and what isn't."
+    },
+    "Q14": {
+      "Q": "Do you work with clients in other countries?",
+      "A": "Yes. We work in English and Spanish, across US and Latin American time zones, and we run everything remotely: calls, delivery and support."
+    },
+    "Q15": {
+      "Q": "Do you work with companies our size?",
+      "A": "We work with small and mid-sized teams — big enough to be drowning in repetitive work, small enough that hiring another person hurts. If you're not a fit, we'll tell you on the audit call instead of selling you something."
+    },
+    "Q16": {
+      "Q": "What technologies do you use?",
+      "A": "Whatever the job needs. Typically Python and Node on the backend, Next.js or Angular on the front, Postgres for data, n8n for orchestration, and AI models where they genuinely add something. We pick the stack after the diagnosis, never before."
+    },
+    "CLOSE_LINE": "Still not sure what to automate? That's what the audit is for.",
+    "CLOSE_CTA": "Get your free audit"
   },
   "NOTFOUND": {
     "META_TITLE": "Page not found (404) — Vectis",

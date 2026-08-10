@@ -21,10 +21,15 @@
       </li>
     </ul>
 
-    <div class="faq-more">
-      <button type="button" class="btn btn-dark" (click)="toggleAll()" [attr.aria-expanded]="showAll()">
-        {{ (showAll() ? 'FAQ.SHOW_LESS' : 'FAQ.SHOW_ALL') | translate }}
-      </button>
+    <!-- Cierre de la sección FAQ: neutraliza la última objeción y empuja al CTA único. -->
+    <div class="faq-close" appReveal>
+      <p class="faq-close-line">{{ 'FAQ.CLOSE_LINE' | translate }}</p>
+      <div class="faq-close-actions">
+        <button type="button" class="btn btn-gold" (click)="scroll.scrollToId('contacto')">{{ 'FAQ.CLOSE_CTA' | translate }}</button>
+        <button type="button" class="btn btn-ghost" (click)="toggleAll()" [attr.aria-expanded]="showAll()">
+          {{ (showAll() ? 'FAQ.SHOW_LESS' : 'FAQ.SHOW_ALL') | translate }}
+        </button>
+      </div>
     </div>
   </div>
 </section>
