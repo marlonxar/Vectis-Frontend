@@ -17,12 +17,13 @@ export class ServicesSectionComponent {
   readonly active = signal(0);
 
   readonly services: Service[] = [
+    // La venta de páginas web como servicio suelto se retira del sitio (change order S4);
+    // el software a la medida se mantiene en 'CUSTOM'.
     { key: 'AI',         tags: ['OpenAI', 'Claude', 'ML'],      icon: 'ai',         idx: 0 },
-    { key: 'WEB',        tags: ['Angular', 'React', 'Next.js'], icon: 'web',        idx: 1 },
-    { key: 'AUTOMATION', tags: ['n8n', 'RPA', 'Workflows'],     icon: 'automation', idx: 2 },
-    { key: 'CUSTOM',     tags: ['SaaS', 'ERP', 'Cloud'],        icon: 'custom',     idx: 3 },
-    { key: 'API',        tags: ['REST', 'GraphQL', 'Webhooks'], icon: 'api',        idx: 4 },
-    { key: 'DATA',       tags: ['ETL', 'BI', 'Dashboards'],     icon: 'data',       idx: 5 },
+    { key: 'AUTOMATION', tags: ['n8n', 'RPA', 'Workflows'],     icon: 'automation', idx: 1 },
+    { key: 'CUSTOM',     tags: ['SaaS', 'ERP', 'Cloud'],        icon: 'custom',     idx: 2 },
+    { key: 'API',        tags: ['REST', 'GraphQL', 'Webhooks'], icon: 'api',        idx: 3 },
+    { key: 'DATA',       tags: ['ETL', 'BI', 'Dashboards'],     icon: 'data',       idx: 4 },
   ];
   readonly left = computed(() => this.services.slice(0, 3));
   readonly right = computed(() => this.services.slice(3));

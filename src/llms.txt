@@ -15,10 +15,9 @@ Vectis Automation Group is a technology company based in San José, Costa Rica, 
 
 ## What we do
 
-Six ways we take work off your team's plate. Senior engineers, full cycle: we design it, build it and keep it running.
+Five ways we take work off your team's plate. Senior engineers, full cycle: we design it, build it and keep it running.
 
 - Artificial Intelligence: AI that reads, answers and decides — so your team doesn't have to do it by hand.
-- Web Development: fast, beautiful websites and web apps that turn visitors into customers.
 - Automations: tasks that happen on their own — reminders, follow-ups, reports. We connect your tools and the work just runs.
 - Custom Software: software built exactly for how your business works. Nothing extra. Nothing missing.
 - Integrations & APIs: we make your systems talk to each other. No more copying data from one app to another.
@@ -33,7 +32,6 @@ Six ways we take work off your team's plate. Senior engineers, full cycle: we de
 - Customer questions, answered instantly: fast, correct answers in any language, at any hour, in your brand's voice.
 - Reports that build themselves: income, expenses and metrics compiled and sent automatically.
 - Get found on Google — and by AI: when people ask Google or ChatGPT for what you sell, your business is the answer.
-- Websites that sell: fast, beautiful sites built to turn visitors into customers.
 
 ## How it works — 3 steps
 

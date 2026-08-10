@@ -148,14 +148,7 @@ export class PortfolioComponent implements OnInit, AfterViewInit, OnDestroy {
       descriptionKey: "PORTFOLIO.SERVICES.SEO_AIO_AUDIT.DESCRIPTION",
       color: "#EF4444",
     },
-    {
-      titleKey: "PORTFOLIO.SERVICES.WEB_DEV.TITLE",
-      categoryKey: "PORTFOLIO.CATEGORIES.DEVELOPMENT",
-      year: "2026",
-      videoUrl: "assets/videos/responsive_inspector_4K.mp4",
-      descriptionKey: "PORTFOLIO.SERVICES.WEB_DEV.DESCRIPTION",
-      color: "#06B6D4",
-    },
+    // 'Websites that sell' (venta de páginas web) se retira del sitio — change order S4.
   ];
 
   // Hover variables
