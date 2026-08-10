@@ -547,7 +547,11 @@
   "INTRO": {
     "LOADING": "Cargando experiencia",
     "SKIP": "para saltar la intro",
-    "SKIP_MOBILE": "Toca para saltar la intro"
+    "SKIP_MOBILE": "Toca para saltar la intro",
+    "BEAT1": "El mismo trabajo. Todos los días.",
+    "BEAT2": "Ahora corre solo.",
+    "BRAND": "VECTIS",
+    "TAGLINE": "El software que mueve tu negocio."
   },
   "PHILOSOPHY": {
     "EYEBROW": "Nuestra filosofía",

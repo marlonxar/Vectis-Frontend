@@ -1,5 +1,5 @@
-import { Component, OnInit, HostListener, inject, signal } from '@angular/core';
-import { CommonModule, DOCUMENT } from '@angular/common';
+import { Component, OnInit, HostListener, PLATFORM_ID, inject, signal } from '@angular/core';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { RouterOutlet, Router, NavigationEnd, NavigationStart, NavigationCancel, NavigationError } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -37,6 +37,7 @@ export class AppComponent implements OnInit {
   private readonly meta = inject(Meta);
   private readonly doc = inject(DOCUMENT);
   private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
 
   /** On the chatbot subdomain we hide the marketing chrome and let the chatbot own its SEO. */
   readonly isChatbot = detectChatbotHost();
@@ -74,7 +75,9 @@ export class AppComponent implements OnInit {
     // Show the intro loader only when the site is opened on the home page (not on
     // privacy, terms, 404, etc.).
     const path = (this.doc.defaultView?.location.pathname || '/').toLowerCase().replace(/\/+$/, '') || '/';
-    this.showIntro.set(path === '/' || path === '/en' || path === '/es');
+    // Solo en el navegador: así el HTML prerenderizado (y el sitio con JS apagado)
+    // muestra el hero directamente, sin el overlay del intro tapándolo.
+    this.showIntro.set(isPlatformBrowser(this.platformId) && (path === '/' || path === '/en' || path === '/es'));
 
     this.applyLangForUrl(this.router.url);
     this.updateCanonical(this.router.url);
