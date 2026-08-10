@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.12.0';
+export const APP_VERSION = '1.13.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,17 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.13.0',
+    date: '2026-08-03',
+    title: 'Iteración del sitio: intro nueva, FAQ y limpieza',
+    changes: [
+      'Nueva intro de entrada de 3 tiempos, mucho más rápida y legible por buscadores; ya no bloquea la carga de la página.',
+      'Preguntas frecuentes reescritas por completo, ordenadas por lo que pregunta un comprador, con un cierre que lleva a la auditoría gratis.',
+      'Se retiró la venta de páginas web como servicio suelto (el software a la medida se mantiene).',
+      'Ajustes de posicionamiento y limpieza de metadatos para el comprador global.',
+    ],
+  },
   {
     version: '1.12.0',
     date: '2026-07-21',
