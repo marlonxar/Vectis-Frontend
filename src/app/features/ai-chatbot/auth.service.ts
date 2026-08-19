@@ -194,7 +194,7 @@ export class ChatbotAuthService {
       email,
       password,
       options: {
-        data: { first_name: firstName, last_name: lastName, preferred_lang: 'es' },
+        data: { first_name: firstName, last_name: lastName, preferred_lang: 'en' },
         emailRedirectTo: `${APP_URL}/`,
       },
     });

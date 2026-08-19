@@ -17,7 +17,7 @@ begin
       first_name              text,
       last_name               text,
       phone                   text,
-      preferred_lang          text default 'es',
+      preferred_lang          text default 'en',
       plan                    text default 'basic',
       plan_expiry             date,
       cancel_at_period_end    boolean default false,
@@ -39,7 +39,7 @@ begin
       values (new.id,
               coalesce(new.raw_user_meta_data->>'first_name', ''),
               coalesce(new.raw_user_meta_data->>'last_name', ''),
-              coalesce(new.raw_user_meta_data->>'preferred_lang', 'es'))
+              coalesce(new.raw_user_meta_data->>'preferred_lang', 'en'))
       on conflict (id) do nothing;
       return new;
     end $fn$;

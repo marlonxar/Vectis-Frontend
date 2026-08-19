@@ -269,7 +269,7 @@ export class ChatbotSessionService {
   readonly lastName = signal('Álvarez');
   readonly email = signal('marlon@wearevectis.com');
   readonly phone = signal('');
-  readonly preferredLang = signal<'es' | 'en'>('es');
+  readonly preferredLang = signal<'es' | 'en'>('en');
   readonly createdAt = signal('2026-06-24');
   readonly planExpiry = signal('');
 
@@ -427,7 +427,7 @@ export class ChatbotSessionService {
       this.firstName.set(profile.first_name ?? '');
       this.lastName.set(profile.last_name ?? '');
       this.phone.set(profile.phone ?? '');
-      this.preferredLang.set((profile.preferred_lang as 'es' | 'en') ?? 'es');
+      this.preferredLang.set((profile.preferred_lang as 'es' | 'en') ?? 'en');
       this.plan.set((profile.plan as PlanId) ?? 'basic');
       this.planExpiry.set(profile.plan_expiry ? String(profile.plan_expiry).slice(0, 10) : '');
       this.createdAt.set(profile.created_at ? String(profile.created_at).slice(0, 10) : '');
@@ -453,7 +453,7 @@ export class ChatbotSessionService {
   /** Limpia el estado al cerrar sesión. */
   reset(): void {
     this.firstName.set(''); this.lastName.set(''); this.email.set(''); this.phone.set('');
-    this.preferredLang.set('es'); this.plan.set('basic'); this.planExpiry.set(''); this.createdAt.set(''); this.cancelAtPeriodEnd.set(false);
+    this.preferredLang.set('en'); this.plan.set('basic'); this.planExpiry.set(''); this.createdAt.set(''); this.cancelAtPeriodEnd.set(false);
     this.paddleCustomerId.set(''); this.paddleSubscriptionId.set('');
     this.onTrial.set(false); this.trialUsed.set(false); this.trialBannerDismissed.set(false);
     this.companies.set([]); this.clientIds.set([]); this.configs.set([]); this.statuses.set([]); this.current.set(0);

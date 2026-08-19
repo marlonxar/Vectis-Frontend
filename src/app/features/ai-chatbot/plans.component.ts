@@ -52,6 +52,7 @@ interface Plan {
                 <h2 class="name">{{ p.nameKey | translate }}</h2>
                 <p class="tag">{{ p.taglineKey | translate }}</p>
                 <div class="price"><span class="amt">{{ localizedPrice()[p.id] || p.price }}</span><span class="per">{{ 'AICHATBOT.PLANS.PER_MONTH' | translate }}</span></div>
+                @if (p.id === 'pro') { <p class="trial">{{ 'AICHATBOT.PLANS.TRIAL_BADGE' | translate }}</p> }
                 <ul class="feat">
                   @for (f of p.features; track f) {
                     <li>
@@ -102,6 +103,8 @@ interface Plan {
     .price { display: flex; align-items: baseline; gap: 8px; margin: 14px 0 6px; }
     .amt { font-size: 44px; font-weight: 800; letter-spacing: -0.03em; }
     .per { color: var(--text-inv-2); font-size: 14px; }
+    .trial { display: inline-block; margin: 2px 0 4px; padding: 3px 10px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 700;
+      color: var(--gold-bright); background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.3); }
     .feat { list-style: none; padding: 18px 0; margin: 12px 0; display: grid; gap: 12px; border-top: 1px solid var(--line-light); flex: 1; }
     .feat li { display: flex; align-items: flex-start; gap: 10px; font-size: 14.5px; color: var(--text-inv-2); }
     .feat li svg { color: var(--gold-bright); flex-shrink: 0; margin-top: 2px; }

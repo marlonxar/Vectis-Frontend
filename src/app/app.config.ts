@@ -28,6 +28,9 @@ function detectInitialLang(pl: PlatformLocation, isBrowser: boolean): 'es' | 'en
     if (path === '/en' || path.startsWith('/en/')) return 'en';
     const q = new URLSearchParams(pl.search || '').get('lang');
     if (q === 'en' || q === 'es') return q;
+    // El producto AI ChatBot es SIEMPRE inglés por defecto: ignora la preferencia
+    // guardada del sitio de marketing (para logueados, el idioma lo fija su perfil tras el login).
+    if (isBrowser && isChatbotHost()) return 'en';
     if (isBrowser) {
       const stored = localStorage.getItem('vectis-lang');
       if (stored === 'en' || stored === 'es') return stored;
@@ -52,7 +55,7 @@ export const appConfig: ApplicationConfig = {
     // funcione durante el prerender en Node, no solo en el navegador.
     provideHttpClient(withFetch()),
     provideTranslateService({
-      defaultLanguage: 'es',
+      defaultLanguage: 'en',
       loader: { provide: TranslateLoader, useFactory: httpLoaderFactory, deps: [HttpClient] },
     }),
     // Precarga las traducciones ANTES de renderizar la app para evitar que se vean
