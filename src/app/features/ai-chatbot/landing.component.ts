@@ -47,6 +47,7 @@ interface Plan {
         <div class="hero">
           <span class="eyebrow on-dark">{{ 'AICHATBOT.HERO.EYEBROW' | translate }}</span>
           <h1 class="title">{{ 'AICHATBOT.HERO.TITLE' | translate }}</h1>
+          <p class="trial-badge"><span class="tb-dot" aria-hidden="true"></span>{{ 'AICHATBOT.HERO.TRIAL' | translate }}</p>
           <p class="priceline">{{ 'AICHATBOT.HERO.PRICELINE' | translate }}</p>
           <p class="lead on-dark">{{ 'AICHATBOT.HERO.SUBTITLE' | translate }}</p>
           <p class="sub2 on-dark">{{ 'AICHATBOT.HERO.SUBTITLE2' | translate }}</p>
@@ -351,6 +352,7 @@ interface Plan {
               <h3 class="pname">{{ p.nameKey | translate }}</h3>
               <p class="ptag">{{ p.taglineKey | translate }}</p>
               <div class="pprice"><span class="pamt">{{ p.price }}</span><span class="pper">{{ 'AICHATBOT.PLANS.PER_MONTH' | translate }}</span></div>
+              @if (p.id === 'pro') { <p class="ptrial">{{ 'AICHATBOT.PLANS.TRIAL_BADGE' | translate }}</p> }
               <ul class="pfeat">
                 @for (f of p.features; track f) {
                   <li>
@@ -468,7 +470,7 @@ interface Plan {
           <h2 class="band-title">{{ 'AICHATBOT.GUIDE.FAQ_TITLE' | translate }}</h2>
         </div>
         <div class="faq-list">
-          @for (i of [1,2,3,4,5,6,7,8,9,10,11,12,13]; track i) {
+          @for (i of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]; track i) {
             <details class="faq-item">
               <summary>{{ ('AICHATBOT.GUIDE.Q' + i) | translate }}</summary>
               <p>{{ ('AICHATBOT.GUIDE.A' + i) | translate }}</p>
@@ -496,7 +498,12 @@ interface Plan {
     .inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1.15fr .85fr; gap: 56px; align-items: center; width: 100%; }
     .title { font-size: clamp(38px, 5.4vw, 72px); line-height: .98; margin-top: 14px; }
     /* Línea de precio justo bajo el H1: los hechos más fuertes, arriba del pliegue. */
-    .priceline { margin-top: 16px; font-size: clamp(15px, 2vw, 18px); font-weight: 700; color: var(--gold-bright); letter-spacing: .01em; }
+    /* Distintivo de prueba gratis, arriba del pliegue */
+    .trial-badge { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; padding: 7px 14px; border-radius: var(--radius-pill);
+      font-size: 13.5px; font-weight: 700; color: var(--ink); background: linear-gradient(135deg, var(--gold-soft), var(--gold-bright));
+      box-shadow: 0 8px 24px rgba(231,171,46,.28); }
+    .tb-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink); opacity: .55; flex-shrink: 0; }
+    .priceline { margin-top: 12px; font-size: clamp(15px, 2vw, 18px); font-weight: 700; color: var(--gold-bright); letter-spacing: .01em; }
     .hero .lead { margin-top: 20px; }
     .feats { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 12px; }
     .feats li { display: flex; align-items: center; gap: 12px; color: var(--text-inv-2); font-size: 15.5px; }
@@ -749,6 +756,8 @@ interface Plan {
     .pprice { display: flex; align-items: baseline; gap: 8px; margin: 14px 0 6px; }
     .pamt { font-size: 44px; font-weight: 800; letter-spacing: -0.03em; }
     .pper { color: var(--text-inv-2); font-size: 14px; }
+    .ptrial { display: inline-block; margin: 2px 0 4px; padding: 3px 10px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 700;
+      color: var(--gold-bright); background: rgba(231,171,46,.12); border: 1px solid rgba(231,171,46,.3); }
     .pfeat { list-style: none; padding: 18px 0 0; margin: 12px 0 0; display: grid; gap: 12px; border-top: 1px solid var(--line-light); flex: 1; }
     .pfeat li { display: flex; align-items: flex-start; gap: 10px; font-size: 14.5px; color: var(--text-inv-2); }
     .pfeat li svg { color: var(--gold-bright); flex-shrink: 0; margin-top: 2px; }
@@ -804,19 +813,19 @@ export class ChatbotLandingComponent implements OnInit {
 
   plans: Plan[] = [
     {
-      id: 'basic', popular: false, nameKey: 'AICHATBOT.PLANS.BASIC.NAME', price: '$19',
+      id: 'basic', popular: false, nameKey: 'AICHATBOT.PLANS.BASIC.NAME', price: '$29',
       taglineKey: 'AICHATBOT.PLANS.BASIC.TAG',
-      features: ['AICHATBOT.PLANS.BASIC.F1', 'AICHATBOT.PLANS.BASIC.F2', 'AICHATBOT.PLANS.BASIC.F3', 'AICHATBOT.PLANS.BASIC.F4', 'AICHATBOT.PLANS.BASIC.F5', 'AICHATBOT.PLANS.BASIC.F6', 'AICHATBOT.PLANS.HANDOFF'],
+      features: ['AICHATBOT.PLANS.BASIC.F1', 'AICHATBOT.PLANS.BASIC.F2', 'AICHATBOT.PLANS.BASIC.F3', 'AICHATBOT.PLANS.BASIC.F4', 'AICHATBOT.PLANS.BASIC.F5', 'AICHATBOT.PLANS.BASIC.F6', 'AICHATBOT.PLANS.BASIC.F7', 'AICHATBOT.PLANS.BASIC.F8'],
     },
     {
       id: 'pro', popular: true, nameKey: 'AICHATBOT.PLANS.PRO.NAME', price: '$49',
       taglineKey: 'AICHATBOT.PLANS.PRO.TAG',
-      features: ['AICHATBOT.PLANS.PRO.F1', 'AICHATBOT.PLANS.PRO.F2', 'AICHATBOT.PLANS.PRO.F3', 'AICHATBOT.PLANS.PRO.F4', 'AICHATBOT.PLANS.PRO.F5', 'AICHATBOT.PLANS.PRO.F6', 'AICHATBOT.PLANS.PRO.F7', 'AICHATBOT.PLANS.PRO.F8', 'AICHATBOT.PLANS.HANDOFF'],
+      features: ['AICHATBOT.PLANS.PRO.F1', 'AICHATBOT.PLANS.PRO.F2', 'AICHATBOT.PLANS.PRO.F3', 'AICHATBOT.PLANS.PRO.F4', 'AICHATBOT.PLANS.PRO.F5'],
     },
     {
       id: 'business', popular: false, nameKey: 'AICHATBOT.PLANS.BUSINESS.NAME', price: '$99',
       taglineKey: 'AICHATBOT.PLANS.BUSINESS.TAG',
-      features: ['AICHATBOT.PLANS.BUSINESS.F1', 'AICHATBOT.PLANS.BUSINESS.F2', 'AICHATBOT.PLANS.BUSINESS.F3', 'AICHATBOT.PLANS.BUSINESS.F4', 'AICHATBOT.PLANS.BUSINESS.F5', 'AICHATBOT.PLANS.BUSINESS.F6', 'AICHATBOT.PLANS.BUSINESS.F7', 'AICHATBOT.PLANS.HANDOFF', 'AICHATBOT.PLANS.WHITELABEL'],
+      features: ['AICHATBOT.PLANS.BUSINESS.F1', 'AICHATBOT.PLANS.BUSINESS.F2', 'AICHATBOT.PLANS.BUSINESS.F3', 'AICHATBOT.PLANS.BUSINESS.F4', 'AICHATBOT.PLANS.BUSINESS.F5'],
     },
   ];
 

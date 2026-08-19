@@ -651,7 +651,8 @@
       "C6_D": "Works day and night, seven days a week.",
       "CTA_TITLE": "Create your chatbot today and start turning more visits into customers.",
       "CTA_BTN": "Get started",
-      "PRICELINE": "From $19/month. No code. Cancel anytime."
+      "PRICELINE": "From $29/month. No code. Cancel anytime.",
+      "TRIAL": "Start with 20 days of Pro — free, no card."
     },
     "LOGIN": {
       "TITLE": "Sign in",
@@ -689,43 +690,41 @@
       "NOTE": "Cancel your subscription anytime.",
       "BASIC": {
         "NAME": "Basic",
-        "TAG": "The essentials, to get started.",
-        "F1": "1 chatbot",
+        "TAG": "Everything to launch, on every channel.",
+        "F1": "1 chatbot · 1 domain",
         "F2": "1,000 messages/mo",
-        "F3": "1 authorized domain",
-        "F4": "3 quick-reply buttons",
-        "F5": "Email support",
-        "F6": "Basic metrics dashboard"
+        "F3": "All channels: website, WhatsApp, Instagram, Messenger & Telegram",
+        "F4": "Human handoff to a live agent",
+        "F5": "Lead capture + calendar booking",
+        "F6": "Trained on your files, documents & inventory",
+        "F7": "Your brand: name, colors & logo",
+        "F8": "3 quick replies · email support"
       },
       "PRO": {
         "NAME": "Pro",
-        "TAG": "For growing businesses.",
+        "TAG": "For growing businesses that want the data.",
         "F1": "Everything in Basic",
         "F2": "5,000 messages/mo",
-        "F3": "Lead capture",
-        "F4": "Unlimited quick-reply buttons",
-        "F5": "Feed the agent your inventory & documents",
-        "F6": "Full metrics dashboard",
-        "F7": "Faster responses and higher availability",
-        "F8": "Conversation analysis & insight capture"
+        "F3": "Full analytics: trends, insights & lead details",
+        "F4": "Handoff timing & response metrics",
+        "F5": "Up to 20 quick replies"
       },
       "BUSINESS": {
         "NAME": "Business",
         "TAG": "For multiple brands or higher volume.",
         "F1": "Everything in Pro",
-        "F2": "Up to 3 chatbots (companies)",
-        "F3": "2 domains per chatbot",
+        "F2": "Up to 3 chatbots (3 companies)",
+        "F3": "3 domains per chatbot",
         "F4": "20,000 messages/mo",
-        "F5": "Custom branding",
-        "F6": "Early access to multichannel",
-        "F7": "Conversation analysis & insight capture"
+        "F5": "Priority support"
       },
       "REFUNDS_NOTE": "Questions about billing? See our",
       "REFUNDS_LINK": "Refund Policy",
       "TERMS_LINK": "Terms",
       "PRIVACY_LINK": "Privacy",
       "HANDOFF": "Human handoff (Telegram)",
-      "WHITELABEL": "White-label (no \"Powered by Vectis\")"
+      "WHITELABEL": "White-label (no \"Powered by Vectis\")",
+      "TRIAL_BADGE": "20 days free"
     },
     "CONFIGURE": {
       "EYEBROW": "Done!",
@@ -1196,7 +1195,9 @@
       "TEXT_EXPIRED": "Your plan expired. Renew to reactivate your ChatBots.",
       "CTA_EXPIRED": "Renew plan",
       "ORIGINS_TRIMMED": "Your current plan allows fewer domains: we kept only the first one on your ChatBots.",
-      "ORIGINS_CTA": "Review domains"
+      "ORIGINS_CTA": "Review domains",
+      "TRIAL_TEXT": "You're on your free Pro trial — {{days}} days left.",
+      "TRIAL_CTA": "Subscribe to keep Pro"
     },
     "MANAGE": {
       "EYEBROW": "Your plan",
@@ -1453,7 +1454,11 @@
       "Q12": "Can it hand the conversation to a human?",
       "A12": "Yes. When the customer asks, the bot connects them with a human agent (handoff). You receive and reply to live chats from your WhatsApp or Telegram, no matter which channel the customer wrote from.",
       "Q13": "Does the chatbot book appointments by itself?",
-      "A13": "Yes. It integrates with Cal.com: it checks your calendar’s real availability, asks the customer for details and creates the booking. On the web it opens a booking window; on other channels the bot books via chat."
+      "A13": "Yes. It integrates with Cal.com: it checks your calendar’s real availability, asks the customer for details and creates the booking. On the web it opens a booking window; on other channels the bot books via chat.",
+      "Q14": "How much does it cost?",
+      "A14": "Three monthly plans in USD: Basic $29, Pro $49 and Business $99. No contracts — change plan or cancel whenever you want.",
+      "Q15": "Is there a free trial?",
+      "A15": "Yes. New accounts get Pro free for 20 days, no card required — full access from the first conversation. When the trial ends, pick a plan to keep going; your ChatBots pause until you do. The trial is one time per account."
     },
     "DEMO": {
       "EYEBROW": "In action",

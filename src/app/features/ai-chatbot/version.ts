@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.13.0';
+export const APP_VERSION = '1.14.0';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,17 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.14.0',
+    date: '2026-08-19',
+    title: 'Prueba gratis de Pro y ajuste de precios',
+    changes: [
+      'Prueba gratis de Pro por 20 días, sin tarjeta: las cuentas nuevas entran directo con el plan Pro completo y empiezan a configurar su bot, sin pasar por la pantalla de pago.',
+      'Un aviso te muestra los días que te quedan de prueba y te invita a suscribirte para seguir en Pro. Al terminar, tus ChatBots se pausan hasta que elijas un plan.',
+      'La prueba es por una sola vez y solo para cuentas nuevas.',
+      'El plan Basic pasa de $19 a $29 al mes. Pro ($49) y Business ($99) se mantienen.',
+    ],
+  },
   {
     version: '1.13.0',
     date: '2026-08-03',

@@ -26,6 +26,17 @@ import { ChatbotAuthService } from './auth.service';
         </button>
       </div>
     }
+    @if (s.showTrialBanner()) {
+      <div class="mbanner info" role="status">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg>
+        <span class="mb-text">{{ 'AICHATBOT.BANNER.TRIAL_TEXT' | translate:{ days: s.trialDaysLeft() } }}
+          <a routerLink="/plans">{{ 'AICHATBOT.BANNER.TRIAL_CTA' | translate }}</a>
+        </span>
+        <button type="button" class="mb-x" (click)="s.trialBannerDismissed.set(true)" [attr.aria-label]="'AICHATBOT.BANNER.CLOSE' | translate">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    }
     @if (s.originsTrimmed()) {
       <div class="mbanner info" role="status">
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>

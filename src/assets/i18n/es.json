@@ -651,7 +651,8 @@
       "C6_D": "Funciona de día y de noche, los siete días de la semana.",
       "CTA_TITLE": "Crea tu chatbot hoy y empieza a convertir más visitas en clientes.",
       "CTA_BTN": "Empezar ahora",
-      "PRICELINE": "Desde $19/mes. Sin código. Cancele cuando quiera."
+      "PRICELINE": "Desde $29/mes. Sin código. Cancele cuando quiera.",
+      "TRIAL": "Empieza con 20 días de Pro — gratis, sin tarjeta."
     },
     "LOGIN": {
       "TITLE": "Inicia sesión",
@@ -689,43 +690,41 @@
       "NOTE": "Puedes cancelar tu suscripción cuando quieras.",
       "BASIC": {
         "NAME": "Basic",
-        "TAG": "Lo esencial, para empezar.",
-        "F1": "1 chatbot",
-        "F2": "1.000 mensajes/mes",
-        "F3": "1 dominio autorizado",
-        "F4": "3 botones de respuesta rápida",
-        "F5": "Soporte por correo electrónico",
-        "F6": "Panel de métricas básico"
+        "TAG": "Todo para arrancar, en todos los canales.",
+        "F1": "1 chatbot · 1 dominio",
+        "F2": "1,000 mensajes/mes",
+        "F3": "Todos los canales: web, WhatsApp, Instagram, Messenger y Telegram",
+        "F4": "Pase a un agente humano",
+        "F5": "Captura de leads + reserva en calendario",
+        "F6": "Entrenado con tus archivos, documentos e inventario",
+        "F7": "Tu marca: nombre, colores y logo",
+        "F8": "3 respuestas rápidas · soporte por correo"
       },
       "PRO": {
         "NAME": "Pro",
-        "TAG": "Para negocios en crecimiento.",
+        "TAG": "Para negocios que quieren los datos.",
         "F1": "Todo lo de Basic",
-        "F2": "5.000 mensajes/mes",
-        "F3": "Captura de leads",
-        "F4": "Botones de respuesta rápida ilimitados",
-        "F5": "Alimenta al agente con tu inventario y documentos",
-        "F6": "Panel de métricas completo",
-        "F7": "Respuestas más rápidas y mayor disponibilidad",
-        "F8": "Análisis de conversaciones y captura de insights"
+        "F2": "5,000 mensajes/mes",
+        "F3": "Analítica completa: tendencias, insights y detalle de leads",
+        "F4": "Métricas de handoff y de respuesta",
+        "F5": "Hasta 20 respuestas rápidas"
       },
       "BUSINESS": {
         "NAME": "Business",
         "TAG": "Para varias marcas o mayor volumen.",
         "F1": "Todo lo de Pro",
-        "F2": "Hasta 3 chatbots (empresas)",
-        "F3": "2 dominios por chatbot",
-        "F4": "20.000 mensajes/mes",
-        "F5": "Marca personalizada",
-        "F6": "Acceso anticipado a multicanal",
-        "F7": "Análisis de conversaciones y captura de insights"
+        "F2": "Hasta 3 chatbots (3 empresas)",
+        "F3": "3 dominios por chatbot",
+        "F4": "20,000 mensajes/mes",
+        "F5": "Soporte prioritario"
       },
       "REFUNDS_NOTE": "¿Dudas sobre cobros? Consulta nuestra",
       "REFUNDS_LINK": "Política de reembolsos",
       "TERMS_LINK": "Términos",
       "PRIVACY_LINK": "Privacidad",
       "HANDOFF": "Handoff a humano (Telegram)",
-      "WHITELABEL": "Marca blanca (sin \"Powered by Vectis\")"
+      "WHITELABEL": "Marca blanca (sin \"Powered by Vectis\")",
+      "TRIAL_BADGE": "20 días gratis"
     },
     "CONFIGURE": {
       "EYEBROW": "¡Listo!",
@@ -1196,7 +1195,9 @@
       "TEXT_EXPIRED": "Tu plan venció. Renueva para reactivar tus ChatBots.",
       "CTA_EXPIRED": "Renovar plan",
       "ORIGINS_TRIMMED": "Tu plan actual permite menos dominios: dejamos solo el primero en tus ChatBots.",
-      "ORIGINS_CTA": "Revisar dominios"
+      "ORIGINS_CTA": "Revisar dominios",
+      "TRIAL_TEXT": "Estás en tu prueba gratis de Pro — te quedan {{days}} días.",
+      "TRIAL_CTA": "Suscríbete para seguir en Pro"
     },
     "MANAGE": {
       "EYEBROW": "Tu plan",
@@ -1453,7 +1454,11 @@
       "Q12": "¿Puede pasar la conversación a una persona?",
       "A12": "Sí. Cuando el cliente lo pide, el bot lo conecta con un agente humano (handoff). Recibes y respondes los chats en vivo desde tu WhatsApp o tu Telegram, sin importar el canal por el que escribió el cliente.",
       "Q13": "¿El chatbot agenda citas por sí mismo?",
-      "A13": "Sí. Se integra con Cal.com: consulta la disponibilidad real de tu calendario, le pregunta los datos al cliente y crea la reserva. En la web abre una ventana de reservas; en los demás canales el bot agenda por chat."
+      "A13": "Sí. Se integra con Cal.com: consulta la disponibilidad real de tu calendario, le pregunta los datos al cliente y crea la reserva. En la web abre una ventana de reservas; en los demás canales el bot agenda por chat.",
+      "Q14": "¿Cuánto cuesta?",
+      "A14": "Tres planes mensuales en USD: Basic $29, Pro $49 y Business $99. Sin contratos — cambia de plan o cancela cuando quieras.",
+      "Q15": "¿Hay prueba gratis?",
+      "A15": "Sí. Las cuentas nuevas obtienen Pro gratis por 20 días, sin tarjeta — acceso completo desde la primera conversación. Al terminar la prueba, elige un plan para continuar; tus ChatBots se pausan hasta que lo hagas. La prueba es por una sola vez por cuenta."
     },
     "DEMO": {
       "EYEBROW": "En acción",

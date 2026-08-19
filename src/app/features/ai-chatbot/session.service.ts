@@ -234,6 +234,8 @@ export interface ProfileRow {
   cancel_at_period_end?: boolean | null;
   paddle_customer_id?: string | null;
   paddle_subscription_id?: string | null;
+  on_trial?: boolean | null;
+  trial_used?: boolean | null;
 }
 
 export interface ChatbotRow {
@@ -275,7 +277,10 @@ export class ChatbotSessionService {
   readonly cancelAtPeriodEnd = signal(false);
   readonly paddleCustomerId = signal('');       // vacío = usuario sin cliente en Paddle (bypass/cortesía)
   readonly paddleSubscriptionId = signal('');   // vacío = sin suscripción en Paddle
+  readonly onTrial = signal(false);             // en prueba gratis de Pro (sin tarjeta)
+  readonly trialUsed = signal(false);           // ya consumió su prueba (no se ofrece de nuevo)
   readonly bannerDismissed = signal(false);
+  readonly trialBannerDismissed = signal(false);
   readonly needsActiveReview = signal(false); // se forzó a elegir chatbots activos
   readonly originsTrimmed = signal(false);    // al bajar de plan se recortaron dominios → avisar
 
@@ -322,6 +327,22 @@ export class ChatbotSessionService {
     if (!e) return false;
     return new Date(e + 'T23:59:59') < new Date();
   });
+  /**
+   * Prueba de Pro en curso: marcado como trial, sin suscripción real en Paddle y aún no vencida.
+   * (Cuando el usuario paga, el webhook fija paddle_subscription_id → deja de ser prueba automáticamente.)
+   */
+  readonly isTrial = computed(() => this.onTrial() && !this.paddleSubscriptionId() && this.hasPlan() && !this.planExpired());
+  /** Días restantes de la prueba (0 si ya venció). */
+  readonly trialDaysLeft = computed(() => {
+    const e = this.planExpiry();
+    if (!e) return 0;
+    const end = new Date(e + 'T23:59:59').getTime();
+    const diff = end - Date.now();
+    return diff <= 0 ? 0 : Math.ceil(diff / 86_400_000);
+  });
+  /** Banner de prueba: en prueba y el usuario no lo cerró. */
+  readonly showTrialBanner = computed(() => this.isTrial() && !this.trialBannerDismissed());
+
   /** Suscripción activa = no cancelada y no vencida. Si no, los ChatBots se consideran pausados. */
   readonly subscriptionActive = computed(() => !this.cancelAtPeriodEnd() && !(this.hasPlan() && this.planExpired()));
   /** Motivo del banner: cancelada o vencida (o null). */
@@ -413,6 +434,8 @@ export class ChatbotSessionService {
       this.cancelAtPeriodEnd.set(!!profile.cancel_at_period_end);
       this.paddleCustomerId.set(profile.paddle_customer_id ?? '');
       this.paddleSubscriptionId.set(profile.paddle_subscription_id ?? '');
+      this.onTrial.set(!!profile.on_trial);
+      this.trialUsed.set(!!profile.trial_used);
     }
     this.companies.set(bots.map((b) => b.company));
     this.clientIds.set(bots.map((b) => b.id));
@@ -432,6 +455,7 @@ export class ChatbotSessionService {
     this.firstName.set(''); this.lastName.set(''); this.email.set(''); this.phone.set('');
     this.preferredLang.set('es'); this.plan.set('basic'); this.planExpiry.set(''); this.createdAt.set(''); this.cancelAtPeriodEnd.set(false);
     this.paddleCustomerId.set(''); this.paddleSubscriptionId.set('');
+    this.onTrial.set(false); this.trialUsed.set(false); this.trialBannerDismissed.set(false);
     this.companies.set([]); this.clientIds.set([]); this.configs.set([]); this.statuses.set([]); this.current.set(0);
     this.needsActiveReview.set(false);
   }
