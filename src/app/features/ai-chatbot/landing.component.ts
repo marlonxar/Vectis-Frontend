@@ -345,6 +345,17 @@ interface Plan {
           <h2 class="band-title">{{ 'AICHATBOT.PRICING.TITLE' | translate }}</h2>
           <p class="lead on-dark">{{ 'AICHATBOT.PRICING.SUBTITLE' | translate }}</p>
         </div>
+        <!-- Prueba gratis seleccionable: lleva al registro -->
+        <article class="ptrial-card">
+          <div class="ptc-info">
+            <span class="ptc-badge">{{ 'AICHATBOT.PLANS.TRIAL_BADGE' | translate }}</span>
+            <h3 class="ptc-title">{{ 'AICHATBOT.PLANS.TRIAL_TITLE' | translate }}</h3>
+            <p class="ptc-desc">{{ 'AICHATBOT.PLANS.TRIAL_DESC' | translate }}</p>
+          </div>
+          <button type="button" class="ptc-cta" (click)="goSignup()">{{ 'AICHATBOT.PLANS.TRIAL_CTA' | translate }}</button>
+        </article>
+        <p class="or-sep"><span>{{ 'AICHATBOT.PLANS.OR_PAID' | translate }}</span></p>
+
         <div class="pcards">
           @for (p of plans; track p.id) {
             <article class="pplan" [class.popular]="p.popular">
@@ -352,7 +363,6 @@ interface Plan {
               <h3 class="pname">{{ p.nameKey | translate }}</h3>
               <p class="ptag">{{ p.taglineKey | translate }}</p>
               <div class="pprice"><span class="pamt">{{ p.price }}</span><span class="pper">{{ 'AICHATBOT.PLANS.PER_MONTH' | translate }}</span></div>
-              @if (p.id === 'pro') { <p class="ptrial">{{ 'AICHATBOT.PLANS.TRIAL_BADGE' | translate }}</p> }
               <ul class="pfeat">
                 @for (f of p.features; track f) {
                   <li>
@@ -744,6 +754,20 @@ interface Plan {
     .pricing-head { text-align: center; max-width: 640px; margin: 0 auto clamp(36px, 5vw, 52px); }
     .pricing-head .band-title { margin-top: 12px; }
     .pricing-head .lead { margin: 16px auto 0; }
+    /* Prueba gratis seleccionable (landing) */
+    .ptrial-card { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+      max-width: 760px; margin: 0 auto 6px; padding: 24px 28px; border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(231,171,46,.14), rgba(231,171,46,.05)); border: 1px solid var(--gold-bright); box-shadow: 0 20px 50px rgba(231,171,46,.14); }
+    .ptc-info { flex: 1; min-width: 240px; }
+    .ptc-badge { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-bright); }
+    .ptc-title { font-size: 22px; margin-top: 6px; }
+    .ptc-desc { color: var(--text-inv-2); font-size: 14px; margin-top: 6px; max-width: 48ch; }
+    .ptc-cta { min-height: 50px; padding: 0 26px; border: none; border-radius: var(--radius-pill); cursor: pointer; font: inherit; font-weight: 700; white-space: nowrap;
+      color: var(--ink); background: linear-gradient(135deg, var(--gold-soft), var(--gold-bright)); box-shadow: 0 10px 30px rgba(231,171,46,.3); transition: transform var(--dur) var(--ease); }
+    .ptc-cta:hover { transform: translateY(-2px); }
+    .or-sep { display: flex; align-items: center; gap: 14px; max-width: 760px; margin: 16px auto 24px; color: var(--text-inv-2); font-size: 12.5px; text-transform: uppercase; letter-spacing: .08em; }
+    .or-sep::before, .or-sep::after { content: ""; height: 1px; flex: 1; background: var(--line-light); }
+
     .pcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
     .pplan { position: relative; display: flex; flex-direction: column; background: rgba(255,255,255,.03);
       border: 1px solid var(--line-light); border-radius: var(--radius-lg); padding: 30px 26px; transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease); }
@@ -800,6 +824,12 @@ export class ChatbotLandingComponent implements OnInit {
   switchMode(m: Mode): void {
     this.mode.set(m);
     this.errorMsg.set(''); this.infoMsg.set(''); this.forgotMsg.set(false);
+  }
+
+  /** CTA de prueba gratis (landing público): abre el registro y sube al formulario. */
+  goSignup(): void {
+    this.switchMode('signup');
+    this.scroll.scrollToTop();
   }
 
   private isEmail(v: string): boolean { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()); }
