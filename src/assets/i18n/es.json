@@ -724,7 +724,11 @@
       "PRIVACY_LINK": "Privacidad",
       "HANDOFF": "Handoff a humano (Telegram)",
       "WHITELABEL": "Marca blanca (sin \"Powered by Vectis\")",
-      "TRIAL_BADGE": "Prueba gratis · 20 días"
+      "TRIAL_BADGE": "Prueba gratis · 20 días",
+      "TRIAL_TITLE": "Prueba Pro gratis por 20 días",
+      "TRIAL_DESC": "Todas las funciones de Pro. Sin tarjeta. Pásate a un plan de paga cuando quieras.",
+      "TRIAL_CTA": "Empezar prueba gratis",
+      "OR_PAID": "o elige un plan de paga"
     },
     "CONFIGURE": {
       "EYEBROW": "¡Listo!",

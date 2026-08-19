@@ -22,9 +22,10 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-08-19',
     title: 'Prueba gratis de Pro y ajuste de precios',
     changes: [
-      'Prueba gratis de Pro por 20 días, sin tarjeta: las cuentas nuevas entran directo con el plan Pro completo y empiezan a configurar su bot, sin pasar por la pantalla de pago.',
-      'Un aviso te muestra los días que te quedan de prueba y te invita a suscribirte para seguir en Pro. Al terminar, tus ChatBots se pausan hasta que elijas un plan.',
-      'La prueba es por una sola vez y solo para cuentas nuevas.',
+      'Nueva prueba gratis de Pro por 20 días, sin tarjeta: aparece como una opción más en la pantalla de planes. Eliges entre empezar la prueba o ir directo a un plan de paga.',
+      'La prueba se puede tomar una sola vez: una vez usada o terminada, deja de aparecer como opción.',
+      'Durante la prueba tienes Pro completo y un aviso te muestra los días que te quedan. Al terminar, tus ChatBots se pausan hasta que elijas un plan de paga.',
+      'El producto ahora abre en inglés por defecto.',
       'El plan Basic pasa de $19 a $29 al mes. Pro ($49) y Business ($99) se mantienen.',
     ],
   },

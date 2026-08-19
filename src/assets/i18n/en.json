@@ -724,7 +724,11 @@
       "PRIVACY_LINK": "Privacy",
       "HANDOFF": "Human handoff (Telegram)",
       "WHITELABEL": "White-label (no \"Powered by Vectis\")",
-      "TRIAL_BADGE": "Free trial · 20 days"
+      "TRIAL_BADGE": "Free trial · 20 days",
+      "TRIAL_TITLE": "Try Pro free for 20 days",
+      "TRIAL_DESC": "Full Pro features. No card required. Switch to a paid plan anytime.",
+      "TRIAL_CTA": "Start free trial",
+      "OR_PAID": "or pick a paid plan"
     },
     "CONFIGURE": {
       "EYEBROW": "Done!",

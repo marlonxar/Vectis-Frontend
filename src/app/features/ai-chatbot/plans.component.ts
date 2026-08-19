@@ -45,6 +45,20 @@ interface Plan {
             <p class="lead on-dark">{{ 'AICHATBOT.PLANS.SUBTITLE' | translate }}</p>
           </header>
 
+          @if (canStartTrial()) {
+            <article class="trial-card">
+              <div class="tc-info">
+                <span class="tc-badge">{{ 'AICHATBOT.PLANS.TRIAL_BADGE' | translate }}</span>
+                <h2 class="tc-title">{{ 'AICHATBOT.PLANS.TRIAL_TITLE' | translate }}</h2>
+                <p class="tc-desc">{{ 'AICHATBOT.PLANS.TRIAL_DESC' | translate }}</p>
+              </div>
+              <button type="button" class="tc-cta" [disabled]="startingTrial()" (click)="startTrial()">
+                {{ (startingTrial() ? 'AICHATBOT.PLANS.CONFIRMING' : 'AICHATBOT.PLANS.TRIAL_CTA') | translate }}
+              </button>
+            </article>
+            <p class="or-sep"><span>{{ 'AICHATBOT.PLANS.OR_PAID' | translate }}</span></p>
+          }
+
           <div class="cards">
             @for (p of plans; track p.id) {
               <article class="plan" [class.popular]="p.popular">
@@ -52,7 +66,6 @@ interface Plan {
                 <h2 class="name">{{ p.nameKey | translate }}</h2>
                 <p class="tag">{{ p.taglineKey | translate }}</p>
                 <div class="price"><span class="amt">{{ localizedPrice()[p.id] || p.price }}</span><span class="per">{{ 'AICHATBOT.PLANS.PER_MONTH' | translate }}</span></div>
-                @if (p.id === 'pro') { <p class="trial">{{ 'AICHATBOT.PLANS.TRIAL_BADGE' | translate }}</p> }
                 <ul class="feat">
                   @for (f of p.features; track f) {
                     <li>
@@ -90,6 +103,21 @@ interface Plan {
     .head { text-align: center; max-width: 640px; margin: 0 auto 48px; }
     .ttl { font-size: clamp(34px, 5vw, 60px); margin-top: 12px; }
     .head .lead { margin: 16px auto 0; }
+
+    /* Tarjeta de prueba gratis (seleccionable, arriba de los planes de paga) */
+    .trial-card { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;
+      max-width: 720px; margin: 0 auto 8px; padding: 24px 28px; border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, rgba(231,171,46,.14), rgba(231,171,46,.05)); border: 1px solid var(--gold-bright); box-shadow: 0 20px 50px rgba(231,171,46,.14); }
+    .tc-info { flex: 1; min-width: 240px; }
+    .tc-badge { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gold-bright); }
+    .tc-title { font-size: 22px; margin-top: 6px; }
+    .tc-desc { color: var(--text-inv-2); font-size: 14px; margin-top: 6px; max-width: 46ch; }
+    .tc-cta { min-height: 50px; padding: 0 26px; border: none; border-radius: var(--radius-pill); cursor: pointer; font: inherit; font-weight: 700; white-space: nowrap;
+      color: var(--ink); background: linear-gradient(135deg, var(--gold-soft), var(--gold-bright)); box-shadow: 0 10px 30px rgba(231,171,46,.3); transition: transform var(--dur) var(--ease); }
+    .tc-cta:hover { transform: translateY(-2px); }
+    .tc-cta:disabled { opacity: .7; cursor: default; transform: none; }
+    .or-sep { display: flex; align-items: center; gap: 14px; max-width: 720px; margin: 18px auto 24px; color: var(--text-inv-2); font-size: 12.5px; text-transform: uppercase; letter-spacing: .08em; }
+    .or-sep::before, .or-sep::after { content: ""; height: 1px; flex: 1; background: var(--line-light); }
 
     .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; align-items: stretch; }
     .plan { position: relative; display: flex; flex-direction: column; background: var(--ink-card);
@@ -137,6 +165,26 @@ export class ChatbotPlansComponent implements OnInit {
   readonly localizedPrice = signal<Partial<Record<PlanId, string>>>({});
   /** Overlay "confirmando pago" mientras el webhook aprovisiona el plan. */
   readonly confirming = signal(false);
+  /** Botón de prueba en curso (evita doble clic). */
+  readonly startingTrial = signal(false);
+
+  /** La prueba se ofrece SOLO si no la ha usado y no tiene una suscripción de paga activa. */
+  canStartTrial(): boolean {
+    return !this.session.trialUsed() && !this.session.paddleSubscriptionId();
+  }
+
+  /** Selecciona la prueba: la concede (Pro 20 días) y entra a configurar el bot. */
+  async startTrial(): Promise<void> {
+    if (this.startingTrial()) return;
+    this.startingTrial.set(true);
+    try {
+      const { error } = await this.auth.startProTrial();
+      if (!error) await this.auth.reload();
+      this.router.navigateByUrl('/configure');
+    } finally {
+      this.startingTrial.set(false);
+    }
+  }
 
   plans: Plan[] = [
     {

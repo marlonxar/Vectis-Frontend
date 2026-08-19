@@ -129,20 +129,10 @@ export class ChatbotAuthService {
 
   private async loadUserData(user: User): Promise<void> {
     try {
-      let [{ data: profile }, { data: bots }] = await Promise.all([
+      const [{ data: profile }, { data: bots }] = await Promise.all([
         this.sb.from('profiles').select('*').eq('id', user.id).maybeSingle(),
         this.sb.from('chatbots').select('*').neq('status', 'DELETED').order('created_at', { ascending: true }),
       ]);
-      // Prueba gratis de Pro (sin tarjeta, cuentas nuevas): si el perfil aún no ha
-      // consumido su prueba, la RPC la inicia (Pro por 20 días) y volvemos a leer el perfil.
-      // La RPC es idempotente: si no es elegible, no hace nada.
-      if (profile && profile['trial_used'] === false) {
-        try {
-          await this.sb.rpc('start_pro_trial');
-          const { data: fresh } = await this.sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
-          if (fresh) profile = fresh;
-        } catch { /* si falla, sigue sin prueba */ }
-      }
       const rows = (bots ?? []).map((r: Record<string, any>) => ({ id: r['id'] as string, company: r['company'] as string, status: r['status'] as string, config: rowToConfig(r) }));
       this.store.hydrate(user.email ?? '', profile, rows);
       this.applyLang(this.store.preferredLang());     // idioma del perfil → toda la UI del panel
@@ -232,14 +222,17 @@ export class ChatbotAuthService {
     return this.sb.rpc('select_plan', { p_plan: plan });
   }
 
+  /** Inicia la prueba de Pro (RPC segura: Pro 20 días, sin tarjeta, una sola vez). */
+  startProTrial() {
+    return this.sb.rpc('start_pro_trial');
+  }
+
   /** Ruta a la que mandar al usuario tras iniciar sesión: panel si ya tiene chatbots, planes si no. */
   async routeAfterAuth(): Promise<string> {
     try {
-      const { data: prof } = await this.sb.from('profiles').select('plan_expiry, trial_used').maybeSingle();
-      // Cuenta nueva elegible a la prueba de Pro: entra directo (la prueba se concede en loadUserData),
-      // sin pasar por la selección de plan.
-      const eligibleTrial = prof && prof['trial_used'] === false;
-      if ((!prof || !prof['plan_expiry']) && !eligibleTrial) return '/plans';   // aún no elige plan y sin prueba
+      const { data: prof } = await this.sb.from('profiles').select('plan_expiry').maybeSingle();
+      // Sin plan/prueba todavía → a la pantalla de planes (ahí elige prueba gratis o un plan de paga).
+      if (!prof || !prof['plan_expiry']) return '/plans';
       const { data } = await this.sb.from('chatbots').select('id').neq('status', 'DELETED').limit(1);
       return data && data.length ? '/dashboard' : '/configure';
     } catch {
