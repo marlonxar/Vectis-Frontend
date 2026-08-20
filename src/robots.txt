@@ -1,8 +1,8 @@
 # Vectis Automation — https://www.wearevectis.com
 User-agent: *
 Allow: /
-# Páginas privadas del producto (requieren sesión; sin contenido indexable).
-# El historial de versiones (/changelog) SÍ es público y queda permitido.
+# Private product pages (require a session; no indexable content).
+# The version history (/changelog) IS public and stays allowed.
 Disallow: /account
 Disallow: /dashboard
 Disallow: /configure
@@ -12,6 +12,9 @@ Disallow: /manage
 Disallow: /plans
 Disallow: /support
 Disallow: /reset
+# De-index paginated subfolders (thin/duplicate pages).
+Disallow: /*/page/
+Disallow: /page/
 
 # Search engines
 User-agent: Googlebot
