@@ -325,7 +325,8 @@
     "CONSENT_TERMS": "Términos y Condiciones",
     "CONSENT_POST": ", y el uso de mis datos para responder a mi solicitud.",
     "PHONE": "Teléfono",
-    "PHONE_PH": "+506 8888 8888"
+    "PHONE_PH": "+506 8888 8888",
+    "EMAIL_DUP": "Este correo ya tiene una cita agendada. Usa otro correo o revisa tu reserva existente."
   },
   "FOOTER": {
     "TAGLINE": "Construimos sistemas que hacen el trabajo repetitivo de su equipo. Crezca sin contratar.",

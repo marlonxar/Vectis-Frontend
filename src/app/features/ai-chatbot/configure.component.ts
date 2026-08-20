@@ -328,15 +328,15 @@ const WORKER_URL = 'https://chatbot.vectisauto.workers.dev';
                 </div>
 
 
-                <!-- 4. AVANZADO -->
-                <div class="acc" [class.ok]="sectionDone(3)" [class.expanded]="isOpen(3)">
-                  <button type="button" class="acc-head" (click)="toggle(3)" [attr.aria-expanded]="isOpen(3)">
-                    <span class="acc-num">4</span>
+                <!-- 3. AVANZADO -->
+                <div class="acc" [class.ok]="sectionDone(2)" [class.expanded]="isOpen(2)">
+                  <button type="button" class="acc-head" (click)="toggle(2)" [attr.aria-expanded]="isOpen(2)">
+                    <span class="acc-num">3</span>
                     <span class="acc-title">{{ 'AICHATBOT.ONBOARD.SEC_ADVANCED' | translate }}</span>
-                    @if (sectionDone(3)) { <span class="acc-ok" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> }
-                    <svg class="acc-chev" [class.up]="isOpen(3)" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                    @if (sectionDone(2)) { <span class="acc-ok" aria-hidden="true"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> }
+                    <svg class="acc-chev" [class.up]="isOpen(2)" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
                   </button>
-                  @if (isOpen(3)) {
+                  @if (isOpen(2)) {
                   <div class="acc-body">
                   <div class="field">
                     <label for="ob-rules">{{ 'AICHATBOT.ONBOARD.RULES' | translate }} <span class="req">*</span>
@@ -825,15 +825,14 @@ export class ChatbotConfigureComponent implements OnInit {
     switch (i) {
       case 0: return this.vCompany() && this.vDesc() && this.vPersona();
       case 1: return this.vInfo() && this.vSchedule() && this.vFaqs();
-      case 2: return true; // apariencia: todo opcional
-      case 3: return this.vRules(); // dominios opcionales (vacío = cualquier dominio)
+      case 2: return this.vRules(); // avanzado: dominios opcionales (vacío = cualquier dominio)
       default: return false;
     }
   }
   /** Primera sección incompleta (hasta ahí puede navegar el usuario). */
   firstInvalid(): number {
-    for (let i = 0; i < 4; i++) { if (!this.sectionValid(i)) return i; }
-    return 4;
+    for (let i = 0; i < 3; i++) { if (!this.sectionValid(i)) return i; }
+    return 3;
   }
   showErr(i: number): boolean { return this.tried().includes(i); }
 
@@ -1002,7 +1001,7 @@ export class ChatbotConfigureComponent implements OnInit {
 
   // --- Progreso ---
   sectionDone(i: number): boolean { return this.sectionValid(i); }
-  sectionsDone(): number { return [0, 1, 2, 3].filter((i) => this.sectionDone(i)).length; }
+  sectionsDone(): number { return [0, 1, 2].filter((i) => this.sectionDone(i)).length; }
   progressPct(): number { return Math.round((this.sectionsDone() / 4) * 100); }
 
   personaPlaceholder(): string {

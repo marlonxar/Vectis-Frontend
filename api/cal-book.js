@@ -32,6 +32,27 @@ module.exports = async (req, res) => {
       return;
     }
 
+    // Duplicate guard: reject if this email already has an upcoming booking.
+    // Cal.com is the source of truth for bookings; we query it before creating a new one.
+    // If the check itself fails (network/API), we do NOT block the booking.
+    try {
+      const q = new URLSearchParams({
+        attendeeEmail: String(email).trim().toLowerCase(),
+        status: 'upcoming',
+      });
+      const dupRes = await fetch(`${CAL_API}/bookings?${q.toString()}`, {
+        headers: { Authorization: `Bearer ${apiKey}`, 'cal-api-version': BOOKINGS_VERSION },
+      });
+      if (dupRes.ok) {
+        const dupData = await dupRes.json();
+        const list = (dupData && dupData.data) || [];
+        if (Array.isArray(list) && list.length > 0) {
+          res.status(409).json({ error: 'duplicate_booking' });
+          return;
+        }
+      }
+    } catch (e) { /* check failed → allow booking */ }
+
     // Goes into the booking's "Additional notes" field → syncs to the calendar event description.
     const description = [
       service ? `Servicio de interés: ${service}` : '',

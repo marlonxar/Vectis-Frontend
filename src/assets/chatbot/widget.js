@@ -21,6 +21,73 @@
   if (!CLIENT_ID) { console.warn('[Vectis ChatBot] Falta data-client-id'); return; }
   if (window.__vxcLoaded) return; window.__vxcLoaded = true;
 
+  // --- i18n del chrome del widget: sigue el idioma del sitio (data-lang > <html lang> > navegador) ---
+  function detectLang() {
+    try {
+      var forced = (self && self.getAttribute('data-lang') || '').toLowerCase().slice(0, 2);
+      if (forced === 'es' || forced === 'en') return forced;
+      var h = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+      if (h.indexOf('en') === 0) return 'en';
+      if (h.indexOf('es') === 0) return 'es';
+      var n = (navigator.language || '').toLowerCase();
+      if (n.indexOf('en') === 0) return 'en';
+      if (n.indexOf('es') === 0) return 'es';
+    } catch (e) { /* noop */ }
+    return 'es';
+  }
+  var LANG = detectLang();
+  var I18N = {
+    es: {
+      openChat: 'Abrir chat', online: 'En línea', talkPerson: 'Hablar con una persona',
+      book: 'Agendar', bookAppt: 'Agendar una cita', minimize: 'Minimizar',
+      closeAria: 'Cerrar y borrar conversación', closeTitle: 'Cerrar y empezar de nuevo',
+      attach: 'Adjuntar imagen', placeholder: 'Escribe tu mensaje…', send: 'Enviar',
+      moreInfo: 'Más info', backToChat: 'Volver al chat', back: 'Volver',
+      connecting: '🙋 Te estoy conectando con una persona del equipo. Puedes seguir escribiendo (y enviar imágenes con 📎); en breve te responden.',
+      backToBot: 'Volviste con el asistente ✨ ¿En qué más te ayudo?',
+      talkingPerson: 'Hablando con una persona', backToAssistant: 'Volver al asistente',
+      agent: 'Agente', onlyImages: 'Solo se pueden enviar imágenes.',
+      imgTooBig: 'La imagen es muy grande (máximo 5 MB).', imageLabel: t('imageLabel'),
+      talkAgent: 'Hablar con un agente', csatQ: '¿Te resultó útil?', csatYes: 'Sí, me ayudó',
+      csatNo: 'No me ayudó', csatThanks: '¡Gracias por tu opinión!',
+      errConn: 'Hubo un problema de conexión. Intenta de nuevo.',
+      errOrigin: 'Este chat no está autorizado en este dominio.',
+      errGeneric: 'Lo siento, no pude responder. Intenta de nuevo.',
+      bookFallback: '¡Claro! Te abro el calendario para que elijas el día y la hora 📅',
+      agentFallback: '¡Claro! Te conecto con alguien de nuestro equipo, un momento…'
+    },
+    en: {
+      openChat: 'Open chat', online: 'Online', talkPerson: 'Talk to a person',
+      book: 'Book', bookAppt: 'Book an appointment', minimize: 'Minimize',
+      closeAria: 'Close and clear conversation', closeTitle: 'Close and start over',
+      attach: 'Attach image', placeholder: 'Type your message…', send: 'Send',
+      moreInfo: 'More info', backToChat: 'Back to chat', back: 'Back',
+      connecting: '🙋 Connecting you with a team member. You can keep typing (and send images with 📎); they will reply shortly.',
+      backToBot: 'You are back with the assistant ✨ How else can I help?',
+      talkingPerson: 'Talking with a person', backToAssistant: 'Back to assistant',
+      agent: 'Agent', onlyImages: 'Only images can be sent.',
+      imgTooBig: 'The image is too large (max 5 MB).', imageLabel: '📷 (image)',
+      talkAgent: 'Talk to an agent', csatQ: 'Was this helpful?', csatYes: 'Yes, it helped',
+      csatNo: "It didn't help", csatThanks: 'Thanks for your feedback!',
+      errConn: 'There was a connection problem. Please try again.',
+      errOrigin: 'This chat is not authorized on this domain.',
+      errGeneric: "Sorry, I couldn't reply. Please try again.",
+      bookFallback: "Sure! I'll open the calendar so you can pick a day and time 📅",
+      agentFallback: 'Sure! Connecting you with someone from our team, one moment…'
+    }
+  };
+  function t(k) { var d = I18N[LANG] || I18N.es; return d[k] != null ? d[k] : (I18N.es[k] || k); }
+  // Re-localiza el chrome visible si el sitio cambia de idioma en vivo.
+  function relocalizeChrome() {
+    LANG = detectLang();
+    if (!$panel) return;
+    var inp = $panel.querySelector('.vxc-in'); if (inp) inp.placeholder = t('placeholder');
+    var sub = $panel.querySelector('.vxc-sub'); if (sub) sub.innerHTML = '<span class="vxc-dot"></span>' + esc(t('online'));
+    var barSpan = $panel.querySelector('.vxc-hobar > span'); if (barSpan) barSpan.innerHTML = '<span class="vxc-dot"></span>' + esc(t('talkingPerson'));
+    var barBtn = $panel.querySelector('.vxc-hoback'); if (barBtn) barBtn.textContent = t('backToAssistant');
+    if ($launch) $launch.setAttribute('aria-label', t('openChat'));
+  }
+
   var cfg = null, history = [], open = false, sending = false, sentEnd = false, csatTimer = null, $styleEl = null;
   var ready = false, pendingOpen = false, loading = false;   // ready = panel construido; pendingOpen = clic mientras cargaba; loading = config en curso
   var SKEY = 'vxc_hist_' + CLIENT_ID;
@@ -234,7 +301,7 @@
   function renderLauncher() {
     if ($launch) return;
     $launch = el('button', 'vxc-launch');
-    $launch.setAttribute('aria-label', 'Abrir chat');
+    $launch.setAttribute('aria-label', t('openChat'));
     $launch.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
     $launch.onclick = toggle;
     document.body.appendChild($launch);
@@ -246,15 +313,15 @@
     var head = el('div', 'vxc-head');
     var initial = ((cfg.title || 'A').trim().charAt(0) || 'A').toUpperCase();
     var ava = cfg.logo ? '<img class="vxc-ava" src="' + esc(cfg.logo) + '" alt="">' : '<span class="vxc-ava">' + esc(initial) + '</span>';
-    var hoBtn = cfg.handoff ? '<button class="vxc-ho-btn" aria-label="Hablar con una persona" title="Hablar con una persona">' +
+    var hoBtn = cfg.handoff ? '<button class="vxc-ho-btn" aria-label="' + esc(t('talkPerson')) + '" title="' + esc(t('talkPerson')) + '">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg></button>' : '';
-    var calBtn = cfg._cal ? '<button class="vxc-cal-btn" aria-label="Agendar" title="Agendar una cita">' +
+    var calBtn = cfg._cal ? '<button class="vxc-cal-btn" aria-label="' + esc(t('book')) + '" title="' + esc(t('bookAppt')) + '">' +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg></button>' : '';
     var acts = (hoBtn || calBtn) ? '<span class="vxc-acts">' + hoBtn + calBtn + '</span>' : '';
-    head.innerHTML = ava + '<div class="vxc-meta"><div class="vxc-title">' + esc(cfg.title) + '</div><div class="vxc-sub"><span class="vxc-dot"></span>En línea</div></div>' +
+    head.innerHTML = ava + '<div class="vxc-meta"><div class="vxc-title">' + esc(cfg.title) + '</div><div class="vxc-sub"><span class="vxc-dot"></span>' + esc(t('online')) + '</div></div>' +
       acts +
-      '<button class="vxc-min" aria-label="Minimizar" title="Minimizar"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>' +
-      '<button class="vxc-x" aria-label="Cerrar y borrar conversación" title="Cerrar y empezar de nuevo">&times;</button>';
+      '<button class="vxc-min" aria-label="' + esc(t('minimize')) + '" title="' + esc(t('minimize')) + '"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>' +
+      '<button class="vxc-x" aria-label="' + esc(t('closeAria')) + '" title="' + esc(t('closeTitle')) + '">&times;</button>';
     if (cfg.handoff) head.querySelector('.vxc-ho-btn').onclick = startHandoff;
     if (cfg._cal) head.querySelector('.vxc-cal-btn').onclick = openCal;
     head.querySelector('.vxc-min').onclick = toggle;     // minimizar: oculta el panel, conserva el chat
@@ -265,23 +332,25 @@
     var foot = el('div', 'vxc-foot');
     // Adjuntar imagen (solo visible en modo humano).
     $attach = el('button', 'vxc-attach');
-    $attach.setAttribute('aria-label', 'Adjuntar imagen'); $attach.setAttribute('title', 'Adjuntar imagen');
+    $attach.setAttribute('aria-label', t('attach')); $attach.setAttribute('title', t('attach'));
     $attach.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>';
     var $file = el('input', 'vxc-file'); $file.type = 'file'; $file.accept = 'image/*';
     $attach.onclick = function () { $file.click(); };
     $file.addEventListener('change', function () { var f = $file.files && $file.files[0]; if (f) sendImageFile(f); $file.value = ''; });
-    var input = el('input', 'vxc-in'); input.type = 'text'; input.placeholder = 'Escribe tu mensaje…';
+    var input = el('input', 'vxc-in'); input.type = 'text'; input.placeholder = t('placeholder');
     var send = el('button', 'vxc-send');
-    send.setAttribute('aria-label', 'Enviar');
+    send.setAttribute('aria-label', t('send'));
     send.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
     foot.appendChild($attach); foot.appendChild($file); foot.appendChild(input); foot.appendChild(send);
-    function doSend() { var v = input.value.trim(); if (v) { input.value = ''; ask(v); } }
+    function doSend() { var v = input.value.trim(); input.value = ''; send.disabled = true; if (v) { ask(v); } }
     send.onclick = doSend;
     // stopPropagation evita que un handler global de la página (p. ej. bloquear la
     // barra espaciadora para el scroll) impida escribir espacios en el input.
     input.addEventListener('keydown', function (e) { e.stopPropagation(); if (e.key === 'Enter') doSend(); });
     input.addEventListener('keypress', function (e) { e.stopPropagation(); });
     input.addEventListener('keyup', function (e) { e.stopPropagation(); });
+    input.addEventListener('input', function () { send.disabled = !input.value.trim(); });
+    send.disabled = true;
 
     var note = null;
     if (cfg.privacyText) {
@@ -291,7 +360,7 @@
         // Enlaza la frase "privacidad de Vectis" dentro del texto; si no aparece, agrega "Más info".
         var m = cfg.privacyText.match(/privacidad de vectis/i);
         if (m) noteHtml = noteHtml.replace(esc(m[0]), anchor(esc(m[0])));
-        else noteHtml += ' ' + anchor('Más info');
+        else noteHtml += ' ' + anchor(esc(t('moreInfo')));
       }
       note = el('div', 'vxc-note', noteHtml);
     }
@@ -306,13 +375,19 @@
     // Panel de agenda (Cal.com) — solo si hay enlace configurado.
     if (cfg._cal) {
       $cal = el('div', 'vxc-cal');
-      $cal.innerHTML = '<div class="vxc-cal-head"><button class="vxc-cal-back" aria-label="Volver al chat" title="Volver">&larr;</button><span>Agendar</span></div>' +
+      $cal.innerHTML = '<div class="vxc-cal-head"><button class="vxc-cal-back" aria-label="' + esc(t('backToChat')) + '" title="' + esc(t('back')) + '">&larr;</button><span>' + esc(t('book')) + '</span></div>' +
         '<div class="vxc-cal-body"><div id="vxc-cal-embed"></div></div>';
       $cal.querySelector('.vxc-cal-back').onclick = closeCal;
       $panel.appendChild($cal);
     }
 
     document.body.appendChild($panel);
+
+    // Sigue el idioma del sitio si cambia en vivo (p. ej. selector ES/EN).
+    if (!window.__vxcLangObs) {
+      window.__vxcLangObs = true;
+      try { new MutationObserver(relocalizeChrome).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] }); } catch (e) { /* noop */ }
+    }
 
     // posición del círculo y del panel (izquierda / derecha)
     if (cfg.position === 'left') { $launch.classList.add('vxc-left'); $panel.classList.add('vxc-left'); }
@@ -383,7 +458,7 @@
     handoff = true;
     if (csatTimer) { clearTimeout(csatTimer); csatTimer = null; }
     var qr = $body.querySelector('.vxc-qr'); if (qr) qr.remove();
-    addSystem('🙋 Te estoy conectando con una persona del equipo. Puedes seguir escribiendo (y enviar imágenes con 📎); en breve te responden.');
+    addSystem(t('connecting'));
     showHandoffBar();
     if ($attach) $attach.classList.add('on');
     api({ action: 'handoff_start', client_id: CLIENT_ID, session_id: sessionId() }).catch(function () { /* noop */ });
@@ -397,7 +472,7 @@
     if (notify !== false) api({ action: 'handoff_end', client_id: CLIENT_ID, session_id: sessionId() }).catch(function () { /* noop */ });
     removeHandoffBar();
     if ($attach) $attach.classList.remove('on');
-    addSystem('Volviste con el asistente ✨ ¿En qué más te ayudo?');
+    addSystem(t('backToBot'));
     scheduleCsat(2500);   // al cerrar el chat con la persona, pide la opinión
   }
   function pollHandoff() {
@@ -405,7 +480,7 @@
     api({ action: 'handoff_poll', client_id: CLIENT_ID, session_id: sessionId() }).then(function (r) {
       if (r && r.messages && r.messages.length) {
         r.messages.forEach(function (m) {
-          if (m && m.image) { addAgentImage(m.image, m.text); history.push({ role: 'bot', text: m.text || '📷 (imagen)' }); }
+          if (m && m.image) { addAgentImage(m.image, m.text); history.push({ role: 'bot', text: m.text || t('imageLabel') }); }
           else if (m && m.text) { addAgent(m.text); history.push({ role: 'bot', text: m.text }); }
         });
         if (history.length > 20) history = history.slice(-20);
@@ -416,17 +491,17 @@
   function showHandoffBar() {
     if (!$panel || $panel.querySelector('.vxc-hobar')) return;
     var bar = el('div', 'vxc-hobar');
-    bar.innerHTML = '<span><span class="vxc-dot"></span>Hablando con una persona</span><button class="vxc-hoback" type="button">Volver al asistente</button>';
+    bar.innerHTML = '<span><span class="vxc-dot"></span>' + esc(t('talkingPerson')) + '</span><button class="vxc-hoback" type="button">' + esc(t('backToAssistant')) + '</button>';
     bar.querySelector('.vxc-hoback').onclick = function () { endHandoff(true); };
     var foot = $panel.querySelector('.vxc-foot');
     if (foot) $panel.insertBefore(bar, foot); else $panel.appendChild(bar);
   }
   function removeHandoffBar() { var b = $panel && $panel.querySelector('.vxc-hobar'); if (b) b.remove(); }
   function addSystem(text) { var b = el('div', 'vxc-sys', esc(text)); $body.appendChild(b); scroll(); }
-  function addAgent(text) { var b = el('div', 'vxc-b vxc-bot'); b.innerHTML = '<span class="vxc-agtag">Agente</span>' + mdToHtml(text); $body.appendChild(b); scroll(); }
+  function addAgent(text) { var b = el('div', 'vxc-b vxc-bot'); b.innerHTML = '<span class="vxc-agtag">' + esc(t('agent')) + '</span>' + mdToHtml(text); $body.appendChild(b); scroll(); }
   function addAgentImage(url, caption) {
     var b = el('div', 'vxc-b vxc-bot');
-    b.innerHTML = '<span class="vxc-agtag">Agente</span><a href="' + esc(url) + '" target="_blank" rel="noopener"><img class="vxc-img" src="' + esc(url) + '" alt=""></a>' + (caption ? '<div class="vxc-imgcap">' + mdToHtml(caption) + '</div>' : '');
+    b.innerHTML = '<span class="vxc-agtag">' + esc(t('agent')) + '</span><a href="' + esc(url) + '" target="_blank" rel="noopener"><img class="vxc-img" src="' + esc(url) + '" alt=""></a>' + (caption ? '<div class="vxc-imgcap">' + mdToHtml(caption) + '</div>' : '');
     $body.appendChild(b); scroll();
   }
   function addUserImage(dataUrl) {
@@ -437,13 +512,13 @@
   // Adjuntar imagen (solo en modo humano): la muestra y la envía al agente.
   function sendImageFile(f) {
     if (!handoff || !f) return;
-    if (!/^image\//.test(f.type)) { addSystem('Solo se pueden enviar imágenes.'); return; }
-    if (f.size > 5 * 1024 * 1024) { addSystem('La imagen es muy grande (máximo 5 MB).'); return; }
+    if (!/^image\//.test(f.type)) { addSystem(t('onlyImages')); return; }
+    if (f.size > 5 * 1024 * 1024) { addSystem(t('imgTooBig')); return; }
     var rd = new FileReader();
     rd.onload = function () {
       var dataUrl = rd.result;
       addUserImage(dataUrl);
-      history.push({ role: 'user', text: '📷 (imagen)' }); saveHistory();
+      history.push({ role: 'user', text: t('imageLabel') }); saveHistory();
       api({ action: 'handoff_msg', client_id: CLIENT_ID, session_id: sessionId(), image: dataUrl }).catch(function () { /* noop */ });
     };
     rd.readAsDataURL(f);
@@ -465,7 +540,7 @@
     // Si el handoff está activo, ofrece hablar con una persona.
     if (cfg.handoff && !handoff) {
       var a = el('button', 'vxc-chip vxc-chip-agent');
-      a.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg>Hablar con un agente';
+      a.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><path d="M4 15v-4a8 8 0 0 1 16 0v4"/><path d="M18 19a2 2 0 0 1-2 2h-3"/><rect x="2" y="14" width="4" height="6" rx="1"/><rect x="18" y="14" width="4" height="6" rx="1"/></svg>' + esc(t('talkAgent')) + '';
       a.onclick = function () { wrap.remove(); startHandoff(); };
       wrap.appendChild(a);
     }
@@ -500,9 +575,9 @@
     if ($body.querySelector('.vxc-csat')) return;
     if (!history.some(function (h) { return h.role === 'user'; })) return;
     var bar = el('div', 'vxc-csat');
-    bar.innerHTML = '<span class="vxc-csat-q">¿Te resultó útil?</span>' +
-      '<button class="vxc-csat-b" data-r="1" aria-label="Sí, me ayudó">👍</button>' +
-      '<button class="vxc-csat-b" data-r="0" aria-label="No me ayudó">👎</button>';
+    bar.innerHTML = '<span class="vxc-csat-q">' + esc(t('csatQ')) + '</span>' +
+      '<button class="vxc-csat-b" data-r="1" aria-label="' + esc(t('csatYes')) + '">👍</button>' +
+      '<button class="vxc-csat-b" data-r="0" aria-label="' + esc(t('csatNo')) + '">👎</button>';
     var btns = bar.querySelectorAll('.vxc-csat-b');
     for (var i = 0; i < btns.length; i++) {
       (function (b) { b.onclick = function () { sendCsat(b.getAttribute('data-r') === '1' ? 1 : 0, bar); }; })(btns[i]);
@@ -512,7 +587,7 @@
   function sendCsat(rating, bar) {
     try { sessionStorage.setItem(CKEY, '1'); } catch (e) { /* noop */ }
     api({ action: 'csat', client_id: CLIENT_ID, session_id: sessionId(), rating: rating }).catch(function () { /* noop */ });
-    bar.innerHTML = '<span class="vxc-csat-q">¡Gracias por tu opinión!</span>';
+    bar.innerHTML = '<span class="vxc-csat-q">' + esc(t('csatThanks')) + '</span>';
   }
 
   // Avisa al worker que la sesión terminó → genera el insight con IA (1 por sesión, planes Pro/Business).
@@ -570,16 +645,16 @@
 
     function finish(r, err) {
       typing.remove();
-      var reply = err ? 'Hubo un problema de conexión. Intenta de nuevo.'
+      var reply = err ? t('errConn')
         : ((r && r.reply) || (r && r.error === 'origin_not_allowed'
-            ? 'Este chat no está autorizado en este dominio.'
-            : 'Lo siento, no pude responder. Intenta de nuevo.'));
+            ? t('errOrigin')
+            : t('errGeneric')));
       // El bot pide abrir el calendario de Cal.com: quitamos el marcador y lo abrimos.
       var openBook = /\[\[\s*AGENDAR\s*\]\]/i.test(reply);
-      if (openBook) { reply = reply.replace(/\[\[\s*AGENDAR\s*\]\]/ig, '').trim() || '¡Claro! Te abro el calendario para que elijas el día y la hora 📅'; }
+      if (openBook) { reply = reply.replace(/\[\[\s*AGENDAR\s*\]\]/ig, '').trim() || t('bookFallback'); }
       // El bot decide conectar con una persona: quitamos el marcador y arrancamos el handoff nosotros.
       var wantAgent = cfg.handoff && !handoff && /\[\[\s*AGENTE\s*\]\]/i.test(reply);
-      if (wantAgent) { reply = reply.replace(/\[\[\s*AGENTE\s*\]\]/ig, '').trim() || '¡Claro! Te conecto con alguien de nuestro equipo, un momento…'; }
+      if (wantAgent) { reply = reply.replace(/\[\[\s*AGENTE\s*\]\]/ig, '').trim() || t('agentFallback'); }
       addBot(reply);
       // Abre solo si hay Cal, no está ya abierto y no se abrió en los últimos 25s (evita reaperturas en cada mensaje).
       var calOpen = $cal && $cal.classList.contains('vxc-on');

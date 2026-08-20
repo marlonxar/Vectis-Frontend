@@ -109,7 +109,7 @@
               <h3 class="step-title">{{ 'CONTACT.STEP3_TITLE' | translate }}</h3>
               <div class="field"><label for="a-name">{{ 'CONTACT.NAME' | translate }} *</label><input id="a-name" name="a-name" [(ngModel)]="appt.name" autocomplete="name" required /></div>
               <div class="row2">
-                <div class="field"><label for="a-email">{{ 'CONTACT.EMAIL' | translate }} *</label><input id="a-email" name="a-email" type="email" [(ngModel)]="appt.email" autocomplete="email" required /></div>
+                <div class="field"><label for="a-email">{{ 'CONTACT.EMAIL' | translate }} *</label><input id="a-email" name="a-email" type="email" [(ngModel)]="appt.email" (ngModelChange)="apptDupEmail.set(false)" [class.bad]="apptDupEmail()" autocomplete="email" required /><small class="field-err" *ngIf="apptDupEmail()" role="alert">{{ 'CONTACT.EMAIL_DUP' | translate }}</small></div>
                 <div class="field"><label for="a-phone">{{ 'CONTACT.PHONE' | translate }} *</label><input id="a-phone" name="a-phone" type="tel" [(ngModel)]="appt.phone" autocomplete="tel" [placeholder]="'CONTACT.PHONE_PH' | translate" required /></div>
               </div>
               <div class="field"><label for="a-company">{{ 'CONTACT.COMPANY' | translate }}</label><input id="a-company" name="a-company" [(ngModel)]="appt.company" autocomplete="organization" /></div>

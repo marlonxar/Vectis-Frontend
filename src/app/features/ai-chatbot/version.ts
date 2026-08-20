@@ -6,7 +6,7 @@
  *  - MAYOR: cambios grandes que rompen compatibilidad.
  * Para publicar una versión: sube APP_VERSION y agrega una entrada AL INICIO de CHANGELOG.
  */
-export const APP_VERSION = '1.14.0';
+export const APP_VERSION = '1.14.1';
 
 export interface ChangelogEntry {
   version: string;
@@ -17,6 +17,17 @@ export interface ChangelogEntry {
 
 /** Historial de versiones, de la más nueva a la más vieja. */
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.14.1',
+    date: '2026-08-20',
+    title: 'Correcciones: idioma del widget, validaciones y numeración',
+    changes: [
+      'El widget de chat ahora sigue el idioma del sitio donde está instalado: si la página está en inglés, toda su interfaz (encabezado, botones, mensajes del sistema y encuesta) aparece en inglés, y cambia en vivo si el sitio cambia de idioma.',
+      'El campo de mensaje del widget ya no permite enviar solo espacios en blanco: el botón de enviar se desactiva hasta que escribes algo.',
+      'Agendar una llamada ahora valida el correo: si ese correo ya tiene una cita activa, se muestra un aviso y no se crea una reserva duplicada.',
+      'Se corrigió la numeración de las secciones al configurar el bot: iba 1, 2, 4; ahora es 1, 2, 3.',
+    ],
+  },
   {
     version: '1.14.0',
     date: '2026-08-19',

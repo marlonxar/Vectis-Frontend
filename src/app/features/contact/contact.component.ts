@@ -64,6 +64,8 @@ export class ContactComponent implements AfterViewInit, OnDestroy {
   readonly apptSent = signal(false);
   readonly apptSending = signal(false);
   readonly apptError = signal(false);
+  /** El email ya tiene una cita activa (validado contra Cal.com al confirmar). */
+  readonly apptDupEmail = signal(false);
   appt = { service: '', date: null as Date | null, time: '', slotIso: '', name: '', email: '', phone: '', company: '', message: '' };
 
   readonly serviceKeys = ['AI', 'WEB', 'AUTOMATION', 'CUSTOM', 'API', 'DATA'];
@@ -303,6 +305,7 @@ export class ContactComponent implements AfterViewInit, OnDestroy {
 
   async confirmAppointment(): Promise<void> {
     this.apptError.set(false);
+    this.apptDupEmail.set(false);
     this.apptSending.set(true);
     const serviceTitle = this.appt.service
       ? this.translate.instant('SERVICES.' + this.appt.service + '.TITLE') : '';
@@ -322,6 +325,14 @@ export class ContactComponent implements AfterViewInit, OnDestroy {
           language: this.translate.currentLang,
         }),
       });
+      // Email ya tiene una cita activa: mostramos error inline y volvemos al paso del correo.
+      if (res.status === 409) {
+        this.apptSending.set(false);
+        this.apptDupEmail.set(true);
+        this.step.set(3);
+        this.scrollToPanel();
+        return;
+      }
       if (!res.ok) throw new Error('book');
       this.apptSending.set(false);
       this.apptSent.set(true);
