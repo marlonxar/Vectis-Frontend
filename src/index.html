@@ -44,6 +44,25 @@
   <meta name="application-name" content="Vectis Automation" />
   <meta name="apple-mobile-web-app-title" content="Vectis Automation" />
 
+  <!-- Google Search Console verification: prefer DNS TXT, or paste the exact tag GSC gives you:
+       <meta name="google-site-verification" content="YOUR_TOKEN" /> -->
+
+  <!-- Google Analytics 4. Set your Measurement ID below (G-XXXXXXXXXX) to enable; empty = disabled. -->
+  <script>
+    window.VECTIS_GA4_ID = ''; // e.g. 'G-XXXXXXXXXX'
+    (function () {
+      var id = window.VECTIS_GA4_ID;
+      if (!id) return;
+      var s = document.createElement('script'); s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { window.dataLayer.push(arguments); };
+      window.gtag('js', new Date());
+      window.gtag('config', id, { anonymize_ip: true });
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <!-- Load Google Fonts without blocking first render (font-display:swap handles the fallback) -->
