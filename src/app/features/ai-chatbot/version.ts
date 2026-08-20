@@ -26,6 +26,7 @@ export const CHANGELOG: ChangelogEntry[] = [
       'El campo de mensaje del widget ya no permite enviar solo espacios en blanco: el botón de enviar se desactiva hasta que escribes algo.',
       'Agendar una llamada ahora valida el correo: si ese correo ya tiene una cita activa, se muestra un aviso y no se crea una reserva duplicada.',
       'Se corrigió la numeración de las secciones al configurar el bot: iba 1, 2, 4; ahora es 1, 2, 3.',
+      'La conversación del widget ahora se conserva al recargar la página y entre visitas (durante 24 horas), en vez de empezar de cero cada vez.',
     ],
   },
   {

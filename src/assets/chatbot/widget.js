@@ -90,15 +90,32 @@
 
   var cfg = null, history = [], open = false, sending = false, sentEnd = false, csatTimer = null, $styleEl = null;
   var ready = false, pendingOpen = false, loading = false;   // ready = panel construido; pendingOpen = clic mientras cargaba; loading = config en curso
+  // La conversación persiste entre recargas Y entre visitas (localStorage), no solo
+  // mientras dure la pestaña. Se considera la MISMA conversación si hubo actividad en
+  // las últimas 24 h; pasado ese lapso, empieza una nueva.
   var SKEY = 'vxc_hist_' + CLIENT_ID;
-  function loadHistory() { try { return JSON.parse(sessionStorage.getItem(SKEY) || '[]') || []; } catch (e) { return []; } }
-  function saveHistory() { try { sessionStorage.setItem(SKEY, JSON.stringify(history.slice(-20))); } catch (e) { /* noop */ } }
-  // Una "conversación" = una sesión del visitante (persiste mientras dure la pestaña).
   var SIDKEY = 'vxc_sid_' + CLIENT_ID;
+  var TSKEY = 'vxc_ts_' + CLIENT_ID;
+  var SESSION_TTL = 24 * 60 * 60 * 1000;   // 24 h
+  function nowMs() { return Date.now(); }
+  function stGet(k) { try { return localStorage.getItem(k); } catch (e) { try { return sessionStorage.getItem(k); } catch (_) { return null; } } }
+  function stSet(k, v) { try { localStorage.setItem(k, v); } catch (e) { try { sessionStorage.setItem(k, v); } catch (_) { /* noop */ } } }
+  function stDel(k) { try { localStorage.removeItem(k); } catch (e) { /* noop */ } try { sessionStorage.removeItem(k); } catch (_) { /* noop */ } }
+  function sessionExpired() { var ts = parseInt(stGet(TSKEY) || '0', 10); return ts > 0 && (nowMs() - ts) > SESSION_TTL; }
+  function clearSession() { stDel(SKEY); stDel(SIDKEY); stDel(TSKEY); }
+  function touchSession() { stSet(TSKEY, String(nowMs())); }
+  function loadHistory() {
+    try {
+      if (sessionExpired()) { clearSession(); return []; }
+      return JSON.parse(stGet(SKEY) || '[]') || [];
+    } catch (e) { return []; }
+  }
+  function saveHistory() { try { stSet(SKEY, JSON.stringify(history.slice(-20))); touchSession(); } catch (e) { /* noop */ } }
   function sessionId() {
     try {
-      var v = sessionStorage.getItem(SIDKEY);
-      if (!v) { v = Date.now().toString(36) + Math.random().toString(36).slice(2, 10); sessionStorage.setItem(SIDKEY, v); }
+      if (sessionExpired()) clearSession();
+      var v = stGet(SIDKEY);
+      if (!v) { v = Date.now().toString(36) + Math.random().toString(36).slice(2, 10); stSet(SIDKEY, v); touchSession(); }
       return v;
     } catch (e) { return 'anon'; }
   }
@@ -421,7 +438,7 @@
   function closeChat() {
     if (handoff) { handoff = false; if (hoTimer) { clearInterval(hoTimer); hoTimer = null; } api({ action: 'handoff_end', client_id: CLIENT_ID, session_id: sessionId() }).catch(function () {}); removeHandoffBar(); if ($attach) $attach.classList.remove('on'); }
     endSession();                                  // captura el insight de la sesión actual antes de descartarla
-    try { sessionStorage.removeItem(SKEY); sessionStorage.removeItem(SIDKEY); } catch (e) { /* noop */ }
+    clearSession();
     history = []; sentEnd = false;                  // nueva sesión (sessionId() generará un id nuevo)
     if ($body) {
       $body.innerHTML = '';
