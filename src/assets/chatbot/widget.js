@@ -47,7 +47,7 @@
       backToBot: 'Volviste con el asistente ✨ ¿En qué más te ayudo?',
       talkingPerson: 'Hablando con una persona', backToAssistant: 'Volver al asistente',
       agent: 'Agente', onlyImages: 'Solo se pueden enviar imágenes.',
-      imgTooBig: 'La imagen es muy grande (máximo 5 MB).', imageLabel: t('imageLabel'),
+      imgTooBig: 'La imagen es muy grande (máximo 5 MB).', imageLabel: '📷 (imagen)',
       talkAgent: 'Hablar con un agente', csatQ: '¿Te resultó útil?', csatYes: 'Sí, me ayudó',
       csatNo: 'No me ayudó', csatThanks: '¡Gracias por tu opinión!',
       errConn: 'Hubo un problema de conexión. Intenta de nuevo.',
